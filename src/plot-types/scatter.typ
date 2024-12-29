@@ -87,12 +87,10 @@
 /// color can be set per point (this discerns @scatter from @plot). 
 ///
 /// ```example
-/// #import lilac
+/// #let x = lq.linspace(0, 10)
 /// 
-/// #let x = lc.linspace(0, 10)
-/// 
-/// #lc.diagram(
-///   lc.scatter(x, x.map(x => calc.sin(x)))
+/// #lq.diagram(
+///   lq.scatter(x, x.map(x => calc.sin(x)))
 /// )
 /// ```
 #let scatter(

@@ -131,26 +131,22 @@
 /// Points where at the $x$ or $y$ coordinate is `nan` are skipped. 
 /// 
 /// ```example
-/// #import lilac
+/// #let x = lq.linspace(0, 10)
 /// 
-/// #let x = lc.linspace(0, 10)
-/// 
-/// #lc.diagram(
-///   lc.plot(x, x.map(x => calc.sin(x)))
+/// #lq.diagram(
+///   lq.plot(x, x.map(x => calc.sin(x)))
 /// )
 /// ```
 /// 
 /// This function is also intended for making plots with error bars. 
 /// 
 /// ```example
-/// #import lilac
-/// 
-/// #lc.diagram(
-///   lc.plot(
+/// #lq.diagram(
+///   lq.plot(
 ///     range(8), (3, 6, 2, 6, 5, 9, 0, 4),
 ///     yerr: (1, 1, .7, .8, .2, .6, .5, 1),
-///     line: none, mark: "star",
-///     mark-size: 8pt
+///     stroke: none, mark: "star",
+///     mark-size: 6pt
 ///   )
 /// )
 /// ```
@@ -224,10 +220,10 @@
   ///
   /// #details[
   ///   ```example
-  ///   #import lilac
+  ///   #import lilaq
   ///
-  ///   #lc.diagram(
-  ///     lc.plot(
+  ///   #lq.diagram(
+  ///     lq.plot(
   ///       range(8), (3,6,2,6,5,9,0,4),
   ///       step: center
   ///     )
@@ -249,7 +245,7 @@
   
   /// Specifies the $z$ position of this plot in the order of rendered diagram objects. 
   /// This makes it also possible to render plots in front of the axes which have a 
-  // z-index of `2.1`.  
+  /// z-index of `2.1`.  
   /// -> int | float
   z-index: 2,
   

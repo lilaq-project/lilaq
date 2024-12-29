@@ -1,4 +1,4 @@
-#import "/src/assertations.typ"
+#import "../assertations.typ"
 #import "../plot-utils.typ": merge-fills, match, match-type, bar-lim
 #import "../process-points.typ": filter-nan-points, stepify
 #import "../math.typ": vec, minmax
