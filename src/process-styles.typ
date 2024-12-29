@@ -102,7 +102,7 @@
     if not "bottom" in margin { margin.bottom = margin.at("y", default: rest) }
     margin
   } else {
-    assert(false, "The type `" + type(margin) + "` is not valid for margin arguments. ")
+    assert(false, message: "The type `" + str(type(margin)) + "` is not valid for margin arguments. ")
   }
 }
 

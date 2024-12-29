@@ -29,7 +29,7 @@
       assert("transform" in norm, message: "The argument `norm` must be a valid scale from the `scales` module")
       norm.transform
     },
-    default: () => assert(false, message: "Unsupported type `" + type(norm) + "` for argument `norm`")
+    default: () => assert(false, message: "Unsupported type `" + str(type(norm)) + "` for argument `norm`")
   )
   
   let normalize = scale.create-trafo(norm-fn, vmin, vmax)

@@ -173,7 +173,7 @@
   } else if type(subticks) == int {
     locate-subticks = ticking.locate-subticks-linear.with(num: subticks)
   } else if subticks != auto {
-    assert(false, message: "Unsupported argument type `" + type(subticks) + "` for parameter `subticks`")
+    assert(false, message: "Unsupported argument type `" + str(type(subticks)) + "` for parameter `subticks`")
   }
   if locate-subticks == auto {
     locate-subticks = match(
