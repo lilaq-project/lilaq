@@ -121,7 +121,34 @@
 }
 
 
-/// Creates a contour plot. 
+/// Creates a contour plot for a 3d mesh. Given a set of `levels`, 
+/// cuts through the mesh are computed automatically and displayed as
+/// contour lines. Contour plots can be either just stroked
+/// 
+/// ```example
+/// #lq.diagram(
+///   width: 4cm, height: 4cm,
+///   lq.contour(
+///     lq.linspace(-5, 5, num: 12),
+///     lq.linspace(-5, 5, num: 12),
+///     (x, y) => x * y, 
+///     map: color.map.icefire,
+///   )
+/// )
+/// ```
+/// or filled per level. 
+/// ```example
+/// #lq.diagram(
+///   width: 4cm, height: 4cm,
+///   lq.contour(
+///     lq.linspace(-5, 5, num: 12),
+///     lq.linspace(-5, 5, num: 12),
+///     (x, y) => x * y, 
+///     map: color.map.icefire,
+///     fill: true
+///   )
+/// )
+/// ```
 #let contour(
 
   /// A one-dimensional array of $x$ data coordinates. 
@@ -135,7 +162,7 @@
 
   /// Specifies the $z$ coordinates (height) for all combinations of $x$ and $y$ 
   /// coordinates. This can either be a two-dimensional array of dimensions $m×n$ 
-  /// where $m$ is the length of @colormesh.x and $n$ is the length of @colormesh.y, 
+  /// where $m$ is the length of @contour.x and $n$ is the length of @contour.y, 
   /// or a function that takes an `x` and a `y` value and returns a corresponding 
   /// `z` coordinate. Also see the function @mesh for creating meshes. 
   /// -> array | function

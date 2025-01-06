@@ -10,7 +10,7 @@
 #let render-hstem(plot, transform) = {
   // let mark = plot.style.mark
   let marker = mark()
-  set line(stroke: plot.style.line)
+  set line(stroke: plot.style.stroke)
 
   let (ymin, ymax) = (plot.ylimits)()
   
@@ -34,22 +34,39 @@
     size: plot.style.mark-size
   )
   show: prepare-path.with(
-    stroke: merge-strokes(plot.style.line, plot.style.color)
+    stroke: merge-strokes(plot.style.stroke, plot.style.color)
   )
+
+  let points = filter-nan-points(plot.x.zip(plot.y)).map(p => transform(..p))
+
+  points.map(((x, y)) => place(path((x0, y), (x, y)))).join()
   
-  for (x, y) in filter-nan-points(plot.x.zip(plot.y)) {
-    let (xx, yy) = transform(x, y)
-    place(path((x0, yy), (xx, yy)))
-    place(dx: xx, dy: yy, marker)
-  }
   if plot.style.base-stroke != none {
     place(line(start: (x0, y1), end: (x0, y2), stroke: plot.style.base-stroke))
   }
+  
+  points.map(((x, y)) => place(dx: x, dy: y, marker)).join()
 }
 
 
-/// Creates a horizonal stem plot. 
+/// Creates a horizontal stem plot. 
+/// ```example
+/// #let ys = lq.linspace(0, 10, num: 20)
+///   
+/// #lq.diagram( 
+///   lq.hstem(
+///     ys.map(calc.cos), 
+///     ys, 
+///     color: orange, 
+///     mark: "diamond",
+///     base-stroke: black,
+///   )
+/// ) 
+/// ```
+///
+/// Also see @stem for vertical stem plots. 
 #let hstem(
+
   /// An array of $x$ coordinates. 
   /// -> array
   x, 
@@ -58,14 +75,14 @@
   /// -> array
   y, 
 
-  /// Combined color for line and markers. See also the parameters @stem.line and 
-  /// @stem.mark-color which take precedence over `color`, if set. 
+  /// Combined color for line and marks. See also the parameters @hstem.line and 
+  /// @hstem.mark-color which take precedence over `color`, if set. 
   /// -> auto | color
   color: auto,
   
-  /// The line style to use for this plot (takes precedence over @stem.color). 
+  /// The line style to use for this plot (takes precedence over @hstem.color). 
   /// -> auto | stroke
-  line: auto, 
+  stroke: auto, 
 
   /// How to stroke the base line. 
   /// -> stroke
@@ -75,11 +92,11 @@
   /// -> auto | lq.mark | string
   mark: auto, 
   
-  /// Size of the markers. 
+  /// Size of the marks. 
   /// -> length
   mark-size: 5pt,
   
-  /// Color of the markers (takes precedence over @stem.color). 
+  /// Color of the marks (takes precedence over @hstem.color). 
   /// -> auto | color
   mark-color: auto,
   
@@ -112,7 +129,7 @@
       mark: mark,
       mark-size: mark-size,
       mark-color: merge-fills(mark-color, color),
-      line: merge-strokes(line, color),
+      stroke: merge-strokes(stroke, color),
       base-stroke: base-stroke
     ),
     plot: render-hstem,

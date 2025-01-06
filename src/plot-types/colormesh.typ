@@ -43,6 +43,17 @@
 
 
 /// Creates a color mesh plot. 
+/// ```example
+/// #lq.diagram(
+///   width: 4cm, height: 4cm,
+///   lq.colormesh(
+///     lq.linspace(-4, 4, num: 10),
+///     lq.linspace(-4, 4, num: 10),
+///     (x, y) => x*y, 
+///     map: color.map.magma
+///   )
+/// )
+/// ```
 #let colormesh(
   
   /// A one-dimensional array of $x$ data coordinates. 

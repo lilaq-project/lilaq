@@ -47,9 +47,9 @@
         show: prepare-mark.with(
           func: plot.style.mean,
           size: plot.style.mark-size,
-          fill: plot.style.mark-color
+          fill: plot.style.outlier-fill
         )
-        set mark(stroke: plot.style.mark-color)
+        set mark(stroke: plot.style.outlier-stroke)
         place(dx: middle, dy: mean, mark())
       } else {
         place(line(start: (xx1 + box-thickness/2, mean), end: (xx2 - box-thickness/2, mean), stroke: style.mean))
@@ -60,9 +60,9 @@
       show: prepare-mark.with(
         func: plot.style.mark,
         size: plot.style.mark-size,
-        fill: plot.style.mark-color
+        fill: plot.style.outlier-fill
       )
-      set mark(stroke: plot.style.mark-color)
+      set mark(stroke: plot.style.outlier-stroke)
       for outlier in statistics.outliers {
         let (_, y) = transform(x + x1, outlier)
         place(dx: middle, dy: y, mark())
@@ -72,7 +72,21 @@
   }
 }
 
-
+/// Makes one or more boxplots from the given data. 
+/// 
+/// ```example
+/// #lq.diagram(
+///   lq.boxplot(
+///     stroke: blue.darken(50%), 
+///     (
+///       (1, 2, 3, 4, 5, 6, 7, 8, 9, 21, 19),
+///       range(1, 30),
+///       (1, 28, 25, 30),
+///       (1, 2, 3, 4, 5, 6, 32),
+///     )
+///   )
+/// )
+/// ```
 #let boxplot(
 
   /// One or more data arrays to generate a boxplot from. If a single data array 
@@ -141,8 +155,12 @@
   outlier-size: 5pt,
   
   /// The color of the marks used to visualize outliers. 
-  /// -> color
-  outlier-color: black,
+  /// -> none | color
+  outlier-fill: none,
+  
+  /// The color of the marks used to visualize outliers. 
+  /// -> stroke
+  outlier-stroke: black,
   
   /// The legend label for this plot. See @plot.label. 
   /// -> content
@@ -197,7 +215,8 @@
       mean: mean,
       mark: if outliers != none { outliers },
       mark-size: outlier-size,
-      mark-color: utility.if-auto(outlier-color, color),
+      outlier-fill: outlier-fill,
+      outlier-stroke: outlier-stroke,
     ),
     plot: render-boxplot,
     xlimits: () => (xmin, xmax),

@@ -127,8 +127,9 @@
 //   place(horizon + center, (plot.style.mark)(plot.style))
 }
 
-/// Standard plotting method for 2d data with lines and/or markers and optional error bars. 
-/// Points where at the $x$ or $y$ coordinate is `nan` are skipped. 
+
+/// Standard plotting method for 2d data with lines and/or marks and optional  
+/// error bars. Points where the $x$ or $y$ coordinate is `nan` are skipped. 
 /// 
 /// ```example
 /// #let x = lq.linspace(0, 10)
@@ -137,6 +138,10 @@
 ///   lq.plot(x, x.map(x => calc.sin(x)))
 /// )
 /// ```
+/// 
+/// By default, the line and mark style is determined by the current @diagram.cycle. 
+/// However, they can be configured per plot with the options @plot.color, @plot.mark,
+/// and @plot.stroke. 
 /// 
 /// This function is also intended for making plots with error bars. 
 /// 
@@ -170,32 +175,25 @@
   /// -> none | array
   yerr: none,
   
-  /// Combined color for line and markers. See also the parameters @plot.stroke and 
+  /// Combined color for line and marks. See also the parameters @plot.stroke and 
   /// @plot.mark-fill which take precedence over `color`, if set. 
-  /// -> color
+  /// -> auto | color
   color: auto,
-  
-  /// The mark to use to mark data points. This may either be a mark (such as 
-  /// `lq.mark.star.with(n: 6)`) or one of the mark strings 
-  ///  - `"."`: Small-sized point mark
-  ///  - `"o"`: Circle mark
-  ///  - `"s"`: Square mark
-  ///  - `"x"`: Cross-shaped mark
-  ///  - `","`: Pixel-sized mark
-  ///  - `"star"`, `"asterisk"`
-  ///  - `"triangle"`, `"diamond"`, `"pentagon"`, `"hexagon"`, `"heptagon"`, `"octagon"`
-  /// -> lq.mark | string
-  mark: auto, 
   
   /// The line style to use for this plot (takes precedence over @plot.color). 
   /// -> auto | stroke
   stroke: auto, 
   
-  /// Size of the markers. For variable-size mark plots, use the plot type @scatter. 
+  /// The mark to use to mark data points. This may either be a mark (such as 
+  /// `lq.mark.x`) or a registered mark string, see @mark. 
+  /// -> auto | lq.mark | string
+  mark: auto, 
+  
+  /// Size of the marks. For variable-size mark plots, use the plot type @scatter. 
   /// -> auto | length
   mark-size: auto,
   
-  /// Color of the markers (takes precedence over @plot.color). 
+  /// Color of the marks (takes precedence over @plot.color). 
   /// TODO: this parameter should eventually be removed. Instead one
   /// would be able to set mark color and stroke through
   /// ```
@@ -239,7 +237,7 @@
   label: none,
   
   /// Whether to clip the plot to the data area. This is usually a good idea for plots 
-  /// with lines but it does also clip part of markers that lie right on an axis. 
+  /// with lines but it does also clip part of marks that lie right on an axis. 
   /// -> boolean
   clip: true,
   

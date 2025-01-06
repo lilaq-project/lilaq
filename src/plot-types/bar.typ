@@ -56,13 +56,40 @@
 
 
 /// Makes a bar plot from the given data. 
+/// 
+/// ```example
+/// #lq.diagram(
+///   xaxis: (subticks: none),
+///   lq.bar(
+///     (1, 2, 3, 4, 5, 6), 
+///     (1, 2, 3, 2, 5, 3), 
+///   )
+/// )
+/// ```
+/// 
+/// 
+/// The example below demonstrates how to use custom tick labels by passing an array of `(location, label)` tuples to `axis.ticks`. 
+/// ```example
+/// #lq.diagram(
+///   xaxis: (
+///     ticks: ("Apples", "Bananas", "Kiwis", "Mangos", "Papayas")
+///       .map(rotate.with(-45deg, reflow: true))
+///       .enumerate(),
+///     subticks: none,
+///   ),
+///   lq.bar(
+///     range(5),
+///     (5, 3, 4, 2, 1)
+///   )
+/// )
+/// ```
 #let bar(
   
-  /// An array of $x$ coordinates. 
+  /// An array of $x$ coordinates denoting the bar positions. 
   /// -> array
   x, 
   
-  /// An array of $y$ coordinates. The number of $x$ and $y$ coordinates must match. 
+  /// An array of $y$ coordinates denoting the bar heights. The number of $x$ and $y$ coordinates must match. 
   /// -> array
   y, 
 
@@ -75,12 +102,48 @@
   stroke: none,
 
   /// Alignment of the bars at the $x$ values. 
+  /// #details[
+  ///   Demonstration of the different alignment modes. 
+  ///   ```example
+  ///   #lq.diagram(
+  ///     xaxis: (subticks: none),
+  ///     lq.bar(
+  ///       (1,2,3,4,5), (1,2,3,4,5), 
+  ///       width: .2, fill: red, 
+  ///       align: left, label: "left"
+  ///     ),
+  ///     lq.bar(
+  ///       (1,2,3,4,5), (5,4,3,2,1), 
+  ///       width: .2, fill: blue, 
+  ///       align: right, label: "right"
+  ///     ),
+  ///     lq.bar(
+  ///       (1,2,3,4,5), (2.5,) * 5, 
+  ///       width: .2, fill: rgb("#AAEEAA99"),
+  ///       align: center, label: "center"
+  ///     ),
+  ///   )
+  ///   ```
+  /// ]
   /// -> alignment
   align: center,
 
   /// Width of the bars in data coordinates. The width can be set either to a constant
   /// for all bars or individually by passing an array with the same length as the 
   /// coordinate arrays. 
+  /// #details[
+  ///   Example for a bar plot with varying bar widths.
+  ///   ```example
+  ///   #lq.diagram(
+  ///     lq.bar(
+  ///       (1, 2, 3, 4, 5), 
+  ///       (1, 2, 3, 2, 5), 
+  ///       width: (1, .5, 1, .5, 1), 
+  ///       fill: orange, 
+  ///     )
+  ///   )
+  ///   ```
+  /// ]
   /// -> int | float | array
   width: .8,
 
@@ -95,6 +158,21 @@
   /// Defines the $y$ coordinate of the baseline of the bars. This can either be a 
   /// constant value applied to all bars or it can be set individually by passing an 
   /// array with the same length as the coordinate arrays. 
+  /// #details[
+  ///   Bar plot with varying base. 
+  ///   ```example
+  ///   #lq.diagram(
+  ///     xaxis: (subticks: none),
+  ///     lq.bar(
+  ///       (1, 2, 3, 4, 5), 
+  ///       (1, 2, 3, 0, 5), 
+  ///       base: (0, 1, 2, -1, 0), 
+  ///       fill: white, 
+  ///       stroke: .7pt
+  ///     )
+  ///   )
+  ///   ```
+  /// ]
   /// -> int | float | array
   base: 0,
   

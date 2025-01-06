@@ -33,24 +33,44 @@
     size: plot.style.mark-size
   )
   show: prepare-path.with(
-    stroke: merge-strokes(plot.style.line, plot.style.color)
+    stroke: merge-strokes(plot.style.stroke, plot.style.color)
   )
   
-  for (x, y) in filter-nan-points(plot.x.zip(plot.y)) {
-    let (xx, yy) = transform(x, y)
-    place(std.path((xx, y0), (xx, yy)))
-    place(dx: xx, dy: yy, marker)
-  }
+  
+  let points = filter-nan-points(plot.x.zip(plot.y)).map(p => transform(..p))
+
+  points.map(((x, y)) => place(path((x, y0), (x, y)))).join()
+  
   if plot.style.base-stroke != none {
     place(line(start: (x1, y0), end: (x2, y0), stroke: plot.style.base-stroke))
   }
+  
+  points.map(((x, y)) => place(dx: x, dy: y, marker)).join()
 }
 
 
 
 
 /// Creates a (vertical) stem plot. 
+/// 
+/// ```example
+/// #let xs = lq.linspace(0, 10, num: 30)
+///   
+/// #lq.diagram(
+///   lq.stem(
+///     xs, 
+///     xs.map(calc.cos), 
+///     color: orange, 
+///     mark: "diamond",
+///     base: -0.25,
+///     base-stroke: black,
+///   )
+/// )
+/// ```
+///
+/// Also see @hstem for horizontal stem plots. 
 #let stem(
+
   /// An array of $x$ coordinates. 
   /// -> array
   x, 
@@ -59,14 +79,14 @@
   /// -> array
   y, 
 
-  /// Combined color for line and markers. See also the parameters @stem.line and 
+  /// Combined color for line and marks. See also the parameters @stem.line and 
   /// @stem.mark-color which take precedence over `color`, if set. 
   /// -> auto | color
   color: auto,
   
   /// The line style to use for this plot (takes precedence over @stem.color). 
   /// -> auto | stroke
-  line: auto, 
+  stroke: auto, 
 
   /// How to stroke the base line. 
   /// -> stroke
@@ -76,11 +96,11 @@
   /// -> lq.mark | string
   mark: auto, 
   
-  /// Size of the markers. 
+  /// Size of the marks. 
   /// -> length
   mark-size: 5pt,
   
-  /// Color of the markers (takes precedence over @stem.color). 
+  /// Color of the marks (takes precedence over @stem.color). 
   /// -> auto | color
   mark-color: auto,
   
@@ -113,7 +133,7 @@
       color: color,
       mark-size: mark-size,
       mark-color: merge-fills(mark-color, color),
-      line: merge-strokes(line, color),
+      stroke: merge-strokes(stroke, color),
       base-stroke: base-stroke
     ),
     plot: render-stem,

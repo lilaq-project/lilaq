@@ -30,7 +30,7 @@
 
 #let render-scatter(plot, transform) = {
   
-  let get-marker-size = match-type(
+  let get-mark-size = match-type(
     plot.size,
     length: () => i => plot.size,
     array: () => i => plot.size.at(i),
@@ -38,7 +38,7 @@
     panic: true
   )
   
-  let get-marker-color = match-type(
+  let get-mark-color = match-type(
     plot.color,
     color: () => i => plot.color,
     array: () => i => plot.color.at(i),
@@ -67,8 +67,8 @@
   for (i, p) in points.enumerate() {
     let p = transform(..p)
     
-    let size = get-marker-size(i)
-    let mark-color = get-marker-color(i)
+    let size = get-mark-size(i)
+    let mark-color = get-mark-color(i)
     
     let options = (
       fill: mark-color.transparentize(100% - get-alpha(i))
@@ -85,12 +85,22 @@
 
 /// Produces a scatter plot from the given coordinates. The mark size and 
 /// color can be set per point (this discerns @scatter from @plot). 
-///
+/// 
 /// ```example
-/// #let x = lq.linspace(0, 10)
+/// #import "@preview/suiji:0.3.0"
+/// #let rng = suiji.gen-rng(33)
+/// #let (rng, x) = suiji.uniform(rng, size: 20)
+/// #let (rng, y) = suiji.uniform(rng, size: 20)
+/// #let (rng, colors) = suiji.uniform(rng, size: 20)
+/// #let (rng, sizes) = suiji.uniform(rng, size: 20)
 /// 
 /// #lq.diagram(
-///   lq.scatter(x, x.map(x => calc.sin(x)))
+///   lq.scatter(
+///     x, y, 
+///     size: sizes.map(size => size * 200), 
+///     color: colors, 
+///     map: color.map.magma
+///   )
 /// )
 /// ```
 #let scatter(
@@ -103,13 +113,13 @@
   /// -> array
   y, 
   
-  /// Marker sizes as `float` values. The area of the markers will scale proportionally 
+  /// Mark sizes as `float` values. The area of the marks will scale proportionally 
   /// with these numbers while the actual mark size (width) will scale with 
   /// $sqrt("size")$.
   /// -> auto | array
   size: auto, 
 
-  /// Marker colors. The element may either be of type `color` (then the argument 
+  /// Mark colors. The element may either be of type `color` (then the argument 
   /// `map` will be ignored) or of type `float`. In the case of the latter, the 
   /// colors will be determined by normalizing the values and passing them through the 
   /// `map`.
@@ -142,7 +152,7 @@
   /// -> auto | lq.mark | string
   mark: auto, 
 
-  /// Marker stroke. TODO: need to get rid of it
+  /// Mark stroke. TODO: need to get rid of it
   stroke: 1pt,
 
   /// The fill opacity. TODO: maybe get rid of it, there is already color. 

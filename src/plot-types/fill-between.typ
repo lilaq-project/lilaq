@@ -25,7 +25,29 @@
 }
 
 
-/// Fills the area between two graphs or the area between one graph and $x$-axis. 
+/// Fills the area between two graphs,
+/// 
+/// ```example
+/// #let xs = lq.linspace(-1, 2)
+/// #lq.diagram(
+///   lq.fill-between(
+///     xs, 
+///     xs.map(calc.sin),
+///     y2: xs.map(calc.cos),
+///   )
+/// )
+/// ```
+/// or the area between one graph and the $x$-axis:
+/// ```example
+/// #let xs = lq.linspace(0, 3, num: 80)
+/// #lq.diagram(
+///   lq.fill-between(
+///     label: [Maxwell-distribution],
+///     xs, 
+///     xs.map(x => x*x*calc.exp(-x*x*1.3)),
+///   )
+/// )
+/// ```
 #let fill-between(
 
   /// An array of $x$ data coordinates. Data coordinates need to of type `int` or `float`. 
