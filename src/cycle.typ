@@ -59,7 +59,7 @@
   if func == none { func = "none" }
   if type(func) == str { 
     if func not in marks {
-      assert(false, message: "Unknown marker \"" + func + "\"")
+      assert(false, message: "Unknown mark \"" + func + "\"")
     }
     func = marks.at(func) 
   }
@@ -99,14 +99,14 @@
 
 
 == Mark sizes 
-Marks are deliberately designed to match in optical size for the same size setting. This results in the `mark.size` not giving a precise definition of the width or radius of some markers. The optical size is subjective and is influenced by a combination of the area and the dimensions of a mark. 
+Marks are deliberately designed to match in optical size for the same size setting. This results in the `mark.size` not giving a precise definition of the width or radius of some marks. The optical size is subjective and is influenced by a combination of the area and the dimensions of a mark. 
 
 Adjustments made:
 - The square is a bit smaller to better match the optical size of the circle. 
 - The polygons with low $n$ are drawn with a larger circumference
 - Stars are drawn a bit larger to compensate their lack of area. 
 - ... and some more. 
-- The circle marker has (at least when the stroke is set to `none`) the exact radius as given through `mark.size`
+- The circle mark has (at least when the stroke is set to `none`) the exact radius as given through `mark.size`
 In addition, polygons with 3, 5, and 7 sides are lowered by a fraction to improve the optical center. 
 
 
@@ -185,10 +185,10 @@ Alternatively, `mark` could always be contextual content (`any`), e.g,
   it.mark
 }
 ```
-This might be yet a bit cleaner. #highlight[Actually, it's muuuuuch worse in performance. Moreover the first version can be optimized to compute many markers at once. ]
+This might be yet a bit cleaner. #highlight[Actually, it's muuuuuch worse in performance. Moreover the first version can be optimized to compute many marks at once. ]
 
 
-Possible behaviors for filled markers:
+Possible behaviors for filled marks:
 - Are by default filled *and* stroked with `color` and a `1pt` outline. 
 - Stroke and fill color can be set manually to vary from the line `color`. Setting `fill` to `none` results in an unfilled mark. 
 or
@@ -211,7 +211,7 @@ or
 // ]
 
 
-Possible behaviors for (only) stroked markers:
+Possible behaviors for (only) stroked marks:
 - Can only be stroked
 - Are by default stroked with `color` and `1pt`. 
 - The stroke can be set manually

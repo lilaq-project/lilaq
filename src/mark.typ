@@ -123,7 +123,7 @@
 }
 
 
-#let text-marker = (mark, body: emoji.heart) => place(
+#let text-mark = (mark, body: emoji.heart) => place(
   center + horizon,
   body
 )
@@ -151,5 +151,5 @@
   "octagon": polygon.with(n: 8),
   "moon": moon,
   "none": mark => none,
-  "text": text-marker
+  "text": text-mark
 )

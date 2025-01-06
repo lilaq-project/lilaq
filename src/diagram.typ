@@ -74,7 +74,8 @@
   /// -> ratio | dictionary
   margin: 6%,
   
-  // stroke: 0.5pt + black,
+  /// Style cycle to use for this diagram. 
+  /// -> array
   cycle: default-cycle,
 
   /// Plot objects. 
