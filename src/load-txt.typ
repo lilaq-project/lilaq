@@ -20,7 +20,7 @@
   
   /// The characters that indicate the start of a single-line comment.
   /// -> str
-  comments: "//",
+  comments: "#",
   
   /// The number of leading rows to be skipped, including comments. 
   /// -> int
