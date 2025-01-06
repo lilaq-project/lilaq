@@ -72,7 +72,7 @@
   /// -> dictionary
   subtick-args: (:),
 
-  /// Instead of using the tick locator, specifies the tick positions explicitly and optionally the tick labels. This can be an array (just specify the positions) or a dictionary with the keys `ticks` and `labels`, containing arrays of equal length. When `ticks` is `none`, no ticks are displayed. If it is `auto`, the `tick-locator` is used. 
+  /// Instead of using the tick locator, specifies the tick locations explicitly and optionally the tick labels. This can be an array with just the tick location or tuples of tick location and label, or a dictionary with the keys `ticks` and `labels`, containing arrays of equal length. When `ticks` is `none`, no ticks are displayed. If it is `auto`, the `tick-locator` is used. 
   /// -> auto | array | dictionary | none
   ticks: auto, 
 
@@ -146,7 +146,13 @@
         format-ticks = ticking.format-ticks-manual.with(labels: ticks.labels) 
       }
     } else if type(ticks) == array {
-      locate-ticks = ticking.locate-ticks-manual.with(ticks: ticks)
+      if ticks.len() > 0 and type(ticks.first()) == array {
+        let (ticks, labels) = array.zip(..ticks)
+        locate-ticks = ticking.locate-ticks-manual.with(ticks: ticks)
+        format-ticks = ticking.format-ticks-manual.with(labels: labels) 
+      } else {
+        locate-ticks = ticking.locate-ticks-manual.with(ticks: ticks)
+      }
     } else if ticks == none {
       locate-ticks = none
       format-ticks = none
