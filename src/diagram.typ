@@ -316,10 +316,10 @@
         (length: height)
       }
     }
-    let (xaxis-, max-xtick-size) = draw-axis(xaxis, axis-info.x.ticking, major-axis-style)
+    let (xaxis-, max-xtick-size) = draw-axis(xaxis, axis-info.x.ticking, major-axis-style, e-get: e-get)
     // xaxis-
     artists.push((content: xaxis-, z: 2.1))
-    let (yaxis-, max-ytick-size) = draw-axis(yaxis, axis-info.y.ticking, major-axis-style)
+    let (yaxis-, max-ytick-size) = draw-axis(yaxis, axis-info.y.ticking, major-axis-style, e-get: e-get)
     // yaxis-
     artists.push((content: yaxis-, z: 2.1))
     if type(max-ytick-size) == array {
@@ -340,7 +340,7 @@
 
     for axis in axes {
       let ticking = axis-generate-ticks(axis, ..get-axis-args(axis))
-      let (axis-, axis-bounds) = draw-axis(axis, ticking, major-axis-style)
+      let (axis-, axis-bounds) = draw-axis(axis, ticking, major-axis-style, e-get: e-get)
       artists.push((content: axis-, z: 2.1))
 
       
@@ -353,7 +353,7 @@
 
     if title != none {
       let title = title
-      if e.func(title) != title-constructor {
+      if e.eid(title) != e.eid(title-constructor) {
         title = title-constructor(title)
       }
       let nested-get-field(element, object, field) = {

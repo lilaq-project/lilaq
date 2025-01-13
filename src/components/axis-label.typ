@@ -32,10 +32,26 @@
   )
 }
 
+
+
+#import "../libs/elembic/lib.typ" as e
+
+#let label = e.element.declare(
+  "label",
+  prefix: "lilaq",
+
+  display: it => rotate(it.angle, it.body, reflow: true),
+
+  fields: (
+    e.field("body", content, required: true),
+    e.field("dx", e.types.union(auto, length), default: auto),
+    e.field("dy", e.types.union(auto, length), default: auto),
+    e.field("pad", length, default: .5em),
+    e.field("angle", angle, default: 0deg),
+  )
+)
+
+
+
 #let xlabel = label
 #let ylabel = label.with(angle: -90deg)
-
-#let label-show = it => {
-  rotate(it.angle, it.body, reflow: true)
-}
-
