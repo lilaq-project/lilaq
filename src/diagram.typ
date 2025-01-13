@@ -2,7 +2,7 @@
 #import "process-styles.typ": update-stroke, process-margin, process-grid-arg
 #import "assertations.typ"
 #import "scale.typ"
-#import "components/legend.typ": *
+#import "components/legend.typ": legend as lq-legend
 
 #import "components/axis.typ": axis, draw-axis, axis-compute-limits, axis-generate-ticks
 #import "ticking.typ"
@@ -380,18 +380,17 @@
     }
 
     
-    if legend != none and legend != false {
+    if legend != none and legend != false and legend-entries.len() > 0{
       let legend = legend
-      let entries = create-legend-entries(plots).filter(x => x.at(1) != none)
-      let entries = legend-entries
       if legend == true { legend = (:) }
-      if entries.len() > 0 {
-        let legend-content = {
-          set text(size: .8em)
-          draw-legend(legend,..entries)
-        }
-        artists.push((content: legend-content, z: legend.at("z-index", default: 6)))
+
+      let legend-content = {
+        // set text(size: .9em)
+        set table(columns: 2, stroke: none, inset: 2pt, align: horizon + left)
+        lq-legend(..legend-entries)
       }
+
+      artists.push((content: legend-content, z: e-get(lq-legend).z-index))
     }
     artists.sorted(key: artist => artist.z).map(artist => artist.content).join()
   })
