@@ -34,3 +34,28 @@
 #let title-show = it => {
   it.body
 }
+
+
+#import "../libs/elembic/lib.typ" as e
+
+
+
+#let title = e.element.declare(
+  "title",
+  prefix: "lilaq",
+
+  // Default show rule receives the constructed element.
+  display: it => it.body,
+
+  fields: (
+    // Specify field name, type, brief description and default.
+    // This allows us to override the color if desired.
+    e.field("body", content, required: true),
+    e.field("pos", alignment, default: top),
+    e.field("dx", e.types.union(auto, length), default: auto),
+    e.field("dy", e.types.union(auto, length), default: auto),
+    e.field("pad", length, default: .5em),
+  )
+)
+
+

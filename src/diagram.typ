@@ -12,6 +12,7 @@
 
 #let debug = false
 #import "cycle.typ": init as cycle-init, default-cycle
+#import "libs/elembic/lib.typ" as e
 
 
 /// Creates a new diagram. 
@@ -187,7 +188,7 @@
 
   
   
-  context {
+  context e.get(e-get => {
   
   let axis-info = (x: (:), y: (:), rest: ((:),) * axes.len())
     
@@ -352,22 +353,27 @@
 
     if title != none {
       let title = title
-      if type(title) != dictionary {
+      if e.func(title) != title-constructor {
         title = title-constructor(title)
       }
-      let wrapper = if title.pos in (top, bottom) {
+      let nested-get-field(element, object, field) = {
+        e.fields(object).at(field, default: e-get(element).at(field))
+      }
+
+      let pos = nested-get-field(title-constructor, title, "pos")
+      let dx = if-auto(nested-get-field(title-constructor, title, "dx"), 0pt)
+      let dy = if-auto(nested-get-field(title-constructor, title, "dy"), 0pt)
+      let pad = if-auto(nested-get-field(title-constructor, title, "pad"), 0pt)
+
+      let wrapper = if pos in (top, bottom) {
         box.with(width: width)
-      } else if title.pos in (left, right) {
+      } else if pos in (left, right) {
         box.with(height: height)
       }
-      let body = wrapper(title-show(title))
+
+      let body = wrapper(title)
       
-      let size = measure(body)
-      let dx = if-auto(title.dx, 0pt)
-      let dy = if-auto(title.dy, 0pt)
-      
-      let pad = if-auto(title.pad, 0pt)
-      let (title, b) = place-with-bounds(body, alignment: title.pos, dx: dx, dy: dy, pad: pad)
+      let (title, b) = place-with-bounds(body, alignment: pos, dx: dx, dy: dy, pad: pad)
       
       artists.push((content: title, z: 3))
       bounds = update-bounds(bounds, b, width: width, height: height)
@@ -396,5 +402,5 @@
     bounds.top *= -1
   }
   box(box(inset: bounds, diagram, stroke: if debug {.1pt} else {0pt}), baseline: bounds.bottom)
-}
+})
 }
