@@ -1,5 +1,6 @@
 // Typst-native types.
-#import "base.typ": type-key, base-typeinfo, ok, err
+#import "../data.typ": type-key
+#import "base.typ": base-typeinfo, ok, err
 
 // Tiling type (renamed in Typst 0.13.0)
 #let tiling = if sys.version < version(0, 13, 0) { pattern } else { tiling }

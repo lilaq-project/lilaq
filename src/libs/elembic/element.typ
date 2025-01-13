@@ -1,64 +1,9 @@
-#import "types/base.typ" as base: custom-type-key, custom-type-data-key, type-key, special-data-values
-#import "types/types.typ"
+#import "data.typ": data, lbl-show-head, lbl-outer-head, lbl-counter-head, lbl-ref-figure-kind-head, lbl-ref-figure-label-head, lbl-ref-figure, lbl-get, lbl-tag, lbl-rule-tag, lbl-data-metadata, lbl-stateful-mode, lbl-normal-mode, lbl-auto-mode, lbl-global-where-head, prepared-rule-key, stored-data-key, element-key, element-data-key, global-data-key, filter-key, special-data-values, custom-type-key, custom-type-data-key, type-key
 #import "fields.typ" as field-internals
+#import "types/base.typ"
+#import "types/types.typ"
 
 #let element-version = 1
-
-// Prefix for the labels added to shown elements.
-#let lbl-show-head = "__custom_element_shown_"
-
-// Prefix for the labels added outside shown elements.
-// This is used to be able to effectively apply show-set rules to them.
-#let lbl-outer-head = "__custom_element_outer_"
-
-// Prefix for counters of elements.
-// This is only used if the element isn't 'refable'.
-#let lbl-counter-head = "__custom_element_counter_"
-
-// Prefix for the figure kind used by 'refable' elements.
-// This is not to be confused with figures containing the elements.
-// This is the kind for a hidden figure used for ref purposes.
-#let lbl-ref-figure-kind-head = "__custom_element_refable_"
-
-// Custom label applied to the hidden reference figure when the user specifies their own label.
-#let lbl-ref-figure-label-head = "__custom_element_ref_figure_label_"
-
-// Label for the hidden figure used for references.
-#let lbl-ref-figure = <__custom_element_ref_figure>
-
-// Label for context blocks which have access to the virtual stylechain.
-#let lbl-get = <__custom_element_get>
-
-// Label for metadata indicating an element's initial properties post-construction.
-#let lbl-tag = <__custom_element_tag>
-
-// Label for metadata indicating a rule's parameters.
-#let lbl-rule-tag = <__custom_element_rule>
-
-// Label for metadata which stores the global data.
-// In practice, this label is never present in the document
-// unless one accidentally leaks the 'bibliography.title'
-// override from our workaround.
-#let lbl-data-metadata = <__custom_element_global_data_metadata>
-
-#let lbl-stateful-mode = <__custom_element_stateful_mode>
-#let lbl-normal-mode = <__custom_element_normal_mode>
-#let lbl-auto-mode = <__custom_element_auto_mode>
-
-// Prefix for labels added by 'select' to matched elements.
-// These labels are not specific to eids.
-#let lbl-global-where-head = "__custom_element_global_where_"
-
-// Special dictionary key to indicate this is a prepared rule.
-#let prepared-rule-key = "__prepared-rule"
-
-// Special dictionary key which stores element context and other data.
-#let stored-data-key = "__elembic_stored_element_data"
-
-#let element-key = "__custom_element"
-#let element-data-key = "__custom_element_data"
-#let global-data-key = "__custom_element_global_data"
-#let filter-key = "__custom_element_filter"
 
 // Basic elements for our document tree analysis
 #let sequence = [].func()
@@ -113,7 +58,7 @@
 
 // When on stateful mode, this state holds the sequence of 'data' for each scope.
 // The last element on the list is the "current" data.
-#let style-state = state("__custom_element_state", ())
+#let style-state = state("__elembic_element_state", ())
 
 // Default library-wide data.
 #let default-global-data = (
@@ -193,207 +138,6 @@
   // (index: last-chain-index, revoking: name-revoked, name: none / name of the revoke itself)
   revoke-chain: ()
 )
-
-// Extract data from a type's or element's constructor, as well as convert
-// a custom type or element instance into a dictionary with keys such as body (for elements only),
-// fields and func, allowing you to access its fields and information when given content (for elements)
-// or the type instance (for types).
-//
-// When given content that is not a custom element, 'body' will be the given value,
-// 'fields' will be 'body.fields()' and 'func' will be 'body.func()'.
-//
-// The returned 'data-kind' indicates which kind of data was retrieved.
-#let data(it) = {
-  if type(it) == function {
-    it(__elembic_data: special-data-values.get-data)
-  } else if type(it) == dictionary and element-key in it {
-    (data-kind: "element", ..it)
-  } else if type(it) == dictionary and custom-type-data-key in it {
-    (data-kind: "custom-type-data", ..it)
-  } else if type(it) == dictionary and custom-type-key in it {
-    it.at(custom-type-key)
-  } else if type(it) == dictionary and stored-data-key in it {
-    it.at(stored-data-key)
-  } else if type(it) != content {
-    (data-kind: "unknown", body: it, fields: (:), func: none, eid: none, fields-known: false, valid: false)
-  } else if (
-    it.has("label")
-    and str(it.label).starts-with(lbl-show-head)
-  ) {
-    // Decomposing an element inside a show rule
-    it.children.at(1).value
-  } else if it.func() == sequence and it.children.len() >= 2 {
-    let last = it.children.last()
-    if (
-      last.at("label", default: none) == lbl-tag
-      // Workaround for 0.11.0 weirdly placing some 'meta' element sometimes
-      or sys.version < version(0, 12, 0) and {
-        last = it.children.at(it.children.len() - 2)
-        last.at("label", default: none) == lbl-tag
-      }
-    ) {
-      // Decomposing a recently-constructed (but not placed) element
-      last.value
-    } else {
-      (data-kind: "content", body: it, fields: it.fields(), func: it.func(), eid: none, fields-known: false, valid: false)
-    }
-  } else if (
-    it.has("label")
-    and str(it.label).starts-with(lbl-outer-head)
-  ) {
-    (data-kind: "incomplete-element-instance", body: it, fields: (:), func: (:), eid: str(it.label).slice(lbl-outer-head.len()), fields-known: false, valid: false)
-  } else {
-    (data-kind: "content", body: it, fields: it.fields(), func: it.func(), eid: none, fields-known: false, valid: false)
-  }
-}
-
-// Obtain the fields of a type instance or element instance (custom or not).
-//
-// SAMPLE USAGE:
-//
-// #show e.selector(elem): it => {
-//   let fields = e.fields(it)
-//   [Hello #fields.name!]
-// }
-#let fields(it) = {
-  let info = data(it)
-
-  if type(info) == dictionary and "data-kind" in info {
-    if info.data-kind in ("content", "element-instance", "type-instance") {
-      return info.fields
-    }
-  }
-
-  (:)
-}
-
-// Obtain context at an element's site.
-//
-// SAMPLE USAGE:
-//
-// 1. In show rules:
-//
-// #show e.selector(elem): it => {
-//   let (get, ..) = e.ctx(it)
-//   let other-elem-ctx = get(other-elem)
-//   [The other element field was set to #other-elem-ctx.field at that point!]
-// }
-//
-// 2. In element declarations:
-//
-// #e.element.declare(
-//   ...
-//   synthesize: it => {
-//     // Get context for other element
-//     it.some-field = (e.ctx(it).get)(other-elem).field
-//   },
-//   ...
-// )
-#let ctx(it) = {
-  let info = data(it)
-  if type(info) == dictionary and "ctx" in info {
-    info.ctx
-  } else {
-    none
-  }
-}
-
-// Obtain an element's or type's scope (usually a module with important definitions).
-//
-// SAMPLE USAGE:
-//
-// #let subelem = e.scope(elem).subelem
-#let scope(it) = {
-  let info = data(it)
-  if type(info) == dictionary and "scope" in info {
-    info.scope
-  } else {
-    none
-  }
-}
-
-/// Obtain an element's or custom type's constructor function.
-/// For native elements, this will be equivalent to `it.func()`.
-///
-/// Useful in custom element show rules, for example.
-///
-/// This is equivalent to `e.data(it).func`.
-///
-/// SAMPLE USAGE:
-///
-/// ```typ
-/// #show selector.or(e.selector(elem1), e.selector(elem2)): it => {
-///   // Will be either elem1 or elem2
-///   let elem = e.func(it)
-///   // 'elem == elem1' works, but comparing 'eid's is recommended
-///   if e.eid(elem) == e.eid(elem1) {
-///     [This is elem1]
-///   } else {
-///     [This is elem2]
-///   }
-/// }
-/// ```
-///
-/// - it (any): element/custom type instance (or element/custom type itself) to get the constructor from
-/// -> function | none
-#let func(it) = {
-  let info = data(it)
-  if type(info) == dictionary and "func" in info {
-    info.func
-  } else {
-    none
-  }
-}
-
-/// Obtain an element's eid. It uniquely distinguishes this element from others,
-/// even if they have the same name, by including both its prefix and name.
-///
-/// This is equivalent to `e.data(elem).eid`.
-///
-/// - elem (any): custom element (or an instance of it) to get 'eid' from
-/// -> function | none
-#let eid(it) = {
-  let info = data(it)
-  if type(info) == dictionary and "eid" in info {
-    info.eid
-  } else {
-    none
-  }
-}
-
-/// Obtain a custom type's tid. It uniquely distinguishes a custom type from
-/// others, even if they have the same name, by including both its prefix and
-/// name. Returns `none` on invalid input.
-///
-/// This is equivalent to `e.data(typ).tid`.
-///
-/// - typ (any): custom type (or an instance of it) to get 'tid' from
-/// -> function | none
-#let tid(it) = {
-  let info = data(it)
-  if type(info) == dictionary and "tid" in info {
-    info.tid
-  } else {
-    none
-  }
-}
-
-// Obtain an element's counter.
-//
-// USAGE:
-//
-// #context {
-//   [The element counter value is #e.counter(elem).get().first()]
-// }
-#let counter_(elem) = {
-  let info = data(elem)
-
-  if type(info) == dictionary and "data-kind" in info and (info.data-kind == "element" or info.data-kind == "element-instance") {
-    info.counter
-  } else {
-    assert(false, message: "e.counter: this is not an element")
-  }
-}
 
 /// This is meant to be used in a show rule of the form `#show ref: e.ref` to ensure
 /// references to custom elements work properly.
@@ -1765,7 +1509,7 @@
   assert(type(fields) == array, message: "element.declare: please specify an array of fields, creating each field with the 'field' function. It can be empty with '()'." + fields-hint)
   assert(prefix != none, message: "element.declare: please specify a 'prefix: ...' for your type, to distinguish it from types with the same name. If you are writing a package or template to be used by others, please do not use an empty prefix.")
   assert(type(prefix) == str, message: "element.declare: the prefix must be a string, not '" + str(type(prefix)) + "'")
-  assert(parse-args == auto or type(parse-args) == function, message: "element.declare: 'parse-args' must be either 'auto' (use built-in parser) or a function receiving (arguments, include-required: true (required fields must be specified - in constructor) / false (required fields must be omitted - in set rules)) => dictionary with parsed fields.")
+  assert(parse-args == auto or type(parse-args) == function, message: "element.declare: 'parse-args' must be either 'auto' (use built-in parser) or a function (default arg parser, fields: dictionary, typecheck: bool) => (user arguments, include-required: true (required fields must be specified - in constructor) / false (required fields must be omitted - in set rules)) => dictionary with parsed fields.")
   assert(type(typecheck) == bool, message: "element.declare: the 'typecheck' argument must be a boolean (true to enable typechecking, false to disable).")
   assert(type(allow-unknown-fields) == bool, message: "element.declare: the 'allow-unknown-fields' argument must be a boolean.")
   assert(template == none or type(template) == function, message: "element.declare: 'template' must be 'none' or a function displayed element => content (usually set rules applied on the displayed element). This is used to add a set of overridable set rules to the element, such as paragraph settings.")
@@ -1839,14 +1583,21 @@
     assert(false, message: "element.declare: labelable element cannot have a conflicting 'label' field\n  hint: you can set 'labelable: false' to disable the special label parameter, but note that it will then be impossible to refer to your element")
   }
 
+  let default-arg-parser = field-internals.generate-arg-parser(
+    fields: fields,
+    general-error-prefix: "element '" + name + "': ",
+    field-error-prefix: field-name => "field '" + field-name + "' of element '" + name + "': ",
+    typecheck: typecheck
+  )
+
   let parse-args = if parse-args == auto {
-    field-internals.generate-arg-parser(
-      fields: fields,
-      general-error-prefix: "element '" + name + "': ",
-      field-error-prefix: field-name => "field '" + field-name + "' of element '" + name + "': ",
-      typecheck: typecheck
-    )
+    default-arg-parser
   } else {
+    let parse-args = parse-args(default-arg-parser, fields: fields, typecheck: typecheck)
+    if type(parse-args) != function {
+      assert(false, message: "element.declare: 'parse-args', when specified as a function, receives the default arg parser alongside `fields: fields dictionary` and `typecheck: bool`, and must return a function (the new arg parser), and not " + base.typename(parse-args))
+    }
+
     parse-args
   }
 
@@ -2076,6 +1827,7 @@
             func: __elembic_func,
             scope: scope,
             default-constructor: default-constructor,
+            name: name,
             eid: eid,
             ctx: if contextual {
               (get: get-styles.with(elements: global-data.elements))
@@ -2281,6 +2033,7 @@
       fields: args,
       func: __elembic_func,
       default-constructor: default-constructor,
+      name: name,
       eid: eid,
       ctx: none,
       counter: element-counter,

@@ -1,5 +1,6 @@
 // Custom types!
-#import "base.typ" as base: custom-type-key, custom-type-data-key, type-key, special-data-values
+#import "../data.typ": special-data-values, custom-type-key, custom-type-data-key, type-key
+#import "base.typ"
 #import "types.typ"
 #import "../fields.typ" as field-internals
 
@@ -50,7 +51,7 @@
   assert(type(fields) == array, message: "types.declare: please specify an array of fields, creating each field with the 'field' function." + fields-hint)
   assert(prefix != none, message: "types.declare: please specify a 'prefix: ...' for your type, to distinguish it from types with the same name. If you are writing a package or template to be used by others, please do not use an empty prefix.")
   assert(type(prefix) == str, message: "types.declare: the prefix must be a string, not '" + str(type(prefix)) + "'")
-  assert(parse-args == auto or type(parse-args) == function, message: "types.declare: 'parse-args' must be either 'auto' (use built-in parser) or a function receiving (arguments, include-required: true (required fields must be specified) / false (required fields must be omitted - currently unused)) => dictionary with parsed fields.")
+  assert(parse-args == auto or type(parse-args) == function, message: "types.declare: 'parse-args' must be either 'auto' (use built-in parser) or a function (default arg parser, fields: dictionary, typecheck: bool) => (user arguments, include-required: true) => dictionary with parsed fields.")
   assert(type(typecheck) == bool, message: "types.declare: the 'typecheck' argument must be a boolean (true to enable typechecking in the constructor, false to disable).")
   assert(type(allow-unknown-fields) == bool, message: "types.declare: the 'allow-unknown-fields' argument must be a boolean.")
   assert(construct == none or type(construct) == function, message: "types.declare: 'construct' must be 'none' (use default constructor) or a function receiving the original constructor and returning the new constructor.")
@@ -77,14 +78,21 @@
   let (all-fields, user-fields, foldable-fields) = fields
   let auto-fold = if fold == auto { auto-fold(foldable-fields) } else { none }
 
+  let default-arg-parser = field-internals.generate-arg-parser(
+    fields: fields,
+    general-error-prefix: "type '" + name + "': ",
+    field-error-prefix: field-name => "field '" + field-name + "' of type '" + name + "': ",
+    typecheck: typecheck
+  )
+
   let parse-args = if parse-args == auto {
-    field-internals.generate-arg-parser(
-      fields: fields,
-      general-error-prefix: "type '" + name + "': ",
-      field-error-prefix: field-name => "field '" + field-name + "' of type '" + name + "': ",
-      typecheck: typecheck
-    )
+    default-arg-parser
   } else {
+    let parse-args = parse-args(default-arg-parser, fields: fields, typecheck: typecheck)
+    if type(parse-args) != function {
+      assert(false, message: "types.declare: 'parse-args', when specified as a function, receives the default arg parser alongside `fields: fields dictionary` and `typecheck: bool`, and must return a function (the new arg parser), and not " + base.typename(parse-args))
+    }
+
     parse-args
   }
 

@@ -1,5 +1,6 @@
 // The type system used by fields.
-#import "base.typ" as base: type-key, ok, err, custom-type-key, custom-type-data-key
+#import "../data.typ": data, special-data-values, type-key, custom-type-key, custom-type-data-key
+#import "base.typ" as base: ok, err
 #import "native.typ"
 
 // The default value for a type.
@@ -12,12 +13,23 @@
   }
 }
 
+#let sequence_ = [].func()
 #let typeof(value) = {
+  let element-data
   if type(value) == dictionary and custom-type-key in value {
     if custom-type-data-key in value {
       base.custom-type
     } else {
-      (value.at(custom-type-key).func)(__elembic_data: base.special-data-values.get-data).typeinfo
+      (value.at(custom-type-key).func)(__elembic_data: special-data-values.get-data).typeinfo
+    }
+  } else if type(value) == content and value.func() == sequence_ and {
+    element-data = data(value)
+    element-data.eid != none
+  } {
+    if "name" in element-data and type(element-data.name) == str {
+      base.element(element-data.name, element-data.eid)
+    } else {
+      base.element("unknown-element", element-data.eid)
     }
   } else {
     let (res, typeinfo) = native.typeinfo(type(value))
@@ -35,7 +47,13 @@
 //
 // Uses base typeinfo information for information such as casts and whatnot.
 #let literal(value) = {
-  base.literal(value, typeof(value))
+  if value == none {
+    native.none_
+  } else if value == auto {
+    native.auto_
+  } else {
+    base.literal(value, typeof(value))
+  }
 }
 
 // Obtain the typeinfo for a type.
@@ -43,12 +61,12 @@
 // Returns ok(typeinfo), or err(error) if there is no corresponding typeinfo.
 #let validate(type_) = {
   if type(type_) == function {
-    let data = type_(__elembic_data: base.special-data-values.get-data)
+    let data = type_(__elembic_data: special-data-values.get-data)
     let data-kind = data.at("data-kind", default: "unknown")
     if data-kind == "custom-type-data" {
       type_ = data.typeinfo
     } else if data-kind == "element" {
-      return (false, "cannot use elements as types")
+      type_ = base.element(data.name, data.eid)
     } else {
       return (false, "Received invalid type: " + repr(type_) + "\n  hint: use 'types.literal(value)' to indicate only that particular value is valid")
     }
@@ -113,8 +131,8 @@
     (true, value)
   } else {
     let value-type = type(value)
-    if value-type == dictionary and base.custom-type-key in value {
-      value-type = value.at(base.custom-type-key).id
+    if value-type == dictionary and custom-type-key in value {
+      value-type = value.at(custom-type-key).id
     }
 
     if kind == "literal" and typeinfo.cast == none {

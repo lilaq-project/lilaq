@@ -1,8 +1,8 @@
-#import "types/base.typ": type-key, custom-type-key
+#import "data.typ": type-key, custom-type-key
 #import "types/types.typ"
 
-#let field-key = "__field"
-#let fields-key = "__fields"
+#let field-key = "__elembic_field"
+#let fields-key = "__elembic_fields"
 
 #let current-field-version = 1
 
