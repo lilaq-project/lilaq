@@ -8,5 +8,10 @@ _Data visualization with [Typst](https://typst.app)_
 [![Test Status](https://github.com/lilaq-project/lilaq/actions/workflows/run_tests.yml/badge.svg)](https://github.com/lilaq-project/lilaq/actions/workflows/run_tests.yml)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/lilaq-project/lilaq/blob/main/LICENSE)
 
+Install the package by cloning it and then import Lilaq via 
+```typ
+#import "lilaq/src/lilaq.typ" as lq
+```
+
 
 You can find a [quickstart document](https://github.com/lilaq-project/lilaq/releases/download/v0.0.1-alpha/lilaq-quickstart.pdf) and its [Typst source code](https://github.com/lilaq-project/lilaq/releases/download/v0.0.1-alpha/lilaq-quickstart.typ) in the attachments of the pre-release. 
