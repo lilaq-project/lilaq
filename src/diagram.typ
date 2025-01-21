@@ -3,6 +3,7 @@
 #import "assertations.typ"
 #import "scale.typ"
 #import "components/legend.typ": legend as lq-legend
+#import "components/grid.typ": grid as lq-grid
 
 #import "components/axis.typ": axis, draw-axis, axis-compute-limits, axis-generate-ticks
 #import "ticking.typ"
@@ -225,16 +226,28 @@
     }
 
     let artists = ()
-
     artists.push((
       content: {
+        let x-transform = tick => transform(tick, 1).at(0)
+        let y-transform = tick => transform(1, tick).at(1)
+        lq-grid(
+          axis-info.x.ticking.ticks.map(x-transform),
+          axis-info.x.ticking.subticks.map(x-transform),
+          kind: "x",
+
+        )
+        lq-grid(
+          axis-info.y.ticking.ticks.map(y-transform),
+          axis-info.y.ticking.subticks.map(y-transform),
+          kind: "y",
+        )
        
-        draw-grid(axis-info.x.ticking.ticks, "major", type: 0)
-        draw-grid(axis-info.x.ticking.subticks, "minor", type: 0)
+        // draw-grid(axis-info.x.ticking.ticks, "major", type: 0)
+        // draw-grid(axis-info.x.ticking.subticks, "minor", type: 0)
     
-        draw-grid(axis-info.y.ticking.ticks, "major", type: 1)
-        draw-grid(axis-info.y.ticking.subticks, "minor", type: 1) 
-      }, z: 0
+        // draw-grid(axis-info.y.ticking.ticks, "major", type: 1)
+        // draw-grid(axis-info.y.ticking.subticks, "minor", type: 1) 
+      }, z: e-get(lq-grid).z-index
     ))
 
     let legend-entries = ()
