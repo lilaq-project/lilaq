@@ -19,6 +19,8 @@
   if "make-legend" in plot {
     runs = (((0, .5), (1, .5)),)
     points = ((0.5,.5),)
+    if plot.yerr != none { plot.yerr = (.5,) }
+    if plot.xerr != none { plot.xerr = (.25,) }
   }
 
 
