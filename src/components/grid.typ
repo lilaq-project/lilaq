@@ -4,19 +4,19 @@
 /// An axis grid for highlighting tick positions in the diagram area. 
 #let grid(
 
-  /// A list of tick positions in length coordinates. 
+  /// A list of tick positions as absolute length coordinates within the diagram frame. This is automatically filled by @diagram with the ticks resulting from the axes' tick locators. 
   /// -> array
   ticks,
 
-  /// A list of subtick positions in length coordinates. 
+  /// A list of subtick positions as absolute length coordinates within the diagram frame. This is automatically filled by @diagram with the ticks resulting from the axes' tick locators. 
   /// -> array
   subticks,
 
-  /// Axis kind. 
+  /// The axis kind: horizontal (`"x"`) or vertical (`"y"`). 
   /// -> "x" | "y"
   kind: "x",
 
-  /// How to stroke grid lines
+  /// How to stroke grid lines. 
   /// -> none | stroke
   stroke: 0.5pt + luma(80%),
 
@@ -31,37 +31,41 @@
   
 ) = {}
 
+
+// A stroke type that can also be auto or none and that still
+// folds correctly. During folding auto and none override an 
+// existing stroke fully. 
+#let auto-none-stroke = e.types.wrap(
+  e.types.smart(e.types.option(stroke)),
+  fold: old-fold => (outer, inner) => if inner in (none, auto) or outer in (none, auto) { inner } else { (e.types.native.stroke_.fold)(outer, inner) }
+)
+
 #let grid = e.element.declare(
   "grid",
   prefix: "lilaq",
 
   display: it => {
-    let sub-stroke = if it.sub == auto { it.stroke } else { it.sub }
+
+    let line
 
     if it.kind == "x" {
-
-      if it.stroke != none {
-        for tick in it.ticks {
-          place(line(start: (tick, 0%), end: (tick, 100%), stroke: it.stroke))
-        }
-      }
-      if sub-stroke != none {
-        for tick in it.subticks {
-          place(line(start: (tick, 0%), end: (tick, 100%), stroke: sub-stroke))
-        }
-      }
+      line = (tick, stroke: it.stroke) => place(
+        std.line(start: (tick, 0%), end: (tick, 100%), stroke: stroke)
+      )
     } else if it.kind == "y" {
+      line = (tick, stroke: it.stroke) => place(
+        std.line(start: (0%, tick), end: (100%, tick), stroke: stroke)
+      )
+    }
 
-      if it.stroke != none {
-        for tick in it.ticks {
-          place(line(start: (0%, tick), end: (100%, tick), stroke: it.stroke))
-        }
-      }
-      if sub-stroke != none {
-        for tick in it.subticks {
-          place(line(start: (0%, tick), end: (100%, tick), stroke: sub-stroke))
-        }
-      }
+    if it.stroke != none {
+      it.ticks.map(line).join()
+    }
+
+    let sub-stroke = if it.sub == auto { it.stroke } else { it.sub }
+
+    if sub-stroke != none {
+      it.subticks.map(line.with(stroke: sub-stroke)).join()
     }
   },
 
@@ -69,7 +73,7 @@
     e.field("ticks", array, required: true),
     e.field("subticks", array, required: true),
     e.field("stroke", e.types.option(stroke), default: 0.5pt + luma(80%), ),
-    e.field("sub", e.types.union(none, auto, stroke), default: none),
+    e.field("sub", auto-none-stroke, default: none),
     e.field("z-index", float, default: 0),
     e.field("kind", str, default: "x"),
   ),
