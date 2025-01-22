@@ -34,3 +34,25 @@
 #let title-show = it => {
   it.body
 }
+
+
+#import "../libs/elembic/lib.typ" as e
+
+
+
+#let title = e.element.declare(
+  "title",
+  prefix: "lilaq",
+
+  display: it => it.body,
+
+  fields: (
+    e.field("body", content, required: true),
+    e.field("pos", alignment, default: top),
+    e.field("dx", e.types.union(auto, length), default: auto),
+    e.field("dy", e.types.union(auto, length), default: auto),
+    e.field("pad", length, default: .5em),
+  )
+)
+
+

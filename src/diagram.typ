@@ -2,7 +2,8 @@
 #import "process-styles.typ": update-stroke, process-margin, process-grid-arg
 #import "assertations.typ"
 #import "scale.typ"
-#import "components/legend.typ": *
+#import "components/legend.typ": legend as lq-legend
+#import "components/grid.typ": grid as lq-grid
 
 #import "components/axis.typ": axis, draw-axis, axis-compute-limits, axis-generate-ticks
 #import "ticking.typ"
@@ -12,6 +13,7 @@
 
 #let debug = false
 #import "cycle.typ": init as cycle-init, default-cycle
+#import "libs/elembic/lib.typ" as e
 
 
 /// Creates a new diagram. 
@@ -187,7 +189,7 @@
 
   
   
-  context {
+  context e.get(e-get => {
   
   let axis-info = (x: (:), y: (:), rest: ((:),) * axes.len())
     
@@ -224,16 +226,28 @@
     }
 
     let artists = ()
-
     artists.push((
       content: {
+        let x-transform = tick => transform(tick, 1).at(0)
+        let y-transform = tick => transform(1, tick).at(1)
+        lq-grid(
+          axis-info.x.ticking.ticks.map(x-transform),
+          axis-info.x.ticking.subticks.map(x-transform),
+          kind: "x",
+
+        )
+        lq-grid(
+          axis-info.y.ticking.ticks.map(y-transform),
+          axis-info.y.ticking.subticks.map(y-transform),
+          kind: "y",
+        )
        
-        draw-grid(axis-info.x.ticking.ticks, "major", type: 0)
-        draw-grid(axis-info.x.ticking.subticks, "minor", type: 0)
+        // draw-grid(axis-info.x.ticking.ticks, "major", type: 0)
+        // draw-grid(axis-info.x.ticking.subticks, "minor", type: 0)
     
-        draw-grid(axis-info.y.ticking.ticks, "major", type: 1)
-        draw-grid(axis-info.y.ticking.subticks, "minor", type: 1) 
-      }, z: 0
+        // draw-grid(axis-info.y.ticking.ticks, "major", type: 1)
+        // draw-grid(axis-info.y.ticking.subticks, "minor", type: 1) 
+      }, z: e-get(lq-grid).z-index
     ))
 
     let legend-entries = ()
@@ -315,10 +329,10 @@
         (length: height)
       }
     }
-    let (xaxis-, max-xtick-size) = draw-axis(xaxis, axis-info.x.ticking, major-axis-style)
+    let (xaxis-, max-xtick-size) = draw-axis(xaxis, axis-info.x.ticking, major-axis-style, e-get: e-get)
     // xaxis-
     artists.push((content: xaxis-, z: 2.1))
-    let (yaxis-, max-ytick-size) = draw-axis(yaxis, axis-info.y.ticking, major-axis-style)
+    let (yaxis-, max-ytick-size) = draw-axis(yaxis, axis-info.y.ticking, major-axis-style, e-get: e-get)
     // yaxis-
     artists.push((content: yaxis-, z: 2.1))
     if type(max-ytick-size) == array {
@@ -339,7 +353,7 @@
 
     for axis in axes {
       let ticking = axis-generate-ticks(axis, ..get-axis-args(axis))
-      let (axis-, axis-bounds) = draw-axis(axis, ticking, major-axis-style)
+      let (axis-, axis-bounds) = draw-axis(axis, ticking, major-axis-style, e-get: e-get)
       artists.push((content: axis-, z: 2.1))
 
       
@@ -352,40 +366,44 @@
 
     if title != none {
       let title = title
-      if type(title) != dictionary {
+      if e.eid(title) != e.eid(title-constructor) {
         title = title-constructor(title)
       }
-      let wrapper = if title.pos in (top, bottom) {
+      let nested-get-field(element, object, field) = {
+        e.fields(object).at(field, default: e-get(element).at(field))
+      }
+
+      let pos = nested-get-field(title-constructor, title, "pos")
+      let dx = if-auto(nested-get-field(title-constructor, title, "dx"), 0pt)
+      let dy = if-auto(nested-get-field(title-constructor, title, "dy"), 0pt)
+      let pad = if-auto(nested-get-field(title-constructor, title, "pad"), 0pt)
+
+      let wrapper = if pos in (top, bottom) {
         box.with(width: width)
-      } else if title.pos in (left, right) {
+      } else if pos in (left, right) {
         box.with(height: height)
       }
-      let body = wrapper(title-show(title))
+
+      let body = wrapper(title)
       
-      let size = measure(body)
-      let dx = if-auto(title.dx, 0pt)
-      let dy = if-auto(title.dy, 0pt)
-      
-      let pad = if-auto(title.pad, 0pt)
-      let (title, b) = place-with-bounds(body, alignment: title.pos, dx: dx, dy: dy, pad: pad)
+      let (title, b) = place-with-bounds(body, alignment: pos, dx: dx, dy: dy, pad: pad)
       
       artists.push((content: title, z: 3))
       bounds = update-bounds(bounds, b, width: width, height: height)
     }
 
     
-    if legend != none and legend != false {
+    if legend != none and legend != false and legend-entries.len() > 0{
       let legend = legend
-      let entries = create-legend-entries(plots).filter(x => x.at(1) != none)
-      let entries = legend-entries
       if legend == true { legend = (:) }
-      if entries.len() > 0 {
-        let legend-content = {
-          set text(size: .8em)
-          draw-legend(legend,..entries)
-        }
-        artists.push((content: legend-content, z: legend.at("z-index", default: 6)))
+
+      let legend-content = {
+        // set text(size: .9em)
+        set table(columns: 2, stroke: none, inset: 2pt, align: horizon + left)
+        lq-legend(..legend-entries)
       }
+
+      artists.push((content: legend-content, z: e-get(lq-legend).z-index))
     }
     artists.sorted(key: artist => artist.z).map(artist => artist.content).join()
   })
@@ -396,5 +414,5 @@
     bounds.top *= -1
   }
   box(box(inset: bounds, diagram, stroke: if debug {.1pt} else {0pt}), baseline: bounds.bottom)
-}
+})
 }

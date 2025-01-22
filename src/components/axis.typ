@@ -4,8 +4,9 @@
 #import "../old-number.typ" as number
 #import "../bounds.typ": *
 #import "../assertations.typ"
-#import "../components/axis-label.typ": xlabel, ylabel, label-show
+#import "../components/axis-label.typ": xlabel, ylabel, label as lq-label
 #import "../process-styles.typ": update-stroke
+#import "../libs/elembic/lib.typ" as e
 
 
 #import "tick.typ": tick as tick-constructor
@@ -378,7 +379,8 @@
 #let draw-axis(
   axis,
   ticking,
-  axis-style
+  axis-style,
+  e-get: none
 ) = {
   if axis.hidden { return (none, ()) }
 
@@ -511,8 +513,11 @@
     
     if axis.label != none and display-axis-label {
       
+      let nested-get-field(element, object, field) = {
+        e.fields(object).at(field, default: e-get(element).at(field))
+      }
       let label = axis.label
-      if type(label) != dictionary {
+      if e.eid(label) != e.eid(lq-label) {
         let constructor = if dim == "height" {xlabel} else {ylabel}
         label = constructor(label)
       }
@@ -521,13 +526,15 @@
       } else if position in (left, right) {
         box.with(height: 100%)
       }
-      let body = wrapper(label-show(label))
-      
+
+      let dx = if-auto(nested-get-field(lq-label, label, "dx"), 0pt)
+      let dy = if-auto(nested-get-field(lq-label, label, "dy"), 0pt)
+      let pad = if-auto(nested-get-field(lq-label, label, "pad"), 0pt) + max-padding
+
+
+      let body = wrapper(label)
       let size = measure(body)
-      let dx = if-auto(label.dx, 0pt)
-      let dy = if-auto(label.dy, 0pt)
-      
-      let pad = if-auto(label.pad, 0pt) + max-padding
+
       let (label, b) = place-with-bounds(body, alignment: position, dx: dx, dy: dy, pad: pad)
       
       content += label
