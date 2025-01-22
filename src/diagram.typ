@@ -52,8 +52,8 @@
   ylabel: none,
 
 
-  /// -> none | str | dictionary
-  grid: none,
+  /// -> auto | none | dictionary | color | length | stroke
+  grid: auto,
 
   /// Sets the scale of the $x$-axis. This may be a `lq.scale` object or the name of one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
   /// -> str | lq.scale
@@ -191,39 +191,23 @@
   
   context e.get(e-get => {
   
-  let axis-info = (x: (:), y: (:), rest: ((:),) * axes.len())
+  let axis-info = (
+    x: (ticking: axis-generate-ticks(xaxis, length: width)), 
+    y: (ticking: axis-generate-ticks(yaxis, length: height)), 
+    rest: ((:),) * axes.len()
+  )
     
-  axis-info.x.ticking = axis-generate-ticks(xaxis, length: width)
-  axis-info.y.ticking = axis-generate-ticks(yaxis, length: height)
-
 
   let bounds = (left: 0pt, right: width, top: 0pt, bottom: height)
-  let use-bounds = false
   
 
-  let grid = process-grid-arg(grid)
 
     
-  let diagram = rect(
+  let diagram = box(
     width: width, height: height, 
     inset: 0pt, stroke: none, 
     {
     
-    let draw-grid(ticks, which, type: 0) = {
-      if type == 0 {
-        if grid.at("x").at(which) == none { return }
-        for tick in ticks {
-          let x = transform(tick, 1).at(type)
-          place(line(start: (x, 0pt), end: (x, height), stroke: grid.x.at(which)))
-        }
-      } else {
-        if grid.at("y").at(which) == none { return }
-        for tick in ticks {
-          let y = transform(1, tick).at(type)
-          place(line(start: (0pt, y), end: (width, y), stroke: grid.y.at(which)))
-        }
-      }
-    }
 
     let artists = ()
     artists.push((
@@ -234,19 +218,14 @@
           axis-info.x.ticking.ticks.map(x-transform),
           axis-info.x.ticking.subticks.map(x-transform),
           kind: "x",
-
+          ..process-grid-arg(grid)
         )
         lq-grid(
           axis-info.y.ticking.ticks.map(y-transform),
           axis-info.y.ticking.subticks.map(y-transform),
           kind: "y",
+          ..process-grid-arg(grid)
         )
-       
-        // draw-grid(axis-info.x.ticking.ticks, "major", type: 0)
-        // draw-grid(axis-info.x.ticking.subticks, "minor", type: 0)
-    
-        // draw-grid(axis-info.y.ticking.ticks, "major", type: 1)
-        // draw-grid(axis-info.y.ticking.subticks, "minor", type: 1) 
       }, z: e-get(lq-grid).z-index
     ))
 
@@ -286,8 +265,8 @@
               (x*100%, (1-y)*100%)
             }
             handle = {
-        show: cycle-init
-        show: cycle-style
+              show: cycle-init
+              show: cycle-style
               (plot.plot)(plot, legend-trafo)
             }
           }
@@ -303,7 +282,6 @@
       artists.push((content: plotted-plot, z: plot.at("z-index", default: 2)))
     }
 
-    // place(box(width: width, height: height, clip: clip == true, diagram-data))
 
     let show-bounds(bounds, clr: red) = {
       place(dx: bounds.left, dy: bounds.top, rect(width: bounds.right - bounds.left, height: bounds.bottom - bounds.top, fill: clr))
@@ -330,13 +308,12 @@
       }
     }
     let (xaxis-, max-xtick-size) = draw-axis(xaxis, axis-info.x.ticking, major-axis-style, e-get: e-get)
-    // xaxis-
     artists.push((content: xaxis-, z: 2.1))
+
     let (yaxis-, max-ytick-size) = draw-axis(yaxis, axis-info.y.ticking, major-axis-style, e-get: e-get)
-    // yaxis-
     artists.push((content: yaxis-, z: 2.1))
+ 
     if type(max-ytick-size) == array {
-      // show-bounds(max-xtick-size, clr: rgb("#AA222222"))
       for b in max-ytick-size {
         bounds = update-bounds(bounds, b, width: width, height: height)
         show-bounds(b, clr: rgb("#22AA2222"))
@@ -345,7 +322,6 @@
         bounds = update-bounds(bounds, b, width: width, height: height)
         show-bounds(b, clr: rgb("#AAAA2222"))
       }
-      use-bounds = true
     } else {
       padding.left = max-ytick-size
       padding.bottom = max-xtick-size
@@ -393,7 +369,7 @@
     }
 
     
-    if legend != none and legend != false and legend-entries.len() > 0{
+    if legend != none and legend != false and legend-entries.len() > 0 {
       let legend = legend
       if legend == true { legend = (:) }
 
@@ -407,12 +383,10 @@
     }
     artists.sorted(key: artist => artist.z).map(artist => artist.content).join()
   })
-  if use-bounds {
-    bounds.bottom -= height
-    bounds.right -= width
-    bounds.left *= -1
-    bounds.top *= -1
-  }
+  bounds.bottom -= height
+  bounds.right -= width
+  bounds.left *= -1
+  bounds.top *= -1
   box(box(inset: bounds, diagram, stroke: if debug {.1pt} else {0pt}), baseline: bounds.bottom)
 })
 }

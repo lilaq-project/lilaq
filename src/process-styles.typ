@@ -168,28 +168,11 @@ grid: (x: (major: 1pt + green, minor: .5pt), y: none)
 */
 
 #let process-grid-arg(grid) = {
-  let default = (major: 0.5pt + luma(80%), minor: none)
-  let grid-spec = (x: default, y: default)
-  if grid == none {
-    
-  } else {
-    let type = type(grid)
-    if type == "string" {
-      if grid == "major" { 
-      } else if grid == "minor" { 
-        grid-spec.x.major = none 
-        grid-spec.y.major = none 
-        grid-spec.x.minor = default.major
-        grid-spec.y.minor = default.major
-      } else if grid == "both" { 
-        grid-spec.x.minor = default.major
-        grid-spec.y.minor = default.major
-      }
-    } else if type == "dictionary" {
-      
-    }
+  if grid == none { return (stroke: none, sub: none) }
+  if grid == auto { return (:) }
+  if type(grid) == dictionary { return grid }
+  if type(grid) in (color, stroke, length) {
+    return (stroke: grid)
   }
-
-  grid-spec
 }
 
