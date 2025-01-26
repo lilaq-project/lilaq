@@ -190,10 +190,22 @@
   
   
   context e.get(e-get => {
-  
+  if yaxis.locate-subticks == none {
+    let p = yaxis
+  }
   let axis-info = (
-    x: (ticking: axis-generate-ticks(xaxis, length: width)), 
-    y: (ticking: axis-generate-ticks(yaxis, length: height)), 
+    x: (ticking: axis-generate-ticks(
+      xaxis, 
+      xaxis.locate-ticks.with(..xaxis.tick-args), 
+      xaxis.locate-subticks.with(..xaxis.subtick-args),
+      kind: "x", length: width, lim: xaxis.lim
+    )), 
+    y: (ticking: axis-generate-ticks(
+      yaxis, 
+      yaxis.locate-ticks.with(..yaxis.tick-args), 
+      yaxis.locate-subticks.with(..yaxis.subtick-args),
+      kind: "y", length: height, lim: yaxis.lim
+    )), 
     rest: ((:),) * axes.len()
   )
     
@@ -207,6 +219,7 @@
     width: width, height: height, 
     inset: 0pt, stroke: none, 
     {
+      
     
 
     let artists = ()
@@ -301,11 +314,17 @@
       type: "major"
     )
     let get-axis-args(axis) = {
-      if axis.kind == "x" { 
-        (length: width)
+      let length = if axis.kind == "x" { 
+        width
       } else {
-        (length: height)
-      }
+        height
+      } 
+      arguments(
+        kind: axis.kind, lim: axis.lim, 
+        axis.locate-ticks.with(..axis.tick-args), 
+        axis.locate-subticks.with(..axis.subtick-args),
+        length: length
+      ) 
     }
     let (xaxis-, max-xtick-size) = draw-axis(xaxis, axis-info.x.ticking, major-axis-style, e-get: e-get)
     artists.push((content: xaxis-, z: 2.1))
@@ -328,7 +347,9 @@
     }
 
     for axis in axes {
-      let ticking = axis-generate-ticks(axis, ..get-axis-args(axis))
+      let ticking = axis-generate-ticks(
+        axis, ..get-axis-args(axis)
+      )
       let (axis-, axis-bounds) = draw-axis(axis, ticking, major-axis-style, e-get: e-get)
       artists.push((content: axis-, z: 2.1))
 

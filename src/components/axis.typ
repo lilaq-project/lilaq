@@ -166,6 +166,8 @@
       "log", () => ticking.locate-ticks-log.with(base: scale.base),
       default: () => ticking.locate-ticks-linear,
     )
+  } else if locate-ticks == none {
+    locate-ticks = (..) => (ticks: ())
   }
   if format-ticks == auto {
     format-ticks = match(
@@ -189,6 +191,9 @@
       "log", () => ticking.locate-subticks-log.with(base: scale.base),
       default: none
     )
+  } 
+  if locate-subticks == none {
+    locate-subticks = (..) => ()
   }
   let is-independant = plots.len() > 0
   if functions == auto { functions = (x => x, x => x) }
@@ -319,49 +324,71 @@
 /// 
 /// -> dictionary
 #let axis-generate-ticks(
+  
   /// The axis object. 
   /// -> lq.axis
   axis, 
   
+  locate-ticks,
+  locate-subticks,
+  
   /// The length with which the axis will be displayed. This is for example used to determine automatic tick distances. 
   /// -> length
-  length: 3cm
+  length: 3cm,
+  kind: "x",
+  lim: (0, 1),
+
 ) = {
-  let ticks = ()
+  let num-ticks-suggestion = match(
+    kind,
+    "x", length / 3em.to-absolute(),
+    "y", length / 2em.to-absolute()
+  )
+  let (x0, x1) = lim
+
+  let ticks = (locate-ticks)(x0, x1, num-ticks-suggestion: num-ticks-suggestion)
+
+  let subticks = (locate-subticks)(x0, x1, ..ticks, num-ticks-suggestion: num-ticks-suggestion)
+
+  return ticks + (subticks: subticks)
+}
+
+
+
+
+#let axis-finish-ticking(
+
+  axis, 
+
+  tick-info, 
+
+  subticks
+
+) = {
   let tick-labels
-  let subticks = ()
   let subtick-labels
   let (exp, offset) = (axis.exponent, axis.offset)
 
-  let em = measure(line(length: 1em, angle: 0deg)).width
-  axis.tick-args.num-ticks-suggestion = match(
-    axis.kind,
-    "x", length / (3 * em),
-    "y", length / (2 * em)
-  )
   let (x0, x1) = axis.lim
+  let ticks = ()
 
-  if x0 != none {
-    if axis.locate-ticks != none {
-      let tick-info = (axis.locate-ticks)(x0, x1, ..axis.tick-args)
-      ticks = tick-info.ticks
-      (tick-labels, exp, offset) = match(
-        axis.format-ticks,
-        none, (none, 0, 0),
-        default: () => (axis.format-ticks)(tick-info, exponent: axis.exponent, offset: axis.offset, auto-exponent-threshold: axis.auto-exponent-threshold),
-      )
-      
+  if axis.locate-ticks != none {
+    ticks = tick-info.ticks
+    (tick-labels, exp, offset) = match(
+      axis.format-ticks,
+      none, (none, 0, 0),
+      default: () => (axis.format-ticks)(tick-info, exponent: axis.exponent, offset: axis.offset, auto-exponent-threshold: axis.auto-exponent-threshold),
+    )
+    
 
-      if axis.locate-subticks != none {
-        subticks = (axis.locate-subticks)(x0, x1, ..tick-info, ..axis.subtick-args)
-        subtick-labels = match(
-        axis.format-subticks,
-        none, none,
-        default: () => (axis.format-subticks)(ticks: subticks, exponent: axis.exponent, offset: axis.offset).at(0),
-      )
-      }
-    } 
-  }
+    if axis.locate-subticks != none {
+      subtick-labels = match(
+      axis.format-subticks,
+      none, none,
+      default: () => (axis.format-subticks)(ticks: subticks, exponent: axis.exponent, offset: axis.offset).at(0),
+    )
+    }
+  } 
 
   return (
     ticks: ticks,
@@ -384,7 +411,7 @@
 ) = {
   if axis.hidden { return (none, ()) }
 
-
+  ticking = axis-finish-ticking(axis, ticking, ticking.subticks)
   let (ticks, tick-labels, subticks, subtick-labels, exp, offset) = ticking
   
   let transform = axis.transform
