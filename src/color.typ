@@ -48,7 +48,7 @@
   diagram(
     width: .3cm, 
     xaxis: (ticks: none), 
-    yaxis: (position: right, mirror: none),
+    yaxis: (position: right, mirror: (:)),
     grid: none,
     // ylabel: "color",
     ylim: (cinfo.min, cinfo.max),
