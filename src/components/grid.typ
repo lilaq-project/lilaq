@@ -1,14 +1,56 @@
 #import "../libs/elembic/lib.typ" as e
 
 
-/// An axis grid for highlighting tick positions in the diagram area. 
+/// An axis grid for highlighting tick positions in the diagram area. The 
+/// grid lines are determined from the ticks located by the tick locators
+/// of the main $x$ and $y$ axes for vertical and horizontal grid lines, 
+/// respectively. 
+/// 
+/// One way to set up the grid stroke is with a style rule. The stroke 
+/// of the main ticks is controlled by `stroke`
+/// 
+/// ```example
+/// #show: lq.set-grid(stroke: teal)
+/// 
+/// #lq.diagram(
+/// 
+/// )
+/// ```
+/// and the stroke of the subticks by `sub`:
+/// ```example
+/// #show: lq.set-grid(sub: .5pt + luma(90%))
+/// 
+/// #lq.diagram(
+/// 
+/// )
+/// ```
+/// 
+/// Through the @diagram.grid parameter, the look of the grid can also be 
+/// controlled directly for an individual diagram. 
+/// ```example
+/// #lq.diagram(
+///   grid: (stroke: black, sub: .25pt)
+/// )
+/// ```
+/// 
+/// Aside from `#show: lq.set-grid(stroke: none)`, the grid can be turned off 
+/// with the short-hand `grid: none`. 
+/// ```example
+/// #lq.diagram(
+///   grid: none
+/// )
+/// ```
 #let grid(
 
-  /// A list of tick positions as absolute length coordinates within the diagram frame. This is automatically filled by @diagram with the ticks resulting from the axes' tick locators. 
+  /// A list of tick positions as absolute length coordinates within the 
+  /// diagram frame. This is automatically filled by @diagram with the ticks 
+  /// resulting from the axes' tick locators. 
   /// -> array
   ticks,
 
-  /// A list of subtick positions as absolute length coordinates within the diagram frame. This is automatically filled by @diagram with the ticks resulting from the axes' tick locators. 
+  /// A list of subtick positions as absolute length coordinates within the 
+  /// diagram frame. This is automatically filled by @diagram with the ticks 
+  /// resulting from the axes' tick locators. 
   /// -> array
   subticks,
 
@@ -20,12 +62,13 @@
   /// -> none | stroke
   stroke: 0.5pt + luma(80%),
 
-  /// How to stroke grid lines for subticks. If `auto`, the style is inherited from @grid.stroke. 
+  /// How to stroke grid lines for subticks. If `auto`, the style is inherited
+  /// from @grid.stroke. 
   /// -> auto | none | stroke
   sub: none,
 
-  /// Determines the $z$ position of the grid in the order of rendered diagram objects. 
-  /// See @plot.z-index.  
+  /// Determines the $z$ position of the grid in the order of rendered diagram
+  /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 0,
   
