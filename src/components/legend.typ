@@ -53,7 +53,7 @@
     } else if args.pos() == () {
       args
     } else {
-      assert(false, message: "element 'sunk': unexpected positional arguments\n  hint: these can only be passed to the constructor")
+      assert(false, message: "element 'legend': unexpected positional arguments\n  hint: these can only be passed to the constructor")
     }
 
     default-parser(args, include-required: include-required)
