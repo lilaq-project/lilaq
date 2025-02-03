@@ -18,7 +18,7 @@
 /// ```
 /// and the stroke of the subticks by `sub`:
 /// ```example
-/// #show: lq.set-grid(sub: .5pt + luma(90%))
+/// #show: lq.set-grid(stroke-sub: .5pt + luma(90%))
 /// 
 /// #lq.diagram(
 /// 
@@ -29,7 +29,7 @@
 /// controlled directly for an individual diagram. 
 /// ```example
 /// #lq.diagram(
-///   grid: (stroke: black, sub: .25pt)
+///   grid: (stroke: black, stroke-sub: .25pt)
 /// )
 /// ```
 /// 
@@ -48,11 +48,9 @@
   /// -> array
   ticks,
 
-  /// A list of subtick positions as absolute length coordinates within the 
-  /// diagram frame. This is automatically filled by @diagram with the ticks 
-  /// resulting from the axes' tick locators. 
-  /// -> array
-  subticks,
+  /// Whether the ticks passed to @grid.ticks are subticks. 
+  /// -> bool
+  sub,
 
   /// The axis kind: horizontal (`"x"`) or vertical (`"y"`). 
   /// -> "x" | "y"
@@ -65,7 +63,7 @@
   /// How to stroke grid lines for subticks. If `auto`, the style is inherited
   /// from @grid.stroke. 
   /// -> auto | none | stroke
-  sub: none,
+  stroke-sub: none,
 
   /// Determines the $z$ position of the grid in the order of rendered diagram
   /// objects. See @plot.z-index.  
@@ -83,40 +81,38 @@
   fold: old-fold => (outer, inner) => if inner in (none, auto) or outer in (none, auto) { inner } else { (e.types.native.stroke_.fold)(outer, inner) }
 )
 
+
 #let grid = e.element.declare(
   "grid",
   prefix: "lilaq",
 
   display: it => {
 
+    let stroke = if it.sub { it.stroke-sub } else { it.stroke }
+
+    if stroke == none { return }
+
     let line
 
     if it.kind == "x" {
-      line = (tick, stroke: it.stroke) => place(
+      line = tick => place(
         std.line(start: (tick, 0%), end: (tick, 100%), stroke: stroke)
       )
     } else if it.kind == "y" {
-      line = (tick, stroke: it.stroke) => place(
+      line = tick => place(
         std.line(start: (0%, tick), end: (100%, tick), stroke: stroke)
       )
     }
 
-    if it.stroke != none {
-      it.ticks.map(line).join()
-    }
 
-    let sub-stroke = if it.sub == auto { it.stroke } else { it.sub }
-
-    if sub-stroke != none {
-      it.subticks.map(line.with(stroke: sub-stroke)).join()
-    }
+    it.ticks.map(line).join()
   },
 
   fields: (
     e.field("ticks", array, required: true),
-    e.field("subticks", array, required: true),
+    e.field("sub", bool, required: true),
     e.field("stroke", e.types.option(stroke), default: 0.5pt + luma(80%), ),
-    e.field("sub", auto-none-stroke, default: none),
+    e.field("stroke-sub", auto-none-stroke, default: none),
     e.field("z-index", float, default: 0),
     e.field("kind", str, default: "x"),
   ),

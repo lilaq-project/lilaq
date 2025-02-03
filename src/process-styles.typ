@@ -168,7 +168,7 @@ grid: (x: (major: 1pt + green, minor: .5pt), y: none)
 */
 
 #let process-grid-arg(grid) = {
-  if grid == none { return (stroke: none, sub: none) }
+  if grid == none { return (stroke: none, stroke-sub: none) }
   if grid == auto { return (:) }
   if type(grid) == dictionary { return grid }
   if type(grid) in (color, stroke, length) {
