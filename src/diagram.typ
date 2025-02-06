@@ -27,7 +27,7 @@
   /// Height of the diagram area. 
   height: 4cm,
 
-  /// Title for the diagram. Use a `lq.title` object for more options. 
+  /// Title for the diagram. Use a @title object for more options. 
   /// -> lq.title | str | content |  none
   title: none,
 
@@ -43,11 +43,11 @@
   /// -> auto |  array
   ylim: auto,
 
-  /// Label for the $x$-axis. Use a `lq.xlabel` object for more options. 
+  /// Label for the $x$-axis. Use a @label object for more options. 
   /// -> content | lq.xlabel
   xlabel: none,
 
-  /// Label for the $y$-axis. Use a `lq.ylabel` object for more options. 
+  /// Label for the $y$-axis. Use a @label object for more options. 
   /// -> content | lq.ylabel
   ylabel: none,
 
@@ -55,19 +55,19 @@
   /// -> auto | none | dictionary | color | length | stroke
   grid: auto,
 
-  /// Sets the scale of the $x$-axis. This may be a `lq.scale` object or the name of one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
+  /// Sets the scale of the $x$-axis. This may be a @scale object or the name of one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
   /// -> str | lq.scale
   xscale: "linear",
   
-  /// Sets the scale of the $y$-axis. This may be a `lq.scale` object or the name of one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
+  /// Sets the scale of the $y$-axis. This may be a @scale object or the name of one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
   /// -> str | lq.scale
   yscale: "linear",
 
-  /// Configures the $x$-axis. This can be a `lq.xaxis` object or a dictionary of arguments to pass to the constructor of the axis. 
+  /// Configures the $x$-axis. This can be a @axis object or a dictionary of arguments to pass to the constructor of the axis. 
   /// lq.xaxis | dictionary
   xaxis: (:),
   
-  /// Configures the $y$-axis. This can be a `lq.xaxis` object or a dictionary of arguments to pass to the constructor of the axis. 
+  /// Configures the $y$-axis. This can be a @axis object or a dictionary of arguments to pass to the constructor of the axis. 
   /// lq.xaxis | dictionary
   yaxis: (:),
 

@@ -143,7 +143,7 @@
 
   /// The normalization method used to scale scalar @scatter.color values to the range 
   /// $[0,1]$ before mapping them to colors using the color map. This can be a 
-  /// `lq.scale`, a string that is the identifier of a built-in scale or a function 
+  /// @scale, a string that is the identifier of a built-in scale or a function 
   /// that takes one argument. 
   /// -> lq.scale | str | function
   norm: "linear",
