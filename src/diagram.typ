@@ -189,7 +189,7 @@
 
   
   
-  context e.get(e-get => {
+  e.get(e-get => {
   
   let axis-info = (
     x: (ticking: axis-generate-ticks(xaxis, length: width)), 
