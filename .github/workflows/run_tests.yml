@@ -30,9 +30,9 @@ jobs:
           tag: ci-semi-stable
 
       - name: Setup typst
-        uses: yusancky/setup-typst@v2
+        uses: typst-community/setup-typst@v3
         with:
-          version: 'v0.12.0'
+          typst-version: 'v0.12.0'
 
       - name: Run test suite
         run: typst-test run
