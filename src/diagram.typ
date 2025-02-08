@@ -2,13 +2,13 @@
 #import "process-styles.typ": update-stroke, process-margin, process-grid-arg
 #import "assertations.typ"
 #import "scale.typ"
-#import "components/legend.typ": legend as lq-legend
+#import "components/legend.typ": legend as lq-legend, place-legend-with-bounds
 #import "components/grid.typ": grid as lq-grid
 
 #import "components/axis.typ": axis, draw-axis, axis-compute-limits, axis-generate-ticks
 #import "ticking.typ"
 #import "bounds.typ": *
-#import "components/title.typ": title as title-constructor, title-show
+#import "components/title.typ": title as lq-title, title-show
 #import "utility.typ": if-auto
 
 #let debug = false
@@ -207,6 +207,8 @@
     width: width, height: height, 
     inset: 0pt, stroke: none, 
     {
+
+    let update-bounds = update-bounds.with(width: width, height: height)
     
 
     let artists = ()
@@ -327,11 +329,11 @@
  
     if type(max-ytick-size) == array {
       for b in max-ytick-size {
-        bounds = update-bounds(bounds, b, width: width, height: height)
+        bounds = update-bounds(bounds, b)
         show-bounds(b, clr: rgb("#22AA2222"))
       }
       for b in max-xtick-size {
-        bounds = update-bounds(bounds, b, width: width, height: height)
+        bounds = update-bounds(bounds, b)
         show-bounds(b, clr: rgb("#AAAA2222"))
       }
     } else {
@@ -346,25 +348,25 @@
 
       
       for b in axis-bounds {
-        bounds = update-bounds(bounds, b, width: width, height: height)
+        bounds = update-bounds(bounds, b)
         show-bounds(b, clr: rgb("#2222AA22"))
       }
     }
     
+    let nested-get-field(element, object, field) = {
+      e.fields(object).at(field, default: e-get(element).at(field))
+    }
 
     if title != none {
       let title = title
-      if e.eid(title) != e.eid(title-constructor) {
-        title = title-constructor(title)
-      }
-      let nested-get-field(element, object, field) = {
-        e.fields(object).at(field, default: e-get(element).at(field))
+      if e.eid(title) != e.eid(lq-title) {
+        title = lq-title(title)
       }
 
-      let pos = nested-get-field(title-constructor, title, "pos")
-      let dx = if-auto(nested-get-field(title-constructor, title, "dx"), 0pt)
-      let dy = if-auto(nested-get-field(title-constructor, title, "dy"), 0pt)
-      let pad = if-auto(nested-get-field(title-constructor, title, "pad"), 0pt)
+      let pos = nested-get-field(lq-title, title, "pos")
+      let dx = if-auto(nested-get-field(lq-title, title, "dx"), 0pt)
+      let dy = if-auto(nested-get-field(lq-title, title, "dy"), 0pt)
+      let pad = if-auto(nested-get-field(lq-title, title, "pad"), 0pt)
 
       let wrapper = if pos in (top, bottom) {
         box.with(width: width)
@@ -377,22 +379,18 @@
       let (title, b) = place-with-bounds(body, alignment: pos, dx: dx, dy: dy, pad: pad)
       
       artists.push((content: title, z: 3))
-      bounds = update-bounds(bounds, b, width: width, height: height)
+      bounds = update-bounds(bounds, b)
     }
 
     
     if legend != none and legend != false and legend-entries.len() > 0 {
-      let legend = legend
-      if legend == true { legend = (:) }
-
-      let legend-content = {
-        // set text(size: .9em)
-        set table(columns: 2, stroke: none, inset: 2pt, align: horizon + left)
-        lq-legend(..legend-entries)
-      }
+      let (legend-content, legend-bounds) = place-legend-with-bounds(legend, legend-entries, e-get)
 
       artists.push((content: legend-content, z: e-get(lq-legend).z-index))
+
+      bounds = update-bounds(bounds, legend-bounds)
     }
+
     artists.sorted(key: artist => artist.z).map(artist => artist.content).join()
   })
   bounds.bottom -= height
