@@ -6,7 +6,7 @@
 #import "components/title.typ": title
 #import "components/legend.typ": legend
 #import "components/grid.typ": grid
-#import "components/axis-label.typ": label, xlabel, ylabel
+#import "components/label.typ": label, xlabel, ylabel
 
 #import "mark.typ": mark, marks
 #import "cycle.typ": style

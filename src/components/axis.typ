@@ -4,7 +4,7 @@
 #import "../old-number.typ" as number
 #import "../bounds.typ": *
 #import "../assertations.typ"
-#import "../components/axis-label.typ": xlabel, ylabel, label as lq-label
+#import "../components/label.typ": xlabel, ylabel, label as lq-label
 #import "../process-styles.typ": update-stroke
 #import "../libs/elembic/lib.typ" as e
 
@@ -31,7 +31,7 @@
   kind: "x", 
 
   /// -> float | alignment
-  position: auto, /* alignment or float */
+  position: auto, 
 
   /// -> stroke
   stroke: .7pt,
