@@ -78,8 +78,8 @@
   /// -> array | function
   directions,
 
-  /// How to color the arrows. This can be a single color or a 2d arrow with the same dimensions as @quiver.directions. 
-  /// -> color | array
+  /// How to color the arrows. This can be a single color or a 2d arrow with the same dimensions as @quiver or a function that receives `(x, y)` pairs from the given `x` and `y` coordinates and returns a scalar/color. 
+  /// -> color | array | function
   color: black,
 
   /// How to stroke the arrows. This parameter takes precedence over @quiver.color. 
@@ -138,6 +138,10 @@
   
   if type(directions) == function {
     directions = x.map(x => y.map(y => directions(x, y)))
+  }
+  
+  if type(color) == function {
+    color = x.map(x => y.map(y => color(x, y)))
   }
   
   if type(color) == array { 
