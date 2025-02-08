@@ -57,6 +57,7 @@
   if alignment.x == none { alignment = alignment.y + center }
   else if alignment.y == none { alignment = alignment.x + horizon }
   if content-alignment == auto { content-alignment = alignment.inv() }
+  else if content-alignment == "inside" { content-alignment = alignment }
 
   let size = measure(content)
   if pad != 0pt {
@@ -71,7 +72,10 @@
     dx += pad.x
   }
   
-  let content = place(content-alignment, content, dx: dx, dy: dy)
+
+  let (ddx, ddy) = (dx, dy)
+  
+  let content = place(content-alignment, content)
   
   if alignment.x == right { dx += 100% }
   else if alignment.x == center { dx += 50% }
@@ -88,7 +92,7 @@
     top: dy,
     bottom: dy + size.height
   )
-  (place(alignment, content), bounds)
+  (place(alignment, content, dx: ddx, dy: ddy), bounds)
 }
 
 
