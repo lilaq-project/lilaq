@@ -59,7 +59,7 @@
   }
 }
 
-
+/// Creates a quiver plot. 
 #let quiver(
 
   /// A one-dimensional array of $x$ data coordinates. 

@@ -2,7 +2,9 @@
 #import "../bounds.typ": place-with-bounds
 #import "../libs/elembic/lib.typ" as e
 
-/// A diagram legend showing labels for all labeled plots. 
+/// A diagram legend listing all labeled plots. 
+/// 
+/// 
 #let legend(
 
   /// The items to place in the legend. These items are tuples of a 
@@ -40,18 +42,21 @@
   /// -> length
   pad: 2pt, 
 
-  // 
+  /// The horizontal displacement of the legend from the position specified 
+  /// through @legend.pos. 
   /// -> length
   dx: 0pt,
 
+  /// The vertical displacement of the legend from the position specified 
+  /// through @legend.pos. 
   /// -> length
   dy: 0pt,
 
+  /// Specifies the $z$ position of the legend in the order of rendered diagram objects. 
   /// -> int | float
   z-index: 6,
 
 ) = {}
-
 
 #let legend = e.element.declare(
   "legend",
