@@ -25,7 +25,7 @@
 }
 
 
-/// Fills the area between two graphs,
+/// Fills the area between two graphs. 
 /// 
 /// ```example
 /// #let xs = lq.linspace(-1, 2)

@@ -1,5 +1,5 @@
 
-/// Parses a CSV (_comma-separated values_) string. This function enhances the 
+/// Parses a CSV (comma-separated values) string. This function enhances the 
 /// functionality of the built-in Typst function `csv` with features like transforming
 /// values to numerical (or other) types, ignoring comments and selecting only part of 
 /// the data. 
