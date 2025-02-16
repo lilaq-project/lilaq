@@ -1,5 +1,5 @@
 #import "ticking.typ"
-#import "components/axis.typ": draw-axis, axis-compute-limits, yaxis
+#import "components/axis.typ": draw-axis, _axis-compute-limits, yaxis
 #import "scale.typ": *
 
 #set text(size: 8pt)
@@ -14,7 +14,7 @@
   let axis = axis
   if type(axis) == dictionary{
     axis = yaxis(lim: (x0, x1), ..axis)
-    axis.lim = axis-compute-limits(axis, lower-margin: 0pt, upper-margin: 0pt)
+    axis.lim = _axis-compute-limits(axis, lower-margin: 0pt, upper-margin: 0pt)
     
     let normalized-y-trafo = create-trafo(axis.scale.transform, ..axis.lim)
   

@@ -5,7 +5,7 @@
 #import "components/legend.typ": legend as lq-legend, place-legend-with-bounds
 #import "components/grid.typ": grid as lq-grid
 
-#import "components/axis.typ": axis, draw-axis, axis-compute-limits, axis-generate-ticks
+#import "components/axis.typ": axis, draw-axis, _axis-compute-limits, _axis-generate-ticks
 #import "ticking.typ"
 #import "bounds.typ": *
 #import "components/title.typ": title as lq-title, title-show
@@ -123,8 +123,8 @@
 
   margin = process-margin(margin)
 
-  xaxis.lim = axis-compute-limits(xaxis, lower-margin: margin.left, upper-margin: margin.right)
-  yaxis.lim = axis-compute-limits(yaxis, lower-margin: margin.bottom, upper-margin: margin.top)
+  xaxis.lim = _axis-compute-limits(xaxis, lower-margin: margin.left, upper-margin: margin.right)
+  yaxis.lim = _axis-compute-limits(yaxis, lower-margin: margin.bottom, upper-margin: margin.top)
 
   
   let normalized-x-trafo = scale.create-trafo(xaxis.scale.transform, ..xaxis.lim)
@@ -154,7 +154,7 @@
     let model-axis = if axis.kind == "x" {xaxis} else {yaxis}
     let has-auto-lim = axis.lim == auto
     let has-auto-lim = false
-    axes.at(i).lim = axis-compute-limits(axis, default-lim: model-axis.lim)
+    axes.at(i).lim = _axis-compute-limits(axis, default-lim: model-axis.lim)
 
     if axis.plots.len() > 0 {
       let other-axis = if axis.kind == "x" {yaxis} else {xaxis}
@@ -192,8 +192,8 @@
   e.get(e-get => {
   
   let axis-info = (
-    x: (ticking: axis-generate-ticks(xaxis, length: width)), 
-    y: (ticking: axis-generate-ticks(yaxis, length: height)), 
+    x: (ticking: _axis-generate-ticks(xaxis, length: width)), 
+    y: (ticking: _axis-generate-ticks(yaxis, length: height)), 
     rest: ((:),) * axes.len()
   )
     
@@ -330,7 +330,7 @@
     }
 
     for axis in axes {
-      let ticking = axis-generate-ticks(axis, ..get-axis-args(axis))
+      let ticking = _axis-generate-ticks(axis, ..get-axis-args(axis))
       let (axis-, axis-bounds) = draw-axis(axis, ticking, major-axis-style, e-get: e-get)
       artists.push((content: axis-, z: 2.1))
 

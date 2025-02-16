@@ -254,7 +254,7 @@
 /// `next(min, -1)` and `next(max, 1)`. 
 /// Finally lower and upper margins are applied. 
 ///
-#let axis-compute-limits(
+#let _axis-compute-limits(
   axis, 
   lower-margin: 0%, upper-margin: 0%,
   default-lim: (0,1),
@@ -318,7 +318,7 @@
 /// Generates all ticks and subticks as well as their labels for an axis. 
 /// 
 /// -> dictionary
-#let axis-generate-ticks(
+#let _axis-generate-ticks(
   /// The axis object. 
   /// -> lq.axis
   axis, 
