@@ -61,11 +61,8 @@
 
 #let polygon = (mark, n: 5, angle: 0deg) => { 
   // The last term serves for equalizing the apparent size of polygons with different n. 
-  // let radius = mark.size / 2 * calc.sqrt(1 + 1/n)
-  let radius = mark.size / 2 * calc.sqrt(1 + 3/(n*n))
-  let dy = (0pt, mark.size/10, 0pt, 0pt).at(n - 2, default: 0pt)
+  let radius = mark.size / 2 * calc.sqrt(1 + 3 / (n*n))
   let dy = (0, .13, 0, .03, 0, .02).at(n - 2, default: 0) * radius
-  // let dy = 0pt
   let poly = std.polygon(
     stroke: mark.stroke, fill: mark.fill,
     ..range(n).map(i => {

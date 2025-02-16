@@ -89,45 +89,9 @@
   let transformed-points = points.map(p => transform(..p))
   transformed-points.map(((x, y)) => place(dx: x, dy: y, marker)).join()
 
-  
-
-  // let errorbars = plot.yerr != none or plot.xerr != none
-  // let errorbar-stroke = get-errorbar-stroke(plot.style.line)
-  
-  // let i = 0
-  // for (x, y) in points {
-  //   let p = transform(x, y)
-  //   if errorbars {
-        
-  //     show: prepare-path.with(
-  //       stroke: merge-strokes((dash: "solid", paint: red, thickness: .2pt), plot.style.line, plot.style.color)
-  //     )
-  //     if plot.xerr != none {
-  //       let (upper, lower) = get-upper-lower(x, plot.xerr.at(i))
-  //       place(path(transform(lower, y), transform(upper, y)))
-  //     }
-  //     if plot.yerr != none {
-  //       let (upper, lower) = get-upper-lower(y, plot.yerr.at(i))
-  //       place(path(transform(x, lower), transform(x, upper)))
-  //     }
-  //   }
-  //   place(dx: p.at(0), dy: p.at(1), marker)
-
-  //   i += 1
-  // }
 }
 
 
-// #let plot-legend-handle(plot) = {
-//   if plot.style.line != none {
-//     place(horizon + center, path((0%, 0%), (0%, 100%), stroke: plot.style.line))
-//   }
-//   if plot.yerr != none {
-//     let errorbar-stroke = get-errorbar-stroke(plot.style.line)
-//     place(horizon + center, line(length: 100%, stroke: errorbar-stroke, angle: 90deg))
-//   }
-//   place(horizon + center, (plot.style.mark)(plot.style))
-}
 
 
 /// Standard plotting method for 2d data with lines and/or marks and optional  

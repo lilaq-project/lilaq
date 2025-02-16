@@ -2,7 +2,6 @@
 #import "process-styles.typ": merge-strokes, merge-fills
 #import "math.typ": minmax
 #import "scale.typ"
-// #import "markers.typ": markers
 
 
 #let plot-lim(x, err: none) = {
@@ -21,14 +20,3 @@
   if lim.at(1) == base-max { lim.at(1) *= 1fr }
   return lim
 }
-
-
-
-// #let get-marker-function(marker) = {
-  // if marker == none {  return size => none }
-  // if type(marker) == function {  return marker }
-  // if type(marker) == str and marker in markers {
-  //   return markers.at(marker)
-  // }
-  // assert(false, message: "Unknown marker " + repr(marker))
-// }

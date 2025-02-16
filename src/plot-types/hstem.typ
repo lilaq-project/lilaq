@@ -8,7 +8,6 @@
 
 
 #let render-hstem(plot, transform) = {
-  // let mark = plot.style.mark
   let marker = mark()
   set line(stroke: plot.style.stroke)
 
@@ -135,15 +134,6 @@
     plot: render-hstem,
     xlimits: () => bar-lim(x, (base,)),
     ylimits: () => minmax(y),
-    // legend-handle: plot => {
-    //   let x0 = 25%
-    //   let x1 = 75% - plot.style.mark-size / 4
-    //   place(std.line(start: (x0, 50%), end: (x1, 50%), stroke: plot.style.line))
-    //   place(dx: x1, dy: 50%, (plot.style.mark)(plot.style))
-    //   if plot.style.base-stroke != none {
-    //     place(std.line(start: (x0, 0pt), end: (x0, 100%), stroke: plot.style.base-stroke))
-    //   }
-    // },
     legend-handle: plot => none,
     new-legend: true,
     clip: clip,

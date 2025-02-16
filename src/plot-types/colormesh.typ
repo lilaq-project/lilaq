@@ -33,7 +33,6 @@
       let (x1, y1) = transform(x - w1/2, y + h2/2)
       let (x2, y2) = transform(x + w2/2, y - h1/2)
       let fill = plot.color.at(j + i*plot.y.len())
-      // place(dx: x1, dy: y1, rect(stroke: none, width: x2 - x1, height: y2 - y1, fill: fill))
       let width = x2 - x1
       let height = y2 - y1
       place(dx: x1, dy: y1, rect(width: width, height: height, fill: fill))

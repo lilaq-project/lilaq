@@ -170,7 +170,7 @@
         axes.at(i).transform = y => (1 - normalized-y-trafo(y)) * height
       }
       plots.push((
-        type: "axis-collection", // TODO: add legend entries
+        type: "axis-collection", 
         plots: axis.plots,
         transform: transform
       ))
@@ -245,19 +245,7 @@
 
     let legend-entries = ()
 
-    
-// #let create-legend-entries(plots) = {
-//   plots
-//     .filter(plot => "legend-handle" in plot)
-//     .map(plot =>
-//       (
-//         box(width: 2em, height: .7em, (plot.legend-handle)(plot)), 
-//         plot.label
-//       )
-//     )
-// }
 
-    
     for (i, plot) in plots.enumerate() {
       let cycle-style = cycle.at(calc.rem(i, cycle.len()))
       let plotted-plot = {
@@ -353,7 +341,7 @@
       }
     }
     
-    let nested-get-field(element, object, field) = {
+    let get-settable-field(element, object, field) = {
       e.fields(object).at(field, default: e-get(element).at(field))
     }
 
@@ -363,10 +351,10 @@
         title = lq-title(title)
       }
 
-      let pos = nested-get-field(lq-title, title, "pos")
-      let dx = if-auto(nested-get-field(lq-title, title, "dx"), 0pt)
-      let dy = if-auto(nested-get-field(lq-title, title, "dy"), 0pt)
-      let pad = if-auto(nested-get-field(lq-title, title, "pad"), 0pt)
+      let pos = get-settable-field(lq-title, title, "pos")
+      let dx = if-auto(get-settable-field(lq-title, title, "dx"), 0pt)
+      let dy = if-auto(get-settable-field(lq-title, title, "dy"), 0pt)
+      let pad = if-auto(get-settable-field(lq-title, title, "pad"), 0pt)
 
       let wrapper = if pos in (top, bottom) {
         box.with(width: width)

@@ -39,24 +39,15 @@
   if type(width) in (int, float) {
     assert(type(x) in (int, float), message: "Setting the width in terms of data coordinates makes no sense if the origin x coordinate is not in data coordinates")
     width = transform(x + width, 1).at(0) - transform(x, 1).at(0)
-    // if width < 0pt {
-    //   width *= -1
-    //   x1 -= width
-    // }
   }
   if type(height) in (int, float) {
     assert(type(y) in (int, float), message: "Setting the height in terms of data coordinates makes no sense if the origin y coordinate is not in data coordinates")
     height = transform(1, y + height).at(1) - transform(1, y).at(1) 
-    // if height < 0pt {
-    //   height *= -1
-    //   y1 -= height
-    // }
   }
 
   return (x1, width, y1, height)
 }
 
-// #rect(width: -2pt, "ad")
 
 #let is-data-coordinates(coord) = type(coord) in (int, float)
 #let all-data-coordinates(coords) = {

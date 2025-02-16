@@ -9,7 +9,6 @@
   let marker = plot.style.mark
   let marker = mark()
   
-  // set path(stroke: plot.style.line)
   
   let (xmin, xmax) = (plot.xlimits)()
   
@@ -139,14 +138,6 @@
     plot: render-stem,
     xlimits: () => minmax(x),
     ylimits: () => bar-lim(y, (base,)),
-    // legend-handle: plot => {
-    //   let y1 = plot.style.mark-size / 4
-    //   place(std.line(start: (50%, y1), end: (50%, 100%), stroke: plot.style.line))
-    //   place(dx: 50%, dy: y1, (plot.style.mark)(plot.style))
-    //   if plot.style.base-stroke != none {
-    //     place(std.line(start: (0pt, 100%), end: (100%, 100%), stroke: plot.style.base-stroke))
-    //   }
-    // },
     legend-handle: plot => none,
     new-legend: true,
     clip: clip,

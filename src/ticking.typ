@@ -97,12 +97,6 @@
 #let discretize-up(x, d, exp, offset: 0) = {
   let dd = d * pow10(exp)
   return calc.round(fit-up(x, dd, offset: offset) * dd, digits: -exp)
-
-  // let k = dd * calc.ceil(calc.round(x / dd, digits: 10))
-  // return calc.round(
-  //   dd * calc.ceil(calc.round(x / dd, digits: 10)),
-  //   digits: -exp
-  // )
 }
 
 /// Returns the nearest number $x'*10^exp <= x*10^exp$ that is divisible by $d$. 
@@ -223,7 +217,7 @@
 
   let x0-offset = precision-offset + first-tick-first-guess
 
-  let axis-offset = 0 // Offset
+  let axis-offset = 0 
   if calc.abs(calc.max(x1, x0) / tick-distance) >= 5000 {
     let fg = pow10(calc.ceil(calc.log(dx, base: 10) + 1))
     axis-offset = discretize-down(x0, fg, 0) 
@@ -237,7 +231,6 @@
 
   return (
     ticks: range(calc.min(max-ticks, num-ticks)).map(x => first-tick + x * tick-distance),
-    // tick-distance: (tick-distance, step, [#pow10(exponent - 1)]),
     tick-distance: tick-distance,
     // We provide additional args to ease the work of the formatter (in case it is
     // format-ticks-linear), because right now we have a lot of information. 

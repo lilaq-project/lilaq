@@ -460,7 +460,6 @@
         max-padding += .5em
       }
     }
-    // content += place(box(width: 100%, height: max-padding, fill: red.transparentize(50%)))
     
     return (content, max-padding)
   }
@@ -513,7 +512,7 @@
     
     if axis.label != none and display-axis-label {
       
-      let nested-get-field(element, object, field) = {
+      let get-settable-field(element, object, field) = {
         e.fields(object).at(field, default: e-get(element).at(field))
       }
       let label = axis.label
@@ -527,9 +526,9 @@
         box.with(height: 100%)
       }
 
-      let dx = if-auto(nested-get-field(lq-label, label, "dx"), 0pt)
-      let dy = if-auto(nested-get-field(lq-label, label, "dy"), 0pt)
-      let pad = if-auto(nested-get-field(lq-label, label, "pad"), 0pt) + max-padding
+      let dx = if-auto(get-settable-field(lq-label, label, "dx"), 0pt)
+      let dy = if-auto(get-settable-field(lq-label, label, "dy"), 0pt)
+      let pad = if-auto(get-settable-field(lq-label, label, "pad"), 0pt) + max-padding
 
 
       let body = wrapper(label)

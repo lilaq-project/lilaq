@@ -239,11 +239,6 @@
 ) = {
   let q = calc.quo(dividend, divisor)
   return (q, dividend - q * divisor)
-  
-  // let rem = calc.rem-euclid(dividend, divisor)
-  // let sign = if dividend < 0 { 1 } else { 1 }
-  // return (calc.floor((dividend - sign*rem) / divisor), rem)
-  // return (calc.quo(dividend - sign*rem, divisor), rem)
 }
 
 #assert.eq(divmod(5, 2), (2, 1))

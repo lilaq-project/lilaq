@@ -6,26 +6,6 @@
 #import "../cycle.typ": mark, prepare-mark, _auto
 #import "../utility.typ": if-auto
 
-// #let plot-legend-handle-scatter(plot) = {
-//   plot.style.mark-size = 2pt
-//   let mark-color = match-type(
-//     plot.color, 
-//     color: plot.color,
-//     array: () => plot.style.map.sample(0%),
-//     auto-type: () => black
-//   )
-//   let alpha = match-type(
-//     plot.alpha,
-//     ratio: () => plot.alpha,
-//     array: () => plot.alpha.at(0, default: 100%)
-//   )
-
-//   if plot.style.marker-stroke.paint == auto {
-//     plot.style.marker-stroke = merge-strokes(plot.style.marker-stroke, mark-color)
-//   }
-//   plot.style.mark-color = mark-color.lighten(100% - alpha)
-//   place(horizon + center, (plot.style.mark)(plot.style))
-// }
 
 
 #let render-scatter(plot, transform) = {

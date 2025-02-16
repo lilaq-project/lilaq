@@ -25,12 +25,6 @@
     place(line(start: (0%, 0%), end: (100%, 100%), stroke: stroke))
     place(line(start: (90%, -10%), end: (110%, 10%), stroke: stroke))
     place(line(start: (-10%, 90%), end: (10%, 110%), stroke: stroke))
-    // place(line(start: (0%, 50%), angle: angle, length: width, stroke: stroke))
-    // place(line(start: (50%, 0%), angle: angle, length: width, stroke: stroke))
-    // place(rect(stroke: .2pt + blue, width: 100%, height: 100%))
-    // place(line(start: (0%, 50%), end: (50%, 100%), stroke: stroke))
-    // place(line(start: (50%, 0%), end: (100%, 50%), stroke: stroke))
-    // #place(line(start: (0%, 100%), end: (100%, 0%)))
   })
 
 }

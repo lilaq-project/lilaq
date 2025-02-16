@@ -109,17 +109,17 @@
   e-get
 
 ) = {
-  let nested-get-field(element, object, field) = {
+  let get-settable-field(element, object, field) = {
     e.fields(object).at(field, default: e-get(element).at(field))
   }
 
   if my-legend == true { my-legend = (:)}
   my-legend = legend(..legend-entries, ..my-legend)
 
-  let pos = nested-get-field(legend, my-legend, "pos")
-  let dx = nested-get-field(legend, my-legend, "dx")
-  let dy = nested-get-field(legend, my-legend, "dy")
-  let pad = nested-get-field(legend, my-legend, "pad")
+  let pos = get-settable-field(legend, my-legend, "pos")
+  let dx = get-settable-field(legend, my-legend, "dx")
+  let dy = get-settable-field(legend, my-legend, "dy")
+  let pad = get-settable-field(legend, my-legend, "pad")
 
   let alignment = top + left
 

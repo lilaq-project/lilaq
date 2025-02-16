@@ -147,26 +147,6 @@
 #assert.eq(twod-ify-alignment(top, horizontal: right), top + right)
 
 
-/*
-axis.grid
----------
-grid: none
-grid: "major" // x, y -> only major
-grid: "minor" // x, y -> only minor
-grid: "both" // x, y -> major and minor
-grid: (x: "major", y: none)
-grid: (major: 1pt + green, minor: .5pt) // x, y -> major green, ...
-grid: (x: (major: 1pt + green, minor: .5pt), y: none)
-*/
-
-/*
-#set grid(
-  stroke: luma(80%)
-)
-#set grid.major()
-
-*/
-
 #let process-grid-arg(grid) = {
   if grid == none { return (stroke: none, stroke-sub: none) }
   if grid == auto { return (:) }
