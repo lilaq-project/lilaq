@@ -121,7 +121,7 @@
 }
 
 
-/// Creates a contour plot for a 3d mesh. Given a set of `levels`, 
+/// Creates a contour plot for a 3-dimensional mesh. Given a set of `levels`, 
 /// cuts through the mesh are computed automatically and displayed as
 /// contour lines. Contour plots can be either just stroked
 /// 

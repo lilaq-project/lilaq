@@ -1,3 +1,9 @@
+/// Scales that can be applied to the displayed data. By default, the 
+/// data is scaled linearly but other scales like `lq.scale.log` and 
+/// `lq.scale.symlog` are available and completely custom scales can
+/// be created with the general `scale` function.  
+
+
 #import "math.typ": sign
 
 
@@ -26,6 +32,8 @@
   /// -> str
   name: "",
 
+  /// Additional data to store in the scale. 
+  /// -> any
   ..args
   
 ) = (
@@ -47,6 +55,8 @@
 /// Creates a new logarithmic scale. 
 #let log(
   
+  /// The base of the logarithm. This info is only used to determine
+  /// the base for ticks. 
   /// -> float
   base: 10
   
@@ -62,15 +72,15 @@
 /// `[threshold, threshold]` around 0 and a logarithmic scaling beyond that. 
 #let symlog(
   
-  /// Base for logarithm. 
+  /// The base of the logarithm. 
   /// -> float
   base: 10, 
 
-  /// Threshold for the linear region
+  /// The threshold for the linear region. 
   /// -> float
   threshold: 2, 
 
-  /// Scaling for the linear region
+  /// The scaling of the linear region. 
   /// -> float
   linscale: 1
   
@@ -120,7 +130,7 @@
 )
 
 
-/// Creates a data->display transformation that maps the interval 
+/// Creates a data-to-display transformation that maps the interval 
 /// $[x_0, x_1]$ to $[y_0, y_1]$ given some monotonous transformation function 
 /// (e.g., identity or log(x)). 
 /// 

@@ -50,7 +50,7 @@
 
 
 
-/// Creates a (vertical) stem plot. 
+/// Creates a vertical stem plot. 
 /// 
 /// ```example
 /// #let xs = lq.linspace(0, 10, num: 30)

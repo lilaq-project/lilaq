@@ -1,6 +1,10 @@
+/// Math library for common visualization tasks. 
+
 #import "vec.typ"
 #import "algorithms/interpolate.typ"
 #import "load-txt.typ": load-txt
+
+
 
 /// Computes the sign of a number. This returns
 /// - 0 for $x=0$

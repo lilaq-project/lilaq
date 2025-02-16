@@ -55,7 +55,7 @@
 
 
 
-/// Makes a bar plot from the given data. 
+/// Creates a bar plot from the given data. 
 /// 
 /// ```example
 /// #lq.diagram(
@@ -68,7 +68,7 @@
 /// ```
 /// 
 /// 
-/// The example below demonstrates how to use custom tick labels by passing an array of `(location, label)` tuples to `axis.ticks`. 
+/// The example below demonstrates how to use custom tick labels by passing an array of `(location, label)` tuples to @axis.ticks. 
 /// ```example
 /// #lq.diagram(
 ///   xaxis: (

@@ -1,6 +1,6 @@
 
 
-/// A label for an axis. 
+/// A label for a diagram axis. 
 #let label(
   /// Content to show in the label. 
   /// -> any

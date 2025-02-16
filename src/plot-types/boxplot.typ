@@ -72,7 +72,7 @@
   }
 }
 
-/// Makes one or more boxplots from the given data. 
+/// Computes and visualizes one or more boxplots from the given data. 
 /// 
 /// ```example
 /// #lq.diagram(

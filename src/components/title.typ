@@ -1,5 +1,5 @@
 
-/// A title for a @diagram. 
+/// A title for a diagram. 
 #let title(
   /// Content to show in the title. 
   /// -> any
