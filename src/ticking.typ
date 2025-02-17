@@ -1,6 +1,6 @@
-#import "old-number.typ": *
 #import "math.typ": *
 #import "assertations.typ"
+#import "@preview/zero:0.3.2"
 
 
 /// Estimates the number of significant digits from an array of values,
@@ -454,29 +454,39 @@
   return (ticks-info.ticks.map(str), 0, 0)
 }
 
-#let znum = num
 
-// #import "/zero/zero.typ": num as znum
-#import "@preview/zero:0.3.1": num as znum
-// #import "/zero/parsing.typ"
 
-#let num(value, e: none, digits: auto, base: 10, omit-unit-mantissa: true) = {
-  let input = str(value)
-  if e != none { input += "e" + str(e) }
-  // znum(input, digits: if digits == auto {auto}else{calc.max(0, digits)}, base: base, omit-unit-mantissa: omit-unit-mantissa)
-  // if value == -5000 {
-  //   let l = str(value).replace(sym.minus, "-")
-  //     let (sign, int, frac) = parsing.decompose-signed-float-string(l)
-    
-  // }
-  znum(
-    (mantissa: str(value).replace(sym.minus, "-"), pm: none, e: if e == none {none}else{str(e)}), 
-    base: base, digits: if digits == auto {auto}else{calc.max(0, digits)}, omit-unity-mantissa: omit-unit-mantissa
+#let num(
+  value, 
+  e: none, 
+  digits: auto, 
+  base: 10, omit-unit-mantissa: true
+) = {
+  if digits != auto {
+    digits = calc.max(0, digits)
+  }
+  if e != none { 
+    e = str(e)
+  }
+  zero.num(
+    (
+      mantissa: str(value).replace(sym.minus, "-"), 
+      pm: none, 
+      e: e
+    ), 
+    base: base, 
+    digits: digits, 
+    omit-unity-mantissa: omit-unit-mantissa
   )
 }
 
 
-#let default-generate-tick-label(value, exponent: 0, digits: auto, simple: false) = {
+#let default-generate-tick-label(
+  value, 
+  exponent: 0, 
+  digits: auto, 
+  simple: false
+) = {
   if simple {
     if exponent == 0 { return $#value$ }
     return $#value dot 10^#exponent$

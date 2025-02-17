@@ -1,12 +1,12 @@
 #import "../scale.typ" as lqscale
 #import "../utility.typ": place-in-out, match, match-type, if-auto
 #import "../ticking.typ"
-#import "../old-number.typ" as number
 #import "../bounds.typ": *
 #import "../assertations.typ"
 #import "../components/label.typ": xlabel, ylabel, label as lq-label
 #import "../process-styles.typ": update-stroke
 #import "../libs/elembic/lib.typ" as e
+#import "@preview/zero:0.3.2"
 
 
 #import "tick.typ": tick as tick-constructor
@@ -497,13 +497,24 @@
     }
     if display-tick-labels {
       if type(exp) == int and exp != 0 {
-        let (c, b) = place-with-bounds(number.num(none, e: exp), ..exp-or-offset-offset, ..exp-or-offset-alignment)
+        let (c, b) = place-with-bounds(
+          {
+            show "X": none
+            zero.num("Xe" + str(exp))
+          },
+          ..exp-or-offset-offset, 
+          ..exp-or-offset-alignment
+        )
         content += c
         b = offset-bounds(b, translate)
         // bounds.push(b)
       }
       if type(offset) in (int, float) and offset != 0 {
-        let (c, b) = place-with-bounds(number.num(implicit-plus: true, offset), ..exp-or-offset-offset, ..exp-or-offset-alignment)
+        let (c, b) = place-with-bounds(
+          zero.num(positive-sign: true, offset), 
+          ..exp-or-offset-offset, 
+          ..exp-or-offset-alignment
+        )
         content += c
         b = offset-bounds(b, translate)
         bounds.push(b)
