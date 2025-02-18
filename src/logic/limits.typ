@@ -1,7 +1,4 @@
-#import "utility.typ": place-in-out, match-type, match
-#import "process-styles.typ": merge-strokes, merge-fills
-#import "math.typ": minmax
-#import "scale.typ"
+#import "../math.typ": minmax
 
 
 #let plot-lim(x, err: none) = {

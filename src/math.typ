@@ -1,8 +1,8 @@
 /// Math library for common visualization tasks. 
 
 #import "vec.typ"
-#import "algorithms/interpolate.typ"
-#import "load-txt.typ": load-txt
+#import "algorithm/interpolate.typ"
+#import "loading/txt.typ": load-txt
 
 
 

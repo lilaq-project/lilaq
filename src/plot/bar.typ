@@ -1,6 +1,9 @@
 #import "../assertations.typ"
-#import "../plot-utils.typ": merge-fills, match, match-type, bar-lim
-#import "../process-points.typ": filter-nan-points, stepify
+#import "../logic/limits.typ": bar-lim
+#import "../process-styles.typ": merge-fills
+#import "../utility.typ":match-type, match
+
+#import "../logic/process-coordinates.typ": filter-nan-points, stepify
 #import "../math.typ": vec, minmax
 #import "../cycle.typ": prepare-path
 

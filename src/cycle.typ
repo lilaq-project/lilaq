@@ -2,7 +2,7 @@
 #import "process-styles.typ": merge-strokes, merge-fills
 #import "utility.typ": if-none
 
-#import "mark.typ": mark, marks
+#import "model/mark.typ": mark, marks
 
 #let _auto = rgb("#0000A1AA")
 

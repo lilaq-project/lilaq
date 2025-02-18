@@ -1,6 +1,7 @@
 #import "utility.typ": match-type
-#import "scale.typ"
-#import "diagram.typ": diagram
+#import "logic/scale.typ"
+#import "logic/transform.typ": create-trafo
+#import "model/diagram.typ": diagram
 #import "plot-primitives.typ": rect
 #import "math.typ" as pmath
 
@@ -32,7 +33,7 @@
     default: () => assert(false, message: "Unsupported type `" + str(type(norm)) + "` for argument `norm`")
   )
   
-  let normalize = scale.create-trafo(norm-fn, vmin, vmax)
+  let normalize = create-trafo(norm-fn, vmin, vmax)
   assert(type(colormap) in (gradient, array), message: "Invalid type for colormap")
   if type(colormap) == array {
     colormap = gradient.linear(..colormap)

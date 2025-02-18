@@ -1,8 +1,8 @@
 #import "../assertations.typ"
 #import "../color.typ": create-normalized-colors
-#import "../plot-utils.typ": match, match-type, merge-strokes
+#import "../process-styles.typ": merge-strokes
 #import "../math.typ": vec
-#import "../utility.typ": if-auto
+#import "../utility.typ": if-auto, match, match-type
 #import "../cycle.typ": style
 
 #import "@preview/tiptoe:0.1.0"

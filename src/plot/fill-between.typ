@@ -1,6 +1,6 @@
 #import "../assertations.typ"
-#import "../plot-utils.typ": merge-strokes, merge-fills
-#import "../process-points.typ": filter-nan-points, stepify
+#import "../process-styles.typ": merge-strokes, merge-fills
+#import "../logic/process-coordinates.typ": filter-nan-points, stepify
 #import "../math.typ": minmax
 
 #let render-fill-between(plot, transform) = {

@@ -1,28 +1,28 @@
 #import "math.typ": *
 
-#import "diagram.typ": diagram
-#import "components/axis.typ": axis, xaxis, yaxis
-#import "components/tick.typ": tick
-#import "components/title.typ": title
-#import "components/legend.typ": legend
-#import "components/grid.typ": grid
-#import "components/label.typ": label, xlabel, ylabel
+#import "model/diagram.typ": diagram
+#import "model/axis.typ": axis, xaxis, yaxis
+#import "model/tick.typ": tick
+#import "model/title.typ": title
+#import "model/legend.typ": legend
+#import "model/grid.typ": grid
+#import "model/label.typ": label, xlabel, ylabel
 
-#import "mark.typ": mark, marks
+#import "model/mark.typ": mark, marks
 #import "cycle.typ": style
 
-#import "plot-types/plot.typ": plot
-#import "plot-types/bar.typ": bar
-#import "plot-types/stem.typ": stem
-#import "plot-types/hstem.typ": hstem
-#import "plot-types/scatter.typ": scatter
-#import "plot-types/fill-between.typ": fill-between
-#import "plot-types/colormesh.typ": colormesh
-#import "plot-types/contour.typ": contour
-#import "plot-types/boxplot.typ": boxplot
-#import "plot-types/quiver.typ": quiver
-#import "plot-types/hlines.typ": hlines
-#import "plot-types/vlines.typ": vlines
+#import "plot/plot.typ": plot
+#import "plot/bar.typ": bar
+#import "plot/stem.typ": stem
+#import "plot/hstem.typ": hstem
+#import "plot/scatter.typ": scatter
+#import "plot/fill-between.typ": fill-between
+#import "plot/colormesh.typ": colormesh
+#import "plot/contour.typ": contour
+#import "plot/boxplot.typ": boxplot
+#import "plot/quiver.typ": quiver
+#import "plot/hlines.typ": hlines
+#import "plot/vlines.typ": vlines
 
 #import "plot-primitives.typ": rect, ellipse, line, path, place
 
@@ -34,5 +34,5 @@
 
 #import "typing.typ": set-grid, set-label, set-title, set-legend
 
-#import "scale.typ"
-#import "ticking.typ": locate-ticks-linear, locate-ticks-log, format-ticks-naive, format-ticks-linear, format-ticks-log
+#import "logic/scale.typ"
+#import "algorithm/ticking.typ": locate-ticks-linear, locate-ticks-log, format-ticks-naive, format-ticks-linear, format-ticks-log

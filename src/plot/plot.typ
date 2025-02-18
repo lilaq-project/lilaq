@@ -1,6 +1,7 @@
-#import "../plot-utils.typ": merge-strokes, plot-lim, merge-fills
+#import "../logic/limits.typ": plot-lim
+#import "../process-styles.typ": merge-strokes, merge-fills
 #import "../assertations.typ"
-#import "../process-points.typ": filter-nan-points, stepify
+#import "../logic/process-coordinates.typ": filter-nan-points, stepify
 #import "../utility.typ": if-auto
 #import "../cycle.typ": mark, prepare-mark, prepare-path
 

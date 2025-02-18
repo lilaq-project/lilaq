@@ -1,5 +1,5 @@
 #import "../assertations.typ"
-#import "../algorithms/contour.typ": *
+#import "../algorithm/contour.typ": *
 #import "../color.typ": create-normalized-colors
 #import "../math.typ": minmax
 
@@ -223,7 +223,7 @@
   let (z0, z1) = (calc.min(..z-flat), calc.max(..z-flat))
   if z0 == z1 { z0 -= 1; z1 += 1}
   if type(levels) == int {
-    import "../ticking.typ"
+    import "../algorithm/ticking.typ"
     let range = ticking.locate-ticks-linear(z0, z1, num-ticks-suggestion: levels)
     levels = range.ticks
   }

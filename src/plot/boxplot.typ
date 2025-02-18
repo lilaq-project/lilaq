@@ -1,6 +1,6 @@
 #import "../assertations.typ"
-#import "../plot-utils.typ": match
-#import "../algorithms/boxplot.typ": *
+#import "../utility.typ": match
+#import "../algorithm/boxplot.typ": *
 #import "../utility.typ"
 #import "../cycle.typ": mark, prepare-mark
 

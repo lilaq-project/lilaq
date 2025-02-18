@@ -1,19 +1,20 @@
 
-#import "process-styles.typ": update-stroke, process-margin, process-grid-arg
-#import "assertations.typ"
-#import "scale.typ"
-#import "components/legend.typ": legend as lq-legend, place-legend-with-bounds
-#import "components/grid.typ": grid as lq-grid
+#import "../process-styles.typ": update-stroke, process-margin, process-grid-arg
+#import "../assertations.typ"
+#import "../logic/scale.typ"
+#import "../logic/transform.typ": create-trafo
+#import "legend.typ": legend as lq-legend, place-legend-with-bounds
+#import "grid.typ": grid as lq-grid
 
-#import "components/axis.typ": axis, draw-axis, _axis-compute-limits, _axis-generate-ticks
-#import "ticking.typ"
-#import "bounds.typ": *
-#import "components/title.typ": title as lq-title, title-show
-#import "utility.typ": if-auto
+#import "axis.typ": axis, draw-axis, _axis-compute-limits, _axis-generate-ticks
+#import "../algorithm/ticking.typ"
+#import "../bounds.typ": *
+#import "title.typ": title as lq-title, title-show
+#import "../utility.typ": if-auto
 
 #let debug = false
-#import "cycle.typ": init as cycle-init, default-cycle
-#import "libs/elembic/lib.typ" as e
+#import "../cycle.typ": init as cycle-init, default-cycle
+#import "../libs/elembic/lib.typ" as e
 
 
 /// Creates a new diagram. 
@@ -127,8 +128,8 @@
   yaxis.lim = _axis-compute-limits(yaxis, lower-margin: margin.bottom, upper-margin: margin.top)
 
   
-  let normalized-x-trafo = scale.create-trafo(xaxis.scale.transform, ..xaxis.lim)
-  let normalized-y-trafo = scale.create-trafo(yaxis.scale.transform, ..yaxis.lim)
+  let normalized-x-trafo = create-trafo(xaxis.scale.transform, ..xaxis.lim)
+  let normalized-y-trafo = create-trafo(yaxis.scale.transform, ..yaxis.lim)
 
   xaxis.normalized-scale-trafo = normalized-x-trafo
   yaxis.normalized-scale-trafo = normalized-y-trafo
@@ -159,7 +160,7 @@
     if axis.plots.len() > 0 {
       let other-axis = if axis.kind == "x" {yaxis} else {xaxis}
       let transform
-      let scale-trafo = scale.create-trafo(axis.scale.transform, ..axes.at(i).lim)
+      let scale-trafo = create-trafo(axis.scale.transform, ..axes.at(i).lim)
       if axis.kind == "x" {
         let normalized-x-trafo = scale-trafo
         transform = (x, y) => (normalized-x-trafo(x) * width, height * (1 - normalized-y-trafo(y)))

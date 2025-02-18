@@ -1,9 +1,9 @@
-#import "../scale.typ" as lqscale
+#import "../logic/scale.typ" as lqscale
 #import "../utility.typ": place-in-out, match, match-type, if-auto
-#import "../ticking.typ"
+#import "../algorithm/ticking.typ"
 #import "../bounds.typ": *
 #import "../assertations.typ"
-#import "../components/label.typ": xlabel, ylabel, label as lq-label
+#import "../model/label.typ": xlabel, ylabel, label as lq-label
 #import "../process-styles.typ": update-stroke
 #import "../libs/elembic/lib.typ" as e
 #import "@preview/zero:0.3.2"

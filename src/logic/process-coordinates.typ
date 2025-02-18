@@ -1,5 +1,4 @@
-#import "math.typ" as pmath
-#import "plot-utils.typ": *
+#import "../math.typ" as pmath
 
 /// Takes an array of points as input and filters all points where at least one
 /// coordinate is #calc.nan to produce

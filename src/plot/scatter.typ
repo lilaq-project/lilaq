@@ -1,10 +1,10 @@
-#import "../plot-utils.typ": match-type, merge-strokes
+#import "../process-styles.typ": merge-strokes
 #import "../assertations.typ"
-#import "../process-points.typ": filter-nan-points
+#import "../logic/process-coordinates.typ": filter-nan-points
 #import "../color.typ": create-normalized-colors
 #import "../math.typ": minmax
 #import "../cycle.typ": mark, prepare-mark, _auto
-#import "../utility.typ": if-auto
+#import "../utility.typ": if-auto, match-type
 
 
 

@@ -1,5 +1,5 @@
-#import "math.typ": *
-#import "assertations.typ"
+#import "../math.typ": *
+#import "../assertations.typ"
 #import "@preview/zero:0.3.2"
 
 

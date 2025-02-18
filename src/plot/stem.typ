@@ -1,28 +1,28 @@
 #import "../assertations.typ"
-#import "../plot-utils.typ": merge-strokes, merge-fills, bar-lim
-#import "../process-points.typ": filter-nan-points
+#import "../logic/limits.typ": bar-lim
+#import "../process-styles.typ":  merge-strokes, merge-fills
+#import "../logic/process-coordinates.typ": filter-nan-points
 #import "../math.typ": minmax
 #import "../utility.typ": if-auto
 #import "../cycle.typ": mark, prepare-mark, prepare-path
 
-
-
-#let render-hstem(plot, transform) = {
+#let render-stem(plot, transform) = {
+  let marker = plot.style.mark
   let marker = mark()
-  set line(stroke: plot.style.stroke)
-
-  let (ymin, ymax) = (plot.ylimits)()
+  
+  
+  let (xmin, xmax) = (plot.xlimits)()
   
   if "make-legend" in plot {
-    ymin = 0
-    ymax = 1
-    plot.x = (.75,)
-    plot.y = (.5,)
-    plot.base = .25
+    xmin = 0
+    xmax = 1
+    plot.x = (.5,)
+    plot.y = (.8,)
+    plot.base = 0
   }
   
-  let (x0, y1) = transform(plot.base, ymin)
-  let (x0, y2) = transform(plot.base, ymax)
+  let (x1, y0) = transform(xmin, plot.base)
+  let (x2, y0) = transform(xmax, plot.base)
 
   
 
@@ -35,36 +35,41 @@
   show: prepare-path.with(
     stroke: merge-strokes(plot.style.stroke, plot.style.color)
   )
-
+  
+  
   let points = filter-nan-points(plot.x.zip(plot.y)).map(p => transform(..p))
 
-  points.map(((x, y)) => place(path((x0, y), (x, y)))).join()
+  points.map(((x, y)) => place(path((x, y0), (x, y)))).join()
   
   if plot.style.base-stroke != none {
-    place(line(start: (x0, y1), end: (x0, y2), stroke: plot.style.base-stroke))
+    place(line(start: (x1, y0), end: (x2, y0), stroke: plot.style.base-stroke))
   }
   
   points.map(((x, y)) => place(dx: x, dy: y, marker)).join()
 }
 
 
-/// Creates a horizontal stem plot. 
+
+
+/// Creates a vertical stem plot. 
+/// 
 /// ```example
-/// #let ys = lq.linspace(0, 10, num: 20)
+/// #let xs = lq.linspace(0, 10, num: 30)
 ///   
-/// #lq.diagram( 
-///   lq.hstem(
-///     ys.map(calc.cos), 
-///     ys, 
+/// #lq.diagram(
+///   lq.stem(
+///     xs, 
+///     xs.map(calc.cos), 
 ///     color: orange, 
 ///     mark: "diamond",
+///     base: -0.25,
 ///     base-stroke: black,
 ///   )
-/// ) 
+/// )
 /// ```
 ///
-/// Also see @stem for vertical stem plots. 
-#let hstem(
+/// Also see @hstem for horizontal stem plots. 
+#let stem(
 
   /// An array of $x$ coordinates. 
   /// -> array
@@ -74,12 +79,12 @@
   /// -> array
   y, 
 
-  /// Combined color for line and marks. See also the parameters @hstem.line and 
-  /// @hstem.mark-color which take precedence over `color`, if set. 
+  /// Combined color for line and marks. See also the parameters @stem.line and 
+  /// @stem.mark-color which take precedence over `color`, if set. 
   /// -> auto | color
   color: auto,
   
-  /// The line style to use for this plot (takes precedence over @hstem.color). 
+  /// The line style to use for this plot (takes precedence over @stem.color). 
   /// -> auto | stroke
   stroke: auto, 
 
@@ -88,18 +93,18 @@
   base-stroke: red,
   
   /// The mark to use to mark data points. See @plot.mark. 
-  /// -> auto | lq.mark | string
+  /// -> lq.mark | string
   mark: auto, 
   
   /// Size of the marks. 
   /// -> length
   mark-size: 5pt,
   
-  /// Color of the marks (takes precedence over @hstem.color). 
+  /// Color of the marks (takes precedence over @stem.color). 
   /// -> auto | color
   mark-color: auto,
   
-  /// Defines the $x$ coordinate of the base line.
+  /// Defines the $y$ coordinate of the base line.
   /// -> int | float
   base: 0,
   
@@ -117,26 +122,27 @@
   z-index: 2,
   
 ) = {
-  assertations.assert-matching-data-dimensions(x, y, fn-name: "hstem")
+  assertations.assert-matching-data-dimensions(x, y, fn-name: "stem")
   (
     x: x,
     y: y,
     base: base,
     label: label,
     style: (
-      color: color,
       mark: mark,
+      color: color,
       mark-size: mark-size,
       mark-color: merge-fills(mark-color, color),
       stroke: merge-strokes(stroke, color),
       base-stroke: base-stroke
     ),
-    plot: render-hstem,
-    xlimits: () => bar-lim(x, (base,)),
-    ylimits: () => minmax(y),
+    plot: render-stem,
+    xlimits: () => minmax(x),
+    ylimits: () => bar-lim(y, (base,)),
     legend-handle: plot => none,
     new-legend: true,
     clip: clip,
     z-index: z-index
   )
 }
+
