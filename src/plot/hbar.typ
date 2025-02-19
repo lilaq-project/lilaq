@@ -18,11 +18,11 @@
 /// Also see @bar. 
 #let hbar(
   
-  /// An array of $x$ coordinates denoting the bar positions. 
+  /// An array of $x$ coordinates denoting the bar lengths. 
   /// -> array
   x, 
   
-  /// An array of $y$ coordinates denoting the bar heights. The number of $x$ and $y$ coordinates must match. 
+  /// An array of $y$ coordinates denoting the bar positions. The number of $x$ and $y$ coordinates must match. 
   /// -> array
   y, 
 
@@ -34,7 +34,7 @@
   /// -> auto | none | color | length | stroke | gradient | pattern | dictionary
   stroke: none,
 
-  /// Alignment of the bars at the $x$ values. 
+  /// Alignment of the bars at the $y$ values. 
   /// #details[
   ///   Demonstration of the different alignment modes. 
   ///   ```example
@@ -80,15 +80,15 @@
   /// -> int | float | array
   width: .8,
 
-  /// An offset to apply to all $x$ coordinates. This is equivalent to replacing
-  /// the array passed to @bar.x with `x.map(x => x + offset)`. Using an offset
+  /// An offset to apply to all $y$ coordinates. This is equivalent to replacing
+  /// the array passed to @bar.y with `y.map(y => y + offset)`. Using an offset
   /// can be useful to avoid overlaps when plotting multiple bar plots into one
   /// diagram. 
   /// -> int | float
   offset: 0,
 
 
-  /// Defines the $y$ coordinate of the baseline of the bars. This can either be a 
+  /// Defines the $x$ coordinate of the baseline of the bars. This can either be a 
   /// constant value applied to all bars or it can be set individually by passing an 
   /// array with the same length as the coordinate arrays. 
   /// #details[
