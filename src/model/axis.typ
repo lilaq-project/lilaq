@@ -349,7 +349,7 @@
   let em = measure(line(length: 1em, angle: 0deg)).width
   axis.tick-args.num-ticks-suggestion = match(
     axis.kind,
-    "x", length / (3 * em),
+    "x", length / (3.3 * em),
     "y", length / (2 * em)
   )
   let (x0, x1) = axis.lim
