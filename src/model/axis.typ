@@ -7,6 +7,7 @@
 #import "../process-styles.typ": update-stroke
 #import "../libs/elembic/lib.typ" as e
 #import "@preview/zero:0.3.2"
+#import "@preview/tiptoe:0.2.0"
 
 
 #import "tick.typ": tick as tick-constructor
@@ -100,6 +101,16 @@
   /// If set to `true`, the entire axis is hidden. 
   /// -> bool
   hidden: false,
+
+  /// Places an arrow tip on the axis spine. This expects a mark as specified by
+  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// -> none | tiptoe.mark
+  tip: none,
+
+  /// Places an arrow tail on the axis spine. This expects a mark as specified by 
+  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// -> none | tiptoe.mark
+  toe: none,
 
   /// Plot objects to associate with this axis. This only applies when this is a secondary axis. Automatic limits are then computed according to this axis and transformations of the data coordinates linked to the scaling of this axis. 
   /// -> any
@@ -237,6 +248,8 @@
     auto-exponent-threshold: auto-exponent-threshold,
     plots: plots,
     hidden: hidden,
+    tip: tip,
+    toe: toe,
   )
 }
 
@@ -419,7 +432,7 @@
     place-exp-or-offset = it => place(horizon + right, dx: .5em, dy: 0pt, place(left + horizon, it))
     exp-or-offset-alignment = (alignment: bottom + right, content-alignment: horizon + left)
     exp-or-offset-offset = (dx: .5em, dy: 0pt)
-    spine = line
+    spine = tiptoe.line.with(tip: axis.tip, toe: axis.toe)
   } else if axis.kind == "y" {
     dim = "width"
     place-tick = (y, label, position, inset, outset, stroke: axis.stroke) => {
@@ -439,7 +452,7 @@
     place-exp-or-offset = it => place(top + center, dx: 0pt, dy: -.5em, place(bottom + center, it))
     exp-or-offset-alignment = (alignment: top + left, content-alignment: center + bottom)
     exp-or-offset-offset = (dx: 0pt, dy: -.5em)
-    spine = line.with(angle: 90deg)
+    spine = tiptoe.line.with(angle: 90deg, tip: axis.toe, toe: axis.tip)
   }
 
 
