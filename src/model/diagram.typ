@@ -81,6 +81,10 @@
   /// -> array
   cycle: default-cycle,
 
+  /// How to fill the data area. 
+  /// -> none | color | gradient | tiling 
+  fill: none,
+
   /// Plot objects. 
   /// -> any
   ..children
@@ -206,7 +210,7 @@
     
   let diagram = box(
     width: width, height: height, 
-    inset: 0pt, stroke: none, 
+    inset: 0pt, stroke: none, fill: fill,
     {
 
     let update-bounds = update-bounds.with(width: width, height: height)
