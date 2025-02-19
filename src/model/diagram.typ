@@ -212,6 +212,8 @@
     width: width, height: height, 
     inset: 0pt, stroke: none, fill: fill,
     {
+    set align(top + left) // sometimes alignment is messed up
+
 
     let update-bounds = update-bounds.with(width: width, height: height)
     
