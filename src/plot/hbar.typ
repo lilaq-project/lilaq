@@ -1,118 +1,22 @@
-#import "../assertations.typ"
-#import "../logic/limits.typ": bar-lim
-#import "../process-styles.typ": merge-fills
-#import "../utility.typ": match-type, match
-
-#import "../logic/process-coordinates.typ": filter-nan-points, stepify
-#import "../math.typ": vec, minmax
-#import "../cycle.typ": prepare-path
-
-
-#let render-bar(
-  plot, 
-  transform, 
-  orientation: "vertical"
-) = {
-  
-  let offset-coeff = plot.offset-coeff
-    
-  let get-bar-range = match-type(
-    plot.width,
-    int: () => i => (
-        plot.width * offset-coeff, plot.width * (1 + offset-coeff),
-      ),
-    float: () => i => (
-        plot.width * offset-coeff, plot.width * (1 + offset-coeff),
-      ),
-    array: () => i => (
-        plot.width.at(i) * offset-coeff, plot.width.at(i) * (1 + offset-coeff),
-      ),
-  )
-  
-
-
-  show: prepare-path.with(
-    fill: plot.style.fill,
-    stroke: plot.style.stroke
-  )
-
-  if "make-legend" in plot {
-    std.path(
-      (0%, 0%), (0%, 100%), (100%, 100%), (100%, 0%), 
-      closed: true
-    )
-  } else {
-
-    if orientation == "vertical" {
-    
-      for i in range(plot.x.len()) {
-        let y = plot.y.at(i)
-        if float.is-nan(y) { continue }
-        
-        let (x1, x2) = get-bar-range(i)
-        let x = plot.x.at(i)
-        
-        let (xx1, y0) = transform(x + x1, plot.base.at(i, default: plot.base.first()))
-        let (xx2, yy) = transform(x + x2, y)
-        
-        place(path(
-          (xx1, y0), (xx1, yy), (xx2, yy), (xx2, y0), closed: true
-        ))
-      }
-
-    } else if orientation == "horizontal" {
-
-      for i in range(plot.y.len()) {
-        let x = plot.x.at(i)
-        if float.is-nan(x) { continue }
-        
-        let (y1, y2) = get-bar-range(i)
-        let y = plot.y.at(i)
-        
-        let (x0, yy1) = transform(plot.base.at(i, default: plot.base.first()), y + y1)
-        let (xx, yy2) = transform(x, y + y2)
-        
-        place(path(
-          (x0, yy1), (xx, yy1), (xx, yy2), (x0, yy2), closed: true
-        ))
-      }
-
-    }
-
-  }
-}
+#import "bar.typ": *
 
 
 
-/// Creates a bar plot from the given data. 
+
+/// Creates a horizontal bar plot from the given data. 
 /// 
 /// ```example
 /// #lq.diagram(
 ///   xaxis: (subticks: none),
-///   lq.bar(
-///     (1, 2, 3, 4, 5, 6), 
+///   lq.hbar(
 ///     (1, 2, 3, 2, 5, 3), 
+///     (1, 2, 3, 4, 5, 6), 
 ///   )
 /// )
 /// ```
 /// 
-/// 
-/// The example below demonstrates how to use custom tick labels by passing an array of `(location, label)` tuples to @axis.ticks. 
-/// ```example
-/// #lq.diagram(
-///   xaxis: (
-///     ticks: ("Apples", "Bananas", "Kiwis", "Mangos", "Papayas")
-///       .map(rotate.with(-45deg, reflow: true))
-///       .enumerate(),
-///     subticks: none,
-///   ),
-///   lq.bar(
-///     range(5),
-///     (5, 3, 4, 2, 1)
-///   )
-/// )
-/// ```
-#let bar(
+/// Also see @bar. 
+#let hbar(
   
   /// An array of $x$ coordinates denoting the bar positions. 
   /// -> array
@@ -136,25 +40,25 @@
   ///   ```example
   ///   #lq.diagram(
   ///     xaxis: (subticks: none),
-  ///     lq.bar(
+  ///     lq.hbar(
   ///       (1,2,3,4,5), (1,2,3,4,5), 
   ///       width: .2, fill: red, 
-  ///       align: left, label: "left"
+  ///       align: top, label: "top"
   ///     ),
-  ///     lq.bar(
-  ///       (1,2,3,4,5), (5,4,3,2,1), 
+  ///     lq.hbar(
+  ///       (5,4,3,2,1), (1,2,3,4,5), 
   ///       width: .2, fill: blue, 
-  ///       align: right, label: "right"
+  ///       align: bottom, label: "bottom"
   ///     ),
-  ///     lq.bar(
-  ///       (1,2,3,4,5), (2.5,) * 5, 
+  ///     lq.hbar(
+  ///       (2.5,) * 5, (1,2,3,4,5), 
   ///       width: .2, fill: rgb("#AAEEAA99"),
   ///       align: center, label: "center"
   ///     ),
   ///   )
   ///   ```
   /// ]
-  /// -> left | center | right
+  /// -> top | center | bottom
   align: center,
 
   /// Width of the bars in data coordinates. The width can be set either to a constant
@@ -164,9 +68,9 @@
   ///   Example for a bar plot with varying bar widths.
   ///   ```example
   ///   #lq.diagram(
-  ///     lq.bar(
-  ///       (1, 2, 3, 4, 5), 
+  ///     lq.hbar(
   ///       (1, 2, 3, 2, 5), 
+  ///       (1, 2, 3, 4, 5), 
   ///       width: (1, .5, 1, .5, 1), 
   ///       fill: orange, 
   ///     )
@@ -192,9 +96,9 @@
   ///   ```example
   ///   #lq.diagram(
   ///     xaxis: (subticks: none),
-  ///     lq.bar(
-  ///       (1, 2, 3, 4, 5), 
+  ///     lq.hbar(
   ///       (1, 2, 3, 0, 5), 
+  ///       (1, 2, 3, 4, 5), 
   ///       base: (0, 1, 2, -1, 0), 
   ///       fill: white, 
   ///       stroke: .7pt
@@ -219,10 +123,10 @@
   z-index: 2,
   
 ) = {
-  assertations.assert-matching-data-dimensions(x, y, width: width, base: base, fn-name: "bar")
+  assertations.assert-matching-data-dimensions(x, y, width: width, base: base, fn-name: "hbar")
 
   if offset != 0 {
-    x = x.map(x => x + offset)
+    y = y.map(y => y + offset)
   }
   
   if type(base) in (int, float) {
@@ -231,23 +135,23 @@
   
   let offset-coeff = match(
     align,
-    left, 0, 
-    center, -0.5, 
-    right, -1
+    top, 0,
+    center, -.5, 
+    bottom, -1
   )
 
   let simple-lims() = vec.add(
-    minmax(x), 
+    minmax(y), 
     (offset-coeff*width, (1 + offset-coeff) * width)
   )
   
-  let xlim = match-type(
+  let ylim = match-type(
     width,
     int: simple-lims,
     float: simple-lims,
     array: () => (
-      calc.min(..x.zip(width).map(((x, w)) => x + offset-coeff*w)),
-      calc.max(..x.zip(width).map(((x, w)) => x + (1 + offset-coeff) * w)),
+      calc.min(..y.zip(width).map(((y, w)) => y + offset-coeff*w)),
+      calc.max(..y.zip(width).map(((y, w)) => y + (1 + offset-coeff) * w)),
     )
   )
 
@@ -263,9 +167,9 @@
       stroke: stroke,
       fill: fill
     ),
-    plot: render-bar,
-    xlimits: () => xlim,
-    ylimits: () => bar-lim(y, base),
+    plot: render-bar.with(orientation: "horizontal"),
+    xlimits: () => bar-lim(x, base),
+    ylimits: () => ylim,
     legend-handle: plot => none,
     new-legend: true,
     clip: clip,

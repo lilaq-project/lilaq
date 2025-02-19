@@ -13,6 +13,7 @@
 
 #import "plot/plot.typ": plot
 #import "plot/bar.typ": bar
+#import "plot/hbar.typ": hbar
 #import "plot/stem.typ": stem
 #import "plot/hstem.typ": hstem
 #import "plot/scatter.typ": scatter
