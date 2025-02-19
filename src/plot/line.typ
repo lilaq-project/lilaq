@@ -1,5 +1,6 @@
 #import "../logic/process-coordinates.typ": convert-vertex
 #import "../logic/limits.typ": compute-primitive-limits
+#import "@preview/tiptoe:0.2.0"
 
 
 /// Draws a line onto the data area. 
@@ -27,6 +28,23 @@
 ///   )
 /// )
 /// ```
+/// 
+/// Arrow tips and tails can be added to a line through the arguments `tip` and `toe`. 
+/// This is supported via the Typst package #link("https://typst.app/universe/package/tiptoe")[tiptoe].
+/// ```example
+/// #import "@preview/tiptoe:0.2.0"
+/// #let xs = lq.arange(-5, 6)
+/// 
+/// #lq.diagram(
+///   lq.plot(xs, xs.map(x => x*x)),
+///   lq.line(
+///     tip: tiptoe.stealth,
+///     toe: tiptoe.bar,
+///     (0, 10), (4, 16)
+///   )
+/// )
+/// ```
+/// 
 #let line(
 
   /// The start point of the line. Coordinates can be given as
@@ -42,12 +60,22 @@
   end,
 
   /// How to stroke the line. 
-  /// -> auto | stroke
-  stroke: auto,
+  /// -> stroke
+  stroke: stroke(),
   
   /// The legend label for this plot. See @plot.label. 
   /// -> content
   label: none,
+
+  /// Places an arrow tip on the line. This expects a mark as specified by
+  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// -> none | tiptoe.mark
+  tip: none,
+  
+  /// Places an arrow tail on the line. This expects a mark as specified by 
+  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// -> none | tiptoe.mark
+  toe: none,
   
   /// Whether to clip the plot to the data area. See @plot.clip. 
   /// -> bool
@@ -62,9 +90,17 @@
   let vertices = (start, end)
   (
     plot: (plot, transform) => { 
-      place(std.path(
+      let (start, end) = vertices.map(convert-vertex.with(transform: transform))
+      if tip == none and toe == none {
+        return place(std.line(
+          stroke: stroke,
+          start: start, end: end
+        ))
+      }
+      place(tiptoe.line(
         stroke: stroke,
-        ..vertices.map(convert-vertex.with(transform: transform))
+        start: start, end: end,
+        tip: tip, toe: toe
       ))
     },
     xlimits: compute-primitive-limits.with(vertices.map(x => x.at(0))),
