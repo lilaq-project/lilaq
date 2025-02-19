@@ -550,9 +550,9 @@
         box.with(height: 100%)
       }
 
-      let dx = if-auto(get-settable-field(lq-label, label, "dx"), 0pt)
-      let dy = if-auto(get-settable-field(lq-label, label, "dy"), 0pt)
-      let pad = if-auto(get-settable-field(lq-label, label, "pad"), 0pt) + max-padding
+      let dx = get-settable-field(lq-label, label, "dx")
+      let dy = get-settable-field(lq-label, label, "dy")
+      let pad = get-settable-field(lq-label, label, "pad") + max-padding
 
 
       let body = wrapper(label)

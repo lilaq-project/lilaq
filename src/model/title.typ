@@ -9,16 +9,16 @@
   pos: top,
 
   /// Horizontal offset
-  /// -> auto | length
-  dx: auto,
+  /// -> length
+  dx: 0pt,
 
   /// Vertical offset
-  /// -> auto | length
-  dy: auto,
+  /// -> length
+  dy: 0pt,
 
   /// Padding between the diagram and the title. 
   /// -> length
-  pad: .5em,
+  pad: 0.5em,
   
 ) = {
   assert(pos in (top, bottom, left, right), message: "`pos` needs to be one of \"top\", \"left\", \"bottom\", and \"right\"")
@@ -49,9 +49,9 @@
   fields: (
     e.field("body", content, required: true),
     e.field("pos", alignment, default: top),
-    e.field("dx", e.types.union(auto, length), default: auto),
-    e.field("dy", e.types.union(auto, length), default: auto),
-    e.field("pad", length, default: .5em),
+    e.field("dx", length, default: 0pt),
+    e.field("dy", length, default: 0pt),
+    e.field("pad", length, default: 0.5em),
   )
 )
 

@@ -6,17 +6,17 @@
   /// -> any
   body,
 
-  /// Horizontal offset
-  /// -> auto | length
-  dx: auto,
+  /// Horizontal offset. 
+  /// -> length
+  dx: 0pt,
 
-  /// Vertical offset
-  /// -> auto | length
-  dy: auto,
+  /// Vertical offset. 
+  /// -> length
+  dy: 0pt,
 
   /// Padding between the axis (and its ticks and labels) and the label. 
   /// -> length
-  pad: .5em,
+  pad: 0.5em,
 
   /// Angle at which the label is drawn. 
   /// -> angle
@@ -44,8 +44,8 @@
 
   fields: (
     e.field("body", content, required: true),
-    e.field("dx", e.types.union(auto, length), default: auto),
-    e.field("dy", e.types.union(auto, length), default: auto),
+    e.field("dx", length, default: 0pt),
+    e.field("dy", length, default: 0pt),
     e.field("pad", length, default: .5em),
     e.field("angle", angle, default: 0deg),
   )

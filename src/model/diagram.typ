@@ -359,9 +359,9 @@
       }
 
       let pos = get-settable-field(lq-title, title, "pos")
-      let dx = if-auto(get-settable-field(lq-title, title, "dx"), 0pt)
-      let dy = if-auto(get-settable-field(lq-title, title, "dy"), 0pt)
-      let pad = if-auto(get-settable-field(lq-title, title, "pad"), 0pt)
+      let dx = get-settable-field(lq-title, title, "dx")
+      let dy = get-settable-field(lq-title, title, "dy")
+      let pad = get-settable-field(lq-title, title, "pad")
 
       let wrapper = if pos in (top, bottom) {
         box.with(width: width)
