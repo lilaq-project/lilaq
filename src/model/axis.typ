@@ -36,7 +36,7 @@
   /// -> stroke
   stroke: .7pt,
 
-  /// auto | boolean
+  /// auto | bool
   mirror: auto,
 
   /// Specifies conversions between the data and the ticks. This can be used to
@@ -98,7 +98,7 @@
   auto-exponent-threshold: 3,
 
   /// If set to `true`, the entire axis is hidden. 
-  /// -> boolean
+  /// -> bool
   hidden: false,
 
   /// Plot objects to associate with this axis. This only applies when this is a secondary axis. Automatic limits are then computed according to this axis and transformations of the data coordinates linked to the scaling of this axis. 

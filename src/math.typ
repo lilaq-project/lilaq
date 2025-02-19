@@ -91,7 +91,7 @@
   num: 50,
   
   /// Whether to include the end of the range. If `false`, numbers are returned for the interval $["start", "end" - ("end"-"start")/"num"]$
-  /// -> boolean
+  /// -> bool
   include-end: true
 ) = {
   assert(num >= 0, message: "linspace: num must be non-negative")

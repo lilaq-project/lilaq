@@ -33,7 +33,7 @@
   title: none,
 
   /// Whether to show a legend with entries for all labelled plot objects. 
-  /// -> boolean
+  /// -> bool
   legend: true,
 
   /// Data limits along the $x$-axis. Expects `auto` or a tuple `(min, max)` where `min` and `max` may be `auto`. The minimum may be larger than the maximum. 

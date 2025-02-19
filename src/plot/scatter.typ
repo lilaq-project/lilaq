@@ -144,7 +144,7 @@
   label: none,
   
   /// Whether to clip the plot to the data area. See @plot.clip. 
-  /// -> boolean
+  /// -> bool
   clip: true,
   
   /// Determines the $z$ position of this plot in the order of rendered diagram objects. 

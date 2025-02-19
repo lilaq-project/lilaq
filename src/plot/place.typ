@@ -71,7 +71,7 @@
   align: center + horizon,
 
   /// Whether to clip the plot to the data area. See @plot.clip. 
-  /// -> boolean
+  /// -> bool
   clip: false,
   
   /// Determines the $z$ position of the content in the order of rendered diagram objects. 

@@ -33,7 +33,7 @@
   
   /// If true, the first line is interpreted as a header naming the individual columns. 
   /// The result is then returned as a dictionary with the headers. 
-  /// -> boolean
+  /// -> bool
   header: false,
   
   /// Optional converter functions or types to use to convert the data entries. This

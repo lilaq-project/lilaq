@@ -180,7 +180,7 @@
   color: auto,
 
   /// Whether to fill the individual contour levels. 
-  /// -> boolean
+  /// -> bool
   fill: false,
   
   /// A color map in form of a gradient or an array of colors to sample from. 

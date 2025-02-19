@@ -205,7 +205,7 @@
   
   /// Whether to clip the plot to the data area. This is usually a good idea for plots 
   /// with lines but it does also clip part of marks that lie right on an axis. 
-  /// -> boolean
+  /// -> bool
   clip: true,
   
   /// Specifies the $z$ position of this plot in the order of rendered diagram objects. 
