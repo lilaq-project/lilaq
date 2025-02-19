@@ -24,7 +24,11 @@
 #import "plot/hlines.typ": hlines
 #import "plot/vlines.typ": vlines
 
-#import "plot-primitives.typ": rect, ellipse, line, path, place
+#import "plot/rect.typ": rect
+#import "plot/ellipse.typ": ellipse
+#import "plot/line.typ": line
+#import "plot/path.typ": path
+#import "plot/place.typ": place
 
 
 #import "patterns.typ"

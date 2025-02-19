@@ -2,7 +2,7 @@
 #import "logic/scale.typ"
 #import "logic/transform.typ": create-trafo
 #import "model/diagram.typ": diagram
-#import "plot-primitives.typ": rect
+#import "plot/rect.typ": rect
 #import "math.typ" as pmath
 
 #let create-normalized-colors(
