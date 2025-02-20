@@ -97,7 +97,7 @@
   assert(num >= 0, message: "linspace: num must be non-negative")
   if num == 0 { return () }
   if num == 1 { return (start,) }
-  let k =  (end - start) / (num - int(include-end))
+  let k = (end - start) / (num - int(include-end))
   range(num).map(x => k * x + start)
 }
 
@@ -217,12 +217,22 @@
   /// -> function
   ..transforms
 ) = {
-  (x, y) + transforms.pos().map(transform => x.map(x => y.map(y => transform(x, y))))
+  let transforms = transforms.pos()
+  let mesh = transforms.map(transform => x.map(x => y.map(y => transform(x, y))))
+  if transforms.len() == 1 {
+    mesh = mesh.first()
+  }
+  return mesh
 }
 
 #assert.eq(
   mesh((0, 1), (4, 5), (x, y) => (x + y)),
-  ((0, 1), (4, 5), ((4,5), (5,6)))
+  ((4, 5), (5, 6))
+)
+
+#assert.eq(
+  mesh((0, 1), (4, 5), (x, y) => (x + y), (x, y) => (x - y)),
+(((4, 5), (5, 6)), ((-4, -5), (-3, -4)))
 )
 
 

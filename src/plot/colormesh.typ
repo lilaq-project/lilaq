@@ -1,5 +1,5 @@
 #import "../assertations.typ"
-#import "../math.typ": sign
+#import "../math.typ": sign, mesh
 #import "../color.typ": create-normalized-colors
 
 #let render-colormesh(plot, transform) = {
@@ -104,7 +104,7 @@
 
 ) = {
   if type(z) == function {
-    z = x.map(x => y.map(y => z(x, y)))
+    z = mesh(x, y, z)
   }
   let color = z.flatten()
   assert.eq(x.len() * y.len(), color.len())

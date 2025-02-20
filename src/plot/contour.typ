@@ -1,7 +1,7 @@
 #import "../assertations.typ"
 #import "../algorithm/contour.typ": *
 #import "../color.typ": create-normalized-colors
-#import "../math.typ": minmax
+#import "../math.typ": minmax, mesh
 
 #let render-contour(plot, transform) = {
   let get-widths(x) = {
@@ -215,7 +215,7 @@
 
 ) = {
   if type(z) == function {
-    z = x.map(x => y.map(y => z(x, y)))
+    z = mesh(x, y, z)
   }
   let z-flat = z.flatten()
   assert.eq(x.len() * y.len(), z-flat.len())

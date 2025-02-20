@@ -1,7 +1,7 @@
 #import "../assertations.typ"
 #import "../color.typ": create-normalized-colors
 #import "../process-styles.typ": merge-strokes
-#import "../math.typ": vec
+#import "../math.typ": vec, mesh
 #import "../utility.typ": if-auto, match, match-type
 #import "../cycle.typ": style
 
@@ -137,11 +137,11 @@
 ) = {
   
   if type(directions) == function {
-    directions = x.map(x => y.map(y => directions(x, y)))
+    directions = mesh(x, y, directions)
   }
   
   if type(color) == function {
-    color = x.map(x => y.map(y => color(x, y)))
+    color = mesh(x, y, color)
   }
   
   if type(color) == array { 
