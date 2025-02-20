@@ -7,10 +7,12 @@
 
 
 /// Computes the sign of a number. This returns
-/// - 0 for $x=0$
-/// - 1 for $x>0$
-/// - -1 for $x<0$
-/// Note that this is different than `float.signum()` which returns `1.0` for $x=0$. 
+/// - `0` for $x=0$
+/// - `1` for $x>0$
+/// - `-1` for $x<0$
+/// Note that this is different from the built-in
+/// [`float.signum()`](https://typst.app/docs/reference/foundations/float/#definitions-signum) 
+/// which returns `1.0` for $x=0$. 
 /// -> int
 #let sign(
   /// The value to determine the sign of. 
@@ -179,7 +181,7 @@
   /// -> ratio
   q, 
 
-  /// Interpolation method. 
+  /// Interpolation method. Currently, only `"linear"` is supported. 
   /// -> "linear"
   method: "linear"
   
@@ -206,6 +208,7 @@
 /// for each function that was passed to `mesh()`. 
 /// -> array
 #let mesh(
+
   /// Array of $x$ coordinates. 
   /// -> array
   x, 
@@ -214,8 +217,10 @@
   /// -> array
   y, 
 
+  /// Bivariate functions that take two numbers `x, y` as inputs. 
   /// -> function
   ..transforms
+
 ) = {
   let transforms = transforms.pos()
   let mesh = transforms.map(transform => x.map(x => y.map(y => transform(x, y))))
@@ -304,7 +309,8 @@
 }
 
 
-/// Computes $10^x$ for the given number $x$. 
+/// Computes $10^x$ for the given number $x$, guaranteeing floating point
+/// computation, even when the input is an `int`. 
 /// -> float
 #let pow10(
   /// The exponent to which to raise the number 10. 

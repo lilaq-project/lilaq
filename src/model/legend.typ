@@ -19,7 +19,7 @@
 
   /// Determines the padding of the entire legend within its box. 
   /// -> relative
-  inset: relative, default: .3em,
+  inset: 0.3em,
 
   /// How to stroke the outer border of the legend. 
   /// -> none | stroke 

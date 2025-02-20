@@ -1,6 +1,6 @@
 
 /// Parses a CSV (comma-separated values) string. This function enhances the 
-/// functionality of the built-in Typst function `csv` with features like transforming
+/// functionality of the built-in Typst function [`csv`](https://typst.app/docs/reference/data-loading/csv/) with features like transforming
 /// values to numerical (or other) types, ignoring comments and selecting only part of 
 /// the data. 
 /// 
@@ -10,7 +10,7 @@
 /// -> array | dictionary
 #let load-txt(
   
-  /// Raw data loaded from a text file via `read()`. 
+  /// Raw data loaded from a text file via [`read()`](https://typst.app/docs/reference/data-loading/read/). 
   /// -> str
   data,
   
@@ -39,7 +39,7 @@
   /// Optional converter functions or types to use to convert the data entries. This
   /// can either be a single function or type that is applied to all columns likewise
   /// or a dictionary with column indices as keys and functions or types as values. 
-  /// Through the (optional) key `rest` a default converter can be specified to be used 
+  /// Through the (optional) key `rest`, a default converter can be specified to be used 
   /// for all columns that have no explicit converter assigned. 
   /// -> function | type | dictionary
   converters: float

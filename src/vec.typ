@@ -5,8 +5,10 @@
 /// receives pairs $(a_i,b_i)$ for all $i$. 
 #let transform(
   /// First vector. 
+  /// -> array
   a, 
   /// Second vector. 
+  /// -> array
   b, 
   /// The function to apply to each item.
   mapper
@@ -16,8 +18,10 @@
 /// Pair-wise adds the elements of two vectors of same length. 
 #let add(
   /// First vector. 
+  /// -> array
   a, 
   /// Second vector.
+  /// -> array
   b
 ) = transform(a, b, ((x,y)) => x + y)
 
@@ -25,8 +29,10 @@
 /// Pair-wise subtracts the elements of two vectors of same length. 
 #let subtract(
   /// First vector. 
+  /// -> array
   a, 
   /// Second vector.
+  /// -> array
   b
 ) = transform(a, b, ((x,y)) => x - y)
 
@@ -34,8 +40,10 @@
 /// Multiplies all entries of a vector with a scalar. 
 #let multiply(
   /// Vector.
+  /// -> array
   a, 
   /// Scalar. 
+  /// -> int | float
   c
 ) = a.map(x => x * c)
 
@@ -43,8 +51,10 @@
 /// Computes the inner product of two vectors. 
 #let inner(
   /// First vector. 
+  /// -> array
   a, 
   /// Second vector.
+  /// -> array
   b
 ) = transform(a, b, ((x,y)) => x * y).sum()
 
