@@ -27,11 +27,20 @@
 
 
 /// Draws a set of vertical lines into the diagram. 
+/// ```example
+/// #lq.diagram(
+///   ylim: (0, 6),
+///   lq.vlines(1, 1.1, line: teal, label: "Indefinite"),
+///   lq.vlines(2, line: blue, min: 2, label: "Fixed start"),
+///   lq.vlines(3, line: purple, max: 2, label: "Fixed end"),
+///   lq.vlines(4, line: red, min: 1, max: 3, label: "Fixed"),
+/// )
+/// ```
 #let vlines(
 
   /// The $x$ coordinate(s) of one or more vertical lines to draw. 
-  /// -> int | float | array
-  x, 
+  /// -> int | float
+  ..x, 
 
   /// The beginning of the line as $y$ coordinate. If set to `auto`, the line will 
   /// always start at the bottom of the diagram. 
@@ -51,18 +60,16 @@
   /// -> content
   label: none,
   
-  /// Determines the $z$ position of this plot in the order of rendered diagram objects. 
-  /// See @plot.z-index.  
+  /// Determines the $z$ position of this plot in the order of rendered diagram
+  /// objects.  See @plot.z-index.  
   /// -> int | float
   z-index: 2,
   
-  
 ) = {
-  assert(type(x) in (array, int, float))
+  x = x.pos()
+
   line = merge-strokes(line)
-  if type(x) in (int, float) {
-    x = (x,)
-  }
+
   let ylimits = none
   if min != auto {
     ylimits = (min, min)
@@ -70,6 +77,7 @@
   if max != auto {
     ylimits = (if min == auto { max } else { min }, max)
   }
+
   (
     x: x,
     min: min, 

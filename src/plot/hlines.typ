@@ -23,12 +23,26 @@
 
 
 
-/// Draws a set of horizontal lines into the diagram. 
+/// Draws a set of horizontal lines into the diagram.
+/// 
+/// By default, the lines are indefinite and span the entire width of the
+/// diagram, independent of the limits, however, through `min` and `max`, 
+/// beginning and end of the line can be fixed to an $x$ coordinate, 
+/// respectively. 
+/// ```example
+/// #lq.diagram(
+///   xlim: (0, 6),
+///   lq.hlines(1, 1.1, line: teal, label: "Indefinite"),
+///   lq.hlines(2, line: blue, min: 2, label: "Fixed start"),
+///   lq.hlines(3, line: purple, max: 2, label: "Fixed end"),
+///   lq.hlines(4, line: red, min: 1, max: 3, label: "Fixed"),
+/// ) 
+/// ```
 #let hlines(
 
   /// The $y$ coordinate(s) of one or more horizontal lines to draw. 
-  /// -> int | float | array
-  y, 
+  /// -> int | float
+  ..y, 
 
   /// The beginning of the line as an $x$ coordinate. If set to `auto`, the line will 
   /// always start at the left edge of the diagram. 
@@ -48,17 +62,16 @@
   /// -> content
   label: none,
   
-  /// Determines the $z$ position of this plot in the order of rendered diagram objects. 
-  /// See @plot.z-index.  
+  /// Determines the $z$ position of this plot in the order of rendered diagram
+  /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 2,
   
 ) = {
-  assert(type(y) in (array, int, float))
+  y = y.pos()
+
   line = merge-strokes(line)
-  if type(y) in (int, float) {
-    y = (y,)
-  }
+
   let xlimits = none
   if min != auto {
     xlimits = (min, min)
@@ -66,6 +79,7 @@
   if max != auto {
     xlimits = (if min == auto { max } else { min }, max)
   }
+
   (
     y: y,
     label: label,
