@@ -42,7 +42,12 @@
   points.map(((x, y)) => place(path((x0, y), (x, y)))).join()
   
   if plot.style.base-stroke != none {
-    place(line(start: (x0, y1), end: (x0, y2), stroke: plot.style.base-stroke))
+    set line(stroke: (cap: "square"))
+    place(line(
+      start: (x0, y1), 
+      end: (x0, y2), 
+      stroke: plot.style.base-stroke
+    ))
   }
   
   points.map(((x, y)) => place(dx: x, dy: y, marker)).join()
@@ -71,25 +76,22 @@
   /// -> array
   x, 
   
-  /// An array of $y$ coordinates. The number of $x$ and $y$ coordinates must match. 
+  /// An array of $y$ coordinates. The number of $x$ and $y$ coordinates 
+  /// must match. 
   /// -> array
   y, 
 
-  /// Combined color for line and marks. See also the parameters @hstem.line and 
-  /// @hstem.mark-color which take precedence over `color`, if set. 
+  /// Combined color for line and marks. See also the parameters @hstem.line 
+  /// and @hstem.mark-color which take precedence over `color`, if set. 
   /// -> auto | color
   color: auto,
   
   /// The line style to use for this plot (takes precedence over @hstem.color). 
   /// -> auto | stroke
   stroke: auto, 
-
-  /// How to stroke the base line. 
-  /// -> stroke
-  base-stroke: red,
   
   /// The mark to use to mark data points. See @plot.mark. 
-  /// -> auto | lq.mark | string
+  /// -> auto | lq.mark | str
   mark: auto, 
   
   /// Size of the marks. 
@@ -103,6 +105,10 @@
   /// Defines the $x$ coordinate of the base line.
   /// -> int | float
   base: 0,
+
+  /// How to stroke the base line. 
+  /// -> stroke
+  base-stroke: red,
   
   /// The legend label for this plot. See @plot.label. 
   /// -> content
@@ -112,8 +118,8 @@
   /// -> bool
   clip: true,
   
-  /// Determines the $z$ position of this plot in the order of rendered diagram objects. 
-  /// See @plot.z-index.  
+  /// Determines the $z$ position of this plot in the order of rendered diagram
+  /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 2,
   
