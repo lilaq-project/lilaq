@@ -85,6 +85,7 @@
     for (i, contour) in contours.enumerate() {
       set line(stroke: plot.line-colors.at(i))
       set path(stroke: plot.line-colors.at(i))
+      set path(stroke: plot.stroke)
       for path in contour {
         place(std.path(..path.map(p => transform(..p))))
       }
@@ -122,8 +123,8 @@
 
 
 /// Creates a contour plot for a 3-dimensional mesh. Given a set of `levels`, 
-/// cuts through the mesh are computed automatically and displayed as
-/// contour lines. Contour plots can be either just stroked
+/// a number of cuts through the mesh are computed automatically and displayed
+/// as contour lines. Contour plots can be either just stroked
 /// 
 /// ```example
 /// #lq.diagram(
@@ -136,7 +137,7 @@
 ///   )
 /// )
 /// ```
-/// or filled per level. 
+/// or filled per-level. 
 /// ```example
 /// #lq.diagram(
 ///   width: 4cm, height: 4cm,
@@ -176,12 +177,15 @@
   /// -> int | array
   levels: 10,
 
-  
-  color: auto,
-
-  /// Whether to fill the individual contour levels. 
+  /// Whether to fill the contour levels. 
   /// -> bool
   fill: false,
+
+  /// How to stroke the contours in the cases that `fill: false`. If this
+  /// argument specifies a color, the coloring from the @contour.map is
+  /// overriden. 
+  /// -> stroke
+  stroke: 0.7pt,
   
   /// A color map in form of a gradient or an array of colors to sample from. 
   /// -> array | gradient
@@ -200,7 +204,7 @@
   /// The normalization method used to scale $z$ coordinates to the range 
   /// $[0,1]$ before mapping them to colors using the color map. This can be a 
   /// `lq.scale`, a string that is the identifier of a built-in scale or a function 
-  /// that takes one argument. 
+  /// that takes one argument. See @colormesh.norm. 
   /// -> lq.scale | str | function
   norm: "linear",
   
@@ -208,8 +212,8 @@
   /// -> content
   label: none,
   
-  /// Determines the $z$ position of this plot in the order of rendered diagram objects. 
-  /// See @plot.z-index.  
+  /// Determines the $z$ position of this plot in the order of rendered diagram
+  /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 2
 
@@ -228,19 +232,9 @@
     levels = range.ticks
   }
   
-  if color == auto {
-    color = z-flat
-  } else if type(color) == std.color {
-    color = levels.map(x => color)
-  }
-  let cinfo
-  if type(color.at(0, default: 0)) in (int, float) {
-    if vmin == auto { vmin = calc.min(..color) }
-    if vmax == auto { vmax = calc.max(..color) }
-    
-    (color, cinfo) = create-normalized-colors(levels, map, norm, vmin: vmin, vmax: vmax)
-  }
-
+  if vmin == auto { vmin = calc.min(..z-flat) }
+  if vmax == auto { vmax = calc.max(..z-flat) }
+  let (color, cinfo) = create-normalized-colors(levels, map, norm, vmin: vmin, vmax: vmax)
 
 
   let stroke-contours = generate-contours(x, y, z, levels, z-range: z1 - z0)
@@ -272,9 +266,10 @@
     z: z,
     levels: levels,
     line-colors: color,
-    fill: fill,
-    label: label,
     contours: contours,
+    fill: fill,
+    stroke: stroke,
+    label: label,
     plot: render-contour,
     xlimits: () => (x.at(0)*1fr, x.at(-1)*1fr),
     ylimits: () => (y.at(0)*1fr, y.at(-1)*1fr),
