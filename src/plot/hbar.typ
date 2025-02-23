@@ -1,8 +1,6 @@
 #import "bar.typ": *
 
 
-
-
 /// Creates a horizontal bar plot from the given data. 
 /// 
 /// ```example
@@ -18,20 +16,25 @@
 /// Also see @bar. 
 #let hbar(
   
-  /// An array of $x$ coordinates denoting the bar lengths. 
+  /// An array of $x$ coordinates specifying the bar lengths. 
   /// -> array
   x, 
   
-  /// An array of $y$ coordinates denoting the bar positions. The number of $x$ and $y$ coordinates must match. 
+  /// An array of $y$ coordinates specifying the bar positions. The number of 
+  /// $x$ and $y$ coordinates must match. 
   /// -> array
   y, 
 
-  /// Fill color for the bars. 
-  /// -> none | color | gradient | pattern
+  /// How to fill the bars. 
+  /// -> none | color | gradient | tiling
   fill: auto,
 
-  /// Stroke style for the bars. 
-  /// -> auto | none | color | length | stroke | gradient | pattern | dictionary
+  /// How to stroke the bars. All values allowed by the built-in `rect`
+  /// function are also allowed here, see 
+  /// [`std.rect#stroke`](https://typst.app/docs/reference/visualize/rect/#parameters-stroke). 
+  /// In particular, note that by passing a dictionary, the individual sides
+  ///  of the bars can be stroked individually. 
+  /// -> auto | none | color | length | stroke | gradient | tiling | dictionary
   stroke: none,
 
   /// Alignment of the bars at the $y$ values. 
@@ -61,9 +64,9 @@
   /// -> top | center | bottom
   align: center,
 
-  /// Width of the bars in data coordinates. The width can be set either to a constant
-  /// for all bars or individually by passing an array with the same length as the 
-  /// coordinate arrays. 
+  /// Width of the bars in data coordinates. The width can be set either to a
+  /// constant for all bars or individually by passing an array with the same 
+  /// length as the coordinate arrays. 
   /// #details[
   ///   Example for a bar plot with varying bar widths.
   ///   ```example
@@ -88,9 +91,9 @@
   offset: 0,
 
 
-  /// Defines the $x$ coordinate of the baseline of the bars. This can either be a 
-  /// constant value applied to all bars or it can be set individually by passing an 
-  /// array with the same length as the coordinate arrays. 
+  /// Defines the $x$ coordinate of the baseline of the bars. This can either  
+  /// be a constant value applied to all bars or it can be set individually by
+  /// passing an array with the same length as the coordinate arrays. 
   /// #details[
   ///   Bar plot with varying base. 
   ///   ```example
@@ -117,13 +120,15 @@
   /// -> bool
   clip: true,
   
-  /// Determines the $z$ position of this plot in the order of rendered diagram objects. 
-  /// See @plot.z-index.  
+  /// Determines the $z$ position of this plot in the order of rendered diagram 
+  /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 2,
   
 ) = {
-  assertations.assert-matching-data-dimensions(x, y, width: width, base: base, fn-name: "hbar")
+  assertations.assert-matching-data-dimensions(
+    x, y, width: width, base: base, fn-name: "hbar"
+  )
 
   if offset != 0 {
     y = y.map(y => y + offset)
@@ -150,7 +155,7 @@
     int: simple-lims,
     float: simple-lims,
     array: () => (
-      calc.min(..y.zip(width).map(((y, w)) => y + offset-coeff*w)),
+      calc.min(..y.zip(width).map(((y, w)) => y + offset-coeff * w)),
       calc.max(..y.zip(width).map(((y, w)) => y + (1 + offset-coeff) * w)),
     )
   )
@@ -176,4 +181,3 @@
     z-index: z-index
   )
 }
-

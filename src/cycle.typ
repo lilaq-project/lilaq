@@ -40,10 +40,10 @@
 
 
 
-#let prepare-path(body, stroke: auto, fill: none) = context {
+#let prepare-path(body, stroke: auto, fill: none, element: path) = context {
   
-  set path(stroke: merge-strokes(style.stroke, style.fill), fill: merge-fills(fill, style.fill))
-  set path(stroke: stroke) if stroke != auto
+  set element(stroke: merge-strokes(style.stroke, style.fill), fill: merge-fills(fill, style.fill))
+  set element(stroke: stroke) if stroke != auto
   body
 }
 

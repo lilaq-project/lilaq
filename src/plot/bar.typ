@@ -28,19 +28,17 @@
         plot.width.at(i) * offset-coeff, plot.width.at(i) * (1 + offset-coeff),
       ),
   )
-  
 
 
   show: prepare-path.with(
     fill: plot.style.fill,
-    stroke: plot.style.stroke
+    stroke: plot.style.stroke,
+    element: rect
   )
 
+
   if "make-legend" in plot {
-    std.path(
-      (0%, 0%), (0%, 100%), (100%, 100%), (100%, 0%), 
-      closed: true
-    )
+    rect(width: 100%, height: 100%)
   } else {
 
     if orientation == "vertical" {
@@ -55,9 +53,7 @@
         let (xx1, y0) = transform(x + x1, plot.base.at(i, default: plot.base.first()))
         let (xx2, yy) = transform(x + x2, y)
         
-        place(path(
-          (xx1, y0), (xx1, yy), (xx2, yy), (xx2, y0), closed: true
-        ))
+        place(dx: xx1, dy: yy, rect(width: xx2 - xx1, height: y0 - yy))
       }
 
     } else if orientation == "horizontal" {
@@ -72,9 +68,7 @@
         let (x0, yy1) = transform(plot.base.at(i, default: plot.base.first()), y + y1)
         let (xx, yy2) = transform(x, y + y2)
         
-        place(path(
-          (x0, yy1), (xx, yy1), (xx, yy2), (x0, yy2), closed: true
-        ))
+        place(dx: x0, dy: yy2, rect(width: xx - x0, height: yy1 - yy2))
       }
 
     }
@@ -97,7 +91,8 @@
 /// ```
 /// 
 /// 
-/// The example below demonstrates how to use custom tick labels by passing an array of `(location, label)` tuples to @axis.ticks. 
+/// The example below demonstrates how to use custom tick labels by passing 
+/// an array of `(location, label)` tuples to @axis.ticks. 
 /// ```example
 /// #lq.diagram(
 ///   xaxis: (
@@ -114,20 +109,25 @@
 /// ```
 #let bar(
   
-  /// An array of $x$ coordinates denoting the bar positions. 
+  /// An array of $x$ coordinates specifying the bar positions. 
   /// -> array
   x, 
   
-  /// An array of $y$ coordinates denoting the bar heights. The number of $x$ and $y$ coordinates must match. 
+  /// An array of $y$ coordinates specifying the bar heights. The number of
+  /// $x$ and $y$ coordinates must match. 
   /// -> array
   y, 
 
-  /// Fill color for the bars. 
-  /// -> none | color | gradient | pattern
+  /// How to fill the bars. 
+  /// -> none | color | gradient | tiling
   fill: auto,
 
-  /// Stroke style for the bars. 
-  /// -> auto | none | color | length | stroke | gradient | pattern | dictionary
+  /// How to stroke the bars. All values allowed by the built-in `rect`
+  /// function are also allowed here, see 
+  /// [`std.rect#stroke`](https://typst.app/docs/reference/visualize/rect/#parameters-stroke). 
+  /// In particular, note that by passing a dictionary, the individual sides
+  ///  of the bars can be stroked individually. 
+  /// -> auto | none | color | length | stroke | gradient | tiling | dictionary
   stroke: none,
 
   /// Alignment of the bars at the $x$ values. 
@@ -157,9 +157,9 @@
   /// -> left | center | right
   align: center,
 
-  /// Width of the bars in data coordinates. The width can be set either to a constant
-  /// for all bars or individually by passing an array with the same length as the 
-  /// coordinate arrays. 
+  /// Width of the bars in data coordinates. The width can be set either to a
+  /// constant for all bars or individually by passing an array with the same 
+  /// length as the coordinate arrays. 
   /// #details[
   ///   Example for a bar plot with varying bar widths.
   ///   ```example
@@ -184,9 +184,9 @@
   offset: 0,
 
 
-  /// Defines the $y$ coordinate of the baseline of the bars. This can either be a 
-  /// constant value applied to all bars or it can be set individually by passing an 
-  /// array with the same length as the coordinate arrays. 
+  /// Defines the $y$ coordinate of the baseline of the bars. This can either  
+  /// be a constant value applied to all bars or it can be set individually by
+  /// passing an array with the same length as the coordinate arrays. 
   /// #details[
   ///   Bar plot with varying base. 
   ///   ```example
@@ -213,13 +213,15 @@
   /// -> bool
   clip: true,
   
-  /// Determines the $z$ position of this plot in the order of rendered diagram objects. 
-  /// See @plot.z-index.  
+  /// Determines the $z$ position of this plot in the order of rendered diagram
+  /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 2,
   
 ) = {
-  assertations.assert-matching-data-dimensions(x, y, width: width, base: base, fn-name: "bar")
+  assertations.assert-matching-data-dimensions(
+    x, y, width: width, base: base, fn-name: "bar"
+  )
 
   if offset != 0 {
     x = x.map(x => x + offset)
@@ -246,7 +248,7 @@
     int: simple-lims,
     float: simple-lims,
     array: () => (
-      calc.min(..x.zip(width).map(((x, w)) => x + offset-coeff*w)),
+      calc.min(..x.zip(width).map(((x, w)) => x + offset-coeff * w)),
       calc.max(..x.zip(width).map(((x, w)) => x + (1 + offset-coeff) * w)),
     )
   )
@@ -272,4 +274,3 @@
     z-index: z-index
   )
 }
-
