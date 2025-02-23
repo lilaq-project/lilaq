@@ -16,7 +16,7 @@
 /// 
 /// )
 /// ```
-/// and the stroke of the subticks by `sub`:
+/// and the stroke of the subticks by `stroke-sub`:
 /// ```example
 /// #show: lq.set-grid(stroke-sub: .5pt + luma(90%))
 /// 

@@ -2,6 +2,7 @@
 
 /// A label for a diagram axis. 
 #let label(
+  
   /// Content to show in the label. 
   /// -> any
   body,
@@ -18,7 +19,8 @@
   /// -> length
   pad: 0.5em,
 
-  /// Angle at which the label is drawn. 
+  /// Angle at which the label is drawn. The label of a `y` axis is often 
+  /// drawn at `-90deg`. 
   /// -> angle
   angle: 0deg
   

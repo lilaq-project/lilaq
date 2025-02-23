@@ -13,17 +13,30 @@
 #import "tick.typ": tick as tick-constructor
 
 
-/// An axis for a diagram. Visually, an axis consists of a _spine_ along the axis direction, a collection of ticks/subticks and an axis label. 
+/// An axis for a diagram. Visually, an axis consists of a _spine_ along the axis 
+/// direction, a collection of ticks/subticks and an axis label. 
+/// 
+/// By default, a @diagram features two axes: an `x` and a `y` axis which can be 
+/// configured directly through @diagram.xaxis and @diagram.yaxis. However, it is 
+/// also possible to add more axis, please refer to the 
+/// #link("tutorials/axis")[axis tutorial] for more details. 
 #let axis(
-  /// Sets the scale of the axis. This may be a `lq.scale` object or the name of one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
+
+  /// Sets the scale of the axis. This may be a @scale object or the name of 
+  /// one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
   /// -> lq.scale | str 
   scale: "linear", 
 
-  /// Data limits of the axis. Expects `auto` or a tuple `(min, max)` where `min` and `max` may be `auto`. The minimum may be larger than the maximum. 
+  /// Data limits of the axis. This can be used to fix the minimum and/or maximum value
+  /// displayed along this axis. This parameter expects `auto` or a tuple `(min, max)` 
+  /// where `min` and `max` can also be `auto`. If a limit is `auto`, it will be 
+  /// automatically computed from all plots associated with this axis and @diagram.margin 
+  /// will be applied. If the minimum is larger than the maximum, the scale is inverted
+  /// and if `min` and `max` coincide, the range will be automatically increased. 
   /// -> auto | array
   lim: auto,
 
-  /// Label for the axis. Use a `lq.label` object for more options. 
+  /// Label for the axis. Use a @label object for more options. 
   /// -> content | lq.label
   label: none,
 
@@ -31,12 +44,17 @@
   /// -> "x" | "y"
   kind: "x", 
 
+  /// 
   /// -> float | alignment
   position: auto, 
 
+  /// How to stroke the spine of the axis. 
   /// -> stroke
   stroke: .7pt,
 
+  /// Whether to mirror the axis, i.e., whether to show the axis ticks also on 
+  /// the side opposite of the one specified with @axis.position. When set to 
+  /// `auto`, mirroring is only activated when `position: auto`. 
   /// auto | bool
   mirror: auto,
 
