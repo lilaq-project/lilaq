@@ -3,13 +3,13 @@
 #import "../assertations.typ"
 #import "../logic/scale.typ"
 #import "../logic/transform.typ": create-trafo
-#import "legend.typ": legend as lq-legend, place-legend-with-bounds
+#import "legend.typ": legend as lq-legend, _place-legend-with-bounds
 #import "grid.typ": grid as lq-grid
 
 #import "axis.typ": axis, draw-axis, _axis-compute-limits, _axis-generate-ticks
 #import "../algorithm/ticking.typ"
 #import "../bounds.typ": *
-#import "title.typ": title as lq-title, title-show
+#import "title.typ": title as lq-title
 #import "../utility.typ": if-auto
 
 #let debug = false
@@ -22,38 +22,46 @@
 /// -> lq.diagram
 #let diagram(
   
-  /// Width of the diagram area. 
+  /// The width of the diagram area. 
+  /// -> length
   width: 6cm,
   
-  /// Height of the diagram area. 
+  /// The height of the diagram area. 
+  /// -> length
   height: 4cm,
 
-  /// Title for the diagram. Use a @title object for more options. 
-  /// -> lq.title | str | content |  none
+  /// The title for the diagram. Use a @title object for more options. 
+  /// -> lq.title | str | content | none
   title: none,
 
   /// Whether to show a legend with entries for all labelled plot objects. 
   /// -> bool
   legend: true,
 
-  /// Data limits along the $x$-axis. Expects `auto` or a tuple `(min, max)` where `min` and `max` may be `auto`. The minimum may be larger than the maximum. 
-  /// -> auto |  array
+  /// Data limits along the $x$-axis. Expects `auto` or a tuple `(min, max)` 
+  /// where `min` and `max` may individually be `auto`. Also see @axis.lim. 
+  /// -> auto | array
   xlim: auto,
   
-  /// Data limits along the $y$-axis. Expects `auto` or a tuple `(min, max)` where `min` and `max` may be `auto`. The minimum may be larger than the maximum. 
-  /// -> auto |  array
+  /// Data limits along the $y$-axis. Expects `auto` or a tuple `(min, max)` 
+  /// where `min` and `max` may individually be `auto`. Also see @axis.lim. 
+  /// -> auto | array
   ylim: auto,
 
   /// Label for the $x$-axis. Use a @label object for more options. 
-  /// -> content | lq.xlabel
+  /// -> lq.xlabel | content
   xlabel: none,
 
   /// Label for the $y$-axis. Use a @label object for more options. 
-  /// -> content | lq.ylabel
+  /// -> lq.ylabel | content
   ylabel: none,
 
-
-  /// -> auto | none | dictionary | color | length | stroke
+  /// Options to apply to the grid. A `stroke`, `color`, or `length` argument 
+  /// directly sets the grid stroke while a `dictionary` with the possible keys
+  /// `stroke`, `stroke-sub`, and `z-index` gives more fine-grained control. 
+  /// Setting this paramerer to `none` removes the grid entirely. 
+  /// See @grid for more details. 
+  /// -> auto | none | dictionary | stroke | color | length
   grid: auto,
 
   /// Sets the scale of the $x$-axis. This may be a @scale object or the name of one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
@@ -64,16 +72,19 @@
   /// -> str | lq.scale
   yscale: "linear",
 
-  /// Configures the $x$-axis. This can be a @axis object or a dictionary of arguments to pass to the constructor of the axis. 
-  /// lq.xaxis | dictionary
+  /// Configures the $x$-axis through a dictionary of arguments to pass to the constructor of the axis. 
+  /// -> dictionary
   xaxis: (:),
   
-  /// Configures the $y$-axis. This can be a @axis object or a dictionary of arguments to pass to the constructor of the axis. 
-  /// lq.xaxis | dictionary
+  /// Configures the $y$-axis through a dictionary of arguments to pass to the constructor of the axis. 
+  /// -> dictionary
   yaxis: (:),
 
-  /// Configures the automatic margins of the diagram around the data. If set to `0%`, the outer-most data points align tightly with the edges of the diagram (as long as the axis limits are left at `auto`). Otherwise, the margin are computed in percent of the covered range along an axis (in scaled coordinates). 
-  /// 
+  /// Configures the automatic margins of the diagram around the data. If set 
+  /// to `0%`, the outer-most data points align tightly with the edges of the 
+  /// diagram (as long as the axis limits are left at `auto`). Otherwise, the
+  /// margin are computed in percent of the covered range along an axis (in
+  /// scaled coordinates). 
   /// -> ratio | dictionary
   margin: 6%,
   
@@ -85,9 +96,10 @@
   /// -> none | color | gradient | tiling 
   fill: none,
 
-  /// Plot objects. 
+  /// Plot objects like @plot, @bar, @scatter, @contour etc. and additional @axis objects. 
   /// -> any
   ..children
+
 ) = {
   assertations.assert-no-named(children)
   set math.equation(numbering: none)
@@ -379,7 +391,7 @@
 
     
     if legend != none and legend != false and legend-entries.len() > 0 {
-      let (legend-content, legend-bounds) = place-legend-with-bounds(legend, legend-entries, e-get)
+      let (legend-content, legend-bounds) = _place-legend-with-bounds(legend, legend-entries, e-get)
 
       artists.push((content: legend-content, z: e-get(lq-legend).z-index))
 

@@ -1,9 +1,14 @@
 /// A tick on a diagram axis. 
 /// TODO: Not used yet
 
+#let tick-label(
+
+) = {}
+
 
 /// A tick on a diagram axis. 
 #let tick(
+  
   /// Position of the tick in data coordinates. 
   /// -> float
   pos, 

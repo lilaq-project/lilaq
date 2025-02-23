@@ -48,7 +48,7 @@
     e.field("body", content, required: true),
     e.field("dx", length, default: 0pt),
     e.field("dy", length, default: 0pt),
-    e.field("pad", length, default: .5em),
+    e.field("pad", length, default: 0.5em),
     e.field("angle", angle, default: 0deg),
   )
 )

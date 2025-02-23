@@ -18,8 +18,8 @@
   let (points, runs) = filter-nan-points(plot.x.zip(plot.y), generate-runs: true)
 
   if "make-legend" in plot {
-    runs = (((0, .5), (1, .5)),)
-    points = ((0.5,.5),)
+    runs = (((0, 0.5), (1, 0.5)),)
+    points = ((0.5, 0.5),)
     if plot.yerr != none { plot.yerr = (.5,) }
     if plot.xerr != none { plot.xerr = (.25,) }
   }
@@ -110,21 +110,22 @@
 /// However, they can be configured per plot with the options @plot.color, @plot.mark,
 /// and @plot.stroke. 
 /// 
-/// This function is also intended for making plots with error bars. 
+/// This function is also intended for creating plots with error bars. 
 /// 
 /// ```example
 /// #lq.diagram(
 ///   lq.plot(
 ///     range(8), (3, 6, 2, 6, 5, 9, 0, 4),
 ///     yerr: (1, 1, .7, .8, .2, .6, .5, 1),
-///     stroke: none, mark: "star",
+///     stroke: none, 
+///     mark: "star",
 ///     mark-size: 6pt
 ///   )
 /// )
 /// ```
 #let plot(
   
-  /// An array of $x$ data coordinates. Data coordinates need to of type `int` or `float`. 
+  /// An array of $x$ data coordinates. Data coordinates need to be of type `int` or `float`. 
   /// -> array
   x, 
   
@@ -205,12 +206,47 @@
   
   /// Whether to clip the plot to the data area. This is usually a good idea for plots 
   /// with lines but it does also clip part of marks that lie right on an axis. 
+  /// #details[
+  ///   Comparison between clipped and non-clipped plot. 
+  ///   ```example
+  ///   #lq.diagram(
+  ///     margin: 0%,
+  ///     lq.plot(
+  ///       (1, 2, 3), (2.5, 1.9, 1.5), 
+  ///       mark: "o", 
+  ///     ),
+  ///     lq.plot(
+  ///       (1, 2, 3), (1, 2.1, 3), 
+  ///       mark: "o", 
+  ///       clip: false
+  ///     )
+  ///   )
+  ///   ```
+  /// ]
   /// -> bool
   clip: true,
   
-  /// Specifies the $z$ position of this plot in the order of rendered diagram objects. 
-  /// This makes it also possible to render plots in front of the axes which have a 
-  /// z-index of `2.1`.  
+  /// Specifies the $z$ position of this plot in the order of rendered diagram 
+  /// objects. This makes it also possible to render plots in front of the axes 
+  /// which have a z-index of `2.1`. 
+  /// #details[
+  ///   In this example, the points are listed before the bars in the legend but 
+  ///   they are still drawn in front of the bars. 
+  ///   ```example
+  ///   #lq.diagram(
+  ///     lq.plot(
+  ///       (1, 2, 3), (4, 5, 6),
+  ///       mark-size: 10pt,
+  ///       z-index: 2.01,
+  ///       label: [Points],
+  ///     ),
+  ///     lq.bar(
+  ///       (1, 2, 3), (4, 5, 6),
+  ///       label: [Bars],
+  ///     )
+  ///   )
+  ///   ```
+  /// ]
   /// -> int | float
   z-index: 2,
   

@@ -50,7 +50,7 @@
 /// ```
 #let fill-between(
 
-  /// An array of $x$ data coordinates. Data coordinates need to of type `int` or `float`. 
+  /// An array of $x$ data coordinates. Data coordinates need to be of type `int` or `float`. 
   /// -> array
   x, 
 
@@ -65,11 +65,11 @@
   y2: none,
 
   /// How to stroke the area. 
-  /// -> none | 
+  /// -> none | stroke
   stroke: none,
 
   /// How to fill the area. 
-  /// -> none | color | gradient | pattern
+  /// -> none | color | gradient | tiling
   fill: blue,
   
   /// Step mode for plotting the lines. See @plot.step. 
@@ -80,8 +80,8 @@
   /// -> content
   label: none,
   
-  /// Determines the $z$ position of this plot in the order of rendered diagram objects. 
-  /// See @plot.z-index.  
+  /// Determines the $z$ position of this plot in the order of rendered diagram 
+  /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 2,
   

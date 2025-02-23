@@ -11,6 +11,7 @@
   /// -> array
   b, 
   /// The function to apply to each item.
+  /// -> function
   mapper
 ) = array.zip(a, b, exact: true).map(mapper)
 

@@ -7,8 +7,7 @@
 /// respectively. 
 /// 
 /// One way to set up the grid stroke is with a style rule. The stroke 
-/// of the main ticks is controlled by `stroke`
-/// 
+/// for the grid lines at the main ticks is controlled by `stroke`
 /// ```example
 /// #show: lq.set-grid(stroke: teal)
 /// 
@@ -18,23 +17,23 @@
 /// ```
 /// and the stroke of the subticks by `stroke-sub`:
 /// ```example
-/// #show: lq.set-grid(stroke-sub: .5pt + luma(90%))
+/// #show: lq.set-grid(stroke-sub: 0.5pt + luma(90%))
 /// 
 /// #lq.diagram(
 /// 
 /// )
 /// ```
 /// 
-/// Through the @diagram.grid parameter, the look of the grid can also be 
+/// Through the parameter @diagram.grid, the look of the grid can also be 
 /// controlled directly for an individual diagram. 
 /// ```example
 /// #lq.diagram(
-///   grid: (stroke: black, stroke-sub: .25pt)
+///   grid: (stroke: black, stroke-sub: 0.25pt)
 /// )
 /// ```
 /// 
 /// Aside from `#show: lq.set-grid(stroke: none)`, the grid can be turned off 
-/// with the short-hand `grid: none`. 
+/// entirely with the short-hand `grid: none`. 
 /// ```example
 /// #lq.diagram(
 ///   grid: none
@@ -89,11 +88,9 @@
   display: it => {
 
     let stroke = if it.sub { it.stroke-sub } else { it.stroke }
-
     if stroke == none { return }
 
     let line
-
     if it.kind == "x" {
       line = tick => place(
         std.line(start: (tick, 0%), end: (tick, 100%), stroke: stroke)
@@ -104,16 +101,15 @@
       )
     }
 
-
     it.ticks.map(line).join()
   },
 
   fields: (
     e.field("ticks", array, required: true),
     e.field("sub", bool, required: true),
-    e.field("stroke", e.types.option(stroke), default: 0.5pt + luma(80%), ),
+    e.field("kind", str, default: "x"),
+    e.field("stroke", e.types.option(stroke), default: 0.5pt + luma(80%)),
     e.field("stroke-sub", auto-none-stroke, default: none),
     e.field("z-index", float, default: 0),
-    e.field("kind", str, default: "x"),
   ),
 )

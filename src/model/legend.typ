@@ -7,14 +7,14 @@
 /// 
 #let legend(
 
-  /// The items to place in the legend. These items are tuples of a 
-  /// plot preview image and the corresponding label. The children are 
+  /// The items to place in the legend. Items are tuples of a 
+  /// plot preview image and the corresponding label. This field is 
   /// filled automatically by @diagram. 
   /// -> array
-  children,
+  ..children,
 
   /// How to fill the background of the legend. 
-  /// -> none | color | tiling
+  /// -> none | color | gradient | tiling
   fill: white.transparentize(20%),
 
   /// Determines the padding of the entire legend within its box. 
@@ -33,12 +33,14 @@
   /// or a position `(x, y)` where `x` and `y` are relative lengths, i.e., 
   /// they can be
   /// - lengths like `20pt` or `2em`,
-  /// - ratios like `50%` (measuring in the diagram area),
+  /// - ratios like `50%` (measuring in the data area),
   /// - or a combination thereof. 
   /// -> alignment | array
   pos: top + right,
 
-  /// In the case that @legend.pos is an `alignment`, `pad` determines how much to pad the legend from the 
+  /// In the case that @legend.pos is an `alignment`, `pad` determines 
+  /// how much to pad the legend from the outer edge of the data area 
+  /// of the diagam. 
   /// -> length
   pad: 2pt, 
 
@@ -52,7 +54,8 @@
   /// -> length
   dy: 0pt,
 
-  /// Specifies the $z$ position of the legend in the order of rendered diagram objects. 
+  /// Specifies the $z$ position of the legend in the order of rendered
+  /// diagram objects. 
   /// -> int | float
   z-index: 6,
 
@@ -73,7 +76,7 @@
   fields: (
     e.field("children", e.types.array(e.types.any), required: true),
     e.field("fill", e.types.option(e.types.paint), default: white.transparentize(20%)),
-    e.field("inset", relative, default: .3em),
+    e.field("inset", relative, default: 0.3em),
     e.field("stroke", e.types.option(stroke), default: 0.5pt + gray),
     e.field("radius", e.types.union(relative, dictionary), default: 1.5pt),
     
@@ -83,6 +86,7 @@
     e.field("dy", length, default: 0pt),
     e.field("z-index", float, default: 6),
   ),
+
   parse-args: (default-parser, fields: none, typecheck: none) => (args, include-required: false) => {
     let args = if include-required {
       let values = args.pos()
@@ -98,7 +102,7 @@
 )
 
 
-#let place-legend-with-bounds(
+#let _place-legend-with-bounds(
 
   /// -> lq.legend | true | dictionary
   my-legend, 

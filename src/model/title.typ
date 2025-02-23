@@ -1,27 +1,36 @@
+#import "../libs/elembic/lib.typ" as e
 
-/// A title for a diagram. 
+
+/// A title for a diagram. Titles can be placed at the top (default),
+/// left, right, or bottom of a diagram. 
 #let title(
-  /// Content to show in the title. 
+
+  /// The content to show in the title. 
   /// -> any
   body,
 
-  /// Position of the title
+  /// Position of the title in the diagram. 
+  /// -> left | top | right | bottom
   pos: top,
 
-  /// Horizontal offset
+  /// Horizontal offset. 
   /// -> length
   dx: 0pt,
 
-  /// Vertical offset
+  /// Vertical offset. 
   /// -> length
   dy: 0pt,
 
-  /// Padding between the diagram and the title. 
+  /// Padding between the axes and the title. 
   /// -> length
   pad: 0.5em,
   
 ) = {
-  assert(pos in (top, bottom, left, right), message: "`pos` needs to be one of \"top\", \"left\", \"bottom\", and \"right\"")
+  assert(
+    pos in (top, bottom, left, right), 
+    message: "`pos` needs to be one of \"top\", \"left\", \"bottom\", and \"right\""
+  )
+
   (
     body: body,
     pos: pos,
@@ -30,14 +39,6 @@
     pad: pad
   )
 }
-
-#let title-show = it => {
-  it.body
-}
-
-
-#import "../libs/elembic/lib.typ" as e
-
 
 
 #let title = e.element.declare(
@@ -54,5 +55,3 @@
     e.field("pad", length, default: 0.5em),
   )
 )
-
-

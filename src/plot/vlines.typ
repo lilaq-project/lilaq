@@ -29,7 +29,7 @@
 /// Draws a set of vertical lines into the diagram. 
 /// ```example
 /// #lq.diagram(
-///   ylim: (0, 6),
+///   ylim: (0, 7),
 ///   lq.vlines(1, 1.1, line: teal, label: "Indefinite"),
 ///   lq.vlines(2, line: blue, min: 2, label: "Fixed start"),
 ///   lq.vlines(3, line: purple, max: 2, label: "Fixed end"),

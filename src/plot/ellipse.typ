@@ -51,13 +51,13 @@
   /// -> auto | none | stroke
   stroke: auto,
 
-  /// How much to pad the content of the ellipse. See the built-in `rect()`.
-  /// -> relative
+  /// How much to pad the content of the ellipse. See the built-in [`std.ellipse#inset`](https://typst.app/docs/reference/visualize/ellipse/#parameters-inset).
+  /// -> relative | dictionary
   inset: 5pt,
 
   /// How much to expand the ellipse beyond its defined size.
-  /// See the built-in `rect()`.
-  /// -> relative
+  /// See the built-in [`std.ellipse#outset`](https://typst.app/docs/reference/visualize/ellipse/#parameters-outset).
+  /// -> relative | dictionary
   outset: 0pt,
 
   /// The legend label for this plot. See @plot.label. 
@@ -68,12 +68,12 @@
   /// -> bool
   clip: true,
   
-  /// Determines the $z$ position of this plot in the order of rendered diagram objects. 
-  /// See @plot.z-index.  
+  /// Determines the $z$ position of this plot in the order of rendered diagram 
+  /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 2,
 
-  /// An optional body to place inside the ellipse. 
+  /// An optional body to place inside the ellipse. If `width` and/or `height` are set to `auto`, they will adapt to the content. 
   /// -> any
   ..body
 

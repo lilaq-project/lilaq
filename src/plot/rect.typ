@@ -53,13 +53,13 @@
   /// -> relative
   radius: 0pt,
 
-  /// How much to pad the content of the rectangle. See the built-in `rect()`.
-  /// -> relative
+  /// How much to pad the content of the rectangle. See the built-in [`std.rect#inset`](https://typst.app/docs/reference/visualize/rect/#parameters-inset).
+  /// -> relative | dictionary
   inset: 5pt,
 
   /// How much to expand the rectangle beyond its defined size.
-  /// See the built-in `rect()`.
-  /// -> relative
+  /// See the built-in [`std.rect#outset`](https://typst.app/docs/reference/visualize/rect/#parameters-outset).
+  /// -> relative | dictionary
   outset: 0pt,
 
   /// The legend label for this plot. See @plot.label. 

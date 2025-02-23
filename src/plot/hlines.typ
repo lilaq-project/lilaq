@@ -31,7 +31,7 @@
 /// respectively. 
 /// ```example
 /// #lq.diagram(
-///   xlim: (0, 6),
+///   xlim: (0, 7),
 ///   lq.hlines(1, 1.1, line: teal, label: "Indefinite"),
 ///   lq.hlines(2, line: blue, min: 2, label: "Fixed start"),
 ///   lq.hlines(3, line: purple, max: 2, label: "Fixed end"),

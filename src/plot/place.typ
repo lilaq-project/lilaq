@@ -8,8 +8,8 @@
 /// 
 /// ```example
 /// #lq.diagram(
-///   lq.place(.5, .5)[Hello],
-///   lq.place(0%, -.25, align: left)[
+///   lq.place(0.5, 0.5)[Hello],
+///   lq.place(0%, -0.25, align: left)[
 ///     Text placed at `x: 0%` and `y: -0.25`
 ///   ]
 /// )
@@ -54,11 +54,11 @@
 /// 
 #let place(
 
-  /// The x coordinate of the origin.
+  /// The $x$ coordinate of the origin.
   /// -> float | relative 
   x, 
 
-  /// The y coordinate of the origin.
+  /// The $y$ coordinate of the origin.
   /// -> float | relative 
   y,
 
@@ -74,8 +74,8 @@
   /// -> bool
   clip: false,
   
-  /// Determines the $z$ position of the content in the order of rendered diagram objects. 
-  /// See @plot.z-index.  
+  /// Determines the $z$ position of the content in the order of rendered diagram
+  /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 3,
 

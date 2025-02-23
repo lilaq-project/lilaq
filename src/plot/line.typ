@@ -3,7 +3,7 @@
 #import "@preview/tiptoe:0.2.0"
 
 
-/// Draws a line onto the data area. 
+/// Draws a line into the data area. 
 /// ```example
 /// #lq.diagram(
 ///   width: 3cm, height: 3cm,
@@ -30,7 +30,8 @@
 /// ```
 /// 
 /// Arrow tips and tails can be added to a line through the arguments `tip` and `toe`. 
-/// This is supported via the Typst package #link("https://typst.app/universe/package/tiptoe")[tiptoe].
+/// This is supported via the Typst package 
+/// #link("https://typst.app/universe/package/tiptoe")[tiptoe].
 /// ```example
 /// #import "@preview/tiptoe:0.2.0"
 /// #let xs = lq.arange(-5, 6)
@@ -49,7 +50,8 @@
 
   /// The start point of the line. Coordinates can be given as
   /// - data coordinates (`int` or `float`),
-  /// - or absolute coordinates from the top left corner of the data area (`length`),
+  /// - or absolute coordinates from the top left corner of the data area 
+  ///   (`length`),
   /// - or in percent relative to the data area (`ratio`),
   /// - or a combination of the latter two (`relative`).  
   /// -> array

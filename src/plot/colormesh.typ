@@ -3,9 +3,10 @@
 #import "../color.typ": create-normalized-colors
 
 #let render-colormesh(plot, transform) = {
-  let get-widths(x) = {
+  let get-extents(x) = {
     x.zip(x.slice(1)).map(((x, x1)) => x1 - x)
   }
+
   let get-size(i, x) = {
     if i < x.len() - 1 { 
       let d2 = x.at(i + 1) - x.at(i)
@@ -20,8 +21,10 @@
       (d, d)
     }
   }
-  let widths = get-widths(plot.x)
-  let heights = get-widths(plot.x)
+
+  let widths = get-extents(plot.x)
+  let heights = get-extents(plot.y)
+
   for i in range(plot.x.len()) {
     for j in range(plot.y.len()) {
       if float.is-nan(plot.z.at(i).at(j)) { continue }
@@ -30,9 +33,9 @@
       
       let (w1, w2) = get-size(i, plot.x)
       let (h1, h2) = get-size(j, plot.y)
-      let (x1, y1) = transform(x - w1/2, y + h2/2)
-      let (x2, y2) = transform(x + w2/2, y - h1/2)
-      let fill = plot.color.at(j + i*plot.y.len())
+      let (x1, y1) = transform(x - w1 / 2, y + h2 / 2)
+      let (x2, y2) = transform(x + w2 / 2, y - h1 / 2)
+      let fill = plot.color.at(j + i * plot.y.len())
       let width = x2 - x1
       let height = y2 - y1
       place(dx: x1, dy: y1, rect(width: width, height: height, fill: fill))
@@ -48,7 +51,7 @@
 ///   lq.colormesh(
 ///     lq.linspace(-4, 4, num: 10),
 ///     lq.linspace(-4, 4, num: 10),
-///     (x, y) => x*y, 
+///     (x, y) => x * y, 
 ///     map: color.map.magma
 ///   )
 /// )
@@ -68,11 +71,11 @@
   /// coordinates. This can either be a two-dimensional array of dimensions $m×n$ 
   /// where $m$ is the length of @colormesh.x and $n$ is the length of @colormesh.y, 
   /// or a function that takes an `x` and a `y` value and returns a corresponding 
-  /// `z` coordinate. Also see the function @mesh for creating meshes. 
+  /// `z` coordinate. Also see the function @mesh that can be used to create such meshes. 
   /// -> array | function
   z,
   
-  /// A color map in form of a gradient or an array of colors to sample from. 
+  /// A color map in the form of a gradient or an array of colors to sample from. 
   /// -> array | gradient
   map: color.map.viridis,
 
@@ -88,8 +91,12 @@
 
   /// The normalization method used to scale $z$ coordinates to the range 
   /// $[0,1]$ before mapping them to colors using the color map. This can be a 
-  /// `lq.scale`, a string that is the identifier of a built-in scale or a function 
-  /// that takes one argument. 
+  /// @scale, a string that is the identifier of a built-in scale or a function 
+  /// that takes one argument (for example the argument `x => calc.log(x)` 
+  /// would be equivalent to passing `"log"`). Note that the function does not 
+  /// actually need to map the values to the interval $[0,1]$. Instead it 
+  /// describes a scaling that is applied before the data set is _linearly_ 
+  /// scaled to the interval $[0,1]$. 
   /// -> lq.scale | str | function
   norm: "linear",
   
@@ -97,8 +104,8 @@
   /// -> content
   label: none,
   
-  /// Determines the $z$ position of this plot in the order of rendered diagram objects. 
-  /// See @plot.z-index.  
+  /// Determines the $z$ position of this plot in the order of rendered diagram
+  /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 2
 

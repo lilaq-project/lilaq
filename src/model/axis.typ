@@ -50,18 +50,18 @@
 
   /// How to stroke the spine of the axis. 
   /// -> stroke
-  stroke: .7pt,
+  stroke: 0.7pt,
 
   /// Whether to mirror the axis, i.e., whether to show the axis ticks also on 
   /// the side opposite of the one specified with @axis.position. When set to 
   /// `auto`, mirroring is only activated when `position: auto`. 
-  /// auto | bool
+  /// -> auto | bool
   mirror: auto,
 
   /// Specifies conversions between the data and the ticks. This can be used to
   /// configure a secondary axis to display the same data in a different unit, e.g., the main axis displays the velocity of a particle while the secondary axis displays the associated energy. In this case, one would pick `functions: (x => m*x*x, y => calc.sqrt(y/m))` with some constant `m`. Note that the first function computes the "forward" direction while the second function computes the "backward" direction. The user needs to ensure that the two functions are really inverses of each other. 
   /// This defaults to the identity. 
-  /// auto | array
+  /// -> auto | array
   functions: auto,
 
   /// The tick locator for the (major) ticks. 

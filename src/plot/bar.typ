@@ -126,7 +126,7 @@
   /// function are also allowed here, see 
   /// [`std.rect#stroke`](https://typst.app/docs/reference/visualize/rect/#parameters-stroke). 
   /// In particular, note that by passing a dictionary, the individual sides
-  ///  of the bars can be stroked individually. 
+  ///  of the bars can be stroked independently. 
   /// -> auto | none | color | length | stroke | gradient | tiling | dictionary
   stroke: none,
 
@@ -138,17 +138,17 @@
   ///     xaxis: (subticks: none),
   ///     lq.bar(
   ///       (1,2,3,4,5), (1,2,3,4,5), 
-  ///       width: .2, fill: red, 
+  ///       width: 0.2, fill: red, 
   ///       align: left, label: "left"
   ///     ),
   ///     lq.bar(
   ///       (1,2,3,4,5), (5,4,3,2,1), 
-  ///       width: .2, fill: blue, 
+  ///       width: 0.2, fill: blue, 
   ///       align: right, label: "right"
   ///     ),
   ///     lq.bar(
   ///       (1,2,3,4,5), (2.5,) * 5, 
-  ///       width: .2, fill: rgb("#AAEEAA99"),
+  ///       width: 0.2, fill: rgb("#AAEEAA99"),
   ///       align: center, label: "center"
   ///     ),
   ///   )
@@ -158,8 +158,8 @@
   align: center,
 
   /// Width of the bars in data coordinates. The width can be set either to a
-  /// constant for all bars or individually by passing an array with the same 
-  /// length as the coordinate arrays. 
+  /// constant for all bars or per-bar by passing an array with 
+  /// the same length as the coordinate arrays. 
   /// #details[
   ///   Example for a bar plot with varying bar widths.
   ///   ```example
@@ -167,14 +167,14 @@
   ///     lq.bar(
   ///       (1, 2, 3, 4, 5), 
   ///       (1, 2, 3, 2, 5), 
-  ///       width: (1, .5, 1, .5, 1), 
+  ///       width: (1, 0.5, 1, 0.5, 1), 
   ///       fill: orange, 
   ///     )
   ///   )
   ///   ```
   /// ]
   /// -> int | float | array
-  width: .8,
+  width: 0.8,
 
   /// An offset to apply to all $x$ coordinates. This is equivalent to replacing
   /// the array passed to @bar.x with `x.map(x => x + offset)`. Using an offset
@@ -185,7 +185,7 @@
 
 
   /// Defines the $y$ coordinate of the baseline of the bars. This can either  
-  /// be a constant value applied to all bars or it can be set individually by
+  /// be a constant value applied to all bars or it can be set per-bar by
   /// passing an array with the same length as the coordinate arrays. 
   /// #details[
   ///   Bar plot with varying base. 
@@ -197,7 +197,7 @@
   ///       (1, 2, 3, 0, 5), 
   ///       base: (0, 1, 2, -1, 0), 
   ///       fill: white, 
-  ///       stroke: .7pt
+  ///       stroke: 0.7pt
   ///     )
   ///   )
   ///   ```

@@ -77,7 +77,7 @@
 /// #lq.diagram(
 ///   lq.scatter(
 ///     x, y, 
-///     size: sizes.map(size => size * 200), 
+///     size: sizes.map(size => 200 * size), 
 ///     color: colors, 
 ///     map: color.map.magma
 ///   )
@@ -99,10 +99,10 @@
   /// -> auto | array
   size: auto, 
 
-  /// Mark colors. The element may either be of type `color` (then the argument 
-  /// `map` will be ignored) or of type `float`. In the case of the latter, the 
-  /// colors will be determined by normalizing the values and passing them through the 
-  /// `map`.
+  /// Mark colors. The element may either be of type `color` (then the argument
+  /// @scatter.map will be ignored) or of type `float`. In the case of the 
+  /// latter, the colors will be determined by normalizing the values and passing 
+  /// them through the `map`.
   /// -> auto | color | array
   color: auto,
 
@@ -121,10 +121,14 @@
   /// -> auto | int | float
   vmax: auto,
 
-  /// The normalization method used to scale scalar @scatter.color values to the range 
+  /// The normalization method used to scale $z$ coordinates to the range 
   /// $[0,1]$ before mapping them to colors using the color map. This can be a 
   /// @scale, a string that is the identifier of a built-in scale or a function 
-  /// that takes one argument. 
+  /// that takes one argument (for example the argument `x => calc.log(x)` 
+  /// would be equivalent to passing `"log"`). Note that the function does not 
+  /// actually need to map the values to the interval $[0,1]$. Instead it 
+  /// describes a scaling that is applied before the data set is _linearly_ 
+  /// scaled to the interval $[0,1]$. 
   /// -> lq.scale | str | function
   norm: "linear",
 
@@ -133,6 +137,7 @@
   mark: auto, 
 
   /// Mark stroke. TODO: need to get rid of it
+  /// -> stroke
   stroke: 1pt,
 
   /// The fill opacity. TODO: maybe get rid of it, there is already color. 
@@ -147,8 +152,8 @@
   /// -> bool
   clip: true,
   
-  /// Determines the $z$ position of this plot in the order of rendered diagram objects. 
-  /// See @plot.z-index.  
+  /// Determines the $z$ position of this plot in the order of rendered diagram
+  /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 2,
   
