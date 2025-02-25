@@ -1,4 +1,4 @@
-#import "libs/elembic/lib.typ" as e
+#import "libs/elembic/lib.typ" as e: selector
 #import "model/grid.typ": grid
 #import "model/label.typ": label
 #import "model/title.typ": title
