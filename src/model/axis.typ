@@ -130,6 +130,8 @@
   /// -> none | tiptoe.mark
   toe: none,
 
+  filter: (value, distance) => true,
+
   /// Plot objects to associate with this axis. This only applies when this is a secondary axis. Automatic limits are then computed according to this axis and transformations of the data coordinates linked to the scaling of this axis. 
   /// -> any
   ..plots
@@ -257,6 +259,8 @@
     format-subticks: format-subticks,
     extra-ticks: extra-ticks,
     format-extra-ticks: format-extra-ticks,
+
+    filter: filter,
 
     tick-args: tick-args,
     subtick-args: subtick-args,
@@ -476,11 +480,16 @@
 
 
   let place-ticks(ticks, labels, position, display-tick-labels, length-coeff: 1, dim: "height") = {
-    ticks = ticks.map(transform)
     if labels == none { labels = (none,) * ticks.len() }
 
+
     let content = ticks.zip(labels).map(
-      ((tick, label)) => place-tick(tick, if not display-tick-labels {none} else {label}, position, length-coeff*axis-style.inset, length-coeff*axis-style.outset)
+      ((tick, label)) => {
+        let loc = transform(tick)
+        let max = transform(axis.lim.at(if dim == "height" {1} else {0}))
+        if not (axis.filter)(tick, calc.min(loc, max - loc)) { return }
+        place-tick(loc, if not display-tick-labels {none} else {label}, position, length-coeff*axis-style.inset, length-coeff*axis-style.outset)
+      }
     ).join()
     
     let max-padding = axis-style.outset
