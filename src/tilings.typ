@@ -4,7 +4,7 @@
 
 #let crosses(
   size: 30pt, stroke: 1pt
-) = pattern(size: (size, size))[
+) = tiling(size: (size, size))[
   #place(line(start: (0%, 0%), end: (100%, 100%), stroke: stroke))
   #place(line(start: (0%, 100%), end: (100%, 0%), stroke: stroke))
 ]
@@ -19,7 +19,7 @@
   let height = m * width
   
   
-  pattern(size: (width, height), {
+  tiling(size: (width, height), {
     stroke = merge-strokes(stroke, std.stroke(cap: "square"))
 
     place(line(start: (0%, 0%), end: (100%, 100%), stroke: stroke))

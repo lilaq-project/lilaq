@@ -44,7 +44,7 @@
   height: auto, 
 
   /// How to fill the ellipse.  
-  /// -> none | color | gradient | pattern
+  /// -> none | color | gradient | tiling
   fill: none,
 
   /// How to stroke the ellipse.

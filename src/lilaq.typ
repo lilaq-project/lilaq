@@ -32,7 +32,7 @@
 #import "plot/place.typ": place
 
 
-#import "patterns.typ"
+#import "tilings.typ"
 #import "color.typ": colorbar
 #import "place-anchor.typ": place-anchor
 

@@ -28,7 +28,7 @@
   ..vertices,
 
   /// How to fill the path.  
-  /// -> none | color | gradient | pattern
+  /// -> none | color | gradient | tiling
   fill: none,
 
   /// How to stroke the path.

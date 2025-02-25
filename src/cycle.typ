@@ -151,7 +151,7 @@ For these reasons, `mark` should be a type defined as the following:
 ```typc
 #type mark {
   /// How to fill the mark. 
-  fill: auto | color | gradient | pattern = auto,
+  fill: auto | color | gradient | tiling = auto,
   
   /// How to stroke the mark. 
   stroke: none | stroke = 1pt,

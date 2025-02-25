@@ -42,7 +42,7 @@
   height: auto, 
 
   /// How to fill the rectangle.  
-  /// -> none | color | gradient | pattern
+  /// -> none | color | gradient | tiling
   fill: none,
 
   /// How to stroke the rectangle.

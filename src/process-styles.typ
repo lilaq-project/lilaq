@@ -23,11 +23,11 @@
 /// so the first fill that is not auto is returned. If all fills are
 /// `auto`, then `auto` is returned. 
 ///
-/// -> auto | none | color | gradient | pattern
+/// -> auto | none | color | gradient | tiling
 #let merge-fills(
   
   /// The fills to merge. 
-  /// -> none | color | gradient | pattern
+  /// -> none | color | gradient | tiling
   ..fills
   
 ) = {
@@ -45,7 +45,7 @@
 #let merge-strokes(
   
   /// The strokes to merge. 
-  /// -> none | auto | stroke | length | color | gradient | pattern | dictionary
+  /// -> none | auto | stroke | length | color | gradient | tiling | dictionary
   ..strokes
   
 ) = {
@@ -70,9 +70,9 @@
 #assert.eq(merge-strokes(auto, red), stroke(red))
 #assert.eq(merge-strokes(red, auto), stroke(red))
 #assert.eq(merge-strokes(red, stroke(dash: "dotted"), 4pt, 10pt), stroke(paint: red, dash: "dotted", thickness: 4pt))
-#assert.eq(merge-strokes(stroke(), 1pt, pattern("1"), red, auto, stroke()), 1pt + pattern("1"))
-#assert.eq(merge-strokes(none, stroke(), 1pt, pattern("1"), red, auto, stroke()), none)
-#assert.eq(merge-strokes(1pt, none, pattern("1"), red, auto, stroke()), stroke(1pt))
+#assert.eq(merge-strokes(stroke(), 1pt, tiling("1"), red, auto, stroke()), 1pt + tiling("1"))
+#assert.eq(merge-strokes(none, stroke(), 1pt, tiling("1"), red, auto, stroke()), none)
+#assert.eq(merge-strokes(1pt, none, tiling("1"), red, auto, stroke()), stroke(1pt))
 
 
 
