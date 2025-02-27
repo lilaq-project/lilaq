@@ -2,25 +2,38 @@
 #import "../process-styles.typ": merge-strokes, merge-fills
 #import "../logic/process-coordinates.typ": filter-nan-points, stepify
 #import "../math.typ": minmax
+#import "../cycle.typ": prepare-path
 
 #let render-fill-between(plot, transform) = {
+  
   let y2 = if plot.y2 == none { (0,)*plot.x.len() } else { plot.y2 }
   
   let (points, runs) = filter-nan-points(plot.x.zip(plot.y1, y2), generate-runs: true)
+
+  show: prepare-path.with(
+    fill: plot.style.fill,
+    stroke: plot.style.stroke,
+    element: polygon
+  )
   
-  for run in runs {
-    let there = run.map(x => x.slice(0,2))
-    let back = run.map(x => (x.at(0), x.at(2)))
-    if plot.style.step != none {
-      there = stepify(there, step: plot.style.step)
-      back = stepify(back, step: plot.style.step)
+  if "make-legend" in plot {
+    polygon((0%, 0%), (0%, 100%), (100%, 100%), (100%, 0%))
+  } else {
+      for run in runs {
+      let there = run.map(x => x.slice(0,2))
+      let back = run.map(x => (x.at(0), x.at(2)))
+      if plot.style.step != none {
+        there = stepify(there, step: plot.style.step)
+        back = stepify(back, step: plot.style.step)
+      }
+      
+
+    else {
+        place(polygon(
+          ..((there + back.rev()).map(p => transform(..p))))
+        )
+      }
     }
-    place(path(
-      fill: plot.style.fill, 
-      stroke: plot.style.stroke,
-      closed: true, 
-      ..((there + back.rev()).map(p => transform(..p))))
-    )
   }
 }
 
@@ -70,7 +83,7 @@
 
   /// How to fill the area. 
   /// -> none | color | gradient | tiling
-  fill: blue,
+  fill: auto,
   
   /// Step mode for plotting the lines. See @plot.step. 
   /// -> none | start | end | center
@@ -102,7 +115,8 @@
     plot: render-fill-between,
     xlimits: () => minmax(x),
     ylimits: () => minmax(y1 + y2 + if y2 == none {(0,)}),
-    legend-handle: plot => box(width: 100%, height: 100%, fill: plot.style.fill),
+    legend-handle: plot => none,
+    new-legend: true,
     z-index: z-index
   )
 }
