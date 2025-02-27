@@ -170,6 +170,13 @@
     if mirror == auto { mirror = none }
   } else if type(position) == alignment {
     if mirror == auto { mirror = none }
+    
+    if kind == "x" {
+      assert(position in (top, bottom), message: "For x-axes, `position` can only be \"top\" or \"bottom\", got " + repr(position))
+    }
+    if kind == "y" {
+      assert(position in (left, right), message: "For y-axes, `position` can only be \"left\" or \"right\", got " + repr(position))
+    }
   }
   if ticks != auto {
     if type(ticks) == dictionary {
