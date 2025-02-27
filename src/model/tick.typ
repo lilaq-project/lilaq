@@ -1,7 +1,11 @@
-/// A tick on a diagram axis. 
-/// TODO: Not used yet
+
+#import "../process-styles.typ": twod-ify-alignment
+#import "../libs/elembic/lib.typ" as e
+
 
 #let tick-label(
+
+  body
 
 ) = {}
 
@@ -11,28 +15,97 @@
   
   /// Position of the tick in data coordinates. 
   /// -> float
-  pos, 
+  value, 
 
-  /// Tick label. 
+  /// The content for the tick label. 
   /// -> any
   label: none,
 
-  /// Stroke of the tick. If set to `auto`, the stroke is inherited the axis spine. 
+  /// Whether this is a subtick. 
+  /// -> bool
+  sub: false,
+
+  /// Stroke of the tick. If set to `auto`, the stroke is inherited the axis 
+  /// spine. 
   /// -> auto | stroke
   stroke: auto,
 
-  /// Length of the tick outside the diagram. 
+  /// How much to shorten sub ticks compared to regular ticks. 
+  /// -> float
+  shorten-sub: 0.5,
+
+  /// Where to align the tick. For example, if set to `right`, the tick label is
+  /// shown to the left of the tick, aligning at its right side. Ticks on a 
+  /// $y$-axis on the left side of the diagram will typically be aligned on the
+  /// right. 
+  /// -> left | top | right | bottom
+  align: right,
+
+  /// The padding to add between the tick and the tick label. 
   /// -> length
-  outside: 0pt,
+  pad: 0.5em,
   
-  /// Length of the tick inside the diagram. 
+  /// The length of the tick on the inside of the axis. Here, the tick label
+  /// is considered to be on the _outside_. For example, if @tick.align is set
+  /// to `right`, the inset determines the tick length to the right of the 
+  /// axis spine. 
   /// -> length
-  inside: 4pt
+  inset: 4pt,
+
+  /// Length of the tick on the outside of the axis, see @tick.inset. For
+  /// example, if @tick.align is set to `right`, the inset determines the tick
+  /// length to the left of the axis spine. 
+  /// -> length
+  outset: 0pt
   
-) = (
-  pos: pos,
-  label: label,
-  stroke: stroke,
-  outside: outside,
-  inside: inside,
+) = {}
+
+
+
+
+#let tick = e.element.declare(
+  "tick",
+  prefix: "lilaq",
+
+  display: it => {
+    let angle = if it.align in (top, bottom) { 90deg } else { 0deg }
+    let factor = if it.sub { it.shorten-sub } else { 1 }
+    let length = (it.inset + it.outset) * factor
+
+    box(inset: (repr(it.align): it.pad + it.outset * factor), {
+      place(
+        twod-ify-alignment(it.align), 
+        pad(
+          ..(repr(it.align): -it.pad - length),
+          line(length: length, angle: angle, stroke: it.stroke)
+        )
+      )
+      it.label
+  })
+  },
+
+  labelable: false,
+
+  fields: (
+    e.field("value", float, required: true),
+    e.field("sub", bool, default: false),
+    e.field("label", e.types.any, default: none),
+    e.field("align", e.types.wrap(alignment, fold: none), default: right),
+    e.field("stroke", e.types.smart(stroke), default: .7pt),
+    e.field("shorten-sub", float, default: 0.5),
+    e.field("pad", length, default: 0.5em),
+    e.field("inset", length, default: 4pt),
+    e.field("outset", length, default: 0pt),
+  )
 )
+
+
+#tick(34, label: [34])
+#tick(34, label: [34], align: left)
+#tick(34, label: [34], align: top)
+#tick(34, label: [34], align: bottom)
+
+#tick(34, label: [34], inset: 2pt)
+#tick(34, label: [34], align: left, inset: 2pt)
+#tick(34, label: [34], align: top, inset: 2pt)
+#tick(34, label: [34], align: bottom, inset: 2pt)

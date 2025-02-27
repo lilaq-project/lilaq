@@ -37,7 +37,7 @@
 #import "place-anchor.typ": place-anchor
 
 
-#import "typing.typ": set-grid, set-label, set-title, set-legend, selector
+#import "typing.typ": set-grid, set-label, set-title, set-legend, set-tick, selector
 
 #import "logic/scale.typ"
 #import "algorithm/ticking.typ": locate-ticks-linear, locate-ticks-log, format-ticks-naive, format-ticks-linear, format-ticks-log
