@@ -565,7 +565,7 @@
     return format-ticks-linear(tick-info, exponent: exponent, auto-exponent-threshold, auto-exponent-threshold)
   }
   if base-label == auto { 
-    if base == calc.e { base-label = [e]}
+    if base == calc.e { base-label = $e$}
     else { base-label = base }
   }
   let ticks = tick-info.ticks
