@@ -647,7 +647,7 @@
       }
     }
     if axis.stroke != none {
-      /// later: use set rules here
+      // later: use set rules here
       let args = (:)
       if axis.tip != auto { args.tip = axis.tip }
       if axis.toe != auto { args.toe = axis.toe }

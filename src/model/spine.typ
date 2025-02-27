@@ -5,8 +5,7 @@
 #import "@preview/tiptoe:0.2.0"
 
 
-/// A tick on a diagram axis. A tick consists of a tick mark on the axis and
-/// a tick label, usually a number denoting the coordinate value. 
+/// The spine of a diagram axis, i.e., the line drawn along the axis. 
 #let spine(
   
   /// How to stroke the spine of the axis. 
@@ -21,7 +20,7 @@
   /// Places an arrow tail on the axis spine. This expects a mark as specified by 
   /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
   /// -> none | tiptoe.mark
-  toe: none,
+  toe: none
 
 ) = {}
 
