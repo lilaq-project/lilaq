@@ -4,13 +4,14 @@
 #import "../bounds.typ": *
 #import "../assertations.typ"
 #import "../model/label.typ": xlabel, ylabel, label as lq-label
-#import "../process-styles.typ": update-stroke
+#import "../process-styles.typ": update-stroke, twod-ify-alignment
 #import "../libs/elembic/lib.typ" as e
+
+#import "tick.typ": tick as lq-tick, tick-label as lq-tick-label
+
 #import "@preview/zero:0.3.2"
 #import "@preview/tiptoe:0.2.0"
 
-
-#import "tick.typ": tick as tick-constructor
 
 
 /// An axis for a diagram. Visually, an axis consists of a _spine_ along the axis 
@@ -431,12 +432,10 @@
   let place-tick 
   let place-exp-or-offset
   let spine
-  let dim 
   let exp-or-offset-alignment
   let exp-or-offset-offset
   
   if axis.kind == "x" {
-    dim = "height"
     place-tick = (x, label, position, inset, outset, stroke: axis.stroke) => {
       if axis.stroke != none {
         place-in-out(position, 
@@ -456,7 +455,6 @@
     exp-or-offset-offset = (dx: .5em, dy: 0pt)
     spine = tiptoe.line.with(tip: axis.tip, toe: axis.toe)
   } else if axis.kind == "y" {
-    dim = "width"
     place-tick = (y, label, position, inset, outset, stroke: axis.stroke) => {
       place(position, 
         line(length: inset + outset, stroke: stroke), 
@@ -479,27 +477,67 @@
 
 
 
-  let place-ticks(ticks, labels, position, display-tick-labels, length-coeff: 1, dim: "height") = {
+  let place-ticks(ticks, labels, position, display-tick-labels, length-coeff: 1, kind: "x") = {
     if labels == none { labels = (none,) * ticks.len() }
 
+    // let dim = if axis.kind == "x" { "height" } else { "width" }
+    // let content = ticks.zip(labels).map(
+    //   ((tick, label)) => {
+    //     let loc = transform(tick)
+    //     let max = transform(axis.lim.at(if kind == "x" {1} else {0}))
+    //     if not (axis.filter)(tick, calc.min(loc, max - loc)) { return }
+    //     place-tick(loc, if not display-tick-labels {none} else {label}, position, length-coeff*axis-style.inset, length-coeff*axis-style.outset)
+    //   }
+    // ).join()
+    
+    // let max-padding = axis-style.outset
+    // if display-tick-labels {
+    //   let label-space = calc.max(..labels.map(label => measure(label).at(dim)), 0pt)
+    //   max-padding += label-space
+    //   if label-space > 0pt {
+    //     max-padding += .5em
+    //   }
+    // }
+    
+    let align = position.inv()
+    let pad = e-get(lq-tick).pad
+    let outset = e-get(lq-tick).outset
+    let length = e-get(lq-tick).inset + outset
+    let angle = if align in (top, bottom) { 90deg } else { 0deg }
+
+    let tline = line(length: length, angle: angle, stroke: e-get(lq-tick).stroke)
+    let make-tick
+    if align == right {
+      make-tick = (label, loc) => place(dx: -outset, dy: loc, {tline + place(dx: -length - pad, right + horizon, label)})
+    } else if align == left {
+      make-tick = (label, loc) => place(dx: -length + outset, dy: loc, {tline + place(dx: length + pad, left + horizon, label)})
+    } else if align == top {
+      make-tick = (label, loc) => place(dy: -length + outset, dx: loc, {tline + place(dy: length + pad, top + center, label)});
+    } else if align == bottom {
+      make-tick = (label, loc) => place(dy: -outset, dx: loc, {tline + place(dy: -length - pad, bottom + center, label)})
+    }
+
+    let max = transform(axis.lim.at(if kind == "x" { 1 } else { 0 }))
 
     let content = ticks.zip(labels).map(
       ((tick, label)) => {
         let loc = transform(tick)
-        let max = transform(axis.lim.at(if dim == "height" {1} else {0}))
         if not (axis.filter)(tick, calc.min(loc, max - loc)) { return }
-        place-tick(loc, if not display-tick-labels {none} else {label}, position, length-coeff*axis-style.inset, length-coeff*axis-style.outset)
+        
+        make-tick(if display-tick-labels { label }, loc)
       }
     ).join()
-    
-    let max-padding = axis-style.outset
+
+    let max-padding = outset
     if display-tick-labels {
+      let dim = if axis.kind == "x" { "height" } else { "width" }
       let label-space = calc.max(..labels.map(label => measure(label).at(dim)), 0pt)
       max-padding += label-space
       if label-space > 0pt {
-        max-padding += .5em
+        max-padding += pad
       }
     }
+
     
     return (content, max-padding)
   }
@@ -511,25 +549,25 @@
     display-ticks: true, 
     display-tick-labels: true, 
     display-axis-label: true,
-    dim: "height"
+    kind: "x"
   ) = {
     let content = none
     let max-padding = 0pt
     let bounds = ()
 
     if display-ticks {
-      let (c, mp) = place-ticks(ticks, tick-labels, position, display-tick-labels, dim: dim)
+      let (c, mp) = place-ticks(ticks, tick-labels, position, display-tick-labels, kind: kind)
       content += c
       max-padding = mp
 
-      let (c, mp) = place-ticks(subticks, subtick-labels, position, display-tick-labels, length-coeff: .5, dim: dim)
+      let (c, mp) = place-ticks(subticks, subtick-labels, position, display-tick-labels, length-coeff: .5, kind: kind)
       content += c
 
       if axis.extra-ticks != none {
         for tick in axis.extra-ticks {
           
           if type(tick) in (int, float) {
-            tick = tick-constructor(tick)
+            tick = lq-tick(tick)
           } 
           content += place-tick(transform(tick.pos), tick.label, position, tick.inside, tick.outside, stroke: if-auto(tick.stroke, axis.stroke))
         }
@@ -568,7 +606,7 @@
       }
       let label = axis.label
       if e.eid(label) != e.eid(lq-label) {
-        let constructor = if dim == "height" {xlabel} else {ylabel}
+        let constructor = if kind == "x" {xlabel} else {ylabel}
         label = constructor(label)
       }
       let wrapper = if position in (top, bottom) {
@@ -588,7 +626,7 @@
       let (label, b) = place-with-bounds(body, alignment: position, dx: dx, dy: dy, pad: pad)
       
       content += label
-      if dim == "height" {
+      if kind == "x" {
         max-padding = size.height + pad
       } else {
         max-padding = size.width + pad
@@ -623,14 +661,14 @@
     return (content, bounds)
   }
 
-  let (axis-content, bounds) = the-axis(dim: dim, translate: axis.translate)
+  let (axis-content, bounds) = the-axis(kind: axis.kind, translate: axis.translate)
   let content = place(axis.position, axis-content, dx: axis.translate.at(0), dy: axis.translate.at(1))
   let em = measure(line(length: 1em, angle: 0deg)).width
   
   
   if axis.mirror != none {
     let (mirror-axis-content, mirror-axis-bounds) = the-axis(
-      dim: dim,
+      kind: axis.kind,
       position: axis.position.inv(),
       translate: axis.translate,
       display-ticks: axis.mirror.at("ticks", default: false),
