@@ -537,8 +537,9 @@
       ((tick, label)) => {
         let loc = transform(tick)
         if not (axis.filter)(tick, calc.min(loc, max - loc)) { return }
-        
-        make-tick(if display-tick-labels { label }, loc)
+        let tick-label = if display-tick-labels { label }
+        if tick-label != none {tick-label = lq-tick-label(tick-label)}
+        make-tick(tick-label, loc)
       }
     ).join()
 

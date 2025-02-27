@@ -3,12 +3,6 @@
 #import "../libs/elembic/lib.typ" as e
 #import "spine.typ": spine
 
-#let tick-label(
-
-  body
-
-) = {}
-
 
 /// A tick on a diagram axis. A tick consists of a tick mark on the axis and
 /// a tick label, usually a number denoting the coordinate value. 
@@ -63,7 +57,6 @@
 
 
 
-
 #let tick = e.element.declare(
   "tick",
   prefix: "lilaq",
@@ -110,3 +103,30 @@
 #tick(34, label: [34], align: left, inset: 2pt)
 #tick(34, label: [34], align: top, inset: 2pt)
 #tick(34, label: [34], align: bottom, inset: 2pt)
+
+
+
+
+/// A tick label, usually a number denoting the coordinate value. 
+/// This type exists prominently to enable `show` rules on tick labels. 
+#let tick-label(
+
+  /// Content to show in the label. 
+  body
+
+) = {}
+
+
+
+#let tick-label = e.element.declare(
+  "tick-label",
+  prefix: "lilaq",
+
+  display: it => {
+    it.body
+  },
+
+  fields: (
+    e.field("body", content, required: true),
+  )
+)

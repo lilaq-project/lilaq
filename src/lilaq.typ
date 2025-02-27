@@ -2,7 +2,7 @@
 
 #import "model/diagram.typ": diagram
 #import "model/axis.typ": axis, xaxis, yaxis
-#import "model/tick.typ": tick
+#import "model/tick.typ": tick, tick-label
 #import "model/spine.typ": spine
 #import "model/title.typ": title
 #import "model/legend.typ": legend
@@ -38,7 +38,7 @@
 #import "place-anchor.typ": place-anchor
 
 
-#import "typing.typ": set-grid, set-label, set-title, set-legend, set-tick, set-spine, selector
+#import "typing.typ": set-grid, set-label, set-title, set-legend, set-tick, set-tick-label, set-spine, selector
 
 #import "logic/scale.typ"
 #import "algorithm/ticking.typ": locate-ticks-linear, locate-ticks-log, format-ticks-naive, format-ticks-linear, format-ticks-log

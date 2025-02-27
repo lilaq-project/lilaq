@@ -1,6 +1,3 @@
-
-
-
 #import "../libs/elembic/lib.typ" as e
 #import "@preview/tiptoe:0.2.0"
 
