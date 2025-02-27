@@ -600,7 +600,7 @@
         )
         content += c
         b = offset-bounds(b, translate)
-        // bounds.push(b)
+        bounds.push(b)
       }
       if type(offset) in (int, float) and offset != 0 {
         let (c, b) = place-with-bounds(
