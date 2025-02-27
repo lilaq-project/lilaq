@@ -8,6 +8,7 @@
 #import "../libs/elembic/lib.typ" as e
 
 #import "tick.typ": tick as lq-tick, tick-label as lq-tick-label
+#import "spine.typ": spine
 
 #import "@preview/zero:0.3.2"
 #import "@preview/tiptoe:0.2.0"
@@ -438,7 +439,6 @@
 
   let place-tick 
   let place-exp-or-offset
-  let spine
   let exp-or-offset-alignment
   let exp-or-offset-offset
   
@@ -460,7 +460,6 @@
     place-exp-or-offset = it => place(horizon + right, dx: .5em, dy: 0pt, place(left + horizon, it))
     exp-or-offset-alignment = (alignment: bottom + right, content-alignment: horizon + left)
     exp-or-offset-offset = (dx: .5em, dy: 0pt)
-    spine = tiptoe.line.with(tip: axis.tip, toe: axis.toe)
   } else if axis.kind == "y" {
     place-tick = (y, label, position, inset, outset, stroke: axis.stroke) => {
       place(position, 
@@ -479,7 +478,6 @@
     place-exp-or-offset = it => place(top + center, dx: 0pt, dy: -.5em, place(bottom + center, it))
     exp-or-offset-alignment = (alignment: top + left, content-alignment: center + bottom)
     exp-or-offset-offset = (dx: 0pt, dy: -.5em)
-    spine = tiptoe.line.with(angle: 90deg, tip: axis.toe, toe: axis.tip)
   }
 
 
@@ -648,7 +646,13 @@
       }
     }
     if axis-stroke != none {
-      content += (spine(length: 100%, stroke: axis-stroke))
+      /// later: use set rules here
+      let args = (:)
+      if axis.tip != none { args.tip = axis.tip }
+      if axis.toe != none { args.toe = axis.toe }
+      if axis.stroke != none { args.stroke = axis.stroke }
+      content += spine(kind: axis.kind, ..args)
+      // content += (spine(length: 100%, stroke: axis-stroke))
     }
     
     let main-bounds = create-bounds()
