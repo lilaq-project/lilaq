@@ -4,7 +4,7 @@
 #import "../bounds.typ": *
 #import "../assertations.typ"
 #import "../model/label.typ": xlabel, ylabel, label as lq-label
-#import "../process-styles.typ": update-stroke, twod-ify-alignment
+#import "../process-styles.typ": update-stroke
 #import "../libs/elembic/lib.typ" as e
 
 #import "tick.typ": tick as lq-tick, tick-label as lq-tick-label
@@ -477,7 +477,13 @@
 
 
 
-  let place-ticks(ticks, labels, position, display-tick-labels, length-coeff: 1, kind: "x") = {
+  let place-ticks(
+    ticks, labels, 
+    position, 
+    display-tick-labels, 
+    sub: false,
+    kind: "x"
+  ) = {
     if labels == none { labels = (none,) * ticks.len() }
 
     // let dim = if axis.kind == "x" { "height" } else { "width" }
@@ -501,10 +507,12 @@
     
     let align = position.inv()
     let pad = e-get(lq-tick).pad
-    let outset = e-get(lq-tick).outset
-    let length = e-get(lq-tick).inset + outset
+    let factor = if sub { e-get(lq-tick).shorten-sub } else { 1 }
+    let outset = e-get(lq-tick).outset * factor
+    let shorten-sub = e-get(lq-tick).shorten-sub
+    let length = e-get(lq-tick).inset * factor + outset
     let angle = if align in (top, bottom) { 90deg } else { 0deg }
-
+  
     let tline = line(length: length, angle: angle, stroke: e-get(lq-tick).stroke)
     let make-tick
     if align == right {
@@ -560,7 +568,7 @@
       content += c
       max-padding = mp
 
-      let (c, mp) = place-ticks(subticks, subtick-labels, position, display-tick-labels, length-coeff: .5, kind: kind)
+      let (c, mp) = place-ticks(subticks, subtick-labels, position, display-tick-labels, sub: true, kind: kind)
       content += c
 
       if axis.extra-ticks != none {
