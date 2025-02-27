@@ -17,7 +17,7 @@
   /// -> float
   value, 
 
-  /// Tick label. 
+  /// The content for the tick label. 
   /// -> any
   label: none,
 
@@ -40,6 +40,10 @@
   /// right. 
   /// -> left | top | right | bottom
   align: right,
+
+  /// The padding to add between the tick and the tick label. 
+  /// -> length
+  pad: 0.5em,
   
   /// The length of the tick on the inside of the axis. Here, the tick label
   /// is considered to be on the _outside_. For example, if @tick.align is set
@@ -52,11 +56,7 @@
   /// example, if @tick.align is set to `right`, the inset determines the tick
   /// length to the left of the axis spine. 
   /// -> length
-  outset: 0pt,
-
-  /// The padding to add between the tick and the tick label. 
-  /// -> length
-  pad: 0.5em,
+  outset: 0pt
   
 ) = {}
 
@@ -92,10 +92,10 @@
     e.field("label", e.types.any, default: none),
     e.field("align", e.types.wrap(alignment, fold: none), default: right),
     e.field("stroke", e.types.smart(stroke), default: .7pt),
-    e.field("shorten-sub", float, default: .5),
+    e.field("shorten-sub", float, default: 0.5),
     e.field("pad", length, default: 0.5em),
-    e.field("outset", length, default: 0pt),
     e.field("inset", length, default: 4pt),
+    e.field("outset", length, default: 0pt),
   )
 )
 
