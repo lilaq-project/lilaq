@@ -1,7 +1,7 @@
 
 #import "../process-styles.typ": twod-ify-alignment
 #import "../libs/elembic/lib.typ" as e
-
+#import "spine.typ": spine
 
 #let tick-label(
 
@@ -10,7 +10,8 @@
 ) = {}
 
 
-/// A tick on a diagram axis. 
+/// A tick on a diagram axis. A tick consists of a tick mark on the axis and
+/// a tick label, usually a number denoting the coordinate value. 
 #let tick(
   
   /// Position of the tick in data coordinates. 
@@ -25,8 +26,8 @@
   /// -> bool
   sub: false,
 
-  /// Stroke of the tick. If set to `auto`, the stroke is inherited the axis 
-  /// spine. 
+  /// How to stroke the tick mark. If set to `auto`, the stroke is inherited 
+  /// the axis spine. 
   /// -> auto | stroke
   stroke: auto,
 
@@ -81,7 +82,7 @@
         )
       )
       it.label
-  })
+    })
   },
 
   labelable: false,
@@ -91,7 +92,7 @@
     e.field("sub", bool, default: false),
     e.field("label", e.types.any, default: none),
     e.field("align", e.types.wrap(alignment, fold: none), default: right),
-    e.field("stroke", e.types.smart(stroke), default: .7pt),
+    e.field("stroke", e.types.smart(stroke), default: auto),
     e.field("shorten-sub", float, default: 0.5),
     e.field("pad", length, default: 0.5em),
     e.field("inset", length, default: 4pt),

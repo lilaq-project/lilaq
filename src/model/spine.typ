@@ -10,11 +10,18 @@
 #let spine(
   
   /// How to stroke the spine of the axis. 
-  stroke: 0.7pt,
+  /// -> none | stroke
+  stroke: (thickness: 0.7pt, cap: "square"),
 
+  /// Places an arrow tip on the axis spine. This expects a mark as specified by
+  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// -> none | tiptoe.mark
   tip: none,
 
-  toe: none
+  /// Places an arrow tail on the axis spine. This expects a mark as specified by 
+  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// -> none | tiptoe.mark
+  toe: none,
 
 ) = {}
 
@@ -37,7 +44,7 @@
   },
 
   fields: (
-    e.field("stroke", stroke, default: 0.7pt),
+    e.field("stroke", stroke, default: (thickness: 0.7pt, cap: "square")),
     e.field(
       "kind", 
       e.types.union(e.types.literal("x"), e.types.literal("y")), 

@@ -4,7 +4,7 @@
 #import "../bounds.typ": *
 #import "../assertations.typ"
 #import "../model/label.typ": xlabel, ylabel, label as lq-label
-#import "../process-styles.typ": update-stroke
+#import "../process-styles.typ": update-stroke, merge-strokes
 #import "../libs/elembic/lib.typ" as e
 
 #import "tick.typ": tick as lq-tick, tick-label as lq-tick-label
@@ -50,9 +50,10 @@
   /// -> float | alignment
   position: auto, 
 
-  /// How to stroke the spine of the axis. 
-  /// -> stroke
-  stroke: 0.7pt,
+  /// How to stroke the spine of the axis. If not `auto`, this is forwarded to 
+  /// @spine.stroke. 
+  /// -> auto | stroke
+  stroke: auto,
 
   /// Whether to mirror the axis, i.e., whether to show the axis ticks also on 
   /// the side opposite of the one specified with @axis.position. When set to 
@@ -124,13 +125,15 @@
 
   /// Places an arrow tip on the axis spine. This expects a mark as specified by
   /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
-  /// -> none | tiptoe.mark
-  tip: none,
+  /// If not `auto`, this is forwarded to @spine.tip. 
+  /// -> auto | none | tiptoe.mark
+  tip: auto,
 
   /// Places an arrow tail on the axis spine. This expects a mark as specified by 
   /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
-  /// -> none | tiptoe.mark
-  toe: none,
+  /// If not `auto`, this is forwarded to @spine.toe. 
+  /// -> auto | none | tiptoe.mark
+  toe: auto,
 
   filter: (value, distance) => true,
 
@@ -432,10 +435,6 @@
   let (ticks, tick-labels, subticks, subtick-labels, exp, offset) = ticking
   
   let transform = axis.transform
-  let axis-stroke = axis.stroke
-  if axis-stroke != none {
-    axis-stroke = update-stroke(axis-stroke, stroke(cap: "square"))
-  }
 
   let place-tick 
   let place-exp-or-offset
@@ -518,7 +517,9 @@
     let length = e-get(lq-tick).inset * factor + outset
     let angle = if align in (top, bottom) { 90deg } else { 0deg }
   
-    let tline = line(length: length, angle: angle, stroke: e-get(lq-tick).stroke)
+    let tick-stroke = if-auto(e-get(lq-tick).stroke, merge-strokes(axis.stroke, e-get(spine).stroke))
+
+    let tline = line(length: length, angle: angle, stroke: tick-stroke)
     let make-tick
     if align == right {
       make-tick = (label, loc) => place(dx: -outset, dy: loc, {tline + place(dx: -length - pad, right + horizon, label)})
@@ -645,14 +646,13 @@
         max-padding = size.width + pad
       }
     }
-    if axis-stroke != none {
+    if axis.stroke != none {
       /// later: use set rules here
       let args = (:)
-      if axis.tip != none { args.tip = axis.tip }
-      if axis.toe != none { args.toe = axis.toe }
-      if axis.stroke != none { args.stroke = axis.stroke }
+      if axis.tip != auto { args.tip = axis.tip }
+      if axis.toe != auto { args.toe = axis.toe }
+      if axis.stroke != auto { args.stroke = axis.stroke }
       content += spine(kind: axis.kind, ..args)
-      // content += (spine(length: 100%, stroke: axis-stroke))
     }
     
     let main-bounds = create-bounds()
