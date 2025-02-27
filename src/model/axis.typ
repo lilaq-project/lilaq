@@ -568,6 +568,14 @@
     let content = none
     let max-padding = 0pt
     let bounds = ()
+    if axis.stroke != none {
+      // later: use set rules here
+      let args = (:)
+      if axis.tip != auto { args.tip = axis.tip }
+      if axis.toe != auto { args.toe = axis.toe }
+      if axis.stroke != auto { args.stroke = axis.stroke }
+      content += place(spine(kind: axis.kind, ..args))
+    }
 
     if display-ticks {
       let (c, mp) = place-ticks(ticks, tick-labels, position, display-tick-labels, kind: kind)
@@ -646,14 +654,8 @@
         max-padding = size.width + pad
       }
     }
-    if axis.stroke != none {
-      // later: use set rules here
-      let args = (:)
-      if axis.tip != auto { args.tip = axis.tip }
-      if axis.toe != auto { args.toe = axis.toe }
-      if axis.stroke != auto { args.stroke = axis.stroke }
-      content += spine(kind: axis.kind, ..args)
-    }
+    // define box of axis spine
+    content += box(..if kind == "y"{(height: 100%)}else{(width:100%)})
     
     let main-bounds = create-bounds()
     if axis.kind == "x" {
