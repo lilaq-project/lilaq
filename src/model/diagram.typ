@@ -103,7 +103,8 @@
 ) = {
   assertations.assert-no-named(children)
   set math.equation(numbering: none)
-  set path(stroke: .7pt)
+  set curve(stroke: .7pt)
+  set line(stroke: .7pt)
   let plots = ()
   let (xplots, yplots) = ((), ())
   let axes = ()

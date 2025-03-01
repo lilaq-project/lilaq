@@ -4,7 +4,7 @@
 #import "../logic/process-coordinates.typ": filter-nan-points
 #import "../math.typ": minmax
 #import "../utility.typ": if-auto
-#import "../cycle.typ": mark, prepare-mark, prepare-path
+#import "../cycle.typ": mark, prepare-mark, prepare-line
 
 #let render-stem(plot, transform) = {
   let marker = plot.style.mark
@@ -23,24 +23,28 @@
   
   let (x1, y0) = transform(xmin, plot.base)
   let (x2, y0) = transform(xmax, plot.base)
+  let points = filter-nan-points(plot.x.zip(plot.y)).map(p => transform(..p))
 
-  
-
-  
   show: prepare-mark.with(
     func: plot.style.mark, 
     color: merge-fills(plot.style.color),
     size: plot.style.mark-size
   )
-  show: prepare-path.with(
-    stroke: merge-strokes(plot.style.stroke, plot.style.color)
-  )
   
-  
-  let points = filter-nan-points(plot.x.zip(plot.y)).map(p => transform(..p))
+    
+  {
+    
+    
+    show: prepare-line.with(
+      stroke: merge-strokes(plot.style.stroke, plot.style.color)
+    )
+    
+    
 
-  points.map(((x, y)) => place(path((x, y0), (x, y)))).join()
-  
+    points.map(((x, y)) => place(line(start: (x, y0), end: (x, y)))).join()
+    
+  }
+
   if plot.style.base-stroke != none {
     set line(stroke: (cap: "square"))
     place(line(

@@ -236,8 +236,10 @@
   }
   box(width: 1cm, height: 1cm, fill: luma(90%), {
     let transform(p) = (p.at(0)*1cm, 1cm - p.at(1)*1cm)
-    place(path(
-      ..closed-curve.map(transform),
+    let vertices = closed-curve.map(transform)
+    place(std.curve(
+      std.curve.move(vertices.first()),
+      ..vertices.slice(1).map(std.curve.line),
     )) 
   })
 }
@@ -579,14 +581,17 @@
         }
       }
       let transform(p) = (p.at(0)*2cm, 2cm - p.at(1)*2cm)
-      contour.map(contour-path => place(path(
-        ..contour-path.map(transform),
-         stroke: get-clr(level).lighten(20%) + 2pt,
-      )) + place(
-        dx: transform(contour-path.first()).at(0), 
-        dy: transform(contour-path.first()).at(1),
+      contour.map(contour-path => {
+        contour-path = contour-path.map(transform)
+        place(curve(
+          curve.move(contour-path.first()),
+          ..contour-path.slice(1).map(curve.line),
+          stroke: get-clr(level).lighten(20%) + 2pt,
+        )) + place(
+        dx: (contour-path.first()).at(0), 
+        dy: (contour-path.first()).at(1),
         place(center + horizon, circle(fill: black, radius: 1pt))
-      )).join()
+      )}).join()
     }
   )
 }

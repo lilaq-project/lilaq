@@ -61,7 +61,8 @@
     // assert.eq(compute-polygon-orientation(..canvas-rect), right)
   
     for (i, contour) in filled-contours.enumerate() {
-      set path(stroke: none, fill: plot.line-colors.at(i), closed: true)
+      // set path(stroke: none, fill: plot.line-colors.at(i), closed: true)
+      set curve(stroke: none, fill: plot.line-colors.at(i))
 
       let points
       if i == 0 {
@@ -75,8 +76,14 @@
         points.push((0,0))
       }
 
-      place(path(
-        ..points.map(p => transform(..p)),
+      // place(path(
+      //   ..points.map(p => transform(..p)),
+      // ))
+      points = points.map(p => transform(..p))
+      place(curve(
+        curve.move(points.first()),
+        ..points.slice(1).map(curve.line),
+        curve.close()
       ))
 
     }
@@ -84,10 +91,16 @@
       
     for (i, contour) in contours.enumerate() {
       set line(stroke: plot.line-colors.at(i))
-      set path(stroke: plot.line-colors.at(i))
-      set path(stroke: plot.stroke)
+      // set path(stroke: plot.line-colors.at(i))
+      // set path(stroke: plot.stroke)
+      set curve(stroke: plot.line-colors.at(i))
+      set curve(stroke: plot.stroke)
       for path in contour {
-        place(std.path(..path.map(p => transform(..p))))
+        path = path.map(p => transform(..p))
+        place(std.curve(
+          curve.move(path.first()),
+          ..path.slice(1).map(curve.line)
+        ))
       }
     }
     

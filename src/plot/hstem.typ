@@ -4,7 +4,7 @@
 #import "../logic/process-coordinates.typ": filter-nan-points
 #import "../math.typ": minmax
 #import "../utility.typ": if-auto
-#import "../cycle.typ": mark, prepare-mark, prepare-path
+#import "../cycle.typ": mark, prepare-mark, prepare-line
 
 
 
@@ -33,13 +33,13 @@
     color: merge-fills(plot.style.color),
     size: plot.style.mark-size
   )
-  show: prepare-path.with(
+  show: prepare-line.with(
     stroke: merge-strokes(plot.style.stroke, plot.style.color)
   )
 
   let points = filter-nan-points(plot.x.zip(plot.y)).map(p => transform(..p))
 
-  points.map(((x, y)) => place(path((x0, y), (x, y)))).join()
+  points.map(((x, y)) => place(line(start: (x0, y), end: (x, y)))).join()
   
   if plot.style.base-stroke != none {
     set line(stroke: (cap: "square"))

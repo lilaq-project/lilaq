@@ -1,6 +1,79 @@
 #import "../assertations.typ"
 #import "../logic/limits.typ": compute-primitive-limits
 #import "../logic/process-coordinates.typ": convert-bezier-curve, transform-point
+#import "../math.typ": vec
+
+
+
+
+#let path-to-curve(
+  ..vertices,
+  stroke: stroke(),
+  fill: none,
+  closed: false
+) = {
+  // place(std.path(..vertices, stroke: stroke, fill: fill, closed: closed))
+  vertices = vertices.pos()
+  if vertices.len() == 0 { return }
+
+  let is-vertex(v) = type(v) == array and type(v.first()) != array
+  let extract-vertex(v) = {
+    if is-vertex(v) { v }
+    else { v.first() }
+  }
+  
+  let curve-elements = ()
+  let start-in = none
+  let out = none
+  for vertex in vertices {
+    let v = extract-vertex(vertex)
+    
+    if is-vertex(vertex) {
+      if out == none {
+        curve-elements.push((v,))
+      } else {
+        curve-elements.push((out, none, v))
+        out = none
+      }
+    } else {
+      if vertex.len() == 2 {
+        vertex.push(vec.multiply(vertex.at(1), -1))
+        // now its definitely a "cubic"!
+      }
+      if curve-elements.len() == 0 {
+        curve-elements.push((v,))
+        start-in = vec.add(v, vertex.at(1))
+      } else if out == none {
+        curve-elements.push((auto, vec.add(v, vertex.at(1)), v))
+        out = auto
+      } else {
+        curve-elements.push((out, vec.add(v, vertex.at(1)), v))
+      }
+      out = vec.add(v, vertex.at(2))
+    }
+  }
+
+  let to-curve-element(x) = {
+    if x.len() == 1 { curve.line(..x) }
+    else if x.len() == 2 { curve.quad(..x) }
+    else if x.len() == 3 { curve.cubic(..x) }
+  }
+  curve-elements = curve-elements.map(to-curve-element)
+  let start = extract-vertex(vertices.first())
+  if closed {
+    if out != none or start-in != none {
+      curve-elements.push(curve.cubic(out, start-in, start))
+    }
+    curve-elements.push(curve.close(mode: "straight"))
+  }
+  
+  std.curve(
+    fill: fill, 
+    stroke: stroke,
+    curve.move(start),
+    ..curve-elements,
+  )
+}
 
 
 /// Draws a path into the data area. Each vertex may be given as data coordinates, 
@@ -92,9 +165,10 @@
         })
         (p,) + cs
       })
-      place(std.path(
-        fill: fill, stroke: stroke, closed: closed,
-        // ..vertices.map(((x, y)) => convert-point(x, y, transform))
+      place(path-to-curve(
+        fill: fill, 
+        stroke: stroke, 
+        closed: closed,
         ..new-vertices
       ))
     },

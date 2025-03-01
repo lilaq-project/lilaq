@@ -29,12 +29,18 @@
   let line = merge-strokes(plot.style.stroke, plot.style.color)
   if line != none {
     show: prepare-path.with(
-      stroke: line
+      stroke: line,
+      element: curve
     )
 
     for run in runs {
+      if run.len() == 0 { continue }
       if plot.style.step != none { run = stepify(run, step: plot.style.step )}
-      place(path(..run.map(p => transform(..p))))
+      run = run.map(p => transform(..p))
+      place(curve(
+        curve.move(run.first()),
+        ..run.slice(1).map(curve.line)
+      ))
     }
   }
 
@@ -62,7 +68,10 @@
     
     points.zip(plot.xerr).map((((x, y), xerr)) => {
       let (upper, lower) = get-upper-lower(x, xerr)
-      place(path(transform(lower, y), transform(upper, y)))
+      place(curve(
+        curve.move(transform(lower, y)), 
+        curve.line(transform(upper, y))
+      ))
       
     }).join()
   }
@@ -72,7 +81,10 @@
     
     points.zip(plot.yerr).map((((x, y), yerr)) => {
       let (upper, lower) = get-upper-lower(y, yerr)
-      place(path(transform(x, lower), transform(x, upper)))
+      place(curve(
+        curve.move(transform(x, lower)), 
+        curve.line(transform(x, upper))
+      ))
       
     }).join()
   }
