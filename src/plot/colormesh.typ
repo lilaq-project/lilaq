@@ -86,12 +86,12 @@
   /// Sets the data value that corresponds to the first color of the color map. If set 
   /// to `auto`, it defaults to the minimum $z$ value.
   /// -> auto | int | float
-  vmin: auto,
+  min: auto,
 
   /// Sets the data value that corresponds to the last color of the color map. If set 
   /// to `auto`, it defaults to the maximum $z$ value.
   /// -> auto | int | float
-  vmax: auto,
+  max: auto,
 
   /// The normalization method used to scale $z$ coordinates to the range 
   /// $[0,1]$ before mapping them to colors using the color map. This can be a 
@@ -123,7 +123,7 @@
   if type(color) == array { 
     if type(color.at(0, default: 0)) in (int, float) {
       
-      (color, cinfo) = create-normalized-colors(color, map, norm, ignore-nan: true, vmin: vmin, vmax: vmax)
+      (color, cinfo) = create-normalized-colors(color, map, norm, ignore-nan: true, min: min, max: max)
     }
   }
   

@@ -9,18 +9,18 @@
   values,
   colormap,
   norm,
-  vmin: auto, 
-  vmax: auto,
+  min: auto, 
+  max: auto,
   ignore-nan: false
 ) = {
   if ignore-nan {
-    if vmin == auto { vmin = pmath.cmin(values) }
-    if vmax == auto { vmax = pmath.cmax(values) }
+    if min == auto { min = pmath.cmin(values) }
+    if max == auto { max = pmath.cmax(values) }
   } else {
-    if vmin == auto { vmin = calc.min(..values) }
-    if vmax == auto { vmax = calc.max(..values) }
+    if min == auto { min = calc.min(..values) }
+    if max == auto { max = calc.max(..values) }
   }
-  if vmin == vmax { vmin -= 1; vmax += 1}
+  if min == max { min -= 1; max += 1}
 
   let norm-fn = match-type(
     norm,
@@ -33,12 +33,12 @@
     default: () => assert(false, message: "Unsupported type `" + str(type(norm)) + "` for argument `norm`")
   )
   
-  let normalize = create-trafo(norm-fn, vmin, vmax)
+  let normalize = create-trafo(norm-fn, min, max)
   assert(type(colormap) in (gradient, array), message: "Invalid type for colormap")
   if type(colormap) == array {
     colormap = gradient.linear(..colormap)
   }
-  (values.map(x => colormap.sample(normalize(x) * 100%)), (norm: norm, min: vmin, max: vmax, colormap: colormap))
+  (values.map(x => colormap.sample(normalize(x) * 100%)), (norm: norm, min: min, max: max, colormap: colormap))
 }
 
 

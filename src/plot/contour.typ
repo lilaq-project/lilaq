@@ -211,12 +211,12 @@
   /// Sets the data value that corresponds to the first color of the color map. If set 
   /// to `auto`, it defaults to the minimum $z$ value.
   /// -> auto | int | float
-  vmin: auto,
+  min: auto,
 
   /// Sets the data value that corresponds to the last color of the color map. If set 
   /// to `auto`, it defaults to the maximum $z$ value.
   /// -> auto | int | float
-  vmax: auto,
+  max: auto,
 
   /// The normalization method used to scale $z$ coordinates to the range 
   /// $[0,1]$ before mapping them to colors using the color map. This can be a 
@@ -249,9 +249,9 @@
     levels = range.ticks
   }
   
-  if vmin == auto { vmin = calc.min(..z-flat) }
-  if vmax == auto { vmax = calc.max(..z-flat) }
-  let (color, cinfo) = create-normalized-colors(levels, map, norm, vmin: vmin, vmax: vmax)
+  if min == auto { min = calc.min(..z-flat) }
+  if max == auto { max = calc.max(..z-flat) }
+  let (color, cinfo) = create-normalized-colors(levels, map, norm, min: min, max: max)
 
 
   let stroke-contours = generate-contours(x, y, z, levels, z-range: z1 - z0)
