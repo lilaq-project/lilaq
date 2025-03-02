@@ -36,21 +36,21 @@
   /// - ratios like `50%` (measuring in the data area),
   /// - or a combination thereof. 
   /// -> alignment | array
-  pos: top + right,
+  position: top + right,
 
-  /// In the case that @legend.pos is an `alignment`, `pad` determines 
+  /// In the case that @legend.position is an `alignment`, `pad` determines 
   /// how much to pad the legend from the outer edge of the data area 
   /// of the diagam. 
   /// -> length
   pad: 2pt, 
 
   /// The horizontal displacement of the legend from the position specified 
-  /// through @legend.pos. 
+  /// through @legend.position. 
   /// -> length
   dx: 0pt,
 
   /// The vertical displacement of the legend from the position specified 
-  /// through @legend.pos. 
+  /// through @legend.position. 
   /// -> length
   dy: 0pt,
 
@@ -80,7 +80,7 @@
     e.field("stroke", e.types.option(stroke), default: 0.5pt + gray),
     e.field("radius", e.types.union(relative, dictionary), default: 1.5pt),
     
-    e.field("pos", e.types.union(alignment, array), default: top + right),
+    e.field("position", e.types.union(alignment, array), default: top + right),
     e.field("pad", length, default: 2pt),
     e.field("dx", length, default: 0pt),
     e.field("dy", length, default: 0pt),
@@ -120,7 +120,7 @@
   if my-legend == true { my-legend = (:)}
   my-legend = legend(..legend-entries, ..my-legend)
 
-  let pos = get-settable-field(legend, my-legend, "pos")
+  let pos = get-settable-field(legend, my-legend, "position")
   let dx = get-settable-field(legend, my-legend, "dx")
   let dy = get-settable-field(legend, my-legend, "dy")
   let pad = get-settable-field(legend, my-legend, "pad")
@@ -130,7 +130,7 @@
   if type(pos) == std.alignment {
     alignment = pos
   } else if type(pos) == array {
-    assert.eq(pos.len(), 2, message: "`legend.pos` needs to be a pair of coordinates, got " + repr(pos))
+    assert.eq(pos.len(), 2, message: "`legend.position` needs to be a pair of coordinates, got " + repr(pos))
     dx += pos.at(0)
     dy += pos.at(1)
   }

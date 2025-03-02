@@ -11,7 +11,7 @@
 
   /// Position of the title in the diagram. 
   /// -> left | top | right | bottom
-  pos: top,
+  position: top,
 
   /// Horizontal offset. 
   /// -> length
@@ -27,13 +27,13 @@
   
 ) = {
   assert(
-    pos in (top, bottom, left, right), 
-    message: "`pos` needs to be one of \"top\", \"left\", \"bottom\", and \"right\""
+    position in (top, bottom, left, right), 
+    message: "`position` needs to be one of \"top\", \"left\", \"bottom\", and \"right\""
   )
 
   (
     body: body,
-    pos: pos,
+    position: position,
     dx: dx,
     dy: dy,
     pad: pad
@@ -49,7 +49,7 @@
 
   fields: (
     e.field("body", content, required: true),
-    e.field("pos", alignment, default: top),
+    e.field("position", alignment, default: top),
     e.field("dx", length, default: 0pt),
     e.field("dy", length, default: 0pt),
     e.field("pad", length, default: 0.5em),

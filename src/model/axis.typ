@@ -592,7 +592,7 @@
           if type(tick) in (int, float) {
             tick = lq-tick(tick)
           } 
-          content += place-tick(transform(tick.pos), tick.label, position, tick.inside, tick.outside, stroke: if-auto(tick.stroke, axis.stroke))
+          content += place-tick(transform(tick.value), tick.label, position, tick.inside, tick.outside, stroke: if-auto(tick.stroke, axis.stroke))
         }
       }
     }

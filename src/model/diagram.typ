@@ -368,20 +368,20 @@
         title = lq-title(title)
       }
 
-      let pos = get-settable-field(lq-title, title, "pos")
+      let position = get-settable-field(lq-title, title, "position")
       let dx = get-settable-field(lq-title, title, "dx")
       let dy = get-settable-field(lq-title, title, "dy")
       let pad = get-settable-field(lq-title, title, "pad")
 
-      let wrapper = if pos in (top, bottom) {
+      let wrapper = if position in (top, bottom) {
         box.with(width: width)
-      } else if pos in (left, right) {
+      } else if position in (left, right) {
         box.with(height: height)
       }
 
       let body = wrapper(title)
       
-      let (title, b) = place-with-bounds(body, alignment: pos, dx: dx, dy: dy, pad: pad)
+      let (title, b) = place-with-bounds(body, alignment: position, dx: dx, dy: dy, pad: pad)
       
       artists.push((content: title, z: 3))
       bounds = update-bounds(bounds, b)
