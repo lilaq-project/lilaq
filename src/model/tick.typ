@@ -61,22 +61,27 @@
   "tick",
   prefix: "lilaq",
 
-  display: it => {
+  display: it => e.get(e-get => {
     let angle = if it.align in (top, bottom) { 90deg } else { 0deg }
     let factor = if it.sub { it.shorten-sub } else { 1 }
     let length = (it.inset + it.outset) * factor
+    
+    let stroke = it.stroke
+    if stroke == auto { 
+      stroke = e-get(spine).stroke 
+    }
 
     box(inset: (repr(it.align): it.pad + it.outset * factor), {
       place(
         twod-ify-alignment(it.align), 
         pad(
           ..(repr(it.align): -it.pad - length),
-          line(length: length, angle: angle, stroke: it.stroke)
+          line(length: length, angle: angle, stroke: stroke)
         )
       )
       it.label
     })
-  },
+  }),
 
   labelable: false,
 
