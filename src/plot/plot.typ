@@ -246,14 +246,15 @@
   ///   they are still drawn in front of the bars. 
   ///   ```example
   ///   #lq.diagram(
+  ///     legend: (position: bottom),
   ///     lq.plot(
-  ///       (1, 2, 3), (4, 5, 6),
+  ///       (1, 2, 3, 4), (2, 3, 4, 5),
   ///       mark-size: 10pt,
   ///       z-index: 2.01,
   ///       label: [Points],
   ///     ),
   ///     lq.bar(
-  ///       (1, 2, 3), (4, 5, 6),
+  ///       (1, 2, 3, 4), (2, 3, 4, 5),
   ///       label: [Bars],
   ///     )
   ///   )
