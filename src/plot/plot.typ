@@ -286,8 +286,7 @@
     plot: render-plot,
     xlimits: () => plot-lim(x, err: xerr),
     ylimits: () => plot-lim(y, err: yerr),
-    legend-handle: plot => none,
-    new-legend: true,
+    legend: true,
     clip: clip,
     z-index: z-index
   )

@@ -279,18 +279,15 @@
         } else {
           (plot.plot)(plot, transform)
         }
-        if "legend-handle" in plot and plot.label != none {
-          let handle = (plot.legend-handle)(plot)
-          if "new-legend" in plot {
-            plot.make-legend = true
-            let legend-trafo(x, y) = {
-              (x*100%, (1-y)*100%)
-            }
-            handle = {
-              show: cycle-init
-              show: cycle-style
-              (plot.plot)(plot, legend-trafo)
-            }
+        if "legend" in plot and plot.label != none {
+          plot.make-legend = true
+          let legend-trafo(x, y) = {
+            (x*100%, (1-y)*100%)
+          }
+          let handle = {
+            show: cycle-init
+            show: cycle-style
+            (plot.plot)(plot, legend-trafo)
           }
           legend-entries.push((
             box(width: 2em, height: .7em, handle),

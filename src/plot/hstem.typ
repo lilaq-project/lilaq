@@ -141,8 +141,7 @@
     plot: render-hstem,
     xlimits: () => bar-lim(x, (base,)),
     ylimits: () => minmax(y),
-    legend-handle: plot => none,
-    new-legend: true,
+    legend: true,
     clip: clip,
     z-index: z-index
   )

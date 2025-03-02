@@ -12,6 +12,16 @@
 #let render-quiver(plot, transform) = context {
 
 
+  let arrow = plot.style.arrow
+  let get-arrow-stroke = plot.style.get-arrow-stroke
+
+  if "make-legend" in plot {
+    return arrow(
+      length: 100%, 
+      stroke: get-arrow-stroke(0, 1)
+    )
+  }
+
   let pivot = match(plot.style.pivot,
     center, () => dir => dir.map(x => -x*0.5),
     start, () => dir => (0, 0),
@@ -19,10 +29,6 @@
     default: () => assert(false, message: "The argument `pivot` of `quiver` needs to be one of 'start', 'center', or 'end'")
   )
 
-
-
-  let arrow = plot.style.arrow
-  let get-arrow-stroke = plot.style.get-arrow-stroke
 
   for i in range(plot.x.len()) {
     for j in range(plot.y.len()) {
@@ -212,12 +218,7 @@
     plot: render-quiver,
     xlimits: () => (x.at(0), x.at(-1)),
     ylimits: () => (y.at(0), y.at(-1)),
-    legend-handle: plot => layout(size => {
-      arrow(
-        length: size.width, 
-        stroke: get-arrow-stroke(0, 1)
-      )
-    }),
+    legend: true,
     z-index: z-index
   )
 }

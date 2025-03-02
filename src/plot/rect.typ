@@ -81,10 +81,19 @@
 
 ) = {
   assertations.assert-no-named(body, fn: "rect")
+  
+  let body = body.pos().at(0, default: none)
+
   (
     x: x, 
     y: y,
     plot: (plot, transform) => { 
+      if "make-legend" in plot {
+        return std.rect(
+          width: 100%, height: 100%, 
+          fill: fill, stroke: stroke, radius: radius
+        )
+      }
       let (x1, width, y1, height) = convert-rect(x, y, width, height, transform)
       place(dx: x1, dy: y1, 
         std.rect(
@@ -95,17 +104,14 @@
           radius: radius, 
           inset: inset, 
           outset: outset,
-          body.pos().at(0, default: none)
+          body
         )
       )
     },
     xlimits: compute-primitive-limits.with((x, if all-data-coordinates((x, width)) { x + width } else { x })),
     ylimits: compute-primitive-limits.with((y, if all-data-coordinates((y, height)) { y + height } else { y })),
-    legend-handle: plot => std.rect(
-      width: 100%, height: 100%, 
-      fill: fill, stroke: stroke, radius: radius
-    ),
     label: label,
+    legend: true,
     clip: clip,
     z-index: z-index
   )

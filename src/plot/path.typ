@@ -154,6 +154,13 @@
   (
     vertices: vertices,
     plot: (plot, transform) => { 
+      if "make-legend" in plot {
+        return std.rect(
+          width: 100%, height: 100%, 
+          fill: fill, stroke: stroke
+        )
+      }
+
       let new-vertices = vertices.map(v => {
         if type(v.at(0)) != array { return transform-point(..v, transform) }
         return convert-bezier-curve(v, transform)
@@ -174,11 +181,8 @@
     },
     xlimits: compute-primitive-limits.with(all-points.map(x => x.at(0))),
     ylimits: compute-primitive-limits.with(all-points.map(x => x.at(1))),
-    legend-handle: plot => std.rect(
-      width: 100%, height: 100%, 
-      fill: fill, stroke: stroke
-    ),
     label: label,
+    legend: true,
     clip: clip,
     z-index: z-index
   )

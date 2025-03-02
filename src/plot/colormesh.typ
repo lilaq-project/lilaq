@@ -3,6 +3,10 @@
 #import "../color.typ": create-normalized-colors
 
 #let render-colormesh(plot, transform) = {
+  if "make-legend" in plot {
+    return box(width: 100%, height: 100%, fill: plot.color.at(0))
+  }
+
   let get-extents(x) = {
     x.zip(x.slice(1)).map(((x, x1)) => x1 - x)
   }
@@ -139,7 +143,7 @@
       1fr * (y.at(0) - 0.5 * (y.at(1) - y.at(0))), 
       1fr * (y.at(-1) + 0.5 * (y.at(-1) - y.at(-2)))
     ),
-    legend-handle: plot => box(width: 100%, height: 100%, fill: color.at(0)),
+    legend: true,
     z-index: z-index
   )
 }

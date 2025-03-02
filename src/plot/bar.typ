@@ -268,8 +268,7 @@
     plot: render-bar,
     xlimits: () => xlim,
     ylimits: () => bar-lim(y, base),
-    legend-handle: plot => none,
-    new-legend: true,
+    legend: true,
     clip: clip,
     z-index: z-index
   )

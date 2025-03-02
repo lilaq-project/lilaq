@@ -4,6 +4,10 @@
 #import "../math.typ": minmax, mesh
 
 #let render-contour(plot, transform) = {
+  if "make-legend" in plot {
+    return std.line(length: 100%, stroke: plot.line-colors.first())
+  }
+
   let get-widths(x) = {
     x.zip(x.slice(1)).map(((x, x1)) => x1 - x)
   }
@@ -286,9 +290,7 @@
     plot: render-contour,
     xlimits: () => (x.at(0)*1fr, x.at(-1)*1fr),
     ylimits: () => (y.at(0)*1fr, y.at(-1)*1fr),
-    legend-handle: plot => {
-      std.line(length: 100%, stroke: color.first())
-    },
+    legend: true,
     z-index: z-index
   )
 }

@@ -175,8 +175,7 @@
     plot: render-bar.with(orientation: "horizontal"),
     xlimits: () => bar-lim(x, base),
     ylimits: () => ylim,
-    legend-handle: plot => none,
-    new-legend: true,
+    legend: true,
     clip: clip,
     z-index: z-index
   )

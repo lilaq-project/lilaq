@@ -92,6 +92,10 @@
   let vertices = (start, end)
   (
     plot: (plot, transform) => { 
+      if "make-legend" in plot {
+        return std.line(length: 100%, stroke: stroke)
+      }
+
       let (start, end) = vertices.map(convert-vertex.with(transform: transform))
       if tip == none and toe == none {
         return place(std.line(
@@ -107,8 +111,8 @@
     },
     xlimits: compute-primitive-limits.with(vertices.map(x => x.at(0))),
     ylimits: compute-primitive-limits.with(vertices.map(x => x.at(1))),
-    legend-handle: plot => std.line(start: (0pt, 100%), end: (100%, 0pt), stroke: stroke),
     label: label,
+    legend: true,
     clip: clip,
     z-index: z-index
   )

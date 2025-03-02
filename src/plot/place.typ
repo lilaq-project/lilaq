@@ -91,7 +91,6 @@
     xlimits: () => none,
     ylimits: () => none,
     label: none,
-    legend-handle: (..) => none,
     clip: clip,
     z-index: z-index
   )

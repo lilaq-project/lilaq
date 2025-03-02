@@ -5,6 +5,13 @@
 #import "../cycle.typ": mark, prepare-mark
 
 #let render-boxplot(plot, transform) = {
+
+  
+  if "make-legend" in plot {
+    return std.line(length: 100%, stroke: plot.style.stroke)
+  }
+
+
   let style = plot.style
 
   let box-thickness = utility.if-auto(stroke(style.stroke).thickness, 1pt)
@@ -289,9 +296,7 @@
     plot: render-boxplot,
     xlimits: () => (xmin, xmax),
     ylimits: () => (ymin, ymax),
-    legend-handle: plot => {
-      std.line(length: 100%, stroke: stroke)
-    },
+    legend: true,
     clip: clip,
     z-index: z-index
   )

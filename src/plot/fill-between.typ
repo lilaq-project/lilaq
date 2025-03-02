@@ -115,8 +115,7 @@
     plot: render-fill-between,
     xlimits: () => minmax(x),
     ylimits: () => minmax(y1 + y2 + if y2 == none {(0,)}),
-    legend-handle: plot => none,
-    new-legend: true,
+    legend: true,
     z-index: z-index
   )
 }

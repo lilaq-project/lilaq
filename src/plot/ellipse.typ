@@ -83,6 +83,13 @@
     x: x, 
     y: y,
     plot: (plot, transform) => { 
+      if "make-legend" in plot {
+        return std.ellipse(
+          width: 100%, height: 100%, 
+          fill: fill, stroke: stroke
+        )
+      }
+
       let (x1, width, y1, height) = convert-rect(x, y, width, height, transform)
       place(dx: x1, dy: y1, 
         std.ellipse(
@@ -98,11 +105,8 @@
     },
     xlimits: compute-primitive-limits.with((x, if all-data-coordinates((x, width)) { x + width } else { x })),
     ylimits: compute-primitive-limits.with((y, if all-data-coordinates((y, height)) { y + height } else { y })),
-    legend-handle: plot => std.ellipse(
-      width: 100%, height: 100%, 
-      fill: fill, stroke: stroke
-    ),
     label: label,
+    legend: true,
     clip: clip,
     z-index: z-index
   )

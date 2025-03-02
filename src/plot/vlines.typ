@@ -8,16 +8,20 @@
 #let render-vlines(plot, transform) = {
   let min = plot.min
   let max = plot.max
+
+  if "make-legend" in plot {
+    return std.line(length: 100%, stroke: plot.style.line)
+  }
+
   if min == auto { min = 100% }
   else {
     (_, min) = transform(1, min)
-    
   }
   if max == auto { max = 0% }
   else {
     (_, max) = transform(1, max)
-    
   }
+
   for x in plot.x {
     let (xx, _) = transform(x, 1)
     place(line(start: (xx, min), end: (xx, max), stroke: plot.style.line))
@@ -89,9 +93,7 @@
     plot: render-vlines,
     xlimits: () => minmax(x),
     ylimits: () => ylimits,
-    legend-handle: plot => {
-      std.line(length: 100%, stroke: line)
-    },
+    legend: true,
     z-index: z-index
   )
 }

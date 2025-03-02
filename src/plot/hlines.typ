@@ -5,16 +5,20 @@
 #let render-hlines(plot, transform) = {
   let min = plot.min
   let max = plot.max
+
+  if "make-legend" in plot {
+    return std.line(length: 100%, stroke: plot.style.line)
+  }
+
   if min == auto { min = 0% }
   else {
     (min, _) = transform(min, 1)
-    
   }
   if max == auto { max = 100% }
   else {
     (max, _) = transform(max, 1)
-    
   }
+
   for y in plot.y {
     let (_, yy) = transform(1, y)
     place(line(start: (min, yy), end: (max, yy), stroke: plot.style.line))
@@ -91,9 +95,7 @@
     plot: render-hlines,
     xlimits: () => xlimits,
     ylimits: () => minmax(y),
-    legend-handle: plot => {
-      std.line(length: 100%, stroke: line)
-    },
+    legend: true,
     z-index: z-index
   )
 }

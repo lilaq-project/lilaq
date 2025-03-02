@@ -195,8 +195,7 @@
     plot: render-scatter,
     xlimits: () => minmax(x),
     ylimits: () => minmax(y),
-    legend-handle: plot => none,
-    new-legend: true, 
+    legend: true,
     clip: clip,
     z-index: z-index
   )
