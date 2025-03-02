@@ -139,8 +139,15 @@
     alignment: alignment, 
     content-alignment: "inside", 
     dx: dx, dy: dy, pad: pad,
+    wrap-in-box: true,
     {
-      set table(columns: 2, stroke: none, inset: 2pt, align: horizon + left)
+      set table(
+        columns: 2, 
+        stroke: none, 
+        inset: 2pt, 
+        align: horizon + left
+      )
+      set table.cell(breakable: false)
       my-legend
     }
   )

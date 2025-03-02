@@ -52,7 +52,8 @@
   dy: 0pt, 
   pad: 0pt,
   alignment: top + left, 
-  content-alignment: auto
+  content-alignment: auto,
+  wrap-in-box: false
 ) = {
   if alignment.x == none { alignment = alignment.y + center }
   else if alignment.y == none { alignment = alignment.x + horizon }
@@ -75,6 +76,9 @@
 
   let (ddx, ddy) = (dx, dy)
   
+  if wrap-in-box {
+    content = box(..size, content)
+  }
   let content = place(content-alignment, content)
   
   if alignment.x == right { dx += 100% }
