@@ -65,7 +65,26 @@
   }
 }
 
-/// Creates a quiver plot. 
+/// Creates a quiver plot for visualizing vector fields over a rectangular 
+/// coordinate grid. 
+/// 
+/// The `quiver` function takes an array of $x$- and $y$-coordinates as well as
+/// a two-dimensional array of vector directions or a mapper from `(x, y)` 
+/// pairs to direction vectors. 
+/// ```example
+/// #lq.diagram(
+///   lq.quiver(
+///     lq.arange(-2, 3),
+///     lq.arange(-2, 3),
+///     (x, y) => (x + y, y - x)
+///   )
+///  )
+/// ```
+/// By default, arrow lengths and strokes are scaled automatically to 
+/// compensate for the density of a quiver plot. 
+/// 
+/// On top, the arrows can easily be color-coded, similar to @colormesh, 
+/// see @quiver.color. 
 #let quiver(
 
   /// A one-dimensional array of $x$ data coordinates. 
@@ -80,17 +99,54 @@
   /// This can either be a two-dimensional array of dimensions $m×n$ 
   /// where $m$ is the length of @quiver.x and $n$ is the length of @quiver.y, 
   /// or a function that takes an `x` and a `y` value and returns a 
-  /// corresponding 2-dimensional vector. 
+  /// corresponding 2-dimensional vector. Masking is possible through `nan` values. 
   /// -> array | function
   directions,
 
-  /// How to color the arrows. This can be a single color or a 2d arrow with the same dimensions as @quiver or a function that receives `(x, y)` pairs from the given `x` and `y` coordinates and returns a scalar/color. 
-  /// -> color | array | function
-  color: black,
-
-  /// How to stroke the arrows. This parameter takes precedence over @quiver.color. 
+  /// How to stroke the arrows. This parameter takes precedence over 
+  /// @quiver.color. If the stroke thickness is left at `auto`, small
+  /// arrows will be drawn with a thinner line style. 
   /// -> auto | stroke
   stroke: auto,
+
+  /// Scales the length of the arrows uniformly. If set to `auto`, the length 
+  /// is heuristically computed from the densitity of the coordinate grid. 
+  /// -> auto | int | float
+  scale: auto, 
+
+  /// With which part the arrows should point onto the grid coordinates, e.g., 
+  /// when set to `end`, the tip (end) of the arrow will point to the 
+  /// respective coordinates. 
+  /// 
+  /// #details[
+  ///   ```example
+  ///   #let x = lq.arange(-2, 3)
+  ///   #let y = lq.arange(-2, 3)
+  ///   #let (directions) = lq.mesh(x, y, (x, y) => (x + y, y - x))
+  /// 
+  ///   #let quiver-diagram = lq.diagram.with(
+  ///     xaxis: (tick-distance: 1),
+  ///     xlim: (-3, 3),
+  ///     ylim: (-3, 3),
+  ///     width: 4cm
+  ///   )
+  /// 
+  ///   #quiver-diagram(
+  ///     title: [`pivot: end`],
+  ///     lq.quiver(x, y, directions, pivot: end),
+  ///   )
+  ///   #quiver-diagram(
+  ///     title: [`pivot: center` (default)],
+  ///     lq.quiver(x, y, directions, pivot: center),
+  ///   )
+  ///   #quiver-diagram(
+  ///     title: [`pivot: start`],
+  ///     lq.quiver(x, y, directions, pivot: start),
+  ///   )
+  ///   ```
+  /// ]
+  /// -> start | center | end
+  pivot: end,  
 
   /// Determines the arrow tip to use. This expects a mark as specified by
   /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
@@ -102,29 +158,45 @@
   /// -> none | tiptoe.mark
   toe: none,
 
-  /// With what part the arrows should point onto the grid coordinates, e.g., when set to `end`, the tip (end) of the arrow will point the respective coordinates. 
-  /// -> start | center | end
-  pivot: end,  
-
-  /// Scales the length of the arrows uniformly
-  /// -> auto | int | float
-  scale: auto, 
+  /// How to color the arrows. This can be a single color or a two-dimensional
+  /// array with the same dimensions as @quiver or a function that receives 
+  /// `(x, y)` pairs from the given `x` and `y` coordinates and returns a 
+  /// scalar/color. 
+  /// #details[
+  ///   In this example, we make a color-coding by taking the `x` value of the
+  ///   direction vectors. 
+  ///   ```example
+  ///   #let x = lq.arange(-2, 3)
+  ///   #let y = lq.arange(-2, 3)
+  ///   #let (directions) = lq.mesh(x, y, (x, y) => (x + y, y - x))
+  /// 
+  ///   #lq.diagram(
+  ///     lq.quiver(
+  ///       x, y, 
+  ///       directions,
+  ///       color: directions.map(d => d.map(d => d.at(0)))
+  ///     ),
+  ///   )
+  ///   ```
+  /// ]
+  /// -> color | array | function
+  color: black,
   
   /// A color map in form of a gradient or an array of colors to sample from. 
   /// -> array | gradient
   map: color.map.viridis,
 
-  /// Sets the data value that corresponds to the first color of the color map. If set 
-  /// to `auto`, it defaults to the minimum $z$ value.
+  /// Sets the data value that corresponds to the first color of the color map. 
+  /// If set to `auto`, it defaults to the minimum color value.
   /// -> auto | int | float
   min: auto,
 
-  /// Sets the data value that corresponds to the last color of the color map. If set 
-  /// to `auto`, it defaults to the maximum $z$ value.
+  /// Sets the data value that corresponds to the last color of the color map. 
+  /// If set to `auto`, it defaults to the maximum color value.
   /// -> auto | int | float
   max: auto,
 
-  /// The normalization method used to scale $z$ coordinates to the range 
+  /// The normalization method used to scale @quiver.color scalars to the range 
   /// $[0,1]$ before mapping them to colors using the color map. This can be a 
   /// @scale, a string that is the identifier of a built-in scale or a function 
   /// that takes one argument. 
@@ -135,8 +207,8 @@
   /// -> content
   label: none,
   
-  /// Determines the $z$ position of this plot in the order of rendered diagram objects. 
-  /// See @plot.z-index.  
+  /// Determines the $z$ position of this plot in the order of rendered diagram 
+  /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 2
   
