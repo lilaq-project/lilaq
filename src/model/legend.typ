@@ -4,7 +4,8 @@
 
 /// A diagram legend listing all labeled plots. 
 /// 
-/// 
+/// Also refer to the 
+/// #link("tutorials/legend")[legend tutorial] for more details. 
 #let legend(
 
   /// The items to place in the legend. Items are tuples of a 
@@ -133,6 +134,7 @@
     assert.eq(pos.len(), 2, message: "`legend.position` needs to be a pair of coordinates, got " + repr(pos))
     dx += pos.at(0)
     dy += pos.at(1)
+    pad = 0pt
   }
   
   place-with-bounds(
