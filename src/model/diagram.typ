@@ -64,19 +64,23 @@
   /// -> auto | none | dictionary | stroke | color | length
   grid: auto,
 
-  /// Sets the scale of the $x$-axis. This may be a @scale object or the name of one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
+  /// Sets the scale of the $x$-axis. This may be a @scale object or the name
+  /// of one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
   /// -> str | lq.scale
   xscale: "linear",
   
-  /// Sets the scale of the $y$-axis. This may be a @scale object or the name of one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
+  /// Sets the scale of the $y$-axis. This may be a @scale object or the name
+  /// of one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
   /// -> str | lq.scale
   yscale: "linear",
 
-  /// Configures the $x$-axis through a dictionary of arguments to pass to the constructor of the axis. 
+  /// Configures the $x$-axis through a dictionary of arguments to pass to the 
+  /// constructor of the axis. See @axis for available options. 
   /// -> dictionary
   xaxis: (:),
   
-  /// Configures the $y$-axis through a dictionary of arguments to pass to the constructor of the axis. 
+  /// Configures the $y$-axis through a dictionary of arguments to pass to the
+  /// constructor of the axis. See @axis for available options. 
   /// -> dictionary
   yaxis: (:),
 
@@ -88,7 +92,8 @@
   /// -> ratio | dictionary
   margin: 6%,
   
-  /// Style cycle to use for this diagram. 
+  /// Style cycle to use for this diagram. Check out the 
+  /// #link("tutorials/cycles")[cycles tutorial] for more information. 
   /// -> array
   cycle: default-cycle,
 
@@ -96,7 +101,8 @@
   /// -> none | color | gradient | tiling 
   fill: none,
 
-  /// Plot objects like @plot, @bar, @scatter, @contour etc. and additional @axis objects. 
+  /// Plot objects like @plot, @bar, @scatter, @contour etc. and additional 
+  /// @axis objects. 
   /// -> any
   ..children
 

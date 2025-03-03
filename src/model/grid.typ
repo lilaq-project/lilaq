@@ -7,7 +7,7 @@
 /// respectively. 
 /// 
 /// One way to set up the grid stroke is with a style rule. The stroke 
-/// for the grid lines at the main ticks is controlled by `stroke`
+/// for the grid lines at the main ticks is controlled by @grid.stroke
 /// ```example
 /// #show: lq.set-grid(stroke: teal)
 /// 
@@ -15,7 +15,7 @@
 /// 
 /// )
 /// ```
-/// and the stroke of the subticks by `stroke-sub`:
+/// and the stroke of the subticks by @grid.stroke-sub:
 /// ```example
 /// #show: lq.set-grid(stroke-sub: 0.5pt + luma(90%))
 /// 

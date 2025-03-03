@@ -105,7 +105,7 @@
 
 #let _place-legend-with-bounds(
 
-  /// -> lq.legend | true | dictionary
+  /// -> true | dictionary
   my-legend, 
 
   /// -> array(array)
