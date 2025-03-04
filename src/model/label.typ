@@ -17,7 +17,7 @@
 
   /// Padding between the axis (and its ticks and labels) and the label. 
   /// -> length
-  pad: 0.5em,
+  pad: 0.75em,
 
   /// Angle at which the label is drawn. The label of a `y` axis is often 
   /// drawn at `-90deg`. 
@@ -48,7 +48,7 @@
     e.field("body", content, required: true),
     e.field("dx", length, default: 0pt),
     e.field("dy", length, default: 0pt),
-    e.field("pad", length, default: 0.5em),
+    e.field("pad", length, default: .7em),
     e.field("angle", angle, default: 0deg),
   )
 )
