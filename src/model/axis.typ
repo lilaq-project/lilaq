@@ -304,9 +304,12 @@
 #let _axis-compute-limits(
   axis, 
   lower-margin: 0%, upper-margin: 0%,
-  default-lim: (0,1),
+  default-lim: (0, 1),
+  is-independant: auto
 ) = {
-  let is-independant = axis.plots.len() > 0
+  if is-independant == auto {
+    is-independant = axis.plots.len() > 0
+  }
   let axis-type = match(axis.kind, "x", "x", "y", "y")
   let (x0, x1) = (none, none)
   let (tight0, tight1) = (true, true)
@@ -320,7 +323,7 @@
       let plot-limits = axis.plots.map(plot => plot.at(axis-type + "limits")())
         .filter(x => x != none)
       if plot-limits.len() == 0 {
-        (x0, x1) = (0, 0)
+        (x0, x1) = (axis.scale.identity,) * 2
       } else {
         for (plot-x0, plot-x1) in plot-limits {
           let tight-bound = (false, false)

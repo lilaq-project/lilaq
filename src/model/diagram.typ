@@ -112,18 +112,15 @@
 
 
 
-
-/// Creates a new diagram. 
-/// 
-/// -> lq.diagram
 #let draw-diagram(it) = {
-  // assertations.assert-no-named(it.children)
   set math.equation(numbering: none)
   set curve(stroke: .7pt)
   set line(stroke: .7pt)
+
   let plots = ()
   let (xplots, yplots) = ((), ())
   let axes = ()
+
   for child in it.children {
     if type(child) == dictionary {
       if child.at("type", default: "") == "axis" {
@@ -157,8 +154,8 @@
 
   it.margin = process-margin(it.margin)
 
-  it.xaxis.lim = _axis-compute-limits(it.xaxis, lower-margin: it.margin.left, upper-margin: it.margin.right)
-  it.yaxis.lim = _axis-compute-limits(it.yaxis, lower-margin: it.margin.bottom, upper-margin: it.margin.top)
+  it.xaxis.lim = _axis-compute-limits(it.xaxis, lower-margin: it.margin.left, upper-margin: it.margin.right, is-independant: true)
+  it.yaxis.lim = _axis-compute-limits(it.yaxis, lower-margin: it.margin.bottom, upper-margin: it.margin.top, is-independant: true)
 
   
   let normalized-x-trafo = create-trafo(it.xaxis.scale.transform, ..it.xaxis.lim)

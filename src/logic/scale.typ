@@ -32,6 +32,11 @@
   /// -> str
   name: "",
 
+  /// An identity value which can be used to find an initial axis range when 
+  /// no limits or plots are given. Scales like logarithmic scales that are 
+  /// only defined for positive values should set this to 1. 
+  identity: 0, 
+
   /// Additional data to store in the scale. 
   /// -> any
   ..args
@@ -40,6 +45,7 @@
   transform: transform,
   inverse: inverse,
   name: name,
+  identity: identity,
   ..args.named()
 )
 
@@ -65,6 +71,7 @@
   x => calc.log(x),
   x => calc.pow(10., x),
   base: base,
+  identity: 1
 )
 
 
