@@ -10,11 +10,13 @@
 #import "../algorithm/ticking.typ"
 #import "../bounds.typ": *
 #import "title.typ": title as lq-title
+#import "label.typ": label as lq-label
 #import "../utility.typ": if-auto
 
 #let debug = false
 #import "../cycle.typ": init as cycle-init, default-cycle
 #import "../libs/elembic/lib.typ" as e
+
 
 
 /// Creates a new diagram. 
@@ -76,12 +78,12 @@
 
   /// Configures the $x$-axis through a dictionary of arguments to pass to the 
   /// constructor of the axis. See @axis for available options. 
-  /// -> dictionary
+  /// -> none | dictionary
   xaxis: (:),
   
   /// Configures the $y$-axis through a dictionary of arguments to pass to the
   /// constructor of the axis. See @axis for available options. 
-  /// -> dictionary
+  /// -> none | dictionary
   yaxis: (:),
 
   /// Configures the automatic margins of the diagram around the data. If set 
@@ -106,15 +108,23 @@
   /// -> any
   ..children
 
-) = {
-  assertations.assert-no-named(children)
+) = {}
+
+
+
+
+/// Creates a new diagram. 
+/// 
+/// -> lq.diagram
+#let draw-diagram(it) = {
+  // assertations.assert-no-named(it.children)
   set math.equation(numbering: none)
   set curve(stroke: .7pt)
   set line(stroke: .7pt)
   let plots = ()
   let (xplots, yplots) = ((), ())
   let axes = ()
-  for child in children.pos() {
+  for child in it.children {
     if type(child) == dictionary {
       if child.at("type", default: "") == "axis" {
         axes.push(child)
@@ -133,65 +143,65 @@
       }
     }
   }
-  if xaxis == none { xaxis = (hidden: true) }
-  if yaxis == none { yaxis = (hidden: true) }
-  if type(xaxis) == dictionary {
-    xaxis = axis(kind: "x", label: xlabel, scale: xscale, lim: xlim, ..xaxis)
+  if it.xaxis == none { it.xaxis = (hidden: true) }
+  if it.yaxis == none { it.yaxis = (hidden: true) }
+  if type(it.xaxis) == dictionary {
+    it.xaxis = axis(kind: "x", label: it.xlabel, scale: it.xscale, lim: it.xlim, ..it.xaxis)
   }
-  xaxis.plots = plots + xplots
-  if type(yaxis) == dictionary {
-    yaxis = axis(kind: "y", label: ylabel, scale: yscale, lim: ylim, ..yaxis)
+  it.xaxis.plots = plots + xplots
+  if type(it.yaxis) == dictionary {
+    it.yaxis = axis(kind: "y", label: it.ylabel, scale: it.yscale, lim: it.ylim, ..it.yaxis)
   }
-  yaxis.plots = plots + yplots
+  it.yaxis.plots = plots + yplots
 
 
-  margin = process-margin(margin)
+  it.margin = process-margin(it.margin)
 
-  xaxis.lim = _axis-compute-limits(xaxis, lower-margin: margin.left, upper-margin: margin.right)
-  yaxis.lim = _axis-compute-limits(yaxis, lower-margin: margin.bottom, upper-margin: margin.top)
+  it.xaxis.lim = _axis-compute-limits(it.xaxis, lower-margin: it.margin.left, upper-margin: it.margin.right)
+  it.yaxis.lim = _axis-compute-limits(it.yaxis, lower-margin: it.margin.bottom, upper-margin: it.margin.top)
 
   
-  let normalized-x-trafo = create-trafo(xaxis.scale.transform, ..xaxis.lim)
-  let normalized-y-trafo = create-trafo(yaxis.scale.transform, ..yaxis.lim)
+  let normalized-x-trafo = create-trafo(it.xaxis.scale.transform, ..it.xaxis.lim)
+  let normalized-y-trafo = create-trafo(it.yaxis.scale.transform, ..it.yaxis.lim)
 
-  xaxis.normalized-scale-trafo = normalized-x-trafo
-  yaxis.normalized-scale-trafo = normalized-y-trafo
-  xaxis.transform = x => normalized-x-trafo(x) * width
-  yaxis.transform = y => height * (1 - normalized-y-trafo(y))
+  it.xaxis.normalized-scale-trafo = normalized-x-trafo
+  it.yaxis.normalized-scale-trafo = normalized-y-trafo
+  it.xaxis.transform = x => normalized-x-trafo(x) * it.width
+  it.yaxis.transform = y => it.height * (1 - normalized-y-trafo(y))
   
   let transform(x, y) = (
-    width * normalized-x-trafo(x), 
-    height * (1 - normalized-y-trafo(y))
+    it.width * normalized-x-trafo(x), 
+    it.height * (1 - normalized-y-trafo(y))
   )
 
   
   let maybe-transform(x, y) = {
-    if type(x) in (int, float) { x = (xaxis.transform)(x) }
-    if type(y) in (int, float) { y = (yaxis.transform)(y) - height }
+    if type(x) in (int, float) { x = (it.xaxis.transform)(x) }
+    if type(y) in (int, float) { y = (it.yaxis.transform)(y) - it.height }
     return (x, y)
   }
-  yaxis.translate = maybe-transform(..yaxis.translate)
-  xaxis.translate = maybe-transform(..xaxis.translate)
+  it.yaxis.translate = maybe-transform(..it.yaxis.translate)
+  it.xaxis.translate = maybe-transform(..it.xaxis.translate)
   
   for i in range(axes.len()) {
     let axis = axes.at(i)
-    let model-axis = if axis.kind == "x" {xaxis} else {yaxis}
+    let model-axis = if axis.kind == "x" {it.xaxis} else {it.yaxis}
     let has-auto-lim = axis.lim == auto
     let has-auto-lim = false
     axes.at(i).lim = _axis-compute-limits(axis, default-lim: model-axis.lim)
 
     if axis.plots.len() > 0 {
-      let other-axis = if axis.kind == "x" {yaxis} else {xaxis}
+      let other-axis = if axis.kind == "x" {it.yaxis} else {it.xaxis}
       let transform
       let scale-trafo = create-trafo(axis.scale.transform, ..axes.at(i).lim)
       if axis.kind == "x" {
         let normalized-x-trafo = scale-trafo
-        transform = (x, y) => (normalized-x-trafo(x) * width, height * (1 - normalized-y-trafo(y)))
-        axes.at(i).transform = x => normalized-x-trafo(x) * width
+        transform = (x, y) => (normalized-x-trafo(x) * it.width, it.height * (1 - normalized-y-trafo(y)))
+        axes.at(i).transform = x => normalized-x-trafo(x) * it.width
       } else {
         let normalized-y-trafo = scale-trafo
-        transform = (x, y) => (normalized-x-trafo(x) * width, height * (1 - normalized-y-trafo(y)))
-        axes.at(i).transform = y => (1 - normalized-y-trafo(y)) * height
+        transform = (x, y) => (normalized-x-trafo(x) * it.width, it.height * (1 - normalized-y-trafo(y)))
+        axes.at(i).transform = y => (1 - normalized-y-trafo(y)) * it.height
       }
       plots.push((
         type: "axis-collection", 
@@ -203,9 +213,9 @@
       axes.at(i).transform = if has-auto-lim {model-axis.transform} else {
         let trafo = x => (model-axis.normalized-scale-trafo)((axis.functions.inv)(x))
         if axis.kind == "y" {
-          y => height * (1 - trafo(y))
+          y => it.height * (1 - trafo(y))
         } else {
-          x => width * trafo(x)
+          x => it.width * trafo(x)
         }
       }
     }
@@ -216,25 +226,25 @@
   e.get(e-get => {
   
   let axis-info = (
-    x: (ticking: _axis-generate-ticks(xaxis, length: width)), 
-    y: (ticking: _axis-generate-ticks(yaxis, length: height)), 
+    x: (ticking: _axis-generate-ticks(it.xaxis, length: it.width)), 
+    y: (ticking: _axis-generate-ticks(it.yaxis, length: it.height)), 
     rest: ((:),) * axes.len()
   )
     
 
-  let bounds = (left: 0pt, right: width, top: 0pt, bottom: height)
+  let bounds = (left: 0pt, right: it.width, top: 0pt, bottom: it.height)
   
 
 
     
   let diagram = box(
-    width: width, height: height, 
-    inset: 0pt, stroke: none, fill: fill,
+    width: it.width, height: it.height, 
+    inset: 0pt, stroke: none, fill: it.fill,
     {
     set align(top + left) // sometimes alignment is messed up
 
 
-    let update-bounds = update-bounds.with(width: width, height: height)
+    let update-bounds = update-bounds.with(width: it.width, height: it.height)
     
 
     let artists = ()
@@ -246,25 +256,25 @@
           axis-info.x.ticking.subticks.map(x-transform),
           true,
           kind: "x",
-          ..process-grid-arg(grid)
+          ..process-grid-arg(it.grid)
         )
         lq-grid(
           axis-info.y.ticking.subticks.map(y-transform),
           true,
           kind: "y",
-          ..process-grid-arg(grid)
+          ..process-grid-arg(it.grid)
         )
         lq-grid(
           axis-info.x.ticking.ticks.map(x-transform),
           false,
           kind: "x",
-          ..process-grid-arg(grid)
+          ..process-grid-arg(it.grid)
         )
         lq-grid(
           axis-info.y.ticking.ticks.map(y-transform),
           false,
           kind: "y",
-          ..process-grid-arg(grid)
+          ..process-grid-arg(it.grid)
         )
       }, z: e-get(lq-grid).z-index
     ))
@@ -273,7 +283,7 @@
 
 
     for (i, plot) in plots.enumerate() {
-      let cycle-style = cycle.at(calc.rem(i, cycle.len()))
+      let cycle-style = it.cycle.at(calc.rem(i, it.cycle.len()))
       let plotted-plot = {
         show: cycle-init
         show: cycle-style
@@ -302,7 +312,7 @@
         }
       }
       if plot.at("clip", default: true) { 
-        plotted-plot = place(box(width: width, height: height, clip: true, plotted-plot))
+        plotted-plot = place(box(width: it.width, height: it.height, clip: true, plotted-plot))
       }
       artists.push((content: plotted-plot, z: plot.at("z-index", default: 2)))
     }
@@ -327,15 +337,15 @@
     )
     let get-axis-args(axis) = {
       if axis.kind == "x" { 
-        (length: width)
+        (length: it.width)
       } else {
-        (length: height)
+        (length: it.height)
       }
     }
-    let (xaxis-, max-xtick-size) = draw-axis(xaxis, axis-info.x.ticking, major-axis-style, e-get: e-get)
+    let (xaxis-, max-xtick-size) = draw-axis(it.xaxis, axis-info.x.ticking, major-axis-style, e-get: e-get)
     artists.push((content: xaxis-, z: 2.1))
 
-    let (yaxis-, max-ytick-size) = draw-axis(yaxis, axis-info.y.ticking, major-axis-style, e-get: e-get)
+    let (yaxis-, max-ytick-size) = draw-axis(it.yaxis, axis-info.y.ticking, major-axis-style, e-get: e-get)
     artists.push((content: yaxis-, z: 2.1))
  
     if type(max-ytick-size) == array {
@@ -368,8 +378,8 @@
       e.fields(object).at(field, default: e-get(element).at(field))
     }
 
-    if title != none {
-      let title = title
+    if it.title != none {
+      let title = it.title
       if e.eid(title) != e.eid(lq-title) {
         title = lq-title(title)
       }
@@ -380,9 +390,9 @@
       let pad = get-settable-field(lq-title, title, "pad")
 
       let wrapper = if position in (top, bottom) {
-        box.with(width: width)
+        box.with(width: it.width)
       } else if position in (left, right) {
-        box.with(height: height)
+        box.with(height: it.height)
       }
 
       let body = wrapper(title)
@@ -394,8 +404,8 @@
     }
 
     
-    if legend != none and legend != false and legend-entries.len() > 0 {
-      let (legend-content, legend-bounds) = _place-legend-with-bounds(legend, legend-entries, e-get)
+    if it.legend != none and it.legend != false and legend-entries.len() > 0 {
+      let (legend-content, legend-bounds) = _place-legend-with-bounds(it.legend, legend-entries, e-get)
 
       artists.push((content: legend-content, z: e-get(lq-legend).z-index))
 
@@ -404,10 +414,52 @@
 
     artists.sorted(key: artist => artist.z).map(artist => artist.content).join()
   })
-  bounds.bottom -= height
-  bounds.right -= width
+  bounds.bottom -= it.height
+  bounds.right -= it.width
   bounds.left *= -1
   bounds.top *= -1
   box(box(inset: bounds, diagram, stroke: if debug {.1pt} else {0pt}), baseline: bounds.bottom)
 })
 }
+
+
+
+#let diagram = e.element.declare(
+  "diagram",
+  prefix: "lilaq",
+
+  display: draw-diagram, 
+
+  fields: (
+    e.field("children", e.types.any, required: true),
+    e.field("width", length, default: 6cm),
+    e.field("height", length, default: 4cm),
+    e.field("title", e.types.union(none, str, content, lq-title), default: none),
+    e.field("legend", e.types.union(bool, dictionary), default: true),
+    e.field("xlim", e.types.union(auto, array), default: auto),
+    e.field("ylim", e.types.union(auto, array), default: auto),
+    e.field("xlabel", e.types.union(lq-label, str, content, none), default: none),
+    e.field("ylabel", e.types.union(lq-label, str, content, none), default: none),
+    e.field("grid", e.types.union(auto, none, dictionary, stroke, color, length), default: auto),
+    e.field("xscale", e.types.union(str, dictionary), default: "linear"),
+    e.field("yscale", e.types.union(str, dictionary), default: "linear"),
+    e.field("xaxis", e.types.option(dictionary), default: (:)),
+    e.field("yaxis", e.types.option(dictionary), default: (:)),
+    e.field("margin", e.types.union(ratio, dictionary), default: 6%),
+    e.field("cycle", e.types.array(function), default: default-cycle),
+    e.field("fill", e.types.option(e.types.paint), default: none),
+  ),
+
+  parse-args: (default-parser, fields: none, typecheck: none) => (args, include-required: false) => {
+    let args = if include-required {
+      let values = args.pos()
+      arguments(values, ..args.named())
+    } else if args.pos() == () {
+      args
+    } else {
+      assert(false, message: "element 'diagram': unexpected positional arguments\n  hint: these can only be passed to the constructor")
+    }
+
+    default-parser(args, include-required: include-required)
+  },
+)

@@ -5,6 +5,7 @@
 #import "model/legend.typ": legend
 #import "model/tick.typ": tick, tick-label
 #import "model/spine.typ": spine
+#import "model/diagram.typ": diagram
 
 #let set_ = e.set_
 #let set-grid = e.set_.with(grid)
@@ -14,3 +15,4 @@
 #let set-tick = e.set_.with(tick)
 #let set-tick-label = e.set_.with(tick-label)
 #let set-spine = e.set_.with(spine)
+#let set-diagram = e.set_.with(diagram)
