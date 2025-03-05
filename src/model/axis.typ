@@ -323,7 +323,10 @@
       let plot-limits = axis.plots.map(plot => plot.at(axis-type + "limits")())
         .filter(x => x != none)
       if plot-limits.len() == 0 {
-        (x0, x1) = (axis.scale.identity,) * 2
+        (x0, x1) = (0, 1)
+        if axis.scale.identity != 0 {
+          (x0, x1) = (axis.scale.identity,) * 2
+        }
       } else {
         for (plot-x0, plot-x1) in plot-limits {
           let tight-bound = (false, false)
