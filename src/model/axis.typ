@@ -523,7 +523,7 @@
     let length = e-get(lq-tick).inset * factor + outset
     let angle = if align in (top, bottom) { 90deg } else { 0deg }
   
-    let tick-stroke = if-auto(e-get(lq-tick).stroke, merge-strokes(axis.stroke, e-get(spine).stroke))
+    let tick-stroke = merge-strokes(e-get(lq-tick).stroke, axis.stroke, e-get(spine).stroke)
 
     let tline = line(length: length, angle: angle, stroke: tick-stroke)
     let make-tick
