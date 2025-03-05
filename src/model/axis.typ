@@ -251,6 +251,13 @@
 
   if mirror == auto {
     mirror = (ticks: true)
+  } else if type(mirror) == bool {
+    if mirror { mirror = (ticks: true) }
+    else { mirror = none }
+  } else if type(mirror) == dictionary {
+    for key in mirror.keys() {
+      assert(key in ("ticks", "tick-labels"), message: "When passing a dictionary to `axis.mirror`, only the keys \"ticks\" and \"tick-labels\" are valid, got \"" + key + "\"")
+    }
   }
   
   (
@@ -700,7 +707,7 @@
       position: axis.position.inv(),
       translate: axis.translate,
       display-ticks: axis.mirror.at("ticks", default: false),
-      display-tick-labels: axis.mirror.at("ticklabels", default: false),
+      display-tick-labels: axis.mirror.at("tick-labels", default: false),
       display-axis-label: axis.mirror.at("label", default: false),
     )
     content += place(axis.position.inv(), mirror-axis-content)
