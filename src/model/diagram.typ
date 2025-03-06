@@ -185,7 +185,7 @@
     let model-axis = if axis.kind == "x" {it.xaxis} else {it.yaxis}
     let has-auto-lim = axis.lim == auto
     let has-auto-lim = false
-    axes.at(i).lim = _axis-compute-limits(axis, default-lim: model-axis.lim)
+    axes.at(i).lim = _axis-compute-limits(axis, default-lim: model-axis.lim, lower-margin: it.margin.left, upper-margin: it.margin.right)
 
     if axis.plots.len() > 0 {
       let other-axis = if axis.kind == "x" {it.yaxis} else {it.xaxis}
