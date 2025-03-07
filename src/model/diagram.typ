@@ -89,8 +89,15 @@
   /// Configures the automatic margins of the diagram around the data. If set 
   /// to `0%`, the outer-most data points align tightly with the edges of the 
   /// diagram (as long as the axis limits are left at `auto`). Otherwise, the
-  /// margin are computed in percent of the covered range along an axis (in
+  /// margins are computed in percent of the covered range along an axis (in
   /// scaled coordinates). 
+  /// 
+  /// The margins can be set individually for each side by passing a dictionary
+  /// with the possible keys
+  /// - `left`, `right`, `top`, `bottom` for addressing individual sides,
+  /// - `x`, `y` for left/right and top/bottom combined sides, and
+  /// - `rest` for all sides not specified by any of the above. 
+  /// 
   /// -> ratio | dictionary
   margin: 6%,
   
@@ -158,10 +165,10 @@
   it.yaxis.plots = yplots
 
 
-  it.margin = process-margin(it.margin)
+  let margin = process-margin(it.margin)
 
-  it.xaxis.lim = _axis-compute-limits(it.xaxis, lower-margin: it.margin.left, upper-margin: it.margin.right, is-independant: true)
-  it.yaxis.lim = _axis-compute-limits(it.yaxis, lower-margin: it.margin.bottom, upper-margin: it.margin.top, is-independant: true)
+  it.xaxis.lim = _axis-compute-limits(it.xaxis, lower-margin: margin.left, upper-margin: margin.right, is-independant: true)
+  it.yaxis.lim = _axis-compute-limits(it.yaxis, lower-margin: margin.bottom, upper-margin: margin.top, is-independant: true)
 
   
   let normalized-x-trafo = create-trafo(it.xaxis.scale.transform, ..it.xaxis.lim)
@@ -190,10 +197,15 @@
   
   for i in range(axes.len()) {
     let axis = axes.at(i)
-    let model-axis = if axis.kind == "x" {it.xaxis} else {it.yaxis}
+    let model-axis = if axis.kind == "x" { it.xaxis } else { it.yaxis }
     let has-auto-lim = axis.lim == auto
     let has-auto-lim = false
-    axes.at(i).lim = _axis-compute-limits(axis, default-lim: model-axis.lim, lower-margin: it.margin.left, upper-margin: it.margin.right)
+    let axes-margin = if axis.kind == "x" { 
+      (lower-margin: margin.left, upper-margin: margin.right)
+    } else {
+      (lower-margin: margin.bottom, upper-margin: margin.top)
+    }
+    axes.at(i).lim = _axis-compute-limits(axis, default-lim: model-axis.lim, ..axes-margin)
 
     if axis.plots.len() > 0 {
       let other-axis = if axis.kind == "x" {it.yaxis} else {it.xaxis}
