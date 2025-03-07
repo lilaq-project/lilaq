@@ -36,7 +36,7 @@
   /// -> lq.title | str | content | none
   title: none,
 
-  /// Whether to show a legend with entries for all labelled plot objects. 
+  /// Whether to show a legend with entries for all labeled plot objects. 
   /// -> bool
   legend: true,
 
@@ -61,7 +61,7 @@
   /// Options to apply to the grid. A `stroke`, `color`, or `length` argument 
   /// directly sets the grid stroke while a `dictionary` with the possible keys
   /// `stroke`, `stroke-sub`, and `z-index` gives more fine-grained control. 
-  /// Setting this paramerer to `none` removes the grid entirely. 
+  /// Setting this parameter to `none` removes the grid entirely. 
   /// See @grid for more details. 
   /// -> auto | none | dictionary | stroke | color | length
   grid: auto,

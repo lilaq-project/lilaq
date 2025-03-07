@@ -147,7 +147,7 @@
   
   /// Optional errors/uncertainties for $x$ coordinates. The number of error values must
   /// match the number of coordinates. Each entry can either be a single value, describing 
-  /// a symmetric uncertainty or a pair `(lower, uppper)` for asymmetric errorbars. 
+  /// a symmetric uncertainty or a pair `(lower, upper)` for asymmetric error bars. 
   /// -> none | array
   xerr: none,
   

@@ -61,9 +61,9 @@
 }
 
 
-/// Assert that there are no additional named arguments in an arugment sink. 
+/// Assert that there are no additional named arguments in an argument sink. 
 #let assert-no-named(
-  /// Argment sink.
+  /// Argument sink.
   args, 
   /// Function name. This can be used to improve the error message. 
   fn: ""

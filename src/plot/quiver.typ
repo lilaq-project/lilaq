@@ -110,7 +110,7 @@
   stroke: auto,
 
   /// Scales the length of the arrows uniformly. If set to `auto`, the length 
-  /// is heuristically computed from the densitity of the coordinate grid. 
+  /// is heuristically computed from the density of the coordinate grid. 
   /// -> auto | int | float
   scale: auto, 
 

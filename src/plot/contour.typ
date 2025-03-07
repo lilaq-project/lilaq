@@ -200,7 +200,7 @@
 
   /// How to stroke the contours in the cases that `fill: false`. If this
   /// argument specifies a color, the coloring from the @contour.map is
-  /// overriden. 
+  /// overridden. 
   /// -> stroke
   stroke: 0.7pt,
   

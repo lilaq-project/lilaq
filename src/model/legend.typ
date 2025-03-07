@@ -41,7 +41,7 @@
 
   /// In the case that @legend.position is an `alignment`, `pad` determines 
   /// how much to pad the legend from the outer edge of the data area 
-  /// of the diagam. 
+  /// of the diagram. 
   /// -> length
   pad: 2pt, 
 
