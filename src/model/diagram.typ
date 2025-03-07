@@ -118,24 +118,30 @@
   set line(stroke: .7pt)
 
   let plots = ()
-  let (xplots, yplots) = ((), ())
+  let (xplots, yplots) = ((), ()) // solely used for computing limits
   let axes = ()
 
   for child in it.children {
     if type(child) == dictionary {
-      if child.at("type", default: "") == "axis" {
+      if child.at("type", default: "") == "axis" { // an axis
         axes.push(child)
         // plots += child.plots
+        let axes-id = axes.len() - 1
+        let axes-plots = child.plots.map(plot => (axes-id, plot))
         if child.plots.len() > 0 {
+          plots += axes-plots 
           if child.kind == "x" {
             yplots += child.plots
           } else {
             xplots += child.plots
           }
         } else {
-          plots += child.plots
+          xplots += child.plots
+          yplots += child.plots
         }
-      } else {
+      } else { // just a regular plot
+        yplots.push(child)
+        xplots.push(child)
         plots.push(child)
       }
     }
@@ -145,11 +151,11 @@
   if type(it.xaxis) == dictionary {
     it.xaxis = axis(kind: "x", label: it.xlabel, scale: it.xscale, lim: it.xlim, ..it.xaxis)
   }
-  it.xaxis.plots = plots + xplots
+  it.xaxis.plots = xplots
   if type(it.yaxis) == dictionary {
     it.yaxis = axis(kind: "y", label: it.ylabel, scale: it.yscale, lim: it.ylim, ..it.yaxis)
   }
-  it.yaxis.plots = plots + yplots
+  it.yaxis.plots = yplots
 
 
   it.margin = process-margin(it.margin)
@@ -179,6 +185,8 @@
   }
   it.yaxis.translate = maybe-transform(..it.yaxis.translate)
   it.xaxis.translate = maybe-transform(..it.xaxis.translate)
+
+  let axes-transforms = (none,) * axes.len()
   
   for i in range(axes.len()) {
     let axis = axes.at(i)
@@ -200,13 +208,8 @@
         transform = (x, y) => (normalized-x-trafo(x) * it.width, it.height * (1 - normalized-y-trafo(y)))
         axes.at(i).transform = y => (1 - normalized-y-trafo(y)) * it.height
       }
-      plots.push((
-        type: "axis-collection", 
-        plots: axis.plots,
-        transform: transform
-      ))
+      axes-transforms.at(i) = transform
     } else {
-      plots += axis.plots
       axes.at(i).transform = if has-auto-lim {model-axis.transform} else {
         let trafo = x => (model-axis.normalized-scale-trafo)((axis.functions.inv)(x))
         if axis.kind == "y" {
@@ -284,18 +287,18 @@
       let plotted-plot = {
         show: cycle-init
         show: cycle-style
-        if plot.at("type", default: "") == "axis-collection" {
-          let transform = plot.transform
-          for plot in plot.plots {
-            (plot.plot)(plot, transform)
-          }
+        if type(plot) == array {
+          let axis-id = plot.at(0)
+          plot = plot.at(1)
+          let transform = axes-transforms.at(axis-id)
+          (plot.plot)(plot, transform)
         } else {
           (plot.plot)(plot, transform)
         }
         if "legend" in plot and plot.label != none {
           plot.make-legend = true
           let legend-trafo(x, y) = {
-            (x*100%, (1-y)*100%)
+            (x * 100%, (1 - y) * 100%)
           }
           let handle = {
             show: cycle-init
