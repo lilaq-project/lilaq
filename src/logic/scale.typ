@@ -35,6 +35,7 @@
   /// An identity value which can be used to find an initial axis range when 
   /// no limits or plots are given. Scales like logarithmic scales that are 
   /// only defined for positive values should set this to 1. 
+  /// -> int | float
   identity: 0, 
 
   /// Additional data to store in the scale. 
