@@ -38,7 +38,14 @@
   if type(colormap) == array {
     colormap = gradient.linear(..colormap)
   }
-  (values.map(x => colormap.sample(normalize(x) * 100%)), (norm: norm, min: min, max: max, colormap: colormap))
+  let convert-scalar-to-color(x) = {
+    if float.is-nan(x) { return luma(0, 0%) }
+    colormap.sample(normalize(x) * 100%)
+  }
+  (
+    values.map(convert-scalar-to-color), 
+    (norm: norm, min: min, max: max, colormap: colormap)
+  )
 }
 
 

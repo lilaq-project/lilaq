@@ -2,53 +2,112 @@
 #import "../math.typ": sign, mesh
 #import "../color.typ": create-normalized-colors
 
+#let are-dimensions-all-equal(data) = {
+  if data.len() <= 1 { return true }
+  let x0 = data.first()
+  return data.slice(1).all(x => calc.abs(1 - x/x0) < 1e-8)
+}
+
+#assert(are-dimensions-all-equal((1, 1, 1)))
+#assert(not are-dimensions-all-equal((1, 1, 2)))
+#assert(not are-dimensions-all-equal((1, 1, 1.0001)))
+#assert(are-dimensions-all-equal((1, 1, 1.000000001)))
+
+
+
 #let render-colormesh(plot, transform) = {
   if "make-legend" in plot {
     return box(width: 100%, height: 100%, fill: plot.color.at(0))
   }
 
-  let get-extents(x) = {
-    x.zip(x.slice(1)).map(((x, x1)) => x1 - x)
+  let get-extents(a) = {
+    a.zip(a.slice(1)).map(((a, a1)) => a1 - a)
   }
 
-  let get-size(i, x) = {
-    if i < x.len() - 1 { 
-      let d2 = x.at(i + 1) - x.at(i)
+  let get-size(i, a) = {
+    if i < a.len() - 1 { 
+      let diff = a.at(i + 1) - a.at(i)
       if i > 0 {
-        (x.at(i) - x.at(i - 1), d2)
+        (a.at(i) - a.at(i - 1), diff)
       } else {
-        (d2, d2)
+        (diff, diff)
       }
     }
     else { 
-      let d = x.at(-1) - x.at(-2)
-      (d, d)
+      let diff = a.at(-1) - a.at(-2)
+      (diff, diff)
     }
   }
 
   let widths = get-extents(plot.x)
   let heights = get-extents(plot.y)
 
-  for i in range(plot.x.len()) {
-    for j in range(plot.y.len()) {
-      if float.is-nan(plot.z.at(i).at(j)) { continue }
-      let x = plot.x.at(i)
-      let y = plot.y.at(j)
-      
-      let (w1, w2) = get-size(i, plot.x)
-      let (h1, h2) = get-size(j, plot.y)
-      let (x1, y1) = transform(x - w1 / 2, y + h2 / 2)
-      let (x2, y2) = transform(x + w2 / 2, y - h1 / 2)
-      let fill = plot.color.at(j + i * plot.y.len())
-      let width = x2 - x1
-      let height = y2 - y1
-      place(dx: x1, dy: y1, rect(width: width, height: height, fill: fill))
+  if are-dimensions-all-equal(widths) and are-dimensions-all-equal(heights) {
+    let (x0, xn) = (plot.x.at(0), plot.x.at(-1))
+    let (y0, yn) = (plot.y.at(0), plot.y.at(-1))
+
+    let w = widths.at(0)
+    let h = heights.at(0)
+    let (x1, y1) = transform(x0 - w / 2, y0 - h / 2)
+    let (x2, y2) = transform(xn + w / 2, yn + h / 2)
+    let scale-x = 100%
+    let scale-y = -100%
+    if x1 > x2 { 
+      (x1, x2) = (x2, x1)
+      scale-x *= -1
     }
+    if y1 < y2 { 
+      (y1, y2) = (y2, y1)
+      scale-y *= -1
+    }
+
+    let img = image(
+      bytes(plot.color.map(c => rgb(c).components().map(x => int(x / 100% * 255))).join()),
+      format: (
+        encoding: "rgba8",
+        width: plot.x.len(),
+        height: plot.y.len(),
+      ),
+      scaling: plot.interpolation,
+      width: x2 - x1,
+      fit: "stretch",
+      height: y1 - y2
+    )
+    place(
+      dx: x1, dy: y2, 
+      scale(x: scale-x, y: scale-y, img)
+    )
+
+  } else {
+    assert(
+      plot.interpolation == "pixelated", 
+      message: "For non-evenly-spaced color meshes, currently only the interpolation option \"pixelated\" is supported. "
+    )
+
+    for i in range(plot.x.len()) {
+      for j in range(plot.y.len()) {
+        let x = plot.x.at(i)
+        let y = plot.y.at(j)
+        
+        let (w1, w2) = get-size(i, plot.x)
+        let (h1, h2) = get-size(j, plot.y)
+        let (x1, y1) = transform(x - w1 / 2, y + h2 / 2)
+        let (x2, y2) = transform(x + w2 / 2, y - h1 / 2)
+        let fill = plot.color.at(i + j * plot.x.len())
+        let width = x2 - x1
+        let height = y2 - y1
+        place(
+          dx: x1, dy: y1, 
+          rect(width: width * 1.01, height: height * 1.01, fill: fill)
+        )
+      }
+    }
+
   }
 }
 
 
-/// Creates a color mesh plot. 
+/// Plots a rectangular color mesh. 
 /// ```example
 /// #lq.diagram(
 ///   width: 4cm, height: 4cm,
@@ -60,6 +119,12 @@
 ///   )
 /// )
 /// ```
+/// 
+/// When the input `x` and `y` coordinate arrays are both evenly spaced, an 
+/// image is drawn instead of individual rectangles. This reduces the file size
+/// and improves rendering in most cases. When either array is not evenly
+/// spaced, the entire color mesh is drawn with individual rectangles. 
+/// 
 #let colormesh(
   
   /// A one-dimensional array of $x$ data coordinates. 
@@ -70,12 +135,14 @@
   /// -> array
   y, 
 
-
   /// Specifies the $z$ coordinates (height) for all combinations of $x$ and $y$ 
-  /// coordinates. This can either be a two-dimensional array of dimensions $m×n$ 
-  /// where $m$ is the length of @colormesh.x and $n$ is the length of @colormesh.y, 
-  /// or a function that takes an `x` and a `y` value and returns a corresponding 
-  /// `z` coordinate. Also see the function @mesh that can be used to create such meshes. 
+  /// coordinates. This can either be a 
+  /// - two-dimensional $m×n$-array where $m$ is the length of @colormesh.y 
+  ///   and $n$ is the length of @colormesh.x (for each $y$ value, a row of $x$
+  ///   values), 
+  /// - or a function that takes an `x` and a `y` value and returns a 
+  ///   corresponding `z` coordinate. 
+  /// Also see the function @mesh that can be used to create such meshes. 
   /// -> array | function
   z,
   
@@ -83,13 +150,13 @@
   /// -> array | gradient
   map: color.map.viridis,
 
-  /// Sets the data value that corresponds to the first color of the color map. If set 
-  /// to `auto`, it defaults to the minimum $z$ value.
+  /// Sets the data value that corresponds to the first color of the color map.
+  /// If set to `auto`, it defaults to the minimum $z$ value.
   /// -> auto | int | float
   min: auto,
 
-  /// Sets the data value that corresponds to the last color of the color map. If set 
-  /// to `auto`, it defaults to the maximum $z$ value.
+  /// Sets the data value that corresponds to the last color of the color map.
+  /// If set to `auto`, it defaults to the maximum $z$ value.
   /// -> auto | int | float
   max: auto,
 
@@ -103,6 +170,12 @@
   /// scaled to the interval $[0,1]$. 
   /// -> lq.scale | str | function
   norm: "linear",
+
+  /// Whether to apply smoothing or leave the color mesh pixelated. This is 
+  /// currently only supported when @colormesh.x and @colormesh.y are evenly 
+  /// spaced. 
+  /// -> "pixelated" | "smooth"
+  interpolation: "pixelated",
   
   /// The legend label for this plot. See @plot.label. 
   /// -> content
@@ -114,17 +187,29 @@
   z-index: 2
 
 ) = {
+
   if type(z) == function {
     z = mesh(x, y, z)
   }
+
+  assert.eq(
+    y.len(), z.len(), 
+    message: "`colormesh`: The number of `y` coordinates and the number of rows in `z` must match. Found " + str(y.len()) + " != " + str(z.len())
+  )
+  assert(
+    type(z) == array and type(z.first()) == array, 
+    message: "`colormesh`: `z` expects a 2D array"
+  )
+  assert.eq(
+    x.len(), z.first().len(), 
+    message: "`colormesh`: The number of `x` coordinates and the row length in `z` must match. Found " + str(x.len()) + " != " + str(z.first().len())
+  )
+
   let color = z.flatten()
-  assert.eq(x.len() * y.len(), color.len())
+
   let cinfo
-  if type(color) == array { 
-    if type(color.at(0, default: 0)) in (int, float) {
-      
-      (color, cinfo) = create-normalized-colors(color, map, norm, ignore-nan: true, min: min, max: max)
-    }
+  if type(color.at(0, default: 0)) in (int, float) {
+    (color, cinfo) = create-normalized-colors(color, map, norm, ignore-nan: true, min: min, max: max)
   }
   
   (
@@ -135,6 +220,7 @@
     label: label,
     color: color,
     plot: render-colormesh,
+    interpolation: interpolation,
     xlimits: () => (
       1fr * (x.at(0) - 0.5 * (x.at(1) - x.at(0))), 
       1fr * (x.at(-1) + 0.5 * (x.at(-1) - x.at(-2)))
