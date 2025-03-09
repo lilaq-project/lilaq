@@ -32,7 +32,7 @@
 
   for i in range(plot.x.len()) {
     for j in range(plot.y.len()) {
-      let dir = plot.directions.at(i).at(j)
+      let dir = plot.directions.at(j).at(i)
       if dir.any(float.is-nan) { continue }
       
       let x = plot.x.at(i)
@@ -42,7 +42,7 @@
       let start = vec.add((x, y), pivot(dir))
       let end = vec.add(start, dir)
 
-      let stroke = get-arrow-stroke(j + i*plot.y.len(), length)
+      let stroke = get-arrow-stroke(i + j*plot.x.len(), length)
       
       if length == 0 {
         let (x, y) = transform(..start)

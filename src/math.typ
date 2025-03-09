@@ -223,7 +223,7 @@
 
 ) = {
   let transforms = transforms.pos()
-  let mesh = transforms.map(transform => x.map(x => y.map(y => transform(x, y))))
+  let mesh = transforms.map(transform => y.map(y => x.map(x => transform(x, y))))
   if transforms.len() == 1 {
     mesh = mesh.first()
   }
@@ -231,13 +231,16 @@
 }
 
 #assert.eq(
-  mesh((0, 1), (4, 5), (x, y) => (x + y)),
-  ((4, 5), (5, 6))
+  mesh((0, 2), (4, 5), (x, y) => (x + y/10)),
+  ((0.4, 2.4), (0.5, 2.5))
 )
 
 #assert.eq(
-  mesh((0, 1), (4, 5), (x, y) => (x + y), (x, y) => (x - y)),
-(((4, 5), (5, 6)), ((-4, -5), (-3, -4)))
+  mesh((0, 2), (4, 5), (x, y) => (x + y/10), (x, y) => (x - y)),
+  (
+    ((0.4, 2.4), (0.5, 2.5)),
+    ((-4, -2), (-5, -3)),
+  )
 )
 
 
