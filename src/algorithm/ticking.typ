@@ -1,6 +1,6 @@
 #import "../math.typ": *
 #import "../assertations.typ"
-#import "@preview/zero:0.3.2"
+#import "@preview/zero:0.3.3"
 
 
 /// Estimates the number of significant digits from an array of values,
