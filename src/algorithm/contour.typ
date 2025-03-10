@@ -465,8 +465,8 @@
   let z-eps = 1e-6 * z-range
   let x-eps = 1e-17 * (x.last() - x.first())
   
-  let get-z(i, j) = { z.at(i).at(j) }
-  let get-p(i, j) = { (x.at(i), y.at(j), z.at(i).at(j)) }
+  let get-z(i, j) = { z.at(j).at(i) }
+  let get-p(i, j) = { (x.at(i), y.at(j), z.at(j).at(i)) }
 
   let blocks = ()
   for i in range(x.len() - 1) {
@@ -576,7 +576,7 @@
         for j in range(y.len()) {
           place(
             dx: i * 1cm, dy: 1cm - j*1cm,
-            sq(fill: get-clr(z.at(i).at(j)))
+            sq(fill: get-clr(z.at(j).at(i)))
           ) 
         }
       }
@@ -596,7 +596,12 @@
   )
 }
 
-#test-contour-case(x: (-1,0,1), y: (-5,5), ((-1,-1),(0,0),(1,1)), 0, 
+#test-contour-case(
+  x: (-1,0,1), 
+  y: (-5,5), 
+  // ((-1,-1),(0,0),(1,1)), 
+  ((-1,0,1),(-1,0,1)), 
+  0, 
   ((((0, 5), (0, -5)), ))
 ),
 
@@ -643,10 +648,14 @@ The dot indicates the start of a curve. A curve is to be oriented such that the 
   ),
   [Offset y], [Offset x], [skew below], [], [], [],
   
-  test-contour-case(((-3,1),(3,-1)), 0, 
-    (((1, .75), (.5,.75), (.5,0)), ((0,.75), (.5,.75), (.5, 1)))
+  test-contour-case(
+    ((-3,3),(1,-1)), 
+    0,
+    (((1, .75), (.5,.75), (.5,0)), 
+    ((0,.75), (.5,.75), (.5, 1)))
   ),
-  test-contour-case(((-3,3),(1,-1)), 0, 
+  test-contour-case(
+    ((-3,1),(3,-1)), 0, 
     (((1, .5), (.75,.5), (.75,0)), ((0,.5), (.75,.5), (.75, 1)))
   ),
   test-contour-case(((-3,3),(3,-1)), 0, 
@@ -662,25 +671,25 @@ The dot indicates the start of a curve. A curve is to be oriented such that the 
   // o  o
   // ---→
   // x  x
-  test-contour-case(((1,2),(0, 6)), 1.5, 
+  test-contour-case(((1,0),(2, 6)), 1.5, 
     ((((0,.5), (1, .25)), ))
   ),
   // x  x
   // ←---
   // o  o
-  test-contour-case(((2,1),(6, 0)), 1.5, 
+  test-contour-case(((2,6),(1, 0)), 1.5, 
     ((((1,.75), (0, .5)), ))
   ),
   // x | o
   //   |
   // x ↓ o
-  test-contour-case(((1,0),(2, 6)), 1.5, 
+  test-contour-case(((1,2),(0, 6)), 1.5, 
     ((((.25,1), (.5, 0)), ))
   ),
   // o ↑ x
   //   |
   // o | x
-  test-contour-case(((2,6),(0,1)), 1.5, 
+  test-contour-case(((2,0),(6,1)), 1.5, 
     ((((.25,0), (.9,1)), ))
   ),
 )
@@ -694,25 +703,25 @@ The dot indicates the start of a curve. A curve is to be oriented such that the 
   // x   x
   // ←-|
   // o | x  (o above level)
-  test-contour-case(((6,0),(2,0)), 3, 
+  test-contour-case(((6,2),(0,0)), 3, 
     ((((.75,0), (0,.5)), ))
   ),
   // o   o
   // --|
   // x ↓ o  (x below level)
-  test-contour-case(((-4,0),(2,0)), -1, 
+  test-contour-case(((-4,2),(0,0)), -1, 
     ((((0,.75), (.5,0)), ))
   ),
   // x   x
   //   |--
   // x ↓ o
-  test-contour-case(((-4,-1),(4,-1)), 0, 
+  test-contour-case(((-4,4),(-1,-1)), 0, 
     ((((1,.8), (.5,0)), ))
   ),
   // o   o
   //   |-→
   // o | x
-  test-contour-case(((4,1),(-4,1)), 0, 
+  test-contour-case(((4,-4),(1,1)), 0, 
     ((((.5,0), (1,.8)), ))
   ),
   [Top to right], [Right to top],[Left to top],[Top to left],
@@ -732,13 +741,13 @@ The dot indicates the start of a curve. A curve is to be oriented such that the 
   // o ↑ x
   // --|
   // x   x
-  test-contour-case(((-4,4),(-4,-4)), 0, 
+  test-contour-case(((-4,-4),(4,-4)), 0, 
     ((((0,.5), (.5,1)), ))
   ),
   // x | o
   // ←-|
   // o   o
-  test-contour-case(((4,-4),(4,4)), 0, 
+  test-contour-case(((4,4),(-4,4)), 0, 
     ((((.5,1), (0,.5)), ))
   ),
 
@@ -752,28 +761,28 @@ The dot indicates the start of a curve. A curve is to be oriented such that the 
   // ·←--·
   // 
   // o   o
-  test-contour-case(((3,0),(4,0)), 0, 
+  test-contour-case(((3,4),(0,0)), 0, 
     ((((1,1), (0,1)), ))
   ),
   
   // ·--→·
   // 
   // x   x
-  test-contour-case(((-3,0),(-4,0)), 0, 
+  test-contour-case(((-3,-4),(0,0)), 0, 
     ((((0,1), (1,1)), ))
   ),
   
   // o   o
   // 
   // ·--→·
-  test-contour-case(((0,3),(0,4)), 0, 
+  test-contour-case(((0,0),(3,4)), 0, 
     ((((0,0), (1,0)), ))
   ),
   
   // x   x
   // 
   // ·←--·
-  test-contour-case(((0,-3),(0,-4)), 0, 
+  test-contour-case(((0,0),(-3,-4)), 0, 
     ((((1,0), (0,0)), ))
   ),
   
@@ -781,28 +790,28 @@ The dot indicates the start of a curve. A curve is to be oriented such that the 
   // ·   o
   // ↓
   // ·   o
-  test-contour-case(((0,0),(3,4)), 0, 
+  test-contour-case(((0,3),(0,4)), 0, 
     ((((0,1), (0,0)), ))
   ),
   
   // ·   x
   // ↑
   // ·   x
-  test-contour-case(((0,0),(-3,-4)), 0, 
+  test-contour-case(((0,-3),(0,-4)), 0, 
     ((((0,0), (0,1)), ))
   ),
   
   // o   ·
   //     ↑
   // o   ·
-  test-contour-case(((3,4),(0,0)), 0, 
+  test-contour-case(((3,0),(4,0)), 0, 
     ((((1,0), (1,1)), ))
   ),
   
   // x   ·
   //     ↓
   // x   ·
-  test-contour-case(((-3,-4),(0,0)), 0, 
+  test-contour-case(((-3,0),(-4,0)), 0, 
     ((((1,1), (1,0)), ))
   ),
 )

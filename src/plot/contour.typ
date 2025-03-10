@@ -96,12 +96,14 @@
   /// -> array
   y, 
 
-
   /// Specifies the $z$ coordinates (height) for all combinations of $x$ and $y$ 
-  /// coordinates. This can either be a two-dimensional array of dimensions $m×n$ 
-  /// where $m$ is the length of @contour.x and $n$ is the length of @contour.y, 
-  /// or a function that takes an `x` and a `y` value and returns a corresponding 
-  /// `z` coordinate. Also see the function @mesh for creating meshes. 
+  /// coordinates. This can either be a 
+  /// - two-dimensional $m×n$-array where $m$ is the length of @colormesh.y 
+  ///   and $n$ is the length of @colormesh.x (for each $y$ value, a row of $x$
+  ///   values), 
+  /// - or a function that takes an `x` and a `y` value and returns a 
+  ///   corresponding `z` coordinate. 
+  /// Also see the function @mesh that can be used to create such meshes. 
   /// -> array | function
   z,
 
@@ -156,12 +158,25 @@
 ) = {
   if type(z) == function {
     z = mesh(x, y, z)
+
   }
-  let z-flat = z.flatten()
-  assert.eq(x.len() * y.len(), z-flat.len())
+  assert.eq(
+    y.len(), z.len(), 
+    message: "`colormesh`: The number of `y` coordinates and the number of rows in `z` must match. Found " + str(y.len()) + " != " + str(z.len())
+  )
+  assert(
+    type(z) == array and type(z.first()) == array, 
+    message: "`colormesh`: `z` expects a 2D array"
+  )
+  assert.eq(
+    x.len(), z.first().len(), 
+    message: "`colormesh`: The number of `x` coordinates and the row length in `z` must match. Found " + str(x.len()) + " != " + str(z.first().len())
+  )
   
+  let z-flat = z.flatten()
   let (z0, z1) = (calc.min(..z-flat), calc.max(..z-flat))
   if z0 == z1 { z0 -= 1; z1 += 1}
+
   if type(levels) == int {
     import "../algorithm/ticking.typ"
     let range = ticking.locate-ticks-linear(z0, z1, num-ticks-suggestion: levels)
