@@ -4,7 +4,7 @@
 #import "../logic/process-coordinates.typ": filter-nan-points, stepify
 #import "../utility.typ": if-auto
 #import "../cycle.typ": mark, prepare-mark, prepare-path
-
+#import "../model/errorbar.typ": errorbar
 
 #let get-errorbar-stroke(base-stroke) = {
   if base-stroke == auto { return stroke() }
@@ -68,10 +68,13 @@
     
     points.zip(plot.xerr).map((((x, y), xerr)) => {
       let (upper, lower) = get-upper-lower(x, xerr)
-      place(curve(
-        curve.move(transform(lower, y)), 
-        curve.line(transform(upper, y))
-      ))
+      let (p0, p1) = (transform(lower, y), transform(upper, y))
+
+      place(
+        dx: p0.at(0),
+        dy: p0.at(1),
+        box(width: p1.at(0) - p0.at(0), errorbar(kind: "x"))
+      )
       
     }).join()
   }
@@ -81,10 +84,13 @@
     
     points.zip(plot.yerr).map((((x, y), yerr)) => {
       let (upper, lower) = get-upper-lower(y, yerr)
-      place(curve(
-        curve.move(transform(x, lower)), 
-        curve.line(transform(x, upper))
-      ))
+      let (p0, p1) = (transform(x, lower), transform(x, upper))
+
+      place(
+        dx: p0.at(0),
+        dy: p0.at(1),
+        box(height: p1.at(1) - p0.at(1), errorbar(kind: "y"))
+      )
       
     }).join()
   }

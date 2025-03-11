@@ -7,6 +7,7 @@
 #import "model/title.typ": title
 #import "model/legend.typ": legend
 #import "model/grid.typ": grid
+#import "model/errorbar.typ": errorbar
 #import "model/label.typ": label, xlabel, ylabel
 
 #import "model/mark.typ": mark, marks
@@ -38,7 +39,7 @@
 #import "place-anchor.typ": place-anchor
 
 
-#import "typing.typ": set-grid, set-label, set-title, set-legend, set-tick, set-tick-label, set-spine, set-diagram, selector
+#import "typing.typ": set-grid, set-label, set-title, set-legend, set-tick, set-tick-label, set-spine, set-diagram, set-errorbar, selector
 
 #import "logic/scale.typ"
 #import "algorithm/ticking.typ": locate-ticks-linear, locate-ticks-log, format-ticks-naive, format-ticks-linear, format-ticks-log
