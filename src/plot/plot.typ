@@ -151,13 +151,18 @@
   /// -> array
   y, 
   
-  /// Optional errors/uncertainties for $x$ coordinates. The number of error values must
-  /// match the number of coordinates. Each entry can either be a single value, describing 
-  /// a symmetric uncertainty or a pair `(lower, upper)` for asymmetric error bars. 
+  /// Optional errors/uncertainties for $x$ coordinates. The number of error 
+  /// values must match the number of coordinates. Each entry can either be a 
+  /// single value, describing a symmetric uncertainty or a pair 
+  /// `(lower, upper)` for asymmetric error bars. 
+  /// 
+  /// The look of the error bars can be controlled through @errorbar. 
   /// -> none | array
   xerr: none,
   
-  /// Optional errors for $y$ coordinates. See @plot.xerr. 
+  /// Optional errors/uncertainties for $y$ coordinates. See @plot.xerr. 
+  /// 
+  /// The look of the error bars can be controlled through @errorbar. 
   /// -> none | array
   yerr: none,
   
