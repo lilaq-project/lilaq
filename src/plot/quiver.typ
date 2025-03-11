@@ -5,7 +5,7 @@
 #import "../utility.typ": if-auto, match, match-type
 #import "../cycle.typ": style
 
-#import "@preview/tiptoe:0.2.0"
+#import "@preview/tiptoe:0.3.0"
 
 
 

@@ -11,7 +11,7 @@
 #import "spine.typ": spine
 
 #import "@preview/zero:0.3.3"
-#import "@preview/tiptoe:0.2.0"
+#import "@preview/tiptoe:0.3.0"
 
 
 
