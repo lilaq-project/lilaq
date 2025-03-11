@@ -57,13 +57,21 @@
 
   /// Whether to mirror the axis, i.e., whether to show the axis ticks also on 
   /// the side opposite of the one specified with @axis.position. When set to 
-  /// `auto`, mirroring is only activated when `position: auto`. 
-  /// -> auto | bool
+  /// `auto`, mirroring is only activated when `position: auto`. More control
+  /// is granted through a dictionary with the possible keys `ticks` and 
+  /// `tick-labels` to individually activate or deactivate those. 
+  /// -> auto | bool | dictionary
   mirror: auto,
 
   /// Specifies conversions between the data and the ticks. This can be used to
-  /// configure a secondary axis to display the same data in a different unit, e.g., the main axis displays the velocity of a particle while the secondary axis displays the associated energy. In this case, one would pick `functions: (x => m*x*x, y => calc.sqrt(y/m))` with some constant `m`. Note that the first function computes the "forward" direction while the second function computes the "backward" direction. The user needs to ensure that the two functions are really inverses of each other. 
-  /// This defaults to the identity. 
+  /// configure a secondary axis to display the same data in a different unit, 
+  /// e.g., the main axis displays the velocity of a particle while the 
+  /// secondary axis displays the associated energy. In this case, one would 
+  /// pick `functions: (x => m*x*x, y => calc.sqrt(y/m))` with some constant
+  /// `m`. Note that the first function computes the "forward" direction while
+  /// the second function computes the "backward" direction. The user needs to 
+  /// ensure that the two functions are really inverses of each other. 
+  /// By default, this parameter resolves to the identity. 
   /// -> auto | array
   functions: auto,
 
@@ -153,6 +161,8 @@
   }
   assert(kind in ("x", "y"), message: "The `kind` of an axis can only be `x` or `y`")
   let translate = (0pt, 0pt)
+
+
   if position == auto {
     if kind == "x" { position = bottom }
     else if kind == "y" { position = left }
@@ -182,6 +192,7 @@
       assert(position in (left, right), message: "For y-axes, `position` can only be \"left\" or \"right\", got " + repr(position))
     }
   }
+
   if ticks != auto {
     if type(ticks) == dictionary {
       assert("ticks" in ticks, message: "When passing a dictionary for `ticks`, you need to provide the keys \"ticks\" and optionally \"labels\"")
@@ -202,6 +213,7 @@
       format-ticks = none
     } else { assert(false, message: "The parameter `ticks` may either be an array or a dictionary")}
   }
+  
   if locate-ticks == auto {
     locate-ticks = match(
       scale.name,
@@ -215,6 +227,7 @@
       scale.name,
       "linear", () => ticking.format-ticks-linear,
       "log", () => ticking.format-ticks-log.with(base: scale.base),
+      "symlog", () => ticking.format-ticks-linear,
       default: () => ticking.format-ticks-naive
     )
   }
@@ -237,7 +250,8 @@
   if functions == auto { functions = (x => x, x => x) }
   else {
     assert(type(functions) == array and functions.map(type) == (function, function), message: "The parameter `functions` for `axis()` expects an array of two functions, a forward and an inverse function.")
-    assert(plots.len() == 0, message: "An `axis()` can either be created with `functions` or with `..plots` but not both. ")
+    assert(plots.len() == 0, message: "An `axis` can either be created with `functions` or with `..plots` but not both. ")
+    assert(lim == auto, message:  "A dependent `axis` with `functions` is not allowed to have manual axis limits. ")
   }
 
   if type(lim) == array {
