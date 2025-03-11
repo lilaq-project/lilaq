@@ -95,7 +95,7 @@
   
   /// Mark sizes as `float` values. The area of the marks will scale proportionally 
   /// with these numbers while the actual mark size (width) will scale with 
-  /// $sqrt("size")$.
+  /// $\sqrt(\mathrm{size})$.
   /// -> auto | array
   size: auto, 
 

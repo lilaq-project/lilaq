@@ -50,8 +50,8 @@
   points, 
 
   /// Step mode
-  /// - `start`: The interval $(x_(i-1), x_i]$ takes the value of $x_i$. 
-  /// - `end`: The interval $[x_i, x_(i+1))$ takes the value of $x_i$. 
+  /// - `start`: The interval $(x_{i-1}, x_i]$ takes the value of $x_i$. 
+  /// - `end`: The interval $[x_i, x_{i+1})$ takes the value of $x_i$. 
   /// - `center`: The value switches half-way between consecutive $x$ positions. 
   /// -> start | center | end
   step: start

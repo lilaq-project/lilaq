@@ -111,7 +111,7 @@
   /// -> auto | float
   offset: auto,
 
-  /// Exponent for all ticks on this axis. All ticks are divided by $10^"exponent"$ and the $10^"exponent"$ is shown at the end of the axis (if the exponent is not 0). This setting can be used to avoid overly long tick labels. 
+  /// Exponent for all ticks on this axis. All ticks are divided by $10^\mathrm{exponent}$ and the $10^\mathrm{exponent}$ is shown at the end of the axis (if the exponent is not 0). This setting can be used to avoid overly long tick labels. 
   /// -> auto | float
   exponent: auto,
 

@@ -76,7 +76,7 @@
 #assert.eq(float.is-nan(-1232445345345e200000000000000000), false)
 
 
-/// Generates an array of evenly-spaced numbers in the interval $["start", "end"]$. 
+/// Generates an array of evenly-spaced numbers in the interval $[x_\mathrm{start}, x_\mathrm{end})$ or $[x_\mathrm{start}, x_\mathrm{end}]$. 
 /// -> array
 #let linspace(
   
@@ -92,9 +92,11 @@
   /// -> int
   num: 50,
   
-  /// Whether to include the end of the range. If `false`, numbers are returned for the interval $["start", "end" - ("end"-"start")/"num"]$
+  /// Whether to include the end of the range. If `true`, samples are taken for
+  /// the closed interval $[x_\mathrm{start}, x_\mathrm{end}]$. 
   /// -> bool
   include-end: true
+
 ) = {
   assert(num >= 0, message: "linspace: num must be non-negative")
   if num == 0 { return () }
@@ -125,7 +127,7 @@
 
 
 
-/// Generates an array of numbers spaced by `step` in the interval $["start", "end")$. 
+/// Generates an array of numbers spaced by `step` in the interval $[x_\mathrm{start}, x_\mathrm{end})$. 
 /// -> array
 #let arange(
   
@@ -192,7 +194,7 @@
   return interpolate.linear(values, q / 100% * (values.len() - 1))
 }
 
-/// Creates a rectangular mesh by taking two arrays ${x_0,...}$ and ${y_0,...}$ and 
+/// Creates a rectangular mesh by taking two arrays $\{x_0,...\}$ and $\{y_0,...\}$ and 
 /// evaluating one or more functions for each possible pair $(x_i,y_j)$. 
 /// ```example
 /// #lq.mesh((0, 1), (4, 5), (x, y) => (x + y))
@@ -298,8 +300,8 @@
 
 
 /// Decomposes a floating point number into the scientific notation
-/// $ x = a*10^n $
-/// where $a in [0.1, 1)$ and $n in ZZ$. Returns an array `(a, n)`. 
+/// $ x = a\cdot 10^n $
+/// where $a \in [0.1, 1)$ and $n \in \mathbb{Z}$. Returns an array `(a, n)`. 
 /// -> array
 #let decompose-floating-point(
   /// Number to decompose. 

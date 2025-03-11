@@ -192,9 +192,9 @@
   
   /// Step mode for plotting the lines. 
   /// - `none`: Consecutive data points are connected with a straight line. 
-  /// - `start`: The interval $(x_(i-1), x_i]$ takes the value of $x_i$. 
+  /// - `start`: The interval $(x_{i-1}, x_i]$ takes the value of $x_i$. 
   /// - `center`: The value switches half-way between consecutive $x$ positions. 
-  /// - `end`: The interval $[x_i, x_(i+1))$ takes the value of $x_i$. 
+  /// - `end`: The interval $[x_i, x_{i+1})$ takes the value of $x_i$. 
   ///
   /// #details[
   ///   ```example

@@ -1,7 +1,7 @@
 /// A module containing helper functions for vector operations. 
 
 
-/// Transforms two vectors $vec(a),vec(b)$ of same length with a function that 
+/// Transforms two vectors $\vec{a},\vec{b}$ of same length with a function that 
 /// receives pairs $(a_i,b_i)$ for all $i$. 
 #let transform(
   /// First vector. 
