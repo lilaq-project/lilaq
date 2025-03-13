@@ -20,8 +20,14 @@
 /// 
 /// By default, a @diagram features two axes: an `x` and a `y` axis which can be 
 /// configured directly through @diagram.xaxis and @diagram.yaxis. However, it is 
-/// also possible to add more axis, please refer to the 
+/// also possible to add more axes, please refer to the 
 /// #link("tutorials/axis")[axis tutorial] for more details. 
+/// 
+/// The built-in tick formatters use the Typst package
+/// #link("https://typst.app/universe/package/zero")[Zero] for displaying
+/// numbers. This makes it possible to define a consistent number format 
+/// throughout the entire document, including tables, in-text quantities,
+/// and figures. 
 #let axis(
 
   /// Sets the scale of the axis. This may be a @scale object or the name of 
