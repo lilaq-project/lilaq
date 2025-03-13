@@ -641,7 +641,7 @@
         let (c, b) = place-with-bounds(
           zero.num(positive-sign: true, offset), 
           ..exp-or-offset-offset, 
-          ..exp-or-offset-alignment
+          // ..exp-or-offset-alignment
         )
         content += c
         b = offset-bounds(b, translate)

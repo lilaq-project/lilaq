@@ -13,6 +13,72 @@
   return stroke(thickness: base-stroke.thickness, paint: base-stroke.paint)
 }
 
+// Process error inputs of the form as documented in @plot.xerr. 
+#let process-errors(err, n /* basically x.len() */, kind: "x") = {
+
+  if type(err) in (int, float) {
+    err = (p: (err,) * n, m: (err,) * n)
+
+  } else if type(err) == dictionary {
+    assert(
+      "m" in err and "p" in err,
+      message: "Error bar dictionaries must contain both \"p\" and \"m\""
+    )
+    if err.keys().len() != 2 {
+      let key = err.keys().filter(x => x not in ("m", "p")).first()
+      assert(
+        false,
+        message: "Errorbar dictionary contains unexpected key \"" + key + "\", expected \"p\" and \"m\""
+      )
+    }
+
+    if type(err.m) in (int, float) {
+      err.m = (err.m,) * n
+    } else if type(err.m) == array {
+      assert(
+        err.m.len() == n,
+        message: "The length of `" + kind + "err.m` does not match the number of data points"
+      )
+    } else {
+      assert(false, message: "`" + kind + "err.m` expects a float or an array")
+    }
+    if type(err.p) in (int, float) {
+      err.p = (err.p,) * n
+    } else if type(err.p) == array {
+      assert(
+        err.p.len() == n,
+        message: "The length of `" + kind + "err.p` does not match the number of data points"
+      )
+    } else {
+      assert(false, message: "`" + kind + "err.p` expects a float or an array")
+    }
+
+  } else if type(err) == array {
+    assert(
+      err.len() == n, 
+      message: "The length of `" + kind + "err` (" + str(err.len()) + ") does not match the number of data points"
+    )
+
+    err = err.map(e => {
+      if type(e) in (int, float) { (p: e, m: e) }
+      else if type(e) == dictionary { 
+        assert("p" in e and "m" in e, message: "Errorbar dictionaries must contain both \"m\" and \"p\"")
+        e
+      }
+      else { assert(false, message: "Expected a single uncertainty or a dictionary, found " + repr(e))}
+    })
+    err = (p: err.map(e => e.p), m: err.map(e => e.m))
+
+  } else {
+    assert(
+      false, 
+      message: "`" + kind + "err` expects a float, an array, or a dictionary with the keys \"p\" and \"m\"."
+    )
+
+  }
+  err
+}
+
 
 #let render-plot(plot, transform) = {
   let (points, runs) = filter-nan-points(plot.x.zip(plot.y), generate-runs: true)
@@ -20,8 +86,8 @@
   if "make-legend" in plot {
     runs = (((0, 0.5), (1, 0.5)),)
     points = ((0.5, 0.5),)
-    if plot.yerr != none { plot.yerr = (.5,) }
-    if plot.xerr != none { plot.xerr = (.25,) }
+    if plot.yerr != none { plot.yerr = (p: (.5,), m: (.5,),) }
+    if plot.xerr != none { plot.xerr = (p: (.25,), m: (.25,)) }
   }
 
 
@@ -66,9 +132,8 @@
   if plot.xerr != none {
     show: errorbar-stroke
     
-    points.zip(plot.xerr).map((((x, y), xerr)) => {
-      let (upper, lower) = get-upper-lower(x, xerr)
-      let (p0, p1) = (transform(lower, y), transform(upper, y))
+    points.zip(plot.xerr.p, plot.xerr.m).map((((x, y), p, m)) => {
+      let (p0, p1) = (transform(x - m, y), transform(x + p, y))
 
       place(
         dx: p0.at(0),
@@ -82,14 +147,13 @@
   if plot.yerr != none {
     show: errorbar-stroke
     
-    points.zip(plot.yerr).map((((x, y), yerr)) => {
-      let (upper, lower) = get-upper-lower(y, yerr)
-      let (p0, p1) = (transform(x, lower), transform(x, upper))
+    points.zip(plot.yerr.p, plot.yerr.m).map((((x, y), p, m)) => {
+      let (p0, p1) = (transform(x, y - m), transform(x, y + p))
 
       place(
         dx: p0.at(0),
-        dy: p0.at(1),
-        box(height: p1.at(1) - p0.at(1), errorbar(kind: "y"))
+        dy: p1.at(1),
+        box(height: p0.at(1) - p1.at(1), errorbar(kind: "y"))
       )
       
     }).join()
@@ -129,6 +193,7 @@
 /// and @plot.stroke. 
 /// 
 /// This function is also intended for creating plots with error bars. 
+/// Those can be styled through @errorbar. 
 /// 
 /// ```example
 /// #lq.diagram(
@@ -151,13 +216,21 @@
   /// -> array
   y, 
   
-  /// Optional errors/uncertainties for $x$ coordinates. The number of error 
-  /// values must match the number of coordinates. Each entry can either be a 
-  /// single value, describing a symmetric uncertainty or a pair 
-  /// `(lower, upper)` for asymmetric error bars. 
+  /// Optional errors/uncertainties for $x$ coordinates. Symmetric errors can
+  /// be specified as a
+  /// - a constant (e.g., `xerr: 1.5`) or
+  /// - an array with the same length as @plot.x for individual errors per 
+  ///   data point (e.g., `xerr: (0.5, 1, 1.5)`). 
+  /// 
+  /// Asymmetric errors can be given as
+  /// - a dictionary with the keys `p` (plus) and `m` (minus) with either a 
+  ///   constant value or arrays with the same length as @plot.x (e.g., 
+  ///   `xerr: (p: 1, m: 2)`) or
+  /// - an array of dictionaries per data point, each filled with single `p` 
+  ///   and `m` values (e.g., `xerr: ((p: 1, m: 2), (p: 2, m: 3))`). 
   /// 
   /// The look of the error bars can be controlled through @errorbar. 
-  /// -> none | array
+  /// -> none | array | dictionary
   xerr: none,
   
   /// Optional errors/uncertainties for $y$ coordinates. See @plot.xerr. 
@@ -275,10 +348,14 @@
   z-index: 2,
   
 ) = {
-  if type(xerr) in (int, float) { xerr = (xerr,) * x.len() }
-  if type(yerr) in (int, float) { yerr = (yerr,) * x.len() }
-  assertations.assert-matching-data-dimensions(x, y, xerr: xerr, yerr: yerr, fn-name: "plot")
+  assertations.assert-matching-data-dimensions(x, y, fn-name: "plot")
+  
   assert(step in (none, start, end, center))
+
+  if xerr != none { xerr = process-errors(xerr, x.len(), kind: "x") }
+  if yerr != none { yerr = process-errors(yerr, x.len(), kind: "y") }
+
+
   (
     x: x,
     y: y,

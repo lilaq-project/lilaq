@@ -5,8 +5,8 @@
   if err == none { return minmax(x) }
   
   return (
-    calc.min(..array.zip(x, err).map(((x, err)) => x - if type(err) == array { err.at(0) } else { err })),
-    calc.max(..array.zip(x, err).map(((x, err)) => x + if type(err) == array { err.at(1) } else { err })),
+    calc.min(..array.zip(x, err.m).map(((x, err)) => x - if type(err) == array { err.at(0) } else { err })),
+    calc.max(..array.zip(x, err.p).map(((x, err)) => x + if type(err) == array { err.at(1) } else { err })),
   )
 }
 

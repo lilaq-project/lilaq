@@ -220,14 +220,18 @@
   let axis-offset = 0 
   if calc.abs(calc.max(x1, x0) / tick-distance) >= 5000 {
     let fg = pow10(calc.ceil(calc.log(dx, base: 10) + 1))
-    axis-offset = discretize-down(x0, fg, 0) 
+    axis-offset = discretize-down(x0, 1, exponent + 2)
+  if axis-offset == 1.811 {
+    let e = (x0, fg, exponent)
+  }
   }
   
   let first-tick = discretize-up(x0 - x0-offset, step, exponent - 1, offset: precision-offset) + x0-offset
 
   let num-ticks = fit-down(x1 - x0-offset, tick-distance, offset: precision-offset) - fit-up(x0 - x0-offset, tick-distance, offset: precision-offset) + 1
 
-  let tt = range(calc.min(max-ticks, num-ticks)).map(x => first-tick + x * tick-distance).map(x=>x/calc.pow(10., exponent))
+  // let tt = range(calc.min(max-ticks, num-ticks)).map(x => first-tick + x * tick-distance).map(x=>x/calc.pow(10., exponent))
+
 
   return (
     ticks: range(calc.min(max-ticks, num-ticks)).map(x => first-tick + x * tick-distance),
