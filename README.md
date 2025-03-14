@@ -9,8 +9,14 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/lilaq-project/lilaq/blob/main/LICENSE)
 [![Static Badge](https://img.shields.io/badge/documentation-736ad9)](https://lilaq.org/)
 
+_Lilaq is a powerful plotting library for [Typst](https://typst.app/)._
 
-Install the package by cloning it and then import Lilaq via 
+
+----
+
+
+
+You can install the package by cloning the repository and importing Lilaq with
 ```typ
 #import "lilaq/src/lilaq.typ" as lq
 ```
