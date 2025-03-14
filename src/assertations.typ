@@ -76,3 +76,38 @@
     }
   )
 }
+
+#let assert-dict-keys(
+  dict, 
+  mandatory: (),
+  optional: (),
+  name: "",
+  message: auto
+) = {
+  for key in mandatory {
+    if key not in dict {
+      if message == auto {
+        message = name + "dictionary expects key `" + key + "`"
+      }
+      assert(
+        false,
+        message: message
+      )
+    }
+    let _ = dict.remove(key)
+  }
+  for key in dict.keys() {
+    if key not in optional {
+      
+      if message == auto {
+        message = name + "dictionary found unexpected key `" + key + "`"
+      }
+      assert(
+        false,
+        message: message
+      )
+    }
+  }
+}
+
+// #assert-dict-keys((a: 12, b: "", c: "a"), mandatory: ("a", "b"), optional: ("c",))

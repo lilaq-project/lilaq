@@ -52,8 +52,17 @@
   /// -> "x" | "y"
   kind: "x", 
 
+  /// Where to place this axis. This can be 
+  /// - one of the sides of the diagram (`top` or `bottom` for $x$-axes, 
+  ///   `left` or `right` for $y$-axes), 
+  /// - a `float` coordinate value on the other axis,
+  /// - a `length` or `relative`,
+  /// - or a combination of the first and third option through a dictionary 
+  ///   with the keys `align` and `offset`. 
   /// 
-  /// -> float | alignment
+  /// More on axis placement can be found in the 
+  /// #link("tutorials/axis#placement-and-mirrors")[axis tutorial]. 
+  /// -> auto | alignment | float | relative | dictionary
   position: auto, 
 
   /// How to stroke the spine of the axis. If not `auto`, this is forwarded to 
@@ -66,6 +75,9 @@
   /// `auto`, mirroring is only activated when `position: auto`. More control
   /// is granted through a dictionary with the possible keys `ticks` and 
   /// `tick-labels` to individually activate or deactivate those. 
+  /// 
+  /// More on axis mirrors can be found in the 
+  /// #link("tutorials/axis#placement-and-mirrors")[axis tutorial]. 
   /// -> auto | bool | dictionary
   mirror: auto,
 
@@ -182,12 +194,21 @@
       position = left 
     }
     if mirror == auto { mirror = none }
-  } else if type(position) == array {
-    assert(position.len() == 2 and type(position.first()) == alignment, message: "Unexpected argument for axis `position`")
-    (position, translate) = position
+  } else if type(position) == dictionary {
+    assertations.assert-dict-keys(position, mandatory: ("align", "offset"))
+
+    
+    (position, translate) = (position.align, position.offset)
     if kind == "x" { translate = (0pt, translate) }
     else if kind == "y" { translate = (translate, 0pt) }
     if mirror == auto { mirror = none }
+    
+    if kind == "x" {
+      assert(position in (top, bottom), message: "For x-axes, `position` can only be \"top\" or \"bottom\", got " + repr(position))
+    }
+    if kind == "y" {
+      assert(position in (left, right), message: "For y-axes, `position` can only be \"left\" or \"right\", got " + repr(position))
+    }
   } else if type(position) == alignment {
     if mirror == auto { mirror = none }
     
@@ -197,7 +218,7 @@
     if kind == "y" {
       assert(position in (left, right), message: "For y-axes, `position` can only be \"left\" or \"right\", got " + repr(position))
     }
-  }
+  } else {}
 
   if ticks != auto {
     if type(ticks) == dictionary {
