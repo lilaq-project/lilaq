@@ -18,7 +18,7 @@ _Lilaq is a powerful plotting library for [Typst](https://typst.app/)._
 
 You can install the package by cloning the repository and importing Lilaq with
 ```typ
-#import "lilaq/src/lilaq.typ" as lq
+#import "@preview/lilaq:0.1.0" as lq
 ```
 
 The documentation lives at https://lilaq.org. 
