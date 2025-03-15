@@ -128,11 +128,41 @@
     stroke: merge-strokes((dash: "solid"), plot.style.stroke, plot.style.color)
   )
 
+
+  let filter = {
+    let every = plot.mark.every
+    if every == 1 { none }
+    else if type(every) == int {
+      let n = plot.x.len()
+      arr => range(calc.quo(n, every)).map(i => arr.at(i * every))
+    } else if type(every) == dictionary {
+      assertations.assert-dict-keys(every, mandatory: ("n",), optional: ("start", "end"))
+      let size = plot.x.len()
+      let start = every.at("start", default: 0)
+      let end = every.at("end", default: size + 1)
+      if end < 0 { end = size + end }
+      assert(start >= 0 and start < size, message: "Invalid start index " + str(start))
+
+      arr => range(calc.quo(end - start, every.n))
+      .map(i => arr.at(i * every.n + start))
+    } else if type(every) == array {
+      arr => every.map(i => arr.at(i))
+    }
+  }
+
+  if filter != none { points = filter(points) }
   
+
   if plot.xerr != none {
     show: errorbar-stroke
+
+    let (p, m) = plot.xerr
+    if filter != none { 
+      p = filter(p)
+      m = filter(m)
+    }
     
-    points.zip(plot.xerr.p, plot.xerr.m).map((((x, y), p, m)) => {
+    points.zip(p, m).map((((x, y), p, m)) => {
       let (p0, p1) = (transform(x - m, y), transform(x + p, y))
 
       place(
@@ -147,7 +177,13 @@
   if plot.yerr != none {
     show: errorbar-stroke
     
-    points.zip(plot.yerr.p, plot.yerr.m).map((((x, y), p, m)) => {
+    let (p, m) = plot.yerr
+    if filter != none { 
+      p = filter(p)
+      m = filter(m)
+    }
+
+    points.zip(p, m).map((((x, y), p, m)) => {
       let (p0, p1) = (transform(x, y - m), transform(x, y + p))
 
       place(
@@ -294,6 +330,29 @@
   /// ]
   /// -> none | start | end | center
   step: none,
+
+  /// Specifies the interval of marks to plot. This can be used to skip
+  /// marks while still drawing lines between all points.
+  /// - `none`: All marks are plotted.
+  /// - `int`: Every $n$-th mark is plotted.
+  /// - `array`: All marks with the given indices are plotted.
+  /// - `dict`: A dictionary with the keys `n`, `start` (start index), and 
+  ///   `end` (end index, negative indices count from the end) can be used 
+  ///   to specify a range of marks to plot.
+  /// 
+  /// #details[
+  ///   ```example
+  ///   #lq.diagram(
+  ///     lq.plot(
+  ///       range(20),
+  ///       range(20).map(x => x*x),
+  ///       every: 4
+  ///     )
+  ///   )
+  ///   ```
+  /// ]
+  /// -> none | int | array | dict
+  every: none,
   
   /// The legend label for this plot. If not given, the plot will not appear in the 
   /// legend. 
@@ -365,7 +424,8 @@
     mark: (
       mark: mark,
       fill: mark-color,
-      size: mark-size
+      size: mark-size,
+      every: every
     ),
     style: (
       stroke: stroke,
