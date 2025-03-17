@@ -3,7 +3,7 @@
 #import "../logic/process-coordinates.typ": all-data-coordinates, convert-rect
 
 
-/// Plots an ellipse with origin `(x, y)`. The origin coordinates as well
+/// Plots an ellipse or circle with origin `(x, y)`. The origin coordinates as well
 /// as width and height can either be given as 
 /// - data coordinates (`int` or `float`),
 /// - or absolute coordinates from the top left corner of the data area (`length`),

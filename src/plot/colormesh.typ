@@ -107,7 +107,7 @@
 }
 
 
-/// Plots a rectangular color mesh. 
+/// Plots a rectangular color mesh, e.g., a heatmap. 
 /// ```example
 /// #lq.diagram(
 ///   width: 4cm, height: 4cm,

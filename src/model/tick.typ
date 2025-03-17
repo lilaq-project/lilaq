@@ -4,7 +4,7 @@
 #import "spine.typ": spine
 
 
-/// A tick on a diagram axis. A tick consists of a tick mark on the axis and
+/// A tick or subtick on a diagram axis. A tick consists of a tick mark on the axis and
 /// a tick label, usually a number denoting the coordinate value. 
 #let tick(
   

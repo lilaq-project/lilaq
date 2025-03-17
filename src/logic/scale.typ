@@ -51,7 +51,8 @@
 )
 
 
-/// Creates a new linear scale. 
+/// Creates a new linear scale. This scale can also be accessed through 
+/// the shorthand `"linear"`. 
 #let linear() = scale(
   name: "linear",
   x => x,
@@ -59,7 +60,8 @@
 )
 
 
-/// Creates a new logarithmic scale. 
+/// Creates a new logarithmic scale. This scale can also be accessed through 
+/// the shorthand `"log"`. 
 #let log(
   
   /// The base of the logarithm. This info is only used to determine
@@ -78,6 +80,7 @@
 
 /// Creates a new symlog scale with a linear scaling in the region 
 /// `[threshold, threshold]` around 0 and a logarithmic scaling beyond that. 
+/// This scale can also be accessed through the shorthand `"symlog"`. 
 #let symlog(
   
   /// The base of the logarithm. 
