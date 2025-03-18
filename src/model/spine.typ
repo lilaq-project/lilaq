@@ -40,7 +40,7 @@
   },
 
   fields: (
-    e.field("stroke", stroke, default: (thickness: 0.7pt, cap: "square")),
+    e.field("stroke", e.types.option(stroke), default: (thickness: 0.7pt, cap: "square")),
     e.field(
       "kind", 
       e.types.union(e.types.literal("x"), e.types.literal("y")), 
