@@ -458,7 +458,7 @@
     e.field("xaxis", e.types.option(dictionary), default: (:)),
     e.field("yaxis", e.types.option(dictionary), default: (:)),
     e.field("margin", e.types.union(ratio, dictionary), default: 6%),
-    e.field("cycle", e.types.array(function), default: default-cycle),
+    e.field("cycle", e.types.wrap(e.types.array(function), fold: none), default: default-cycle),
     e.field("fill", e.types.option(e.types.paint), default: none),
   ),
 
