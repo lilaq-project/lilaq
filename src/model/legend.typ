@@ -1,5 +1,6 @@
 #import "../process-styles.typ": twod-ify-alignment
 #import "../bounds.typ": place-with-bounds
+#import "../assertations.typ"
 #import "../libs/elembic/lib.typ" as e
 
 /// A diagram legend listing all labeled plots. 
@@ -36,7 +37,13 @@
   /// - lengths like `20pt` or `2em`,
   /// - ratios like `50%` (measuring in the data area),
   /// - or a combination thereof. 
-  /// -> alignment | array
+  /// 
+  /// Finally, the position can also be a dictionary with the keys `align` and `offset` where
+  /// - `align` is an alignment like `top` or `bottom`, and
+  /// - `offset` is a point `(x, y)` where `x` and `y` are relative lengths.
+  /// Optionally, the dictionary can also have the key `outside` set to `true` 
+  /// to align the legend outside the diagram instead of inside.
+  /// -> alignment | array | dictionary
   position: top + right,
 
   /// In the case that @legend.position is an `alignment`, `pad` determines 
@@ -81,7 +88,7 @@
     e.field("stroke", e.types.option(stroke), default: 0.5pt + gray),
     e.field("radius", e.types.union(relative, dictionary), default: 1.5pt),
     
-    e.field("position", e.types.union(alignment, array), default: top + right),
+    e.field("position", e.types.union(alignment, array, dictionary), default: top + right),
     e.field("pad", length, default: 2pt),
     e.field("dx", length, default: 0pt),
     e.field("dy", length, default: 0pt),
@@ -127,6 +134,7 @@
   let pad = get-settable-field(legend, my-legend, "pad")
 
   let alignment = top + left
+  let content-alignment = "inside"
 
   if type(pos) == std.alignment {
     alignment = pos
@@ -135,11 +143,27 @@
     dx += pos.at(0)
     dy += pos.at(1)
     pad = 0pt
+  } else if type(pos) == dictionary {
+    assertations.assert-dict-keys(
+      pos, 
+      mandatory: ("align", "offset"),
+      optional: ("outside",), 
+      name: "axis.position"
+    )
+    alignment = pos.align
+    let offset = pos.offset
+    assert.eq(offset.len(), 2, message: "`legend.position.offset` needs to be a pair of coordinates, got " + repr(pos.offset))
+    dx += offset.at(0)
+    dy += offset.at(1)
+    if "outside" in pos and pos.outside {
+      content-alignment = auto
+    }
+    pad = 0pt
   }
   
   place-with-bounds(
     alignment: alignment, 
-    content-alignment: "inside", 
+    content-alignment: content-alignment, 
     dx: dx, dy: dy, pad: pad,
     wrap-in-box: true,
     {

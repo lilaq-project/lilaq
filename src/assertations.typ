@@ -84,6 +84,7 @@
   name: "",
   message: auto
 ) = {
+  name += " "
   for key in mandatory {
     if key not in dict {
       if message == auto {
@@ -100,7 +101,7 @@
     if key not in optional {
       
       if message == auto {
-        message = name + "dictionary found unexpected key `" + key + "`"
+        message = name + "dictionary found unexpected key `" + key + "` (expected " + (mandatory + optional).join(", ", last: ", or ") + ")"
       }
       assert(
         false,
