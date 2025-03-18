@@ -710,7 +710,11 @@
       }
     }
     // define box of axis spine
-    content += box(..if kind == "y"{(height: 100%)}else{(width:100%)})
+    content += block(
+      ..if kind == "y"{ (height: 100%, width: 0%) }
+        else{ (width:100%, height: 0pt) },
+      inset: 0pt, outset: 0pt
+    )
     
     let main-bounds = create-bounds()
     if axis.kind == "x" {
@@ -741,7 +745,8 @@
   let content = place(axis.position, axis-content, dx: axis.translate.at(0), dy: axis.translate.at(1))
   let em = measure(line(length: 1em, angle: 0deg)).width
   
-  
+  // let a = measure(lq-tick-label(box(width: 1em))).width
+  // content += repr(a) + " " + repr(1em.to-absolute())
   if axis.mirror != none {
     let (mirror-axis-content, mirror-axis-bounds) = the-axis(
       kind: axis.kind,
