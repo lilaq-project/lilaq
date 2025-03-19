@@ -31,14 +31,25 @@
 
 
   show: prepare-path.with(
-    fill: plot.style.fill,
+    fill: if type(plot.style.fill) != array { plot.style.fill},
     stroke: plot.style.stroke,
     element: rect
   )
 
 
+  let colored-rect = {
+    if type(plot.style.fill) == array {
+      (i, width: 0pt, height: 0pt) => rect(
+        width: width, height: height, fill: plot.style.fill.at(i)
+      )
+    } else {
+      (i, width: 0pt, height: 0pt) => rect(width: width, height: height)
+    }
+  }
+
+
   if "make-legend" in plot {
-    rect(width: 100%, height: 100%)
+    colored-rect(0, width: 100%, height: 100%)
   } else {
 
     if orientation == "vertical" {
@@ -52,8 +63,8 @@
         
         let (xx1, y0) = transform(x + x1, plot.base.at(i, default: plot.base.first()))
         let (xx2, yy) = transform(x + x2, y)
-        
-        place(dx: xx1, dy: yy, rect(width: xx2 - xx1, height: y0 - yy))
+
+        place(dx: xx1, dy: yy, colored-rect(i, width: xx2 - xx1, height: y0 - yy))
       }
 
     } else if orientation == "horizontal" {
@@ -68,7 +79,7 @@
         let (x0, yy1) = transform(plot.base.at(i, default: plot.base.first()), y + y1)
         let (xx, yy2) = transform(x, y + y2)
         
-        place(dx: x0, dy: yy2, rect(width: xx - x0, height: yy1 - yy2))
+        place(dx: x0, dy: yy2, colored-rect(i, width: xx - x0, height: yy1 - yy2))
       }
 
     }
@@ -118,8 +129,9 @@
   /// -> array
   y, 
 
-  /// How to fill the bars. 
-  /// -> none | color | gradient | tiling
+  /// How to fill the bars. This can be a single value applied to all bars or
+  /// an array with the same length as the coordinate arrays.
+  /// -> none | color | gradient | tiling | array
   fill: auto,
 
   /// How to stroke the bars. All values allowed by the built-in `rect`
@@ -220,14 +232,14 @@
   
 ) = {
   assertations.assert-matching-data-dimensions(
-    x, y, width: width, base: base, fn-name: "bar"
+    x, y, width: width, base: base, fill: fill, fn-name: "bar"
   )
 
   if offset != 0 {
     x = x.map(x => x + offset)
   }
   
-  if type(base) in (int, float) {
+  if type(base) != array {
     base = (base,)
   }
   

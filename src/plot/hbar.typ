@@ -25,8 +25,9 @@
   /// -> array
   y, 
 
-  /// How to fill the bars. 
-  /// -> none | color | gradient | tiling
+  /// How to fill the bars. This can be a single value applied to all bars or
+  /// an array with the same length as the coordinate arrays.
+  /// -> none | color | gradient | tiling | array
   fill: auto,
 
   /// How to stroke the bars. All values allowed by the built-in `rect`
@@ -134,7 +135,7 @@
     y = y.map(y => y + offset)
   }
   
-  if type(base) in (int, float) {
+  if type(base) != array {
     base = (base,)
   }
   
