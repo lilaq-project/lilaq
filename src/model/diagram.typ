@@ -36,9 +36,10 @@
   /// -> lq.title | str | content | none
   title: none,
 
-  /// Whether to show a legend with entries for all labeled plot objects. 
-  /// -> bool
-  legend: true,
+  /// Options to pass to the legend constructor. If set to `none`, no legend is
+  /// shown.
+  /// -> none | dictionary
+  legend: (:),
 
   /// Data limits along the $x$-axis. Expects `auto` or a tuple `(min, max)` 
   /// where `min` and `max` may individually be `auto`. Also see @axis.lim. 
@@ -416,7 +417,7 @@
     }
 
     
-    if it.legend != none and it.legend != false and legend-entries.len() > 0 {
+    if it.legend != none and legend-entries.len() > 0 {
       let (legend-content, legend-bounds) = _place-legend-with-bounds(it.legend, legend-entries, e-get)
 
       artists.push((content: legend-content, z: e-get(lq-legend).z-index))
@@ -447,7 +448,7 @@
     e.field("width", length, default: 6cm),
     e.field("height", length, default: 4cm),
     e.field("title", e.types.union(none, str, content, lq-title), default: none),
-    e.field("legend", e.types.union(bool, dictionary), default: true),
+    e.field("legend", e.types.option(dictionary), default: (:)),
     e.field("xlim", e.types.union(auto, array), default: auto),
     e.field("ylim", e.types.union(auto, array), default: auto),
     e.field("xlabel", e.types.union(lq-label, str, content, none), default: none),
