@@ -434,7 +434,7 @@
 })
 }
 
-
+#let folding-dict = e.types.wrap(dictionary, fold: old-fold => (a, b) => a + b)
 
 #let diagram = e.element.declare(
   "diagram",
@@ -455,8 +455,8 @@
     e.field("grid", e.types.union(auto, none, dictionary, stroke, color, length), default: auto),
     e.field("xscale", e.types.union(str, dictionary), default: "linear"),
     e.field("yscale", e.types.union(str, dictionary), default: "linear"),
-    e.field("xaxis", e.types.option(dictionary), default: (:)),
-    e.field("yaxis", e.types.option(dictionary), default: (:)),
+    e.field("xaxis", e.types.option(folding-dict), default: (:)),
+    e.field("yaxis", e.types.option(folding-dict), default: (:)),
     e.field("margin", e.types.union(ratio, dictionary), default: 6%),
     e.field("cycle", e.types.wrap(e.types.array(function), fold: none), default: default-cycle),
     e.field("fill", e.types.option(e.types.paint), default: none),
