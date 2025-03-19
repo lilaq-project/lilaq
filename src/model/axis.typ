@@ -571,7 +571,7 @@
     let length = e-get(lq-tick).inset * factor + outset
     let angle = if align in (top, bottom) { 90deg } else { 0deg }
   
-    let tick-stroke = merge-strokes(e-get(lq-tick).stroke, axis.stroke, e-get(spine).stroke)
+    let tick-stroke = merge-strokes(e-get(lq-tick).stroke, axis.stroke, (cap: "butt"), e-get(spine).stroke)
     if tick-stroke == none {
       // can happen when spine.stroke is none
       tick-stroke = 0.7pt
