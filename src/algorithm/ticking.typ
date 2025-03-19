@@ -167,29 +167,52 @@
 /// $x_0>x_1$ but not $x_0 = x_1$. 
 ///
 /// This function returns a dictionary with the keys
-///   - `ticks`, containing an array of tick positions,
-///   - `exponent`, holding an automatic exponent $n$ so that the range $[t_"min"/10^n, t_"max"/10^n]$ spans at most 10 for min/max ticks $t_"min", t_"max"$. This exponent may be applied by the axis to improve legibility of the ticks and to reduce their length when printed. 
-///   - `offset`, containing some offset that may be used by the axis to reduce the length of tick labels by subtracting it from all ticks. 
-///   - `significant-digits`: The maximum number of significant digits of the returned ticks. This is an optimization for label formatting because this function has the information for free while a formatter needs to expensively estimate it. 
-///
-///
-/// - x0 (float): Start of the range. 
-/// - x1 (float): End of the range. 
-/// - tick-distance (auto, float): Sets the distance between ticks. If set to `auto`, the 
-///    distance will be determined automatically according to `num-ticks-suggestion` and the 
-///    given range. 
-/// - num-ticks-suggestion (int, float): Suggested number of ticks to use. This may for example 
-///     be chosen according to the length of the axis and the font size. 
-/// - max-ticks (int): At most this many ticks are returned. This guard ensures that while 
-///     typing a value for tick-distance with live recompilation, that not a humongous number
-///     of ticks is genreated. 
+/// - `ticks`, containing an array of tick positions,
+/// - `exponent`, holding an automatic exponent $n$ so that the range 
+///   $[t_\mathrm{min}/10^n, t_\mathrm{max}/10^n]$ spans at most 10 for min/max
+///   ticks $t_\mathrm{min}, t_\mathrm{max}$. This exponent may be applied by 
+///   the axis to improve legibility of the ticks and to reduce their length 
+///   when printed. 
+/// - `offset`, containing some offset that may be used by the axis to reduce 
+///   the length of tick labels by subtracting it from all ticks. 
+/// - `significant-digits`: The maximum number of significant digits of the 
+///   returned ticks. This is an optimization for label formatting because this
+///   function has the information for free while a formatter needs to 
+///   expensively estimate it. 
 #let locate-ticks-linear(
+
+  /// The start of the range that is displayed on the axis. 
+  /// -> float
   x0, 
+
+  /// The end of the range that is displayed on the axis. 
+  /// -> float
   x1, 
+
+  /// Sets the distance between consecutive ticks. If set to `auto`, the 
+  /// distance will be determined automatically according to 
+  /// `num-ticks-suggestion` and the given range. 
+  /// -> auto | float
   tick-distance: auto,
+
+  /// Suggested number of ticks to use. This may for example be chosen 
+  /// according to the length of the axis and the font size. 
+  /// -> int | float
   num-ticks-suggestion: 5, 
+
+  /// The maximum number of ticks to generate. This guard ensures prevents 
+  /// accidental generation of a huge number of ticks. 
+  /// -> int
   max-ticks: 200,
+
+  /// The density of ticks. This can be used as a qualitative knob to tune
+  /// the number of generated ticks in relation to the suggested number of
+  /// ticks. 
+  /// -> ratio
+  density: 100%,
+
   ..args
+
 ) = {
   assert.ne(x0, x1, message: "The tick input range cannot be zero")
   if x1 < x0 {
@@ -201,7 +224,7 @@
   let mantissa
   let exponent
   if tick-distance == auto {
-    let approx-step = dx / num-ticks-suggestion
+    let approx-step = dx / (num-ticks-suggestion * density / 100%)
     (mantissa, exponent) = decompose-floating-point(calc.abs(approx-step))
     step = get-best-step(mantissa)
     tick-distance = step * pow10(exponent - 1)
