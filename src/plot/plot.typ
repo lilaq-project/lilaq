@@ -125,7 +125,9 @@
 
 
   let errorbar-stroke = prepare-path.with(
-    stroke: merge-strokes((dash: "solid"), plot.style.stroke, plot.style.color)
+    stroke: merge-strokes(
+      ..((dash: "solid"), plot.style.stroke, plot.style.color).filter(x => x != none)
+    )
   )
 
 
