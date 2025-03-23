@@ -20,7 +20,9 @@
   dy: 0pt,
 
   /// Padding between the axis (and its ticks and labels) and the label. 
-  /// -> length
+  /// When this is set to `none`, the label is drawn directly on the axis
+  /// (ignoring the ticks).
+  /// -> none | length
   pad: 0.75em,
 
   /// Angle at which the label is drawn. The label of a `y` axis is often 
@@ -60,7 +62,7 @@
       ), 
       default: "x"
     ),
-    e.field("pad", length, default: .7em),
+    e.field("pad", e.types.option(length), default: .7em),
     e.field("angle", angle, default: 0deg),
   )
 )
