@@ -7,6 +7,10 @@
   /// -> any
   body,
 
+  /// The kind of axis that the label is attached to.
+  /// -> "x" | "y"
+  kind: "x",
+
   /// Horizontal offset. 
   /// -> length
   dx: 0pt,
@@ -46,8 +50,16 @@
 
   fields: (
     e.field("body", content, required: true),
-    e.field("dx", length, default: 0pt),
-    e.field("dy", length, default: 0pt),
+    e.field("dx", relative, default: 0pt),
+    e.field("dy", relative, default: 0pt),
+    e.field(
+      "kind", 
+      e.types.union(
+        e.types.literal("x"), 
+        e.types.literal("y")
+      ), 
+      default: "x"
+    ),
     e.field("pad", length, default: .7em),
     e.field("angle", angle, default: 0deg),
   )
