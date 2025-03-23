@@ -1,8 +1,11 @@
 
-#import "process-styles.typ": merge-strokes, merge-fills
-#import "utility.typ": if-none
+#import "../process-styles.typ": merge-strokes, merge-fills
+#import "../utility.typ": if-none
+#import "../model/mark.typ": mark, marks
 
-#import "model/mark.typ": mark, marks
+#import "map.typ": petroff10
+#import "cycle.typ": generic
+
 
 #let _auto = rgb("#0000A1AA")
 
@@ -91,6 +94,7 @@
 
 
 
+// #let default-cycle = generic(style, fill: petroff10)
 
 
 

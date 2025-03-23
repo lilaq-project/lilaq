@@ -1,9 +1,9 @@
 #import "../assertations.typ"
-#import "../color.typ": create-normalized-colors
+#import "../logic/sample-colors.typ": sample-colors
 #import "../process-styles.typ": merge-strokes
 #import "../math.typ": vec, mesh
 #import "../utility.typ": if-auto, match, match-type
-#import "../cycle.typ": style
+#import "../style/styling.typ": style
 
 #import "@preview/tiptoe:0.3.0"
 
@@ -229,7 +229,7 @@
     
     if type(color-flat.at(0, default: 0)) in (int, float) {
       let cinfo
-      (color, cinfo) = create-normalized-colors(color-flat, map, norm, ignore-nan: true, min: min, max: max)
+      (color, cinfo) = sample-colors(color-flat, map, norm, ignore-nan: true, min: min, max: max)
     }
   }
 

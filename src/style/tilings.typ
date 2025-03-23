@@ -1,4 +1,4 @@
-#import "process-styles.typ": merge-strokes
+#import "../process-styles.typ": merge-strokes
 
 
 

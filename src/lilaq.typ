@@ -11,7 +11,9 @@
 #import "model/label.typ": label, xlabel, ylabel
 
 #import "model/mark.typ": mark, marks
-#import "cycle.typ": style
+#import "style/styling.typ": style
+#import "style/cycle.typ"
+#import "style/color.typ"
 
 #import "plot/plot.typ": plot
 #import "plot/bar.typ": bar
@@ -34,8 +36,8 @@
 #import "plot/place.typ": place
 
 
-#import "tilings.typ"
-#import "color.typ": colorbar
+#import "style/tilings.typ"
+#import "colorbar.typ": colorbar
 #import "place-anchor.typ": place-anchor
 
 

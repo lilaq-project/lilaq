@@ -3,7 +3,7 @@
 #import "../assertations.typ"
 #import "../logic/process-coordinates.typ": filter-nan-points, stepify
 #import "../utility.typ": if-auto
-#import "../cycle.typ": mark, prepare-mark, prepare-path
+#import "../style/styling.typ": mark, prepare-mark, prepare-path
 #import "../model/errorbar.typ": errorbar
 
 #let get-errorbar-stroke(base-stroke) = {

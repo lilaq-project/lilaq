@@ -14,7 +14,7 @@
 #import "../utility.typ": if-auto
 
 #let debug = false
-#import "../cycle.typ": init as cycle-init, default-cycle
+#import "../style/styling.typ": init as cycle-init, default-cycle
 #import "../libs/elembic/lib.typ" as e
 
 

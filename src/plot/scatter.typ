@@ -1,9 +1,9 @@
 #import "../process-styles.typ": merge-strokes
 #import "../assertations.typ"
 #import "../logic/process-coordinates.typ": filter-nan-points
-#import "../color.typ": create-normalized-colors
+#import "../logic/sample-colors.typ": sample-colors
 #import "../math.typ": minmax
-#import "../cycle.typ": mark, prepare-mark, _auto
+#import "../style/styling.typ": mark, prepare-mark, _auto
 #import "../utility.typ": if-auto, match-type
 
 
@@ -176,7 +176,7 @@
       if type(map) == array {
         map = gradient.linear(..map)
       }
-      (color, cinfo) = create-normalized-colors(color, map, norm, ignore-nan: false, min: min, max: max)
+      (color, cinfo) = sample-colors(color, map, norm, ignore-nan: false, min: min, max: max)
     }
   }
   (

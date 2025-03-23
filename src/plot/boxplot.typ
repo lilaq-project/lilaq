@@ -2,7 +2,7 @@
 #import "../utility.typ": match
 #import "../algorithm/boxplot.typ": *
 #import "../utility.typ"
-#import "../cycle.typ": mark, prepare-mark
+#import "../style/styling.typ": mark, prepare-mark
 
 #let render-boxplot(plot, transform) = {
 

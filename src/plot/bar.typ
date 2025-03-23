@@ -5,7 +5,7 @@
 
 #import "../logic/process-coordinates.typ": filter-nan-points, stepify
 #import "../math.typ": vec, minmax
-#import "../cycle.typ": prepare-path
+#import "../style/styling.typ": prepare-path
 
 
 #let render-bar(

@@ -1,11 +1,11 @@
-#import "utility.typ": match-type
-#import "logic/scale.typ"
-#import "logic/transform.typ": create-trafo
-#import "model/diagram.typ": diagram
-#import "plot/rect.typ": rect
-#import "math.typ" as pmath
 
-#let create-normalized-colors(
+#import "../utility.typ": match-type
+#import "../math.typ" as pmath
+#import "../logic/scale.typ"
+#import "../logic/transform.typ": create-trafo
+
+
+#let sample-colors(
   values,
   colormap,
   norm,
@@ -24,7 +24,7 @@
 
   let norm-fn = match-type(
     norm,
-    function: norm,
+    function: () => norm,
     string: () => scale.scales.at(norm).transform,
     dictionary: () => {
       assert("transform" in norm, message: "The argument `norm` must be a valid scale from the `scales` module")
@@ -48,19 +48,3 @@
   )
 }
 
-
-
-
-#let colorbar(plot) = {
-  let cinfo = plot.cinfo
-  diagram(
-    width: .3cm, 
-    xaxis: (ticks: none), 
-    yaxis: (position: right, mirror: (:)),
-    grid: none,
-    // ylabel: "color",
-    ylim: (cinfo.min, cinfo.max),
-    yscale: cinfo.norm,
-    rect(0%, 0%, width: 100%, height: 100%, fill: gradient.linear(..cinfo.colormap.stops(), angle: -90deg))
-  )
-}

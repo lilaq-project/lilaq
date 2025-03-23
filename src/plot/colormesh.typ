@@ -1,6 +1,6 @@
 #import "../assertations.typ"
 #import "../math.typ": sign, mesh
-#import "../color.typ": create-normalized-colors
+#import "../logic/sample-colors.typ": sample-colors
 
 #let are-dimensions-all-equal(data) = {
   if data.len() <= 1 { return true }
@@ -209,7 +209,7 @@
 
   let cinfo
   if type(color.at(0, default: 0)) in (int, float) {
-    (color, cinfo) = create-normalized-colors(color, map, norm, ignore-nan: true, min: min, max: max)
+    (color, cinfo) = sample-colors(color, map, norm, ignore-nan: true, min: min, max: max)
   }
   
   (

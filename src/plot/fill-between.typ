@@ -2,7 +2,7 @@
 #import "../process-styles.typ": merge-strokes, merge-fills
 #import "../logic/process-coordinates.typ": filter-nan-points, stepify
 #import "../math.typ": minmax
-#import "../cycle.typ": prepare-path
+#import "../style/styling.typ": prepare-path
 
 #let render-fill-between(plot, transform) = {
   

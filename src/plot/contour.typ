@@ -1,6 +1,6 @@
 #import "../assertations.typ"
 #import "../algorithm/contour.typ": *
-#import "../color.typ": create-normalized-colors
+#import "../logic/sample-colors.typ": sample-colors
 #import "../math.typ": minmax, mesh
 
 #let render-contour(plot, transform) = {
@@ -185,7 +185,7 @@
   
   if min == auto { min = calc.min(..z-flat) }
   if max == auto { max = calc.max(..z-flat) }
-  let (color, cinfo) = create-normalized-colors(levels, map, norm, min: min, max: max)
+  let (color, cinfo) = sample-colors(levels, map, norm, min: min, max: max)
 
 
   let contours = generate-contours(x, y, z, levels, z-range: z1 - z0)

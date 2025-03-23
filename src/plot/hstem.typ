@@ -4,7 +4,7 @@
 #import "../logic/process-coordinates.typ": filter-nan-points
 #import "../math.typ": minmax
 #import "../utility.typ": if-auto
-#import "../cycle.typ": mark, prepare-mark, prepare-line
+#import "../style/styling.typ": mark, prepare-mark, prepare-line
 
 
 
