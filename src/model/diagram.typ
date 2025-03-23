@@ -14,7 +14,8 @@
 #import "../utility.typ": if-auto
 
 #let debug = false
-#import "../style/styling.typ": init as cycle-init, default-cycle
+#import "../style/styling.typ": init as cycle-init, style, default-cycle
+#import "../style/cycle.typ": generic
 #import "../libs/elembic/lib.typ" as e
 
 
@@ -104,6 +105,9 @@
   
   /// Style cycle to use for this diagram. Check out the 
   /// #link("tutorials/cycles")[cycles tutorial] for more information. 
+  /// The elements of a style cycles should either be all functions as 
+  /// described in the tutorial or all of type `color`. In the latter case,
+  /// the color sequence is automatically converted to a style cycle.
   /// -> array
   cycle: default-cycle,
 
@@ -294,9 +298,14 @@
 
     let legend-entries = ()
 
+    let cycle = it.cycle
+    assert(cycle.len() > 0, message: "The style cycle for the diagram must not be empty")
+    if type(cycle.first()) == color {
+      cycle = generic(style, fill: cycle)
+    }
 
     for (i, plot) in plots.enumerate() {
-      let cycle-style = it.cycle.at(calc.rem(i, it.cycle.len()))
+      let cycle-style = cycle.at(calc.rem(i, cycle.len()))
       let plotted-plot = {
         show: cycle-init
         show: cycle-style
@@ -459,7 +468,7 @@
     e.field("xaxis", e.types.option(folding-dict), default: (:)),
     e.field("yaxis", e.types.option(folding-dict), default: (:)),
     e.field("margin", e.types.union(ratio, dictionary), default: 6%),
-    e.field("cycle", e.types.wrap(e.types.array(function), fold: none), default: default-cycle),
+    e.field("cycle", e.types.wrap(e.types.array(e.types.union(function, color)), fold: none), default: default-cycle),
     e.field("fill", e.types.option(e.types.paint), default: none),
   ),
 
