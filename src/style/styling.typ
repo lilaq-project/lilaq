@@ -94,7 +94,7 @@
 
 
 
-// #let default-cycle = generic(style, fill: petroff10)
+#let default-cycle = generic(style, fill: petroff10)
 
 
 
