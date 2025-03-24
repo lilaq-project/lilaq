@@ -1,4 +1,5 @@
 
+#import "../assertations.typ"
 #import "../process-styles.typ": merge-strokes, merge-fills
 #import "../utility.typ": if-none
 #import "../model/mark.typ": mark, marks
@@ -56,6 +57,48 @@
   body
 }
 
+#let resolve-mark(mark) = {
+  if mark == none { 
+    mark = "none" 
+  }
+
+  if type(mark) == str { 
+    if mark not in marks {
+      assert(false, message: "Unknown mark \"" + mark + "\"")
+    }
+    marks.at(mark) 
+  } else if type(mark) == function or mark == auto {
+    mark
+  } else {
+    assert(false, message: "Invalid mark " + repr(mark))
+  }
+}
+
+
+
+#let process-cycles-arg(cycle) = {
+  assert(cycle.len() > 0, message: "The style cycle for the diagram must not be empty")
+  if type(cycle.first()) == color {
+    generic(style, fill: cycle)
+  } else if type(cycle.first()) == dictionary {
+    cycle.map(c => {
+      assertations.assert-dict-keys(c, optional: ("color", "stroke", "mark"))
+      
+      it => {
+        set style(fill: c.color) if "color" in c
+        set style(stroke: c.stroke) if "stroke" in c
+        set mark(align: resolve-mark(c.mark)) if "mark" in c
+        it
+      }
+    })
+  } else {
+    cycle
+  }
+}
+
+
+
+
 #let prepare-mark(
   body, 
   color: auto, 
@@ -65,13 +108,7 @@
   size: auto
 ) = {
   set style(fill: color) if color != auto
-  if func == none { func = "none" }
-  if type(func) == str { 
-    if func not in marks {
-      assert(false, message: "Unknown mark \"" + func + "\"")
-    }
-    func = marks.at(func) 
-  }
+  func = resolve-mark(func)
   set mark(align: func) if func != auto
   set mark(fill: fill) if fill != auto
   set mark(inset: size) if size != auto
