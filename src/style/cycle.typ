@@ -18,22 +18,22 @@
 
 
 
-/// Joins plotting style cycles with ascending precedence, i.e., settings from
+/// Folds plotting style cycles with ascending precedence, i.e., settings from
 /// the last cycle may override settings from the preceding cycles. 
-#let join(
+#let fold(
 
-  /// The cycles to join element-wise. 
+  /// The cycles to fold element-wise. 
   /// -> array
   ..cycles, 
 
-  /// How to join cycles of different lengths. The options are:
+  /// How to fold cycles of different lengths. The options are:
   /// - `"strict"`: Cycles must have the same length.
-  /// - `"shortest"`: Cycles are joined up to the last element of the shortest
+  /// - `"shortest"`: Cycles are folded up to the last element of the shortest
   ///   cycle.
   /// - `"longest"`: Cycles that are too short are extended with empty elements
-  ///   to the length of longest cycle before joining them. 
+  ///   to the length of longest cycle before folding them. 
   /// - `"repeat"`: Cycles that are too short are repeated to the length of the
-  ///   longest cycle before joining them.
+  ///   longest cycle before folding them.
   ///  
   /// -> "shortest" | "longest" | "repeat" | "strict"
   mode: "longest"
