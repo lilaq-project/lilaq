@@ -36,7 +36,7 @@
 
 
 #let square = mark => {
-  let s = mark.size / 1.13
+  let s = mark.size * 0.85
   move(
     dx: -s / 2, 
     dy: -s / 2, 
@@ -46,22 +46,22 @@
 
 
 #let cross = mark => {
-  let s = mark.size / calc.sqrt(8) * 1.07
+  let s = mark.size / calc.sqrt(8) * 1.25
   place(line(start: (-s, -s), end: (s, s), stroke: mark.stroke))
   line(start: (s, -s), end: (-s, s), stroke: mark.stroke)
 }
 
 
-#let plus = mark => {
-  let s = mark.size / 2 * 1.05
-  place(line(start: (0pt, -s), end: (0pt, s), stroke: mark.stroke))
-  line(start: (s, 0pt), end: (-s, 0pt), stroke: mark.stroke)
-}
+// #let plus = mark => {
+//   let s = mark.size / 2 * 1.2
+//   place(line(start: (0pt, -s), end: (0pt, s), stroke: mark.stroke))
+//   line(start: (s, 0pt), end: (-s, 0pt), stroke: mark.stroke)
+// }
 
 
 #let polygon = (mark, n: 5, angle: 0deg) => { 
   // The last term serves for equalizing the apparent size of polygons with different n. 
-  let radius = mark.size / 2 * calc.sqrt(1 + 3 / (n*n))
+  let radius = mark.size / 2 * calc.sqrt(1 + 4 / (n*n))
   let dy = (0, .13, 0, .03, 0, .02).at(n - 2, default: 0) * radius
   let poly = std.polygon(
     stroke: mark.stroke, fill: mark.fill,
@@ -81,7 +81,7 @@
 
 
 #let star = (mark, n: 5, angle: 0deg, inset: 60%) => { 
-  let radius = mark.size / 2 * 1.1
+  let radius = mark.size / 2 * 1.15
   
   std.polygon(
     stroke: mark.stroke, 
@@ -132,11 +132,14 @@
   ",": point,
   "*": asterisk,
   "asterisk": asterisk,
-  "3": asterisk.with(n: 3),
   "x": cross,
-  "+": plus,
+  "+": asterisk.with(n: 4),
   "|": polygon.with(n: 2),
   "-": polygon.with(n: 2, angle: 90deg),
+  "a3": asterisk.with(n: 3),
+  "a4": asterisk.with(n: 4),
+  "a5": asterisk.with(n: 5),
+  "a6": asterisk.with(n: 6),
   "<": polygon.with(n: 3, angle: -90deg),
   ">": polygon.with(n: 3, angle: 90deg),
   "^": polygon.with(n: 3),
@@ -144,12 +147,16 @@
   "o": circle,
   "s": square,
   "polygon": polygon,
-  "diamond": polygon.with(n: 4),
-  "pentagon": polygon.with(n: 5),
-  "hexagon": polygon.with(n: 6),
-  "heptagon": polygon.with(n: 7),
-  "octagon": polygon.with(n: 8),
+  "d": polygon.with(n: 4),
+  "p5": polygon.with(n: 5),
+  "p6": polygon.with(n: 6),
+  "p7": polygon.with(n: 7),
+  "p8": polygon.with(n: 8),
   "star": star,
+  "s3": star.with(n: 3, inset: 70%),
+  "s4": star.with(n: 4),
+  "s5": star.with(n: 5),
+  "s6": star.with(n: 6),
   "moon": moon,
   "text": text-mark,
   "none": mark => none
