@@ -46,7 +46,7 @@
 
 
 #let cross = mark => {
-  let s = mark.size / calc.sqrt(8) * 1.25
+  let s = mark.size / calc.sqrt(8) * 1.2
   place(line(start: (-s, -s), end: (s, s), stroke: mark.stroke))
   line(start: (s, -s), end: (-s, s), stroke: mark.stroke)
 }
