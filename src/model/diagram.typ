@@ -14,8 +14,8 @@
 #import "../utility.typ": if-auto
 
 #let debug = false
-#import "../style/styling.typ": init as cycle-init, style, default-cycle, process-cycles-arg
-#import "../style/cycle.typ": generic
+#import "../style/styling.typ": init as cycle-init, style, process-cycles-arg
+#import "../style/map.typ": petroff10
 #import "../libs/elembic/lib.typ" as e
 
 
@@ -113,7 +113,7 @@
   ///   `mark`. 
   ///   
   /// -> array
-  cycle: default-cycle,
+  cycle: petroff10,
 
   /// How to fill the data area. 
   /// -> none | color | gradient | tiling 
@@ -468,7 +468,7 @@
     e.field("xaxis", e.types.option(folding-dict), default: (:)),
     e.field("yaxis", e.types.option(folding-dict), default: (:)),
     e.field("margin", e.types.union(ratio, dictionary), default: 6%),
-    e.field("cycle", e.types.wrap(e.types.array(e.types.union(function, color, dictionary)), fold: none), default: default-cycle),
+    e.field("cycle", e.types.wrap(e.types.array(e.types.union(function, color, dictionary)), fold: none), default: petroff10),
     e.field("fill", e.types.option(e.types.paint), default: none),
   ),
 

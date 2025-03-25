@@ -118,22 +118,6 @@
 
 
 
-#let default-cycle = (
-  it => { set style(fill: blue); it },
-  it => { set style(fill: orange); it },
-  // it => { set style(fill: yellow); it },
-  it => { set style(fill: purple); it },
-  it => { set style(fill: green); it },
-  it => { set style(fill: red); it },
-)
-
-
-
-
-
-#let default-cycle = generic(style, fill: petroff10)
-
-
 
 
 #show raw.where(block: true): block.with(fill: luma(95%), inset: 1em)
