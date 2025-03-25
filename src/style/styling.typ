@@ -37,7 +37,7 @@
   
   
   set style(fill: black)
-  set mark(fill: _auto, stroke: _auto + 1pt, align: marks.at("."), inset: 4pt)
+  set mark(fill: _auto, stroke: _auto + .7pt, align: marks.at("."), inset: 4pt)
   body
 }
 
