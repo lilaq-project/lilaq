@@ -30,8 +30,6 @@
 ///   )
 /// )
 /// ```
-/// 
-/// Also see @plot. 
 #let errorbar(
 
   /// The kind of error bar: horizontal (`"x"`) or vertical (`"y"`). 

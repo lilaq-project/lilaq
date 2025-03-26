@@ -1,6 +1,31 @@
 #import "@preview/tiptoe:0.3.0": arc
 
 
+/// A mark for a plot. Refer to the #link("tutorials/marks")[mark tutorial] for
+/// a list of available mark shapes and more details. 
+#let mark(
+
+  /// The size of the mark. The built-in mark shapes are tuned to match in 
+  /// optical size, see #link("tutorials/marks#sizing")[mark sizing]. 
+  size: 4pt,
+
+  /// How to fill the mark. If set to `auto`, the fill is inherited from the
+  /// plot. 
+  fill: auto,
+
+  /// How to stroke the mark. If set to `auto`, the stroke is inherited from the
+  /// plot.
+  /// -> stroke
+  stroke: 0.7pt,
+
+  /// The shape of the mark. This can be a string identifying one of the 
+  /// built-in marks (check out the tutorial) or a function that takes a mark 
+  /// and produces content. 
+  /// -> str | function
+  shape: "."
+
+) = {}
+
 #let mark = grid
 
 
