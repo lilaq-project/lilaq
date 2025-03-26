@@ -2,8 +2,9 @@
 #import "../libs/elembic/lib.typ" as e
 
 
-/// An error bar for a plot. This type allows for quick configuration and 
-/// complete restyling of error bars. 
+/// An error bar object for a plot. This type allows for quick configuration and 
+/// complete restyling of error bars. For drawing plots with error bars, 
+/// use @plot. 
 /// 
 /// ```example
 /// #lq.diagram(
