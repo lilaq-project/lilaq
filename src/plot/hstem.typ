@@ -63,7 +63,7 @@
 ///     ys.map(calc.cos), 
 ///     ys, 
 ///     color: orange, 
-///     mark: "diamond",
+///     mark: "d",
 ///     base-stroke: black,
 ///   )
 /// ) 

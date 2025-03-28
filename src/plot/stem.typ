@@ -70,7 +70,7 @@
 ///     xs, 
 ///     xs.map(calc.cos), 
 ///     color: orange, 
-///     mark: "diamond",
+///     mark: "d",
 ///     base: -0.25,
 ///     base-stroke: black,
 ///   )
