@@ -9,8 +9,8 @@
 /// ```example
 /// #lq.diagram(
 ///   lq.place(0.5, 0.5)[Hello],
-///   lq.place(0%, -0.25, align: left)[
-///     Text placed at `x: 0%` and `y: -0.25`
+///   lq.place(0%, 0.3, align: left)[
+///     Text placed at `x: 0%` and `y: 0.3`
 ///   ]
 /// )
 /// ```
@@ -45,6 +45,7 @@
 ///   lq.place(25%, 50%,
 ///     lq.diagram(
 ///       title: [mini],
+///       fill: white,
 ///       width: 40pt, height: 30pt, 
 ///       lq.plot(xs, xs.map(x => x*x))
 ///     )

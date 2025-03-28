@@ -1,7 +1,5 @@
-/// A module containing helper functions for vector operations. 
 
-
-/// Transforms two vectors $\vec{a},\vec{b}$ of same length with a function that 
+/// Transforms two vectors $a, b$ of the same length with a function that 
 /// receives pairs $(a_i,b_i)$ for all $i$. 
 #let transform(
   /// First vector. 
@@ -16,7 +14,7 @@
 ) = array.zip(a, b, exact: true).map(mapper)
 
 
-/// Pair-wise adds the elements of two vectors of same length. 
+/// Pair-wise adds the elements of two vectors of the same length. 
 #let add(
   /// First vector. 
   /// -> array
@@ -27,7 +25,7 @@
 ) = transform(a, b, ((x,y)) => x + y)
 
 
-/// Pair-wise subtracts the elements of two vectors of same length. 
+/// Pair-wise subtracts the elements of two vectors of the same length. 
 #let subtract(
   /// First vector. 
   /// -> array

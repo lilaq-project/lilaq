@@ -1,4 +1,3 @@
-/// Math library for common visualization tasks. 
 
 #import "vec.typ"
 #import "algorithm/interpolate.typ"
@@ -6,7 +5,7 @@
 
 
 
-/// Computes the sign of a number. This returns
+/// Returns the sign of a number. 
 /// - `0` for $x=0$
 /// - `1` for $x>0$
 /// - `-1` for $x<0$
@@ -21,7 +20,7 @@
 ) = if value == 0 { 0 } else if value < 0 { -1 } else { 1 }
 
 
-/// Returns the minimum value of an array. `NaN` values are ignored. Returns `none` 
+/// Returns the minimum value of an array, ignoring `NaN` values. Returns `none` 
 /// if the array is empty or contains only `NaN` values. 
 /// -> none | float
 #let cmin(
@@ -34,7 +33,7 @@
   return calc.min(..values)
 }
 
-/// Returns the maximum value of an array. `NaN` values are ignored. Returns `none` 
+/// Returns the maximum value of an array, ignoring `NaN` values. Returns `none` 
 /// if the array is empty or contains only `NaN` values. 
 /// -> none | float
 #let cmax(
@@ -47,8 +46,8 @@
   return calc.max(..values)
 }
 
-/// Returns the minimum and maximum value of an array as a tuple. `NaN` values are 
-/// ignored. Returns `(none, none)` if the array is empty or contains only `NaN` values. 
+/// Returns the minimum and maximum value of an array, ignoring `NaN` values. 
+/// Returns `(none, none)` if the array is empty or contains only `NaN` values. 
 /// -> array 
 #let minmax(
   /// Values to compute the minimum and the maximum of. 
@@ -76,7 +75,7 @@
 #assert.eq(float.is-nan(-1232445345345e200000000000000000), false)
 
 
-/// Generates an array of evenly-spaced numbers in the interval $[x_\mathrm{start}, x_\mathrm{end})$ or $[x_\mathrm{start}, x_\mathrm{end}]$. 
+/// Generates an array of evenly-spaced numbers in the interval `[start, end)` or `[start, end]`. 
 /// -> array
 #let linspace(
   
@@ -93,7 +92,7 @@
   num: 50,
   
   /// Whether to include the end of the range. If `true`, samples are taken for
-  /// the closed interval $[x_\mathrm{start}, x_\mathrm{end}]$. 
+  /// the closed interval `[start, end]`. 
   /// -> bool
   include-end: true
 
@@ -127,7 +126,7 @@
 
 
 
-/// Generates an array of numbers spaced by `step` in the interval $[x_\mathrm{start}, x_\mathrm{end})$. 
+/// Generates an array of numbers spaced by `step` in the interval `[start, end)`. 
 /// -> array
 #let arange(
   
@@ -194,8 +193,9 @@
   return interpolate.linear(values, q / 100% * (values.len() - 1))
 }
 
-/// Creates a rectangular mesh by taking two arrays $\{x_0,...\}$ and $\{y_0,...\}$ and 
-/// evaluating one or more functions for each possible pair $(x_i,y_j)$. 
+/// Creates a rectangular mesh from two input arrays. 
+/// One or more functions are evaluated for each possible pair $(x_i,y_j)$ of
+/// the inputs $\{x_0,...\}$ and $\{y_0,...\}$. 
 /// ```example
 /// #lq.mesh((0, 1), (4, 5), (x, y) => (x + y))
 /// ```
@@ -299,7 +299,7 @@
 
 
 
-/// Decomposes a floating point number into the scientific notation
+/// Decomposes a floating point number into the scientific notation. 
 /// $ x = a\cdot 10^n $
 /// where $a \in [0.1, 1)$ and $n \in \mathbb{Z}$. Returns an array `(a, n)`. 
 /// -> array

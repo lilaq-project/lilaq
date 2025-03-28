@@ -2,7 +2,7 @@
 #import "@preview/tiptoe:0.3.0"
 
 
-/// The spine of a diagram axis, i.e., the line drawn along the axis. 
+/// The spine of a diagram axis (the line drawn along the axis). 
 #let spine(
   
   /// How to stroke the spine of the axis. 
