@@ -390,7 +390,7 @@
     subticks += base-range.map(x => x + tick)
   }
   if x0 > x1 { (x0, x1) = (x1, x0) }
-  return subticks.filter(x => x0 <= x and x <= x1)
+  return (ticks: subticks.filter(x => x0 <= x and x <= x1))
 }
 
 #assertations.approx(locate-subticks-linear(1, 2, ticks: (), num: 1), ())
@@ -454,7 +454,7 @@
     }
   }
   if x0 > x1 { (x0, x1) = (x1, x0) }
-  return subticks.filter(x => x0 <= x and x <= x1)
+  return (ticks: subticks.filter(x => x0 <= x and x <= x1))
 }
 
 #assertations.approx(locate-subticks-log(1, 10, ticks: ()), ())

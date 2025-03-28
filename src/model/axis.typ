@@ -430,7 +430,7 @@
 ) = {
   let ticks = ()
   let tick-labels
-  let subticks = ()
+  let subticks = (ticks: ())
   let subtick-labels
   let (exp, offset) = (axis.exponent, axis.offset)
 
@@ -467,7 +467,7 @@
   return (
     ticks: ticks,
     tick-labels: tick-labels,
-    subticks: subticks,
+    subticks: subticks.ticks,
     subtick-labels: subtick-labels,
     exp: exp,
     offset: offset
