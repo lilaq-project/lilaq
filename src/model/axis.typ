@@ -94,15 +94,19 @@
   functions: auto,
 
   /// The tick locator for the (major) ticks. 
+  /// -> auto | function
   locate-ticks: auto,
   
   /// The formatter for the (major) ticks. 
+  /// -> auto | function
   format-ticks: auto,
   
   /// The tick locator for the subticks. 
+  /// -> auto | function
   locate-subticks: auto,
   
   /// The formatter for the subticks. 
+  /// -> auto | none | function
   format-subticks: none,
 
   /// An array of extra ticks to display. The ticks can be positions given as `float` or `lq.tick` objects. 

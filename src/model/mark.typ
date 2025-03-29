@@ -7,10 +7,12 @@
 
   /// The size of the mark. The built-in mark shapes are tuned to match in 
   /// optical size, see #link("tutorials/marks#sizing")[mark sizing]. 
+  /// -> length
   size: 4pt,
 
   /// How to fill the mark. If set to `auto`, the fill is inherited from the
   /// plot. 
+  /// -> auto | none | color | gradient | tiling
   fill: auto,
 
   /// How to stroke the mark. If set to `auto`, the stroke is inherited from the

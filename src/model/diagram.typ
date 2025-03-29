@@ -53,11 +53,11 @@
   ylim: auto,
 
   /// Label for the $x$-axis. Use a @label object for more options. 
-  /// -> lq.xlabel | content
+  /// -> lq.label | content
   xlabel: none,
 
   /// Label for the $y$-axis. Use a @label object for more options. 
-  /// -> lq.ylabel | content
+  /// -> lq.label | content
   ylabel: none,
 
   /// Options to apply to the grid. A `stroke`, `color`, or `length` argument 
