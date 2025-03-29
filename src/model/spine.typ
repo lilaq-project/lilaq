@@ -7,7 +7,7 @@
   
   /// How to stroke the spine of the axis. 
   /// -> none | stroke
-  stroke: (thickness: 0.7pt, cap: "square"),
+  stroke: (thickness: 0.5pt, cap: "square"),
 
   /// Places an arrow tip on the axis spine. This expects a mark as specified by
   /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
