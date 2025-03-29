@@ -2,17 +2,15 @@
 #import "../logic/limits.typ": compute-primitive-limits
 #import "../logic/process-coordinates.typ": convert-bezier-curve, transform-point
 #import "../math.typ": vec
+#import "@preview/tiptoe:0.3.0"
 
 
 
 
 #let path-to-curve(
   ..vertices,
-  stroke: stroke(),
-  fill: none,
   closed: false
 ) = {
-  // place(std.path(..vertices, stroke: stroke, fill: fill, closed: closed))
   vertices = vertices.pos()
   if vertices.len() == 0 { return }
 
@@ -67,9 +65,7 @@
     curve-elements.push(curve.close(mode: "straight"))
   }
   
-  std.curve(
-    fill: fill, 
-    stroke: stroke,
+  (
     curve.move(start),
     ..curve-elements,
   )
@@ -111,6 +107,16 @@
   /// Whether to close the path. 
   /// -> bool
   closed: false,
+
+  /// Places an arrow tip on the curve. This expects a mark as specified by
+  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// -> none | tiptoe.mark
+  tip: none,
+  
+  /// Places an arrow tail on the curve. This expects a mark as specified by 
+  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// -> none | tiptoe.mark
+  toe: none,
 
   /// The legend label for this plot. See @plot.label. 
   /// -> content
@@ -172,12 +178,21 @@
         })
         (p,) + cs
       })
-      place(path-to-curve(
-        fill: fill, 
-        stroke: stroke, 
+      let segments = path-to-curve(
         closed: closed,
         ..new-vertices
-      ))
+      )
+      let curve = std.curve
+      if tip != none or toe != none {
+        curve = tiptoe.curve.with(tip: tip, toe: toe)
+      }
+
+      place(
+        curve(
+          ..segments, 
+          fill: fill, stroke: stroke, 
+        )
+      )
     },
     xlimits: compute-primitive-limits.with(all-points.map(x => x.at(0))),
     ylimits: compute-primitive-limits.with(all-points.map(x => x.at(1))),
