@@ -365,10 +365,10 @@
       }
     }
     let (xaxis-, max-xtick-size) = draw-axis(it.xaxis, axis-info.x.ticking, major-axis-style, e-get: e-get)
-    artists.push((content: xaxis-, z: 2.1))
+    artists.push((content: xaxis-, z: 20))
 
     let (yaxis-, max-ytick-size) = draw-axis(it.yaxis, axis-info.y.ticking, major-axis-style, e-get: e-get)
-    artists.push((content: yaxis-, z: 2.1))
+    artists.push((content: yaxis-, z: 20))
  
     if type(max-ytick-size) == array {
       for b in max-ytick-size {
@@ -387,7 +387,7 @@
     for axis in axes {
       let ticking = _axis-generate-ticks(axis, ..get-axis-args(axis))
       let (axis-, axis-bounds) = draw-axis(axis, ticking, major-axis-style, e-get: e-get)
-      artists.push((content: axis-, z: 2.1))
+      artists.push((content: axis-, z: 20))
 
       
       for b in axis-bounds {

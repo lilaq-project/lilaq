@@ -16,7 +16,7 @@
 /// ```
 /// 
 /// Unlike other plotting commands, @place is not clipped to the data area by
-/// default and the z-index is one higher, making the placed content appear 
+/// default and the z-index is higher, making the placed content appear 
 /// on top of most other diagram objects. 
 /// 
 /// ```example
@@ -78,7 +78,7 @@
   /// Determines the $z$ position of the content in the order of rendered diagram
   /// objects. See @plot.z-index.  
   /// -> int | float
-  z-index: 3,
+  z-index: 21,
 
 ) = {
   (
