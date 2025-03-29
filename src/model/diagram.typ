@@ -421,7 +421,7 @@
       
       let (title, b) = place-with-bounds(body, alignment: position, dx: dx, dy: dy, pad: pad)
       
-      artists.push((content: title, z: 3))
+      artists.push((content: title, z: 20))
       bounds = update-bounds(bounds, b)
     }
 
