@@ -64,7 +64,7 @@
   /// Specifies the $z$ position of the legend in the order of rendered
   /// diagram objects. 
   /// -> int | float
-  z-index: 6,
+  z-index: 25,
 
 ) = {}
 
