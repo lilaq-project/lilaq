@@ -58,9 +58,9 @@
   /// -> auto | int | float
   max: auto,
 
-  /// How to stroke the lines
+  /// How to stroke the lines. 
   /// -> stroke
-  line: blue,
+  line: black,
   
   /// The legend label for this plot. See @plot.label. 
   /// -> content
