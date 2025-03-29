@@ -93,7 +93,7 @@
     e.field("stroke", e.types.smart(stroke), default: auto),
     e.field("shorten-sub", float, default: 0.5),
     e.field("pad", length, default: 0.5em),
-    e.field("inset", length, default: 4pt),
+    e.field("inset", length, default: 3pt),
     e.field("outset", length, default: 0pt),
   )
 )
@@ -117,6 +117,7 @@
 #let tick-label(
 
   /// Content to show in the label. 
+  /// -> content
   body
 
 ) = {}
