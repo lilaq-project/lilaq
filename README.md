@@ -4,7 +4,7 @@
 
 <!-- _Data visualization with [Typst](https://typst.app)_ -->
 
-[![Typst Package](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Flilaq-project%2Flilaq%2Fv0.1.0%2Ftypst.toml&query=%24.package.version&prefix=v&logo=typst&label=package&color=239DAD)](https://typst.app/universe/package/lilaq)
+[![Typst Package](https://img.shields.io/badge/dynamic/toml?url=https%3A%2F%2Fraw.githubusercontent.com%2Flilaq-project%2Flilaq%2Fv0.2.0%2Ftypst.toml&query=%24.package.version&prefix=v&logo=typst&label=package&color=239DAD)](https://typst.app/universe/package/lilaq)
 [![Test Status](https://github.com/lilaq-project/lilaq/actions/workflows/run_tests.yml/badge.svg)](https://github.com/lilaq-project/lilaq/actions/workflows/run_tests.yml)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/lilaq-project/lilaq/blob/main/LICENSE)
 [![Static Badge](https://img.shields.io/badge/documentation-736ad9)](https://lilaq.org/)
@@ -18,7 +18,27 @@ _Lilaq is a powerful plotting library for [Typst](https://typst.app/)._
 
 You can install the package by cloning the repository and importing Lilaq with
 ```typ
-#import "@preview/lilaq:0.1.0" as lq
+#import "@preview/lilaq:0.2.0" as lq
 ```
 
 The documentation lives at https://lilaq.org. 
+
+## Demos
+Clicking on any demo image below will bring you to the respective page of the documentation that shows how to create this plot. 
+
+[![simple plot demo](https://github.com/user-attachments/assets/c71886e0-e0a9-499e-848f-18580b1da523)](https://lilaq.org/docs/quickstart#the-first-plot)
+[![scatter](https://github.com/user-attachments/assets/a1cf3019-b306-44a0-b28f-a2bb6fa522eb)](https://lilaq.org/docs/reference/scatter)
+[![contour](https://github.com/user-attachments/assets/b60d8bac-faf6-4465-bd78-0687f3912108)](https://lilaq.org/docs/reference/contour)
+
+[![boxplot](https://github.com/user-attachments/assets/09b1251a-46b3-488f-aab8-451d950c044c)](https://lilaq.org/docs/reference/boxplot)
+[![quiver](https://github.com/user-attachments/assets/98f10346-2686-4c0c-8955-8a42465e65aa)](https://lilaq.org/docs/reference/quiver)
+[![marks](https://github.com/user-attachments/assets/26e9e478-1599-4ded-9e6d-7fe0193ae6b9)](https://lilaq.org/docs/examples/styled-marks)
+
+[![spectrum plot](https://github.com/user-attachments/assets/2fe1b3e3-14b3-43ba-b117-e20151203a9c)](https://lilaq.org/docs/examples/dual-axis)
+[![climograph](https://github.com/user-attachments/assets/4151bca1-67f5-41e3-aef3-b4d2e4c07eb9)](https://lilaq.org/docs/examples/climograph)
+
+[![weierstrass function](https://github.com/user-attachments/assets/0181795f-9b5d-4552-9be3-c85ddcdba83a)](https://lilaq.org/docs/examples/plot-within-a-plot)
+[![koch snowflake fractal](https://github.com/user-attachments/assets/14e5a26e-fd13-41ff-be73-817730e77dbf)](https://lilaq.org/docs/examples/koch-snowflake)
+
+[![bars with numbers](https://github.com/user-attachments/assets/c7e0edda-0b16-472b-83e3-1d639fc9c2b1)](https://lilaq.org/docs/examples/bar-plot-with-numbers)
+[![twin axes](https://github.com/user-attachments/assets/b2706289-24a8-4e6d-bde0-119f13552855)](https://lilaq.org/docs/tutorials/axis#independent-axes-twin-axes)
