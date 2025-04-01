@@ -26,19 +26,112 @@ The documentation lives at https://lilaq.org.
 ## Demos
 Clicking on any demo image below will bring you to the respective page of the documentation that shows how to create this plot. 
 
+
+<table>
+<tr>
+    <th>Line plots</th>
+    <th>Scatter</th>
+    <th>Contour</th>
+</tr>
+<tr>
+<td>
+
 [![simple plot demo](https://github.com/user-attachments/assets/c71886e0-e0a9-499e-848f-18580b1da523)](https://lilaq.org/docs/quickstart#the-first-plot)
+
+</td>
+
+<td>
+
 [![scatter](https://github.com/user-attachments/assets/a1cf3019-b306-44a0-b28f-a2bb6fa522eb)](https://lilaq.org/docs/reference/scatter)
+
+</td>
+<td>
+
 [![contour](https://github.com/user-attachments/assets/b60d8bac-faf6-4465-bd78-0687f3912108)](https://lilaq.org/docs/reference/contour)
 
+</td>
+</tr>
+<tr>
+    <th>Boxplot</th>
+    <th>Quiver</th>
+    <th>Styled marks</th>
+</tr>
+<tr>
+<td>
+
 [![boxplot](https://github.com/user-attachments/assets/09b1251a-46b3-488f-aab8-451d950c044c)](https://lilaq.org/docs/reference/boxplot)
+
+</td>
+<td>
+
 [![quiver](https://github.com/user-attachments/assets/98f10346-2686-4c0c-8955-8a42465e65aa)](https://lilaq.org/docs/reference/quiver)
+
+</td>
+<td>
+
 [![marks](https://github.com/user-attachments/assets/26e9e478-1599-4ded-9e6d-7fe0193ae6b9)](https://lilaq.org/docs/examples/styled-marks)
 
+</td>
+</tr>
+</table>
+
+
+
+<table>
+<tr>
+    <th>Spectrum with secondary axis</th>
+    <th>Climograph with twin axis</th>
+</tr>
+<tr>
+<td>
+
 [![spectrum plot](https://github.com/user-attachments/assets/2fe1b3e3-14b3-43ba-b117-e20151203a9c)](https://lilaq.org/docs/examples/dual-axis)
+
+</td>
+<td>
+
 [![climograph](https://github.com/user-attachments/assets/4151bca1-67f5-41e3-aef3-b4d2e4c07eb9)](https://lilaq.org/docs/examples/climograph)
 
-[![weierstrass function](https://github.com/user-attachments/assets/0181795f-9b5d-4552-9be3-c85ddcdba83a)](https://lilaq.org/docs/examples/plot-within-a-plot)
-[![koch snowflake fractal](https://github.com/user-attachments/assets/14e5a26e-fd13-41ff-be73-817730e77dbf)](https://lilaq.org/docs/examples/koch-snowflake)
+</td>
+</tr>
+<tr>
+    <th>Bar plot with numbers</th>
+    <th>Multiple twin axes</th>
+</tr>
+<tr>
+<td>
 
 [![bars with numbers](https://github.com/user-attachments/assets/c7e0edda-0b16-472b-83e3-1d639fc9c2b1)](https://lilaq.org/docs/examples/bar-plot-with-numbers)
+
+</td>
+<td>
+
 [![twin axes](https://github.com/user-attachments/assets/b2706289-24a8-4e6d-bde0-119f13552855)](https://lilaq.org/docs/tutorials/axis#independent-axes-twin-axes)
+
+</td>
+</tr>
+</table>
+
+
+
+
+<table>
+<tr>
+    <th>Plot within a plot</th>
+    <th>Koch snowflake fractal</th>
+</tr>
+<tr>
+<td>
+
+[![weierstrass function](https://github.com/user-attachments/assets/0181795f-9b5d-4552-9be3-c85ddcdba83a)](https://lilaq.org/docs/examples/plot-within-a-plot)
+
+</td>
+<td>
+
+[![koch snowflake fractal](https://github.com/user-attachments/assets/14e5a26e-fd13-41ff-be73-817730e77dbf)](https://lilaq.org/docs/examples/koch-snowflake)
+
+</td>
+</tr>
+</table>
+
+
