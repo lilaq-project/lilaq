@@ -25,11 +25,11 @@
 /// -> lq.diagram
 #let diagram(
   
-  /// The width of the diagram area. 
+  /// The width of the diagram. 
   /// -> length
   width: 6cm,
   
-  /// The height of the diagram area. 
+  /// The height of the diagram. 
   /// -> length
   height: 4cm,
 
@@ -37,7 +37,7 @@
   /// -> lq.title | str | content | none
   title: none,
 
-  /// Options to pass to the legend constructor. If set to `none`, no legend is
+  /// Options to pass to the @legend constructor. If set to `none`, no legend is
   /// shown.
   /// -> none | dictionary
   legend: (:),
@@ -105,17 +105,16 @@
   
   /// Style cycle to use for this diagram. Check out the 
   /// #link("tutorials/cycles")[cycles tutorial] for more information. 
-  /// The elements of a style cycles should either be 
+  /// The elements of a cycle array should either be 
   /// - all functions as described in the tutorial, or
-  /// - all of type `color` in which case the color sequence is automatically
-  ///   converted to a style cycle, or
+  /// - all of type `color` (e.g., one of the maps under `lq.color.map`), or
   /// - all of type `dictionary` with possible keys `color`, `stroke`, and 
   ///   `mark`. 
   ///   
   /// -> array
   cycle: petroff10,
 
-  /// How to fill the data area. 
+  /// How to fill the background of the data area. 
   /// -> none | color | gradient | tiling 
   fill: none,
 

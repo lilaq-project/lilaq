@@ -231,7 +231,7 @@
 /// and @plot.stroke. 
 /// 
 /// This function is also intended for creating plots with error bars. 
-/// Those can be styled through @errorbar. 
+/// Error bars can be styled through the @errorbar type. 
 /// 
 /// ```example
 /// #lq.diagram(
@@ -246,11 +246,11 @@
 /// ```
 #let plot(
   
-  /// An array of $x$ data coordinates. Data coordinates need to be of type `int` or `float`. 
+  /// An array of $x$ coordinates. Data coordinates need to be of type `int` or `float`. 
   /// -> array
   x, 
   
-  /// An array of $y$ data coordinates. The number of $x$ and $y$ coordinates must match. 
+  /// An array of $y$ coordinates. The number of $x$ and $y$ coordinates must match. 
   /// -> array
   y, 
   
@@ -267,7 +267,7 @@
   /// - an array of dictionaries per data point, each filled with single `p` 
   ///   and `m` values (e.g., `xerr: ((p: 1, m: 2), (p: 2, m: 3))`). 
   /// 
-  /// The look of the error bars can be controlled through @errorbar. 
+  /// The look of the error bars can be controlled through the type @errorbar. 
   /// -> none | array | dictionary
   xerr: none,
   
@@ -385,7 +385,7 @@
   
   /// Specifies the $z$ position of this plot in the order of rendered diagram 
   /// objects. This makes it also possible to render plots in front of the axes 
-  /// which have a z-index of `2.1`. 
+  /// which have a z-index of `20`. 
   /// #details[
   ///   In this example, the points are listed before the bars in the legend but 
   ///   they are still drawn in front of the bars. 

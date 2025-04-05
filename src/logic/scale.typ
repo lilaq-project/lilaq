@@ -15,15 +15,15 @@
 #let scale(
 
   /// Transformation from data coordinates to scaled coordinates.  
-  /// Note that the transformation function does not need to worry about absolute 
-  /// scaling and offset. As an example, the transformation function for the linear 
-  /// scale is just `x => x` and not `x => a * x + b` or similar and the logarithmic 
-  /// scale uses `x => calc.log(x)`. 
+  /// Note that the transformation function does not need to worry about 
+  /// absolute scaling and offsets. As an example, the transformation function 
+  /// for the linear scale is just `x => x` and not something like 
+  /// `x => a * x + b`. The logarithmic scale uses `x => calc.log(x)`. 
   /// -> function
   transform,
 
-  /// A precise inverse of the `transform` should be given here to enable the 
-  /// conversion of scaled coordinates back to data coordinates. 
+  /// A precise inverse of the `transform` in order to enable the conversion of
+  /// scaled coordinates back to data coordinates. 
   /// -> function
   inverse,
   

@@ -93,21 +93,24 @@
   /// -> array
   y, 
   
-  /// Mark sizes as `float` values. The area of the marks will scale proportionally 
-  /// with these numbers while the actual mark size (width) will scale with 
-  /// $\sqrt(\mathrm{size})$.
+  /// How to scale the marks. The area of the marks scales proportionally 
+  /// with these numbers while the actual mark "size" (e.g., width) will scale with 
+  /// $\sqrt{\mathrm{size}}$.
   /// -> auto | array
   size: auto, 
 
-  /// Mark colors. The element may either be of type `color` (then the argument
-  /// @scatter.map will be ignored) or of type `float`. In the case of the 
-  /// latter, the colors will be determined by normalizing the values and passing 
-  /// them through the `map`.
+  /// How to fill the marks. A single color can be used to override the default
+  /// cycle fill style. 
+  /// 
+  /// When given per-point as an array, the values may either be of type 
+  /// - `color` (then the @scatter.map is ignored)
+  /// - or of type `float` in which case the colors are computed by normalizing
+  ///   the given values and passing them through @scatter.map.
   /// -> auto | color | array
   color: auto,
 
-  /// A color map in form of a gradient or an array of colors to sample from when 
-  /// @scatter.color is given as `float` values.  
+  /// A color map in the form of a gradient or an array of colors to sample from when 
+  /// @scatter.color is given as a `float` array.  
   /// -> array | gradient
   map: color.map.viridis,
 
@@ -121,14 +124,16 @@
   /// -> auto | int | float
   max: auto,
 
-  /// The normalization method used to scale $z$ coordinates to the range 
-  /// $[0,1]$ before mapping them to colors using the color map. This can be a 
-  /// @scale, a string that is the identifier of a built-in scale or a function 
-  /// that takes one argument (for example the argument `x => calc.log(x)` 
-  /// would be equivalent to passing `"log"`). Note that the function does not 
-  /// actually need to map the values to the interval $[0,1]$. Instead it 
-  /// describes a scaling that is applied before the data set is _linearly_ 
-  /// scaled to the interval $[0,1]$. 
+  /// The normalization method used to scale `float` @scatter.color values to 
+  /// the range $[0,1]$ before mapping them to colors with the color map. This
+  /// can be 
+  /// - a @scale, 
+  /// - a string that is the identifier of a built-in scale, or 
+  /// - a function that takes one argument (for example `x => calc.log(x)` 
+  ///   would be equivalent to passing `"log"`). Note that the function does not 
+  ///   actually need to map the values to the interval $[0,1]$. Instead it 
+  ///   describes a scaling that is applied before the data set is _linearly_ 
+  ///   scaled to the interval $[0,1]$. 
   /// -> lq.scale | str | function
   norm: "linear",
 

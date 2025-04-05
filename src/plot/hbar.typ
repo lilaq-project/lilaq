@@ -1,7 +1,7 @@
 #import "bar.typ": *
 
 
-/// Creates a horizontal bar plot from the given data. 
+/// Creates a horizontal bar plot from the given bar positions and lengths. 
 /// 
 /// ```example
 /// #lq.diagram(

@@ -89,7 +89,7 @@
 
 
 
-/// Creates a bar plot from the given data. 
+/// Creates a bar plot from the given bar positions and heights.  
 /// 
 /// ```example
 /// #lq.diagram(

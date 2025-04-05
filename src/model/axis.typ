@@ -591,7 +591,7 @@
     } else if align == left {
       make-tick = (label, loc) => place(dx: -length + outset, dy: loc, {tline + place(dx: length + pad, left + horizon, label)})
     } else if align == top {
-      make-tick = (label, loc) => place(dy: -length + outset, dx: loc, {tline + place(dy: length + pad, top + center, label)});
+      make-tick = (label, loc) => place(dy: -length + outset, dx: loc, {tline + place(dy: length + pad, top + right, label)});
     } else if align == bottom {
       make-tick = (label, loc) => place(dy: -outset, dx: loc, {tline + place(dy: -length - pad, bottom + center, label)})
     }
