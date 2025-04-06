@@ -5,6 +5,15 @@
 
 /// A diagram legend listing all labeled plots. 
 /// 
+/// ```example
+/// #lq.diagram(
+///   legend: (position: top + left),
+/// 
+///   lq.plot((1,2,3), (1,2,3), label: [Data A]),
+///   lq.plot((1,2,3), (2,3,4), label: [Data B]),
+/// )
+/// ```
+/// 
 /// Also refer to the 
 /// #link("tutorials/legend")[legend tutorial] for more details. 
 #let legend(
