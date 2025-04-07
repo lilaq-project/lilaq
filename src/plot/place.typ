@@ -14,6 +14,17 @@
 ///   ]
 /// )
 /// ```
+/// When annotating data points, it can be particularly useful to use the built-in 
+/// #link("https://typst.app/docs/reference/layout/pad/")[`pad`] function to 
+/// add some space. 
+/// ```example
+/// #lq.diagram(
+///   lq.plot((1, 2, 3, 4), (3, 5, 1, 3)),
+///   lq.place(2, 5, align: left, pad(.7em)[max]),
+///   lq.place(3, 1, align: right, pad(.7em)[min])
+/// )
+/// ```
+/// 
 /// 
 /// Unlike other plotting commands, @place is not clipped to the data area by
 /// default and the z-index is higher, making the placed content appear 
