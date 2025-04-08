@@ -41,8 +41,14 @@
   /// automatically computed from all plots associated with this axis and @diagram.margin 
   /// will be applied. If the minimum is larger than the maximum, the scale is inverted
   /// and if `min` and `max` coincide, the range will be automatically increased. 
+  /// Also see @axis.inverted. 
   /// -> auto | array
   lim: auto,
+
+  /// Whether to invert the limits (swap minimum and maximum). Inverting is 
+  /// applied regardless of whether the limits are set manually or computed automatically. 
+  /// -> bool
+  inverted: false,
 
   /// Label for the axis. Use a @label object for more options. 
   /// -> content | lq.label
@@ -339,6 +345,8 @@
     hidden: hidden,
     tip: tip,
     toe: toe,
+
+    inverted: inverted
   )
 }
 
@@ -412,13 +420,17 @@
   let k1 = (axis.scale.transform)(x1)
   let D = k1 - k0
 
+  if axis.inverted {
+    (x0, x1) = (x1, x0)
+  }
+
   if not tight0 {
     x0 = (axis.scale.inverse)(k0 - D * lower-margin/100%)
   }
   if not tight1 {
     x1 = (axis.scale.inverse)(k1 + D * upper-margin/100%)
   }
-  
+
   return (x0, x1)
 }
 
