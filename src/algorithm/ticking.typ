@@ -221,19 +221,20 @@
   let dx = x1 - x0
 
   let step
-  let mantissa
   let exponent
+  
   if tick-distance == auto {
     let approx-step = dx / (num-ticks-suggestion * density / 100%)
+    let mantissa
     (mantissa, exponent) = decompose-floating-point(calc.abs(approx-step))
     step = get-best-step(mantissa)
     tick-distance = step * pow10(exponent - 1)
   } else {
-    (mantissa, exponent) = decompose-floating-point(calc.abs(tick-distance))
+    (_, exponent) = decompose-floating-point(calc.abs(tick-distance))
     step = tick-distance / pow10(exponent - 1)
   }
   
-  
+  tick-distance = float(tick-distance)
   
   let precision-offset = compute-precision-offset(x0, x1)
   let first-tick-first-guess = calc.quo(x0 - precision-offset, tick-distance) * tick-distance
@@ -244,9 +245,6 @@
   if calc.abs(calc.max(x1, x0) / tick-distance) >= 5000 {
     let fg = pow10(calc.ceil(calc.log(dx, base: 10) + 1))
     axis-offset = discretize-down(x0, 1, exponent + 2)
-  if axis-offset == 1.811 {
-    let e = (x0, fg, exponent)
-  }
   }
   
   let first-tick = discretize-up(x0 - x0-offset, step, exponent - 1, offset: precision-offset) + x0-offset
@@ -267,7 +265,8 @@
   )
 }
 
-
+#assert.eq(locate-ticks-linear(-4, 19, tick-distance: auto).ticks, (0, 5, 10, 15))
+#assert.eq(locate-ticks-linear(-4, 19, tick-distance: 5).ticks, (0, 5, 10, 15))
 
 // Selected cases
 #assertations.approx(locate-ticks-linear(0, 0.1).ticks.len(), 6)
