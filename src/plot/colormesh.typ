@@ -127,11 +127,11 @@
 /// 
 #let colormesh(
   
-  /// A one-dimensional array of $x$ data coordinates. 
+  /// A one-dimensional array of $x$ coordinates. 
   /// -> array
   x, 
   
-  /// A one-dimensional array of $y$ data coordinates. 
+  /// A one-dimensional array of $y$ coordinates. 
   /// -> array
   y, 
 
@@ -143,6 +143,8 @@
   /// - or a function that takes an `x` and a `y` value and returns a 
   ///   corresponding `z` coordinate. 
   /// Also see the function @mesh that can be used to create such meshes. 
+  /// 
+  /// For masking, you can use `float.nan` values to hide individual cells of the color mesh. 
   /// -> array | function
   z,
   
