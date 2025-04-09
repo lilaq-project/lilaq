@@ -1,5 +1,6 @@
 #import "../process-styles.typ": merge-strokes
 #import "../math.typ": minmax
+#import "../assertations.typ"
 
 
 #let render-hlines(plot, transform) = {
@@ -7,7 +8,7 @@
   let max = plot.max
 
   if "make-legend" in plot {
-    return std.line(length: 100%, stroke: plot.style.line)
+    return line(length: 100%, stroke: plot.style.stroke)
   }
 
   if min == auto { min = 0% }
@@ -21,7 +22,7 @@
 
   for y in plot.y {
     let (_, yy) = transform(1, y)
-    place(line(start: (min, yy), end: (max, yy), stroke: plot.style.line))
+    place(line(start: (min, yy), end: (max, yy), stroke: plot.style.stroke))
   }
 }
 
@@ -36,10 +37,10 @@
 /// ```example
 /// #lq.diagram(
 ///   xlim: (0, 7),
-///   lq.hlines(1, 1.1, line: teal, label: "Indefinite"),
-///   lq.hlines(2, line: blue, min: 2, label: "Fixed start"),
-///   lq.hlines(3, line: purple, max: 2, label: "Fixed end"),
-///   lq.hlines(4, line: red, min: 1, max: 3, label: "Fixed"),
+///   lq.hlines(1, 1.1, stroke: teal, label: "Indefinite"),
+///   lq.hlines(2, stroke: blue, min: 2, label: "Fixed start"),
+///   lq.hlines(3, stroke: purple, max: 2, label: "Fixed end"),
+///   lq.hlines(4, stroke: red, min: 1, max: 3, label: "Fixed"),
 /// ) 
 /// ```
 #let hlines(
@@ -60,7 +61,7 @@
 
   /// How to stroke the lines. 
   /// -> stroke
-  line: black,
+  stroke: black,
   
   /// The legend label for this plot. See @plot.label. 
   /// -> content
@@ -72,9 +73,10 @@
   z-index: 2,
   
 ) = {
+  assertations.assert-no-named(y)
   y = y.pos()
 
-  line = merge-strokes(line)
+  stroke = merge-strokes(stroke)
 
   let xlimits = none
   if min != auto {
@@ -90,7 +92,7 @@
     min: min, 
     max: max,
     style: (
-      line: line,
+      stroke: stroke,
     ),
     plot: render-hlines,
     xlimits: () => xlimits,
