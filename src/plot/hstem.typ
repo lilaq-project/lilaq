@@ -91,7 +91,7 @@
   stroke: auto, 
   
   /// The mark to use to mark data points. See @plot.mark. 
-  /// -> auto | lq.mark | str
+  /// -> auto | none | lq.mark | str
   mark: auto, 
   
   /// Size of the marks. 

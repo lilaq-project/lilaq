@@ -288,7 +288,7 @@
   
   /// The mark to use to mark data points. This may either be a mark (such as 
   /// `lq.mark.x`) or a registered mark string, see @mark. 
-  /// -> auto | lq.mark | string
+  /// -> auto | none | lq.mark | string
   mark: auto, 
   
   /// Size of the marks. For variable-size mark plots, use the plot type @scatter. 
