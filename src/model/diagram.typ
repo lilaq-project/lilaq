@@ -127,32 +127,70 @@
 
 
 
+#let axis-constructor = axis
+
+#let create-principle-axis(
+  axis, lim, scale,
+  kind: "x",
+  label,
+  plots,
+  margin,
+  it
+) = {
+  if axis == none { axis = (hidden: true) }
+
+  if type(axis) == dictionary {
+    axis = axis-constructor(kind: kind, label: label, scale: scale, lim: lim, ..axis)
+  }
+  axis.plots = plots
+
+  let margin = if kind == "x" {
+    (lower-margin: margin.left, upper-margin: margin.right)
+  } else {
+    (lower-margin: margin.bottom, upper-margin: margin.top)
+  }
+
+  axis.lim = _axis-compute-limits(axis, is-independant: true, ..margin)
+
+  
+  let normalized-scale-trafo = create-trafo(axis.scale.transform, ..axis.lim)
+  axis.normalized-scale-trafo = normalized-scale-trafo
+  
+  if kind == "x" {
+    axis.transform = x => normalized-scale-trafo(x) * it.width
+  } else {
+    axis.transform = y => it.height * (1 - normalized-scale-trafo(y))
+  }
+  
+  return axis
+}
+
+
+
 #let draw-diagram(it) = {
   set math.equation(numbering: none)
   set curve(stroke: .7pt)
   set line(stroke: .7pt)
 
-  let plots = ()
-  let (xplots, yplots) = ((), ()) // solely used for computing limits
+  // Either a plot object or a dict (axis-id: int, plot: dict). 
+  let plots = () 
+  // solely used for computing limits
+  let (xplots, yplots) = ((), ()) 
+  // all addtional axes
   let axes = ()
 
   for child in it.children {
     if type(child) == dictionary {
       if child.at("type", default: "") == "axis" { // an axis
         axes.push(child)
-        // plots += child.plots
-        let axes-id = axes.len() - 1
-        let axes-plots = child.plots.map(plot => (axes-id, plot))
+        let axis-id = axes.len() - 1
         if child.plots.len() > 0 {
-          plots += axes-plots 
+          plots += child.plots.map(plot => (axis-id: axis-id, plot: plot)) 
           if child.kind == "x" {
             yplots += child.plots
           } else {
             xplots += child.plots
           }
-        } else {
-          xplots += child.plots
-          yplots += child.plots
         }
       } else { // just a regular plot
         yplots.push(child)
@@ -161,51 +199,43 @@
       }
     }
   }
-  if it.xaxis == none { it.xaxis = (hidden: true) }
-  if it.yaxis == none { it.yaxis = (hidden: true) }
-  if type(it.xaxis) == dictionary {
-    it.xaxis = axis(kind: "x", label: it.xlabel, scale: it.xscale, lim: it.xlim, ..it.xaxis)
-  }
-  it.xaxis.plots = xplots
-  if type(it.yaxis) == dictionary {
-    it.yaxis = axis(kind: "y", label: it.ylabel, scale: it.yscale, lim: it.ylim, ..it.yaxis)
-  }
-  it.yaxis.plots = yplots
-
 
   let margin = process-margin(it.margin)
 
-  it.xaxis.lim = _axis-compute-limits(it.xaxis, lower-margin: margin.left, upper-margin: margin.right, is-independant: true)
-  it.yaxis.lim = _axis-compute-limits(it.yaxis, lower-margin: margin.bottom, upper-margin: margin.top, is-independant: true)
+  let xaxis = create-principle-axis(
+    kind: "x",
+    it.xaxis, it.xlim, it.xscale,
+    it.xlabel, xplots, margin, it
+  )
+  let yaxis = create-principle-axis(
+    kind: "y",
+    it.yaxis, it.ylim, it.yscale,
+    it.ylabel, yplots, margin, it
+  )
+
+
 
   
-  let normalized-x-trafo = create-trafo(it.xaxis.scale.transform, ..it.xaxis.lim)
-  let normalized-y-trafo = create-trafo(it.yaxis.scale.transform, ..it.yaxis.lim)
-
-  it.xaxis.normalized-scale-trafo = normalized-x-trafo
-  it.yaxis.normalized-scale-trafo = normalized-y-trafo
-  it.xaxis.transform = x => normalized-x-trafo(x) * it.width
-  it.yaxis.transform = y => it.height * (1 - normalized-y-trafo(y))
   
   let transform(x, y) = (
-    it.width * normalized-x-trafo(x), 
-    it.height * (1 - normalized-y-trafo(y))
+    (xaxis.transform)(x), 
+    (yaxis.transform)(y), 
   )
 
   
   let maybe-transform(x, y) = {
-    if type(x) in (int, float) { x = (it.xaxis.transform)(x) }
-    if type(y) in (int, float) { y = (it.yaxis.transform)(y) - it.height }
+    if type(x) in (int, float) { x = (xaxis.transform)(x) }
+    if type(y) in (int, float) { y = (yaxis.transform)(y) - it.height }
     return (x, y)
   }
-  it.yaxis.translate = maybe-transform(..it.yaxis.translate)
-  it.xaxis.translate = maybe-transform(..it.xaxis.translate)
+  yaxis.translate = maybe-transform(..yaxis.translate)
+  xaxis.translate = maybe-transform(..xaxis.translate)
 
   let axes-transforms = (none,) * axes.len()
   
   for i in range(axes.len()) {
     let axis = axes.at(i)
-    let model-axis = if axis.kind == "x" { it.xaxis } else { it.yaxis }
+    let model-axis = if axis.kind == "x" { xaxis } else { yaxis }
     let has-auto-lim = axis.lim == auto
     let has-auto-lim = false
     let axes-margin = if axis.kind == "x" { 
@@ -216,17 +246,17 @@
     axes.at(i).lim = _axis-compute-limits(axis, default-lim: model-axis.lim, ..axes-margin)
 
     if axis.plots.len() > 0 {
-      let other-axis = if axis.kind == "x" {it.yaxis} else {it.xaxis}
+      let other-axis = if axis.kind == "x" {yaxis} else {xaxis}
       let transform
       let scale-trafo = create-trafo(axis.scale.transform, ..axes.at(i).lim)
       if axis.kind == "x" {
         let normalized-x-trafo = scale-trafo
-        transform = (x, y) => (normalized-x-trafo(x) * it.width, it.height * (1 - normalized-y-trafo(y)))
         axes.at(i).transform = x => normalized-x-trafo(x) * it.width
+        transform = (x, y) => ((axes.at(i).transform)(x), (yaxis.transform)(y))
       } else {
         let normalized-y-trafo = scale-trafo
-        transform = (x, y) => (normalized-x-trafo(x) * it.width, it.height * (1 - normalized-y-trafo(y)))
         axes.at(i).transform = y => (1 - normalized-y-trafo(y)) * it.height
+        transform = (x, y) => ((xaxis.transform)(x), (axes.at(i).transform)(y))
       }
       axes-transforms.at(i) = transform
     } else {
@@ -246,8 +276,8 @@
   e.get(e-get => {
   
   let axis-info = (
-    x: (ticking: _axis-generate-ticks(it.xaxis, length: it.width)), 
-    y: (ticking: _axis-generate-ticks(it.yaxis, length: it.height)), 
+    x: (ticking: _axis-generate-ticks(xaxis, length: it.width)), 
+    y: (ticking: _axis-generate-ticks(yaxis, length: it.height)), 
     rest: ((:),) * axes.len()
   )
     
@@ -303,39 +333,50 @@
 
     let cycle = process-cycles-arg(it.cycle)
 
-    for (i, plot) in plots.enumerate() {
-      let cycle-style = cycle.at(calc.rem(i, cycle.len()))
+    let cycle-index = 0
+    for plot in plots {
+      let transform = transform
+
+      if type(plot) == dictionary and "axis-id" in plot {
+        let transform = axes-transforms.at(plot.axis-id)
+        plot = plot.plot
+      }
+
+
+      let takes-part-in-cycle = not plot.at("ignores-cycle", default: true)
+      let cycle-style = cycle.at(calc.rem(cycle-index, cycle.len()))
+
       let plotted-plot = {
         show: cycle-init
         show: cycle-style
-        if type(plot) == array {
-          let axis-id = plot.at(0)
-          plot = plot.at(1)
-          let transform = axes-transforms.at(axis-id)
-          (plot.plot)(plot, transform)
-        } else {
-          (plot.plot)(plot, transform)
-        }
-        if "legend" in plot and plot.label != none {
-          plot.make-legend = true
-          let legend-trafo(x, y) = {
-            (x * 100%, (1 - y) * 100%)
-          }
-          let handle = {
-            show: cycle-init
-            show: cycle-style
-            (plot.plot)(plot, legend-trafo)
-          }
-          legend-entries.push((
-            box(width: 2em, height: .7em, handle),
-            plot.label
-          ))
-        }
+        (plot.plot)(plot, transform)
       }
+      
+      if takes-part-in-cycle {
+        cycle-index += 1
+      }
+
       if plot.at("clip", default: true) { 
         plotted-plot = place(box(width: it.width, height: it.height, clip: true, plotted-plot))
       }
       artists.push((content: plotted-plot, z: plot.at("z-index", default: 2)))
+
+      
+      if "legend" in plot and plot.label != none {
+        plot.make-legend = true
+        let legend-trafo(x, y) = {
+          (x * 100%, (1 - y) * 100%)
+        }
+        let handle = {
+          show: cycle-init
+          show: cycle-style
+          (plot.plot)(plot, legend-trafo)
+        }
+        legend-entries.push((
+          box(width: 2em, height: .7em, handle),
+          plot.label
+        ))
+      }
     }
 
 
@@ -363,10 +404,10 @@
         (length: it.height)
       }
     }
-    let (xaxis-, max-xtick-size) = draw-axis(it.xaxis, axis-info.x.ticking, major-axis-style, e-get: e-get)
+    let (xaxis-, max-xtick-size) = draw-axis(xaxis, axis-info.x.ticking, major-axis-style, e-get: e-get)
     artists.push((content: xaxis-, z: 20))
 
-    let (yaxis-, max-ytick-size) = draw-axis(it.yaxis, axis-info.y.ticking, major-axis-style, e-get: e-get)
+    let (yaxis-, max-ytick-size) = draw-axis(yaxis, axis-info.y.ticking, major-axis-style, e-get: e-get)
     artists.push((content: yaxis-, z: 20))
  
     if type(max-ytick-size) == array {
