@@ -201,6 +201,7 @@
     xlimits: () => minmax(x),
     ylimits: () => minmax(y),
     legend: true,
+    ignores-cycle: false,
     clip: clip,
     z-index: z-index
   )

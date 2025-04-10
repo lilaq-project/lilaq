@@ -116,6 +116,7 @@
     xlimits: () => minmax(x),
     ylimits: () => minmax(y1 + y2 + if y2 == none {(0,)}),
     legend: true,
+    ignores-cycle: false,
     z-index: z-index
   )
 }
