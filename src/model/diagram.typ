@@ -333,8 +333,8 @@
 
     let cycle = process-cycles-arg(it.cycle)
 
-
-    for (i, plot) in plots.enumerate() {
+    let cycle-index = 0
+    for plot in plots {
       let transform = transform
 
       if type(plot) == dictionary and "axis-id" in plot {
@@ -343,12 +343,17 @@
       }
 
 
-      let cycle-style = cycle.at(calc.rem(i, cycle.len()))
+      let takes-part-in-cycle = not plot.at("ignores-cycle", default: true)
+      let cycle-style = cycle.at(calc.rem(cycle-index, cycle.len()))
 
       let plotted-plot = {
         show: cycle-init
         show: cycle-style
         (plot.plot)(plot, transform)
+      }
+      
+      if takes-part-in-cycle {
+        cycle-index += 1
       }
 
       if plot.at("clip", default: true) { 
