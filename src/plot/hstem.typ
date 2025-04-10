@@ -142,6 +142,7 @@
     xlimits: () => bar-lim(x, (base,)),
     ylimits: () => minmax(y),
     legend: true,
+    ignores-cycle: false,
     clip: clip,
     z-index: z-index
   )

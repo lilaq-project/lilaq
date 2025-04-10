@@ -177,6 +177,7 @@
     xlimits: () => bar-lim(x, base),
     ylimits: () => ylim,
     legend: true,
+    ignores-cycle: false,
     clip: clip,
     z-index: z-index
   )

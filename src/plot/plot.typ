@@ -438,6 +438,7 @@
     xlimits: () => plot-lim(x, err: xerr),
     ylimits: () => plot-lim(y, err: yerr),
     legend: true,
+    ignores-cycle: false,
     clip: clip,
     z-index: z-index
   )
