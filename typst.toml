@@ -8,6 +8,7 @@ description = "Scientific data visualization."
 compiler = "0.13.0"
 
 repository = "https://github.com/lilaq-project/lilaq"
+homepage = "https://lilaq.org"
 keywords = ["plotting", "diagram", "axis", "matplotlib", "tikz", "pgfplots", "graph", "visualisation", "chart"]
 categories = ["visualization"]
 exclude = ["/docs/*", "/tests/*"]
