@@ -19,7 +19,7 @@
   if "make-legend" in plot {
     polygon((0%, 0%), (0%, 100%), (100%, 100%), (100%, 0%))
   } else {
-      for run in runs {
+    for run in runs {
       let there = run.map(x => x.slice(0,2))
       let back = run.map(x => (x.at(0), x.at(2)))
       if plot.style.step != none {
@@ -28,11 +28,9 @@
       }
       
 
-    else {
-        place(polygon(
-          ..((there + back.rev()).map(p => transform(..p))))
-        )
-      }
+      place(polygon(
+        ..((there + back.rev()).map(p => transform(..p))))
+      )
     }
   }
 }
@@ -101,6 +99,7 @@
 ) = {
   
   assertations.assert-matching-data-dimensions(x, x, y1: y1, y2: y2, fn-name: "fill-between")
+  assert(step in (none, start, end, center))
   
   (
     x: x,
