@@ -120,7 +120,7 @@
 
 #let _place-legend-with-bounds(
 
-  /// -> true | dictionary
+  /// -> none | dictionary | legend
   my-legend, 
 
   /// -> array(array)
@@ -133,8 +133,9 @@
     e.fields(object).at(field, default: e-get(element).at(field))
   }
 
-  if my-legend == true { my-legend = (:)}
-  my-legend = legend(..legend-entries, ..my-legend)
+  if e.eid(my-legend) != e.eid(legend) {
+    my-legend = legend(..legend-entries, ..my-legend)
+  }
 
   let pos = get-settable-field(legend, my-legend, "position")
   let dx = get-settable-field(legend, my-legend, "dx")

@@ -39,7 +39,10 @@
 
   /// Options to pass to the @legend constructor. If set to `none`, no legend is
   /// shown.
-  /// -> none | dictionary
+  /// 
+  /// Alternatively, a legend with entirely custom entries can be created and 
+  /// given here. 
+  /// -> none | dictionary | lq.legend
   legend: (:),
 
   /// Data limits along the $x$-axis. Expects `auto` or a tuple `(min, max)` 
@@ -498,7 +501,7 @@
     e.field("width", length, default: 6cm),
     e.field("height", length, default: 4cm),
     e.field("title", e.types.union(none, str, content, lq-title), default: none),
-    e.field("legend", e.types.option(dictionary), default: (:)),
+    e.field("legend", e.types.option(e.types.union(dictionary, lq-legend)), default: (:)),
     e.field("xlim", e.types.wrap(e.types.union(auto, array), fold: none), default: auto),
     e.field("ylim", e.types.wrap(e.types.union(auto, array), fold: none), default: auto),
     e.field("xlabel", e.types.union(lq-label, str, content, none), default: none),
