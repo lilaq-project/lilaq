@@ -394,12 +394,12 @@
         for (plot-x0, plot-x1) in plot-limits {
           let tight-bound = (false, false)
           if type(plot-x0) == fraction { plot-x0 /= 1fr; tight-bound.at(0) = true }
-          if axis.lim.at(0) == auto and (x0 == none or plot-x0 < x0) {
+          if axis.lim.at(0) == auto and plot-x0 != none and (x0 == none or plot-x0 < x0) {
             x0 = plot-x0
             tight0 = tight-bound.at(0)
           }
           if type(plot-x1) == fraction { plot-x1 /= 1fr; tight-bound.at(1) = true }
-          if axis.lim.at(1) == auto and (x1 == none or plot-x1 > x1) {
+          if axis.lim.at(1) == auto and plot-x0 != none and (x1 == none or plot-x1 > x1) {
             x1 = plot-x1
             tight1 = tight-bound.at(1)
           }
