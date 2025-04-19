@@ -8,8 +8,9 @@
 /// The maps `viridis`, `magma` `plasma`, and `inferno` have been developed by 
 /// Stéfan van der Walt and Nathaniel Smith for Matplotlib. The color map `cividis`
 /// is an optimization of `viridis` accounting for perceptual linearity also for
-/// those with CVD. 
-/// 
+/// those with CVD. The bi-sequential map `tovu` is a CVD-friendlier combination of the `topo`
+/// map from #link("https://github.com/matplotlib/cmocean")[cmocean] and 
+/// `bukavu`. 
 /// The remaining maps have been created by 
 /// #link("https://www.fabiocrameri.ch/colourmaps/")[Crameri _et al_]. 
 /// 
@@ -78,6 +79,35 @@
 /// #show-map("roma")
 /// ```
 /// 
+/// 
+/// == Bi-sequential color maps
+/// ```typ render
+/// #import "src/typst/_color-sequence.typ": show-map
+/// 
+/// #let show-map(name) = block(width: 14cm, {
+///   let map = dictionary(lq.color.map).at(name)
+///   show "lq.color.map.": set text(gray)
+///   raw("lq.color.map." + name)
+///   stack(spacing: -1pt,
+///     rect(
+///       width: 100%,
+///       height: 1.5cm,
+///       fill: gradient.linear(..map)
+///     ),
+///     rect(
+///       width: 100%,
+///       height: 1cm,
+///       fill: gradient.linear(..map).sharp(map.len()),
+///     )
+///   )
+/// })
+/// #show-map("tovu")
+/// #show-map("oleron")
+/// #show-map("bukavu")
+/// #show-map("fes")
+/// ```
+/// 
+/// 
 /// == Qualitative color maps
 /// Qualitative color maps are good for [style cycles](/docs/tutorials/cycles). 
 /// ```typ render
@@ -88,49 +118,5 @@
 /// #show-sequence("petroff6")
 /// #show-sequence("okabe-ito")
 /// ```
+
 #import "map.typ"
-#import "map2.typ"
-#set page(height: auto)
-#{
-  for (name, map) in dictionary(map) {
-    if name == "rgb" {continue }
-    raw("#let " + name + " = (\n")
-    map.map(x => raw("  " + repr(x) + ",")).join("\n")
-    "\n)\n\n"
-  }
-}
-
-#let grad(map) = stack(spacing: -1pt,
-  rect(
-  width: 100%,
-  height: 2cm,
-  fill: gradient.linear(..map)
-  ),
-   rect(
-  width: 100%,
-  fill: gradient.linear(..map).sharp(map.len()),
-)
-)
-
-#grad(std.color.map.viridis) //
-#grad(map2.batlow10) //
-#grad(map2.acton10) //
-#grad(map2.lajolla10) //
-#grad(map2.lipari10) //
-#grad(map2.davos10) //
-// #grad(map2.oslo10)
-// #grad(map2.devon10)
-// #grad(map2.navia10) // no
-
-#pagebreak()
-
-// #grad(map2.cork10)
-// #grad(map2.cork25)
-// #grad(map2.cork50)
-// #grad(map2.cork)
-
-#grad(map2.cork25)
-#grad(map2.vik25) 
-#grad(map2.tofino25) //
-#grad(map2.managua25) //
-#grad(map2.roma25) //
