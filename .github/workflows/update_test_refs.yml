@@ -1,0 +1,34 @@
+name: update test refs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create_test_refs:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Setup typst
+        uses: typst-community/setup-typst@v3
+        with:
+          typst-version: 'v0.12.0'
+
+      - name: Install tytanic from crates.io
+        uses: baptiste0928/cargo-install@v3.0.0
+        with:
+          crate: tytanic
+          version: '0.2.2'
+
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Update test refs
+        run: tt update
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "[update] test refs"
