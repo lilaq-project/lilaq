@@ -599,13 +599,13 @@
     let tline = line(length: length, angle: angle, stroke: tick-stroke)
     let make-tick
     if align == right {
-      make-tick = (label, loc) => place(dx: -outset, dy: loc, {tline + place(dx: -length - pad, right + horizon, label)})
+      make-tick = (label, loc) => place(dx: -outset, dy: loc, {tline + place(dx: -length - pad, right + horizon, box(height: 0pt, label))})
     } else if align == left {
-      make-tick = (label, loc) => place(dx: -length + outset, dy: loc, {tline + place(dx: length + pad, left + horizon, label)})
+      make-tick = (label, loc) => place(dx: -length + outset, dy: loc, {tline + place(dx: length + pad, left + horizon, box(height: 0pt, label))})
     } else if align == top {
-      make-tick = (label, loc) => place(dy: -length + outset, dx: loc, {tline + place(dy: length + pad, top + center, label)});
+      make-tick = (label, loc) => place(dy: -length + outset, dx: loc, {tline + place(dy: length + pad, top + center, box(width: 0pt, label))});
     } else if align == bottom {
-      make-tick = (label, loc) => place(dy: -outset, dx: loc, {tline + place(dy: -length - pad, bottom + center, label)})
+      make-tick = (label, loc) => place(dy: -outset, dx: loc, {tline + place(dy: -length - pad, bottom + center, box(width: 0pt, label))})
     }
 
     let max = transform(axis.lim.at(if kind == "x" { 1 } else { 0 }))
