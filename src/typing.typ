@@ -9,6 +9,8 @@
 #import "model/errorbar.typ": errorbar
 
 #let set_ = e.set_
+#let fields = e.fields
+#let elembic = e
 #let set-grid = e.set_.with(grid)
 #let set-title = e.set_.with(title)
 #let set-label = e.set_.with(label)
