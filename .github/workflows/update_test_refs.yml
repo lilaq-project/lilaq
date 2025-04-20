@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  create_test_refs:
+  update_test_refs:
     runs-on: ubuntu-latest
 
     permissions:
