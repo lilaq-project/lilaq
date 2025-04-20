@@ -8,6 +8,9 @@ on:
       - .github/**
   pull_request:
     branches: [ main ]
+  workflow_run:
+    workflows: [update test refs]
+    types: [completed]
 
 jobs:
   tests:
@@ -22,17 +25,22 @@ jobs:
           packages: cargo
           version: 1.0
 
-      - name: Install typst-test from github
-        uses: baptiste0928/cargo-install@v2.2.0
+      - name: Install tytanic from crates.io
+        uses: baptiste0928/cargo-install@v3.0.0
         with:
-          crate: typst-test
-          git: https://github.com/tingerrr/typst-test.git
-          tag: ci-semi-stable
-
-      - name: Setup typst
-        uses: typst-community/setup-typst@v3
-        with:
-          typst-version: 'v0.12.0'
+          crate: tytanic
+          version: '0.2.2'
 
       - name: Run test suite
-        run: typst-test run
+        run: tt run
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: artifacts
+          path: |
+            tests/**/diff/*.png
+            tests/**/out/*.png
+            tests/**/ref/*.png
+          retention-days: 5
