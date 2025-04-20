@@ -342,7 +342,7 @@
       let transform = transform
 
       if type(plot) == dictionary and "axis-id" in plot {
-        let transform = axes-transforms.at(plot.axis-id)
+        transform = axes-transforms.at(plot.axis-id)
         plot = plot.plot
       }
 
