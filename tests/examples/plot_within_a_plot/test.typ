@@ -1,4 +1,4 @@
-#set page(width: auto, height: auto, margin: 0pt)
+#set page(width: auto, height: auto, margin: 5pt)
 #import "/src/lilaq.typ" as lq
 
 #let weierstrass(x, k: 8) = {

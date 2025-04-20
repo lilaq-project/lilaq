@@ -1,4 +1,4 @@
-#set page(width: auto, height: auto, margin: 0pt)
+#set page(width: auto, height: auto, margin: 5pt)
 #import "/src/lilaq.typ" as lq
 
 #let xs = lq.linspace(0, 4 * calc.pi)
