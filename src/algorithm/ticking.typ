@@ -540,6 +540,8 @@
   let inline-exponent = 0     // extra exp that is shown for each tick
 
   let inherited-exponent = ticks-info.at("exponent", default: 0)
+  
+  if exponent == none { exponent = 0 }
   if exponent == auto {
     if calc.abs(inherited-exponent) >= auto-exponent-threshold {
       additional-exponent = inherited-exponent
