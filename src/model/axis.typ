@@ -151,7 +151,7 @@
   /// 
   /// In combination with logarithmic tick locators, `none` can be used to 
   /// force writing out all numbers. 
-  /// -> auto | none | float
+  /// -> auto | none | int | "inline"
   exponent: auto,
 
   /// Threshold for automatic exponents. 
