@@ -45,3 +45,5 @@
 
 #import "logic/scale.typ"
 #import "algorithm/ticking.typ": locate-ticks-linear, locate-ticks-log, format-ticks-naive, format-ticks-linear, format-ticks-log
+
+#import "theme/theme.typ"
