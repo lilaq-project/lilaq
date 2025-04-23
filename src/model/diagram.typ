@@ -25,11 +25,11 @@
 /// -> lq.diagram
 #let diagram(
   
-  /// The width of the diagram's data area (excluding axes ticks and labels). 
+  /// The width of the diagram's data area (excluding axes, labels etc.). 
   /// -> length
   width: 6cm,
   
-  /// The height of the diagram's data area (excluding title, axes ticks and labels). 
+  /// The height of the diagram's data area (excluding axes, labels, title etc.). 
   /// -> length
   height: 4cm,
 
