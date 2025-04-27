@@ -176,7 +176,7 @@
   /// Whether to apply smoothing or leave the color mesh pixelated. This is 
   /// currently only supported when @colormesh.x and @colormesh.y are evenly 
   /// spaced. 
-  /// -> "pixelated" | "smooth"
+  /// -> "pixelated" | "smooth"
   interpolation: "pixelated",
   
   /// The legend label for this plot. See @plot.label. 
