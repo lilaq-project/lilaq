@@ -5,7 +5,7 @@
 
 
 #import "../math.typ": sign
-
+#import "../algorithm/ticking.typ"
 
 /// Constructor for the scale type. Scales are used to transform data coordinates 
 /// into scaled coordinates. Commonly, data is displayed with a linear scale, i.e., 
@@ -38,6 +38,14 @@
   /// -> int | float
   identity: 0, 
 
+  /// The default tick locator to use with this scale. 
+  /// -> none | function
+  locate-ticks: none,
+
+  /// The default subtick locator to use with this scale. 
+  /// -> none | function
+  locate-subticks: none,
+
   /// Additional data to store in the scale. 
   /// -> any
   ..args
@@ -47,6 +55,8 @@
   inverse: inverse,
   name: name,
   identity: identity,
+  locate-ticks: locate-ticks,
+  locate-subticks: locate-subticks,
   ..args.named()
 )
 
@@ -57,6 +67,8 @@
   name: "linear",
   x => x,
   x => x,
+  locate-ticks: ticking.locate-ticks-linear,
+  locate-subticks: ticking.locate-subticks-linear,
 )
 
 
@@ -74,7 +86,9 @@
   x => calc.log(x),
   x => calc.pow(10., x),
   base: base,
-  identity: 1
+  identity: 1,
+  locate-ticks: ticking.locate-ticks-log.with(base: base),
+  locate-subticks: ticking.locate-subticks-log.with(base: base),
 )
 
 

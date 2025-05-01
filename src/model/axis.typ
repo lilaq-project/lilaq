@@ -1,5 +1,5 @@
 #import "../logic/scale.typ" as lqscale
-#import "../utility.typ": place-in-out, match, match-type, if-auto
+#import "../utility.typ": place-in-out, match, match-type, if-auto, if-none
 #import "../algorithm/ticking.typ"
 #import "../bounds.typ": *
 #import "../assertations.typ"
@@ -255,12 +255,7 @@
   }
   
   if locate-ticks == auto {
-    locate-ticks = match(
-      scale.name,
-      "linear", () => ticking.locate-ticks-linear,
-      "log", () => ticking.locate-ticks-log.with(base: scale.base),
-      default: () => ticking.locate-ticks-linear,
-    )
+    locate-ticks = if-none(scale.locate-ticks, ticking.locate-ticks-linear)
   }
   if format-ticks == auto {
     format-ticks = match(
@@ -279,12 +274,7 @@
     assert(false, message: "Unsupported argument type `" + str(type(subticks)) + "` for parameter `subticks`")
   }
   if locate-subticks == auto {
-    locate-subticks = match(
-      scale.name,
-      "linear", () => ticking.locate-subticks-linear,
-      "log", () => ticking.locate-subticks-log.with(base: scale.base),
-      default: none
-    )
+    locate-subticks = if-none(scale.locate-subticks, none)
   }
   let is-independant = plots.len() > 0
   if functions == auto { functions = (x => x, x => x) }
