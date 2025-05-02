@@ -1,5 +1,6 @@
 #import "../math.typ": *
 #import "../assertations.typ"
+#import "../logic/symlog.typ": symlog-transform
 #import "@preview/zero:0.3.3"
 
 
@@ -181,17 +182,17 @@
 ///   expensively estimate it. 
 #let locate-ticks-linear(
 
-  /// The start of the range that is displayed on the axis. 
+  /// The start of the range to locate ticks for. 
   /// -> float
   x0, 
 
-  /// The end of the range that is displayed on the axis. 
+  /// The end of the range to locate ticks for. 
   /// -> float
   x1, 
 
-  /// Sets the distance between consecutive ticks. If set to `auto`, the 
-  /// distance will be determined automatically according to 
-  /// `num-ticks-suggestion` and the given range. 
+  /// Sets the distance between consecutive ticks manually. If set to `auto`,  
+  /// the distance will be determined automatically according to 
+  /// `num-ticks-suggestion`, `density`, and the given range. 
   /// -> auto | float
   tick-distance: auto,
 
@@ -200,7 +201,7 @@
   /// -> int | float
   num-ticks-suggestion: 5, 
 
-  /// The maximum number of ticks to generate. This guard ensures prevents 
+  /// The maximum number of ticks to generate. This guard prevents an 
   /// accidental generation of a huge number of ticks. 
   /// -> int
   max-ticks: 200,
@@ -214,17 +215,17 @@
   ..args
 
 ) = {
-  assert.ne(x0, x1, message: "The tick input range cannot be zero")
+  assert.ne(x0, x1, message: "Start and end of the range to locate ticks on cannot be identical")
   if x1 < x0 {
     (x1, x0) = (x0, x1)
   }
-  let dx = x1 - x0
+  // let dx = x1 - x0
 
   let step
   let exponent
   
   if tick-distance == auto {
-    let approx-step = dx / (num-ticks-suggestion * density / 100%)
+    let approx-step = (x1 - x0) / (num-ticks-suggestion * density / 100%)
     let mantissa
     (mantissa, exponent) = decompose-floating-point(calc.abs(approx-step))
     step = get-best-step(mantissa)
@@ -243,7 +244,7 @@
 
   let axis-offset = 0 
   if calc.abs(calc.max(x1, x0) / tick-distance) >= 5000 {
-    let fg = pow10(calc.ceil(calc.log(dx, base: 10) + 1))
+    // let fg = pow10(calc.ceil(calc.log(dx, base: 10) + 1))
     axis-offset = discretize-down(x0, 1, exponent + 2)
   }
   
@@ -307,25 +308,42 @@
 /// This function returns a dictionary with the key `ticks` containing an array of tick
 /// positions. 
 ///
-/// - x0 (float): Start of the range. 
-/// - x1 (float): End of the range. 
-/// - base (int): Base of the logarithmic axis. 
-/// - num-ticks-suggestion (int, float): Determines the density of ticks. 
-/// - max-ticks (int): At most this many ticks are returned. This guard ensures that while 
-///     typing a value for tick-distance with live recompilation, that not a humongous number
-///     of ticks is genreated. 
 /// -> dictionary
 #let locate-ticks-log(
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
   x0, 
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
   x1, 
+
+  /// The base of the logarithmic axis. 
+  /// -> int
   base: 10, 
-  num-ticks-suggestion: 5,
-  max-ticks: 200, 
+
+
+  /// Suggested number of ticks to use. This may for example be chosen 
+  /// according to the length of the axis and the font size. 
+  /// -> int | float
+  num-ticks-suggestion: 5, 
+
+  /// The maximum number of ticks to generate. This guard prevents an 
+  /// accidental generation of a huge number of ticks. 
+  /// -> int
+  max-ticks: 200,
+
+  /// The density of ticks. This can be used as a qualitative knob to tune
+  /// the number of generated ticks in relation to the suggested number of
+  /// ticks. 
+  /// -> ratio
+  density: 100%,
+
   ..args
 ) = {
   if x0 > x1 { (x0 ,x1) = (x1, x0) }
   let log = calc.log.with(base: base)
-  let Dx = x1 - x0
   let g = log(x1) - log(x0)
   if g < 2 { 
      let tick-info = locate-ticks-linear(x0, x1, ..args) 
@@ -335,7 +353,7 @@
   
   let n0 = calc.ceil(log(x0))
   let n1 = calc.floor(log(x1))
-  let step = calc.max(1, int(calc.round((n1 - n0) / num-ticks-suggestion)))
+  let step = calc.max(1, int(calc.round((n1 - n0) / (num-ticks-suggestion * density / 100%))))
   
   (
     ticks: range(calc.min(n1 - n0 + 1, max-ticks), step: step).map(x => calc.pow(base * 1., x + n0)),
@@ -346,32 +364,164 @@
 #assertations.approx(locate-ticks-log(1, 1e8).ticks, (1, 100, 1e4, 1e6, 1e8))
 #assertations.approx(locate-ticks-log(0.24, 9, base: 2).ticks, (.25, .5, 1, 2, 4, 8))
 #assertations.approx(locate-ticks-log(1, 1024, base: 2).ticks, (1, 4, 16, 64, 256, 1024))
-#assertations.approx(locate-ticks-log(1, 2).ticks, locate-ticks-linear(1, 2).ticks)
-#assertations.approx(locate-ticks-log(1, 2, base: 2).ticks, locate-ticks-linear(1, 2).ticks)
+// #assertations.approx(locate-ticks-log(1, 2).ticks, locate-ticks-linear(1, 2).ticks)
+// #assertations.approx(locate-ticks-log(1, 2, base: 2).ticks, locate-ticks-linear(1, 2).ticks)
+
+
+
+
+/// Locate linear ticks on a symlog axis with range $[x_0, x_1]$. The range may be
+/// inverted, i.e., $x_0>x_1$ but not $x_0 = x_1$. Ticks are placed on powers of the base
+/// or if the range is too large, on every other power of the base (starting with the lower 
+/// limit). In this case, the density of the ticks is determined by `num-ticks-suggestion`. 
+/// This function returns a dictionary with the key `ticks` containing an array of tick
+/// positions. 
+///
+/// -> dictionary
+#let locate-ticks-symlog(
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
+  x0, 
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
+  x1, 
+
+  /// The base of the logarithmic axis. 
+  /// -> int
+  base: 10, 
+
+  /// The threshold for the linear region. 
+  /// -> float
+  threshold: 1, 
+
+  /// The scaling of the linear region. 
+  /// -> float
+  linscale: 1,
+
+  /// Suggested number of ticks to use. This may for example be chosen 
+  /// according to the length of the axis and the font size. 
+  /// -> int | float
+  num-ticks-suggestion: 5, 
+
+  /// The maximum number of ticks to generate. This guard prevents an 
+  /// accidental generation of a huge number of ticks. 
+  /// -> int
+  max-ticks: 200,
+
+  /// The density of ticks. This can be used as a qualitative knob to tune
+  /// the number of generated ticks in relation to the suggested number of
+  /// ticks. 
+  /// -> ratio
+  density: 100%,
+
+  ..args
+) = {
+  if x0 > x1 { (x0 ,x1) = (x1, x0) }
+  let log = calc.log.with(base: base)
+  
+  let transform = symlog-transform(base, threshold, linscale)
+  let (a, b) = (transform(x0), transform(x1))
+
+
+  let ticks = ()
+  if x1 > threshold {
+    let x0-log = calc.max(x0, threshold)
+    let f = (b - transform(x0-log)) / (b - a)
+
+    let log-ticks = locate-ticks-log(
+      x0-log, x1, 
+      base: base,
+      density: density,
+      num-ticks-suggestion: num-ticks-suggestion * f
+    )
+    ticks += log-ticks.ticks
+  }
+  if x0 < -threshold {
+    let x1-log = calc.min(x1, -threshold)
+    let f = (transform(x1-log) - a) / (b - a)
+
+    let log-ticks = locate-ticks-log(
+      -x1-log, -x0,
+      base: base,
+      density: density,
+      num-ticks-suggestion: num-ticks-suggestion * f
+    )
+    ticks += log-ticks.ticks.map(tick => -tick).rev()
+  }
+  if x0 < threshold and x1 > -threshold { // x0 > threshold or x1 < -treshold
+    let x0-log = calc.max(x0, -threshold + 1e-9) 
+    let x1-log = calc.min(x1, threshold - 1e-9)
+    let f = (transform(x1-log) - transform(x0-log)) / (b - a)
+
+    let linear-ticks = locate-ticks-linear(
+      x0-log, x1-log,
+      base: base,
+      density: density,
+      num-ticks-suggestion: num-ticks-suggestion * f
+    )
+    ticks += linear-ticks.ticks
+  }
+  
+  (
+    ticks: ticks,
+  )
+}
+
+#assertations.approx(
+  locate-ticks-symlog(1, 1000).ticks, 
+  (1, 10, 100, 1000)
+)
+
+#assertations.approx(
+  locate-ticks-symlog(-100, -1).ticks, 
+  (-100, -10, -1)
+)
+
+#assertations.approx(
+  locate-ticks-symlog(-1, 1).ticks, 
+  (-.5, 0, .5)
+)
+
 
 
 /// Automatically locate linear subticks from an array of ticks. 
 ///
-/// - x0 (float): Start of the range. 
-/// - x1 (float): End of the range. 
-/// - num (auto): Number of subticks to put between consecutive ticks. If set to `auto`, 
-///      this defaults to 4 for tick distances basing on 2.5, 5, and 10 and to 3 for tick
-///      distances that base on 2. 
-/// - ticks (array): Ticks produced by some tick locator. 
-/// - tick-distance (auto): Difference between consecutive (major) ticks. If set to `auto`,
-///      the distance is automatically computed from the given ticks. 
 #let locate-subticks-linear(
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
   x0, 
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
   x1, 
-  num: auto, 
+
+  /// Ticks produced by some tick locator. 
+  /// -> array
   ticks: (), 
+
+  /// Number of subticks to put between consecutive ticks. If set to `auto`, 
+  /// this defaults to 4 for tick distances basing on 2.5, 5, and 10 and to 3 
+  /// for tick distances that base on 2. 
+  /// -> auto | int
+  num: auto, 
+
+  /// Difference between consecutive (major) ticks. If set to `auto`,
+  /// the distance is estimated from the given ticks. 
+  /// -> auto | float
   tick-distance: auto, 
+
   ..args // important!
+
 ) = {
   assert.eq(args.pos().len(), 0, message: "Unexpected positional arguments")
-  if ticks.len() == 0 { return () }
+  if x0 > x1 { (x0, x1) = (x1, x0) }
+
+  if ticks.len() == 0 { return (ticks: ()) }
   if tick-distance == auto {
-    if ticks.len() < 2 { return () }
+    if ticks.len() < 2 { return (ticks: ()) }
     tick-distance = ticks.at(1) - ticks.at(0)
   }
   if num == auto {
@@ -388,24 +538,23 @@
   for tick in (ticks.first() - tick-distance,) + ticks {
     subticks += base-range.map(x => x + tick)
   }
-  if x0 > x1 { (x0, x1) = (x1, x0) }
   return (ticks: subticks.filter(x => x0 <= x and x <= x1))
 }
 
-#assertations.approx(locate-subticks-linear(1, 2, ticks: (), num: 1), ())
-#assertations.approx(locate-subticks-linear(1, 2, ticks: (1,), num: 1), ())
-#assertations.approx(locate-subticks-linear(1, 2, ticks: (1, 2), num: 1), (1.5,))
-#assertations.approx(locate-subticks-linear(2, 1, ticks: (1, 2), num: 1), (1.5,))
-#assertations.approx(locate-subticks-linear(1, 2, ticks: (1, 2), num: 3), (1.25,1.5,1.75))
-#assertations.approx(locate-subticks-linear(0, 2, ticks: (1, 2), num: 1), (0.5, 1.5))
+#assertations.approx(locate-subticks-linear(1, 2, ticks: (), num: 1).ticks, ())
+#assertations.approx(locate-subticks-linear(1, 2, ticks: (1,), num: 1).ticks, ())
+#assertations.approx(locate-subticks-linear(1, 2, ticks: (1, 2), num: 1).ticks, (1.5,))
+#assertations.approx(locate-subticks-linear(2, 1, ticks: (1, 2), num: 1).ticks, (1.5,))
+#assertations.approx(locate-subticks-linear(1, 2, ticks: (1, 2), num: 3).ticks, (1.25,1.5,1.75))
+#assertations.approx(locate-subticks-linear(0, 2, ticks: (1, 2), num: 1).ticks, (0.5, 1.5))
 
 // Test for interval enhancement and restriction to [x0, x1]
-#assertations.approx(locate-subticks-linear(1, 3, ticks: (1, 2), num: 3), (1.25, 1.5, 1.75, 2.25, 2.5, 2.75))
-#assertations.approx(locate-subticks-linear(1, 2.5, ticks: (1, 2), num: 3), (1.25, 1.5, 1.75, 2.25, 2.5))
-#assertations.approx(locate-subticks-linear(.5, 1.5, ticks: (1, 2), num: 3), (0.5, 0.75, 1.25, 1.5))
-#assertations.approx(locate-subticks-linear(.55, 1.5, ticks: (1, 2), num: 3), (0.75, 1.25, 1.5))
+#assertations.approx(locate-subticks-linear(1, 3, ticks: (1, 2), num: 3).ticks, (1.25, 1.5, 1.75, 2.25, 2.5, 2.75))
+#assertations.approx(locate-subticks-linear(1, 2.5, ticks: (1, 2), num: 3).ticks, (1.25, 1.5, 1.75, 2.25, 2.5))
+#assertations.approx(locate-subticks-linear(.5, 1.5, ticks: (1, 2), num: 3).ticks, (0.5, 0.75, 1.25, 1.5))
+#assertations.approx(locate-subticks-linear(.55, 1.5, ticks: (1, 2), num: 3).ticks, (0.75, 1.25, 1.5))
 
-#assertations.approx(locate-subticks-linear(5, 25, ticks: (11, 21), tick-distance: 10, num: 1), (6, 16,))
+#assertations.approx(locate-subticks-linear(5, 25, ticks: (11, 21), tick-distance: 10, num: 1).ticks, (6, 16,))
 
 
 
@@ -413,26 +562,43 @@
 ///
 /// - x0 (float): Start of the range. 
 /// - x1 (float): End of the range. 
-/// - subs (array): Which multiples of each tick to mark as with a subtick, e.g., 
-///     `(2,3,4,5,6,7,8,9)`. If set to `auto`, this defaults to `range(2, base)`. 
-/// - ticks (array): Ticks produced by some tick locator. 
-/// - base (float): Base of the logarithmic scale. 
 #let locate-subticks-log(
+  
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
   x0, 
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
   x1, 
-  subs: auto,
+  
+  /// Ticks produced by some tick locator. 
+  /// -> array
   ticks: (), 
+
+  /// Which multiples of each tick to mark as with a subtick, e.g., 
+  /// `(2,3,4,5,6,7,8,9)`. If set to `auto`, this defaults to `range(2, base)`. 
+  /// -> auto | array
+  subs: auto,
+
+  /// Base of the logarithmic scale. If set to `auto`, the base is tried to be 
+  /// inferred from the given ticks. 
+  /// -> auto | float
   base: auto,
+
   ..args // important!
+
 ) = {
-  if ticks.len() == 0 { return () }
+  if ticks.len() == 0 { return (ticks: ()) }
   if base == auto {
-    if ticks.len() < 2 { return () }
+    if ticks.len() < 2 { return (ticks: ()) }
     base = ticks.at(1) / ticks.at(0)
   }
   if subs == auto {
     subs = range(2, calc.floor(base))
   }
+  assert(ticks.len() >= 2, message: "`locate-subticks-log` can only infer the base automatically when at least two ticks are given")
   let quo = ticks.at(1) / ticks.at(0)
   let subticks = ()
   
@@ -456,10 +622,10 @@
   return (ticks: subticks.filter(x => x0 <= x and x <= x1))
 }
 
-#assertations.approx(locate-subticks-log(1, 10, ticks: ()), ())
-#assertations.approx(locate-subticks-log(1, 10, ticks: (3,)), ())
-#assertations.approx(locate-subticks-log(1, 10, ticks: (1, 10)), range(2, 10))
-#assertations.approx(locate-subticks-log(.25, 20, ticks: (1, 10)), range(3, 10).map(x=>x/10) + range(2, 10) + (20,))
+#assertations.approx(locate-subticks-log(1, 10, ticks: ()).ticks, ())
+#assertations.approx(locate-subticks-log(1, 10, ticks: (3,)).ticks, ())
+#assertations.approx(locate-subticks-log(1, 10, ticks: (1, 10)).ticks, range(2, 10))
+#assertations.approx(locate-subticks-log(.25, 20, ticks: (1, 10)).ticks, range(3, 10).map(x=>x/10) + range(2, 10) + (20,))
 
 
 

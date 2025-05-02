@@ -12,7 +12,8 @@
   if type(a) == array and type(b) == array {
     assert(a.len() == b.len(), message: "Non-matching array lengths " + repr(a) + " / " + repr(b))
     for (x, y) in a.zip(b) {
-      if calc.abs(x - y) >= eps {
+      if calc.abs(x - y) >= eps and calc.abs(1 - calc.abs(x / y)) >= eps {
+        assert(false, message: repr(x) + " was not approx equal to " + repr(y) )
         assert(false, message: repr(a) + " was not approx equal to " + repr(b) )
       }
     }

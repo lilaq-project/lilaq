@@ -129,6 +129,11 @@
     threshold: threshold,
     base: base,
     linscale: linscale,
+    locate-ticks: ticking.locate-ticks-symlog.with(
+      base: base, 
+      threshold: threshold, 
+      linscale: linscale
+    )
   )
 }
 
