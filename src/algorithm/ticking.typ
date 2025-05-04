@@ -422,12 +422,16 @@
   density: 100%,
 
   ..args
+
 ) = {
-  if x0 > x1 { (x0 ,x1) = (x1, x0) }
+  if x0 > x1 { (x0, x1) = (x1, x0) }
   let log = calc.log.with(base: base)
   
+  let locate-ticks-log = locate-ticks-log.with(
+    linear-threshold: 0, base: base, density: density
+  )
+
   let transform = symlog-transform(base, threshold, linscale)
-  let locate-ticks-log = locate-ticks-log.with(linear-threshold: 0)
   let (a, b) = (transform(x0), transform(x1))
 
 
@@ -438,8 +442,6 @@
 
     let log-ticks = locate-ticks-log(
       x0-log, x1, 
-      base: base,
-      density: density,
       num-ticks-suggestion: num-ticks-suggestion * f
     )
     ticks += log-ticks.ticks
@@ -450,8 +452,6 @@
 
     let log-ticks = locate-ticks-log(
       -x1-log, -x0,
-      base: base,
-      density: density,
       num-ticks-suggestion: num-ticks-suggestion * f
     )
     ticks += log-ticks.ticks.map(tick => -tick).rev()
@@ -650,32 +650,30 @@
   /// -> array
   ticks: (), 
 
-  /// Which multiples of each tick to mark as with a subtick, e.g., 
+  /// Which multiples of each tick to mark with a subtick, e.g., 
   /// `(2,3,4,5,6,7,8,9)`. If set to `auto`, this defaults to `range(2, base)`. 
   /// -> auto | array
   subs: auto,
 
-  /// Base of the logarithmic scale. If set to `auto`, the base is tried to be 
-  /// inferred from the given ticks. 
-  /// -> auto | float
-  base: auto,
+  /// Base of the logarithmic scale. 
+  /// -> float
+  base: 10,
 
   /// The threshold for the linear region. 
   /// -> float
   threshold: 1, 
 
-  /// The scaling of the linear region. 
-  /// -> float
-  linscale: 1,
-
-  ..args // important!
+  ..args
 
 ) = {
   let subticks = ()
+  let locate-subticks-log = locate-subticks-log.with(
+    base: base, 
+    subs: subs
+  )
   
   if x1 > threshold {
     subticks += locate-subticks-log(
-      base: base,
       calc.max(x0, threshold),
       x1,
       ticks: ticks.filter(x => x > threshold)
@@ -684,7 +682,6 @@
   
   if x0 < -threshold {
     subticks += locate-subticks-log(
-      base: base,
       -x0,
       -calc.min(x1, -threshold),
       ticks: ticks.filter(x => x > threshold)
