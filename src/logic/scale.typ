@@ -103,7 +103,7 @@
 
   /// The threshold for the linear region. 
   /// -> float
-  threshold: 2, 
+  threshold: 1, 
 
   /// The scaling of the linear region. 
   /// -> float
