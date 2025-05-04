@@ -323,7 +323,6 @@
   /// -> int
   base: 10, 
 
-
   /// Suggested number of ticks to use. This may for example be chosen 
   /// according to the length of the axis and the font size. 
   /// -> int | float
@@ -340,12 +339,18 @@
   /// -> ratio
   density: 100%,
 
+  /// If `log(x1/x0)` is below this threshold, resolve to a linear tick
+  /// locator. Set this to `0` to force logarithmic ticks. 
+  /// -> float
+  linear-threshold: 2,
+
   ..args
+
 ) = {
   if x0 > x1 { (x0 ,x1) = (x1, x0) }
   let log = calc.log.with(base: base)
   let g = log(x1) - log(x0)
-  if g < 2 { 
+  if g < linear-threshold { 
      let tick-info = locate-ticks-linear(x0, x1, ..args) 
      tick-info.linear = true // notify format-ticks-log that this is actually a "linear" ticking
      return tick-info
@@ -364,8 +369,8 @@
 #assertations.approx(locate-ticks-log(1, 1e8).ticks, (1, 100, 1e4, 1e6, 1e8))
 #assertations.approx(locate-ticks-log(0.24, 9, base: 2).ticks, (.25, .5, 1, 2, 4, 8))
 #assertations.approx(locate-ticks-log(1, 1024, base: 2).ticks, (1, 4, 16, 64, 256, 1024))
-// #assertations.approx(locate-ticks-log(1, 2).ticks, locate-ticks-linear(1, 2).ticks)
-// #assertations.approx(locate-ticks-log(1, 2, base: 2).ticks, locate-ticks-linear(1, 2).ticks)
+#assertations.approx(locate-ticks-log(1, 2).ticks, locate-ticks-linear(1, 2).ticks)
+#assertations.approx(locate-ticks-log(1, 2, base: 2).ticks, locate-ticks-linear(1, 2).ticks)
 
 
 
@@ -422,6 +427,7 @@
   let log = calc.log.with(base: base)
   
   let transform = symlog-transform(base, threshold, linscale)
+  let locate-ticks-log = locate-ticks-log.with(linear-threshold: 0)
   let (a, b) = (transform(x0), transform(x1))
 
 
@@ -559,11 +565,7 @@
 
 
 /// Automatically locate logarithmic subticks from an array of ticks. 
-///
-/// - x0 (float): Start of the range. 
-/// - x1 (float): End of the range. 
 #let locate-subticks-log(
-  
 
   /// The start of the range to locate ticks for. 
   /// -> float
@@ -598,8 +600,11 @@
   if subs == auto {
     subs = range(2, calc.floor(base))
   }
-  assert(ticks.len() >= 2, message: "`locate-subticks-log` can only infer the base automatically when at least two ticks are given")
-  let quo = ticks.at(1) / ticks.at(0)
+  let quo = if ticks.len() >= 2 {
+    ticks.at(1) / ticks.at(0)
+  } else {
+    base
+  }
   let subticks = ()
   
   if ticks.len() >= 2 and quo > base {
@@ -629,6 +634,67 @@
 
 
 
+
+/// Automatically locate symlog subticks from an array of ticks. 
+#let locate-subticks-symlog(
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
+  x0, 
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
+  x1, 
+  
+  /// Ticks produced by some tick locator. 
+  /// -> array
+  ticks: (), 
+
+  /// Which multiples of each tick to mark as with a subtick, e.g., 
+  /// `(2,3,4,5,6,7,8,9)`. If set to `auto`, this defaults to `range(2, base)`. 
+  /// -> auto | array
+  subs: auto,
+
+  /// Base of the logarithmic scale. If set to `auto`, the base is tried to be 
+  /// inferred from the given ticks. 
+  /// -> auto | float
+  base: auto,
+
+  /// The threshold for the linear region. 
+  /// -> float
+  threshold: 1, 
+
+  /// The scaling of the linear region. 
+  /// -> float
+  linscale: 1,
+
+  ..args // important!
+
+) = {
+  let subticks = ()
+  
+  if x1 > threshold {
+    subticks += locate-subticks-log(
+      base: base,
+      calc.max(x0, threshold),
+      x1,
+      ticks: ticks.filter(x => x > threshold)
+    ).ticks
+  }
+  
+  if x0 < -threshold {
+    subticks += locate-subticks-log(
+      base: base,
+      -x0,
+      -calc.min(x1, -threshold),
+      ticks: ticks.filter(x => x > threshold)
+    ).ticks.map(x => -x)
+  }
+
+  (
+    ticks: subticks
+  )
+}
 
 #let format-ticks-manual(
   tick-info, labels: (), ..args

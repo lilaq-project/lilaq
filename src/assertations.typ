@@ -8,7 +8,6 @@
   /// Epsilon.
   eps: 1e-12
 ) = {
-  return true
   if type(a) == array and type(b) == array {
     assert(a.len() == b.len(), message: "Non-matching array lengths " + repr(a) + " / " + repr(b))
     for (x, y) in a.zip(b) {

@@ -133,7 +133,12 @@
       base: base, 
       threshold: threshold, 
       linscale: linscale
-    )
+    ),
+    locate-subticks: ticking.locate-subticks-symlog.with(
+      base: base, 
+      threshold: threshold, 
+      linscale: linscale
+    ),
   )
 }
 
