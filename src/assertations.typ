@@ -82,13 +82,18 @@
   mandatory: (),
   optional: (),
   name: "",
-  message: auto
+  message: auto,
+  missing-message: auto,
+  unexpected-message: auto
 ) = {
   name += " "
   for key in mandatory {
     if key not in dict {
       if message == auto {
         message = name + "dictionary expects key `" + key + "`"
+      }
+      if type(missing-message) == function {
+        message = missing-message(key)
       }
       assert(
         false,
@@ -102,6 +107,9 @@
       
       if message == auto {
         message = name + "dictionary found unexpected key `" + key + "` (expected " + (mandatory + optional).join(", ", last: ", or ") + ")"
+      }
+      if type(unexpected-message) == function {
+        message = unexpected-message(key, (mandatory + optional).join(", ", last: ", or "))
       }
       assert(
         false,
