@@ -193,6 +193,13 @@
   return interpolate.linear(values, q / 100% * (values.len() - 1))
 }
 
+#assert.eq(percentile((1,2,3), 50%), 2)
+#assert.eq(percentile((1,2,3), 25%), 1.5)
+#assert.eq(percentile((1,2,3), 0%), 1)
+#assert.eq(percentile((1,2,3), 100%), 3)
+
+
+
 /// Creates a rectangular mesh from two input arrays. 
 /// One or more functions are evaluated for each possible pair $(x_i,y_j)$ of
 /// the inputs $\{x_0,...\}$ and $\{y_0,...\}$. 

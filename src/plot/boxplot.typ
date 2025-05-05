@@ -161,10 +161,36 @@
 ///   ),
 /// )
 /// ```
+/// 
+/// Some data sets might be too large to be processed in Typst. In this case, 
+/// the median, the first and third quartil as well as the whiskers can be 
+/// computed somewhere else and specified manually in Lilaq (see also 
+/// @boxplot.data). 
+/// ```example
+/// #lq.diagram(
+///   width: 4cm,
+///   lq.boxplot(
+///     (
+///       median: 4.4,
+///       q1: 2,
+///       q3: 8,
+///       outliers: (12, 13),
+///       whisker-low: 0,
+///       whisker-high: 10,
+///     ),
+///   )
+/// )
+/// ```
 #let boxplot(
 
-  /// One or more data arrays to generate a boxplot from. 
-  /// -> array
+  /// One or more data sets to generate a boxplot from. A data set can either be
+  /// - an array of values (in this case all statistics are computed automatically) or
+  /// - a dictionary with the mandatory keys `median`, `q1`, `q3`, 
+  ///   `whisker-low`, and `whisker-high` and optional keys `mean` and 
+  ///   `outliers`. This method is useful for precomputed distributions, 
+  ///   especially data sets that are too large for processing in Typst. 
+  /// 
+  /// -> array | dictionary
   ..data,
 
   /// The $x$ coordinate(s) to draw the boxplots at. If set to `auto`, boxplots will 
@@ -267,14 +293,17 @@
   if cap == auto { cap = utility.if-none(stroke, std.stroke()) }
   
   let statistics = data.map(boxplot-statistics.with(whiskers: whisker-pos))
-  let outlier-values = ()
+
+
+  let all-outliers = ()
   if outliers != none {
-    outlier-values = statistics.map(boxplot => boxplot.outliers).flatten()
+    all-outliers = statistics.map(boxplot => boxplot.outliers).flatten()
   }
-  let ymax = calc.max(..statistics.map(x => x.whisker-high), ..outlier-values)
-  let ymin = calc.min(..statistics.map(x => x.whisker-low), ..outlier-values)
+  let ymax = calc.max(..statistics.map(x => x.whisker-high), ..all-outliers)
+  let ymin = calc.min(..statistics.map(x => x.whisker-low), ..all-outliers)
   let xmin = x.at(0) - width.at(0)
   let xmax = x.at(-1) + width.at(-1)
+
   (
     x: x,
     statistics: statistics,
