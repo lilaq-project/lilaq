@@ -17,22 +17,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Probe runner package cache
-        uses: awalsh128/cache-apt-pkgs-action@latest
+      - name: Install tytanic (binary)
+        uses: taiki-e/install-action@v2
         with:
-          packages: cargo
-          version: 1.0
-
-      - name: Install tytanic from crates.io
-        uses: baptiste0928/cargo-install@v3.0.0
-        with:
-          crate: tytanic
-          version: '0.2.2'
+          tool: tytanic@0.2.2
 
       - name: Run test suite
-        run: tt run
+        run: tt run --no-fail-fast
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v4

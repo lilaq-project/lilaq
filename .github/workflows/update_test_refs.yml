@@ -11,14 +11,13 @@ jobs:
       contents: write
 
     steps:
-      - name: Install tytanic from crates.io
-        uses: baptiste0928/cargo-install@v3.0.0
-        with:
-          crate: tytanic
-          version: '0.2.2'
-
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install tytanic (binary)
+        uses: taiki-e/install-action@v2
+        with:
+          tool: tytanic@0.2.2
 
       - name: Update test refs
         run: tt update
