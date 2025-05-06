@@ -48,7 +48,7 @@
   "label",
   prefix: "lilaq",
 
-  display: it => rotate(it.body, reflow: true),
+  display: it => rotate(it.angle, it.body, reflow: true),
 
   fields: (
     e.field("body", e.types.option(content), required: true),
