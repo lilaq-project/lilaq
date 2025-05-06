@@ -48,10 +48,10 @@
   "label",
   prefix: "lilaq",
 
-  display: it => rotate(it.angle, it.body, reflow: true),
+  display: it => rotate(it.body, reflow: true),
 
   fields: (
-    e.field("body", content, required: true),
+    e.field("body", e.types.option(content), required: true),
     e.field("dx", relative, default: 0pt),
     e.field("dy", relative, default: 0pt),
     e.field(
@@ -69,5 +69,5 @@
 
 
 
-#let xlabel = label
-#let ylabel = label.with(angle: -90deg)
+#let xlabel = label.with(kind: "x")
+#let ylabel = label.with(angle: -90deg, kind: "y")
