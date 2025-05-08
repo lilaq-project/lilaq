@@ -478,7 +478,7 @@
     }
 
     
-    if it.legend != none and legend-entries.len() > 0 {
+    if it.legend != none and (legend-entries.len() > 0 or e.eid(it.legend) == e.eid(lq-legend)) {
       let (legend-content, legend-bounds) = _place-legend-with-bounds(it.legend, legend-entries, e-get)
 
       artists.push((content: legend-content, z: e-get(lq-legend).z-index))
