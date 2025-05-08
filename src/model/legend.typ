@@ -18,8 +18,7 @@
 /// #link("tutorials/legend")[legend tutorial] for more details. 
 #let legend(
 
-  /// The items to place in the legend. Items are tuples of a 
-  /// plot preview image and the corresponding label. This field is 
+  /// The items to place in the legend. This field is 
   /// filled automatically by @diagram. 
   /// -> array
   ..children,
@@ -86,7 +85,7 @@
     inset: it.inset,
     fill: it.fill,
     radius: it.radius,
-    table(..it.children.join())
+    table(..it.children)
   ),
 
   fields: (
@@ -134,7 +133,7 @@
   }
 
   if e.eid(my-legend) != e.eid(legend) {
-    my-legend = legend(..legend-entries, ..my-legend)
+    my-legend = legend(..legend-entries.join(), ..my-legend)
   }
 
   let pos = get-settable-field(legend, my-legend, "position")
