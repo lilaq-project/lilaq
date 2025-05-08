@@ -219,7 +219,6 @@
   if x1 < x0 {
     (x1, x0) = (x0, x1)
   }
-  // let dx = x1 - x0
 
   let step
   let exponent
@@ -252,7 +251,6 @@
 
   let num-ticks = fit-down(x1 - x0-offset, tick-distance, offset: precision-offset) - fit-up(x0 - x0-offset, tick-distance, offset: precision-offset) + 1
 
-  // let tt = range(calc.min(max-ticks, num-ticks)).map(x => first-tick + x * tick-distance).map(x=>x/calc.pow(10., exponent))
 
 
   return (
@@ -456,7 +454,7 @@
     )
     ticks += log-ticks.ticks.map(tick => -tick).rev()
   }
-  if x0 < threshold and x1 > -threshold { // x0 > threshold or x1 < -treshold
+  if x0 < threshold and x1 > -threshold { 
     let x0-log = calc.max(x0, -threshold + 1e-9) 
     let x1-log = calc.min(x1, threshold - 1e-9)
     let f = (transform(x1-log) - transform(x0-log)) / (b - a)
