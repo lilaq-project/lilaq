@@ -175,6 +175,14 @@
   set curve(stroke: .7pt)
   set line(stroke: .7pt)
 
+
+  // show: e.show_(
+  //   lq-label.with(kind: "y"), 
+  //   it => {
+  //     set rotate(-90deg)
+  //     it
+  //   }
+  // )
   // Either a plot object or a dict (axis-id: int, plot: dict). 
   let plots = () 
   // solely used for computing limits
@@ -504,8 +512,8 @@
     e.field("legend", e.types.option(e.types.union(dictionary, lq-legend)), default: (:)),
     e.field("xlim", e.types.wrap(e.types.union(auto, array), fold: none), default: auto),
     e.field("ylim", e.types.wrap(e.types.union(auto, array), fold: none), default: auto),
-    e.field("xlabel", e.types.union(lq-label, str, content, none), default: none),
-    e.field("ylabel", e.types.union(lq-label, str, content, none), default: none),
+    e.field("xlabel", e.types.option(e.types.union(lq-label, str, content)), default: none),
+    e.field("ylabel", e.types.option(e.types.union(lq-label, str, content)), default: none),
     e.field("grid", e.types.union(auto, none, dictionary, stroke, color, length), default: auto),
     e.field("xscale", e.types.union(str, dictionary), default: "linear"),
     e.field("yscale", e.types.union(str, dictionary), default: "linear"),
