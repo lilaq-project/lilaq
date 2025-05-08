@@ -1,6 +1,7 @@
-#import "ticking.typ"
-#import "components/axis.typ": draw-axis, _axis-compute-limits, yaxis
-#import "scale.typ": *
+#import "/lilaq/src/algorithm/ticking.typ": *
+#import "/lilaq/src/model/axis.typ": draw-axis, _axis-compute-limits, yaxis
+#import "../src/logic/scale.typ": *
+#import "../src/logic/transform.typ": create-trafo
 
 #set text(size: 8pt)
 
@@ -22,11 +23,11 @@
     axis.transform = y => length * (1 - normalized-y-trafo(y))
   }
   axis.lim = (x0, x1)
-  let tick-info = ticking.locate-ticks-linear(x0, x1, num-ticks-suggestion: 6)
+  let tick-info = locate-ticks-linear(x0, x1, num-ticks-suggestion: 6)
   let ticks = tick-info.ticks
-  let minor-ticks = ticking.locate-subticks-linear(x0, x1, ..tick-info)
+  let minor-ticks = locate-subticks-linear(x0, x1, ..tick-info)
   
-  let (tick-labels, exp, offset) = ticking.format-ticks-linear(tick-info, exponent: exponent, offset: offset)
+  let (tick-labels, exp, offset) = format-ticks-linear(tick-info, exponent: exponent, offset: offset)
 
 
 
@@ -140,26 +141,26 @@ Test auto exponent
 #test-axis(0, .0001, ax)
 #test-axis(0, 1e-20, ax)
 
-// #assert.eq(discretize-up(1.2, 2, -1), 1.2)
-// #assert.eq(discretize-down(1.2, 2, -1), 1.2)
-// #assert.eq(discretize-up(0.1, 2, -2), 0.1)
-// // #assert.eq(discretize-down(1.2, 2, -10), 1.2)
-// #assert.eq(discretize-down(0.23456789, 5, -8), 0.23456785)
-// #assert.eq(discretize-up(0.23456789, 5, -8), 0.2345679)
-// #assert.eq(discretize-down(2345.23, 2, -2), 2345.22)
-// #assert.eq(discretize-down(2345.23, 2, -1), 2345.2)
-// #assert.eq(discretize-down(2345.23, 2, 0), 2344)
-// #assert.eq(discretize-down(2345.23, 2, 1), 2340)
-// #assert.eq(discretize-down(2345.23, 2, 2), 2200)
-// #assert.eq(discretize-down(2345.23, 2, 3), 2000)
-// #assert.eq(discretize-up(2345.23, 2, 1), 2360)
-// #assert.eq(discretize-up(2345.23, 2, 0), 2346)
-// #assert.eq(0.2, 0.4/2)
-// #assert.eq(discretize-down(34, 5), 30)
-// #assert.eq(discretize-down(1015, 11), 1012)
-// #assert.eq(discretize-down(10153823420, 1000), 10153823000)
+#assert.eq(discretize-up(1.2, 2, -1), 1.2)
+#assert.eq(discretize-down(1.2, 2, -1), 1.2)
+#assert.eq(discretize-up(0.1, 2, -2), 0.1)
+#assert.eq(discretize-down(1.2, 2, -10), 1.2)
+#assert.eq(discretize-down(0.23456789, 5, -8), 0.23456785)
+#assert.eq(discretize-up(0.23456789, 5, -8), 0.2345679)
+#assert.eq(discretize-down(2345.23, 2, -2), 2345.22)
+#assert.eq(discretize-down(2345.23, 2, -1), 2345.2)
+#assert.eq(discretize-down(2345.23, 2, 0), 2344)
+#assert.eq(discretize-down(2345.23, 2, 1), 2340)
+#assert.eq(discretize-down(2345.23, 2, 2), 2200)
+#assert.eq(discretize-down(2345.23, 2, 3), 2000)
+#assert.eq(discretize-up(2345.23, 2, 1), 2360)
+#assert.eq(discretize-up(2345.23, 2, 0), 2346)
+#assert.eq(0.2, 0.4/2)
+#assert.eq(discretize-down(34, 5, 0), 30)
+#assert.eq(discretize-down(1015, 11, 0), 1012)
+#assert.eq(discretize-down(10153823420, 1000, 0), 10153823000)
 
-// #assert.eq(discretize-up(34, 5), 35)
-// #assert.eq(discretize-up(1015, 11), 1023)
-// #assert.eq(discretize-up(10153823420, 1000), 10153824000)
+#assert.eq(discretize-up(34, 5, 0), 35)
+#assert.eq(discretize-up(1015, 11, 0), 1023)
+#assert.eq(discretize-up(10153823420, 1000, 0), 10153824000)
 
