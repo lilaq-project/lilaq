@@ -42,19 +42,21 @@
   show: prepare-mark.with(
     func: plot.style.mark, 
   )
-  set mark(stroke: plot.style.stroke)
+  set mark(stroke: plot.style.stroke) if plot.style.stroke != auto
 
   for (i, p) in points.enumerate() {
     let p = transform(..p)
     
     let size = get-mark-size(i)
     let mark-color = get-mark-color(i)
+    let mark-fill-color = mark-color.transparentize(100% - get-alpha(i))
     
-    let options = (
-      fill: mark-color.transparentize(100% - get-alpha(i))
-    )
+    let options = (:)
+    if mark-fill-color != _auto {
+      options.fill = mark-fill-color
+    }
     if size != auto { options.inset = size }
-    if plot.style.stroke != none { options.stroke = merge-strokes(plot.style.stroke, mark-color) }
+    if plot.style.stroke not in (none, auto) { options.stroke = merge-strokes(plot.style.stroke, mark-color) }
     
     place(dx: p.at(0), dy: p.at(1), mark(..options))
   }
@@ -143,7 +145,7 @@
 
   /// Mark stroke. TODO: need to get rid of it
   /// -> stroke
-  stroke: 1pt,
+  stroke: auto,
 
   /// The fill opacity. TODO: maybe get rid of it, there is already color. 
   /// -> ratio | array
