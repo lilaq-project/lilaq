@@ -160,7 +160,17 @@
 /// Locate ticks manually on an axis with range $[x_0, x_1]$.
 #let locate-ticks-manual(
   x0, x1, ticks: (), ..args
-) = (ticks: ticks.filter(x => x0 <= x and x <= x1))
+) = {
+  if type(ticks.at(0, default: 0)) == array {
+    let filtered-ticks = ticks.filter(((x, label)) => x0 <= x and x <= x1)
+    (
+      ticks: filtered-ticks.map(x => x.at(0)), 
+      labels: filtered-ticks.map(x => x.at(1))
+    )
+  } else {
+    (ticks: ticks.filter(x => x0 <= x and x <= x1))
+  }
+}
 
 
 #assertations.approx(locate-ticks-manual(2, 200, ticks: (3, 4, 5, 6)).ticks, (3, 4, 5, 6))
@@ -699,10 +709,13 @@
 }
 
 #let format-ticks-manual(
-  tick-info, labels: (), ..args
+  tick-info, ..args
 ) = {
-  assert(tick-info.ticks.len() == labels.len(), message: "When providing manual ticks and labels, the number of ticks and labels needs to match. ")
-  return (labels, 0, 0)
+  assert(
+    "labels" in tick-info, message: "No labels given to `format-ticks-manual`"
+  )
+
+  return (tick-info.labels, 0, 0)
 }
 
 

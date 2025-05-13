@@ -242,9 +242,9 @@
       }
     } else if type(ticks) == array {
       if ticks.len() > 0 and type(ticks.first()) == array {
-        let (ticks, labels) = array.zip(..ticks)
+        // let (ticks, labels) = array.zip(..ticks)
         locate-ticks = ticking.locate-ticks-manual.with(ticks: ticks)
-        format-ticks = ticking.format-ticks-manual.with(labels: labels) 
+        format-ticks = ticking.format-ticks-manual 
       } else {
         locate-ticks = ticking.locate-ticks-manual.with(ticks: ticks)
       }
