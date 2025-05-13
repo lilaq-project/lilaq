@@ -63,7 +63,7 @@
 
   display: it => e.get(e-get => {
     let angle = if it.align in (top, bottom) { 90deg } else { 0deg }
-    let factor = if it.sub { (it.shorten-sub / 100%) } else { 1 }
+    let factor = if it.sub { 1 - (it.shorten-sub / 100%) } else { 1 }
     let length = (it.inset + it.outset) * factor
     
     let stroke = it.stroke
