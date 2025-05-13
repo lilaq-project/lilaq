@@ -26,13 +26,13 @@
   stroke: auto,
 
   /// How much to shorten sub ticks compared to regular ticks. 
-  /// -> float
-  shorten-sub: 0.5,
+  /// -> ratio
+  shorten-sub: 50%,
 
   /// Where to align the tick. For example, if set to `right`, the tick label is
-  /// shown to the left of the tick, aligning at its right side. Ticks on a 
-  /// $y$-axis on the left side of the diagram will typically be aligned on the
-  /// right. 
+  /// shown to the left of the tick, aligning at its right side. For example,  
+  /// ticks on a $y$-axis on the left side of the diagram will typically be 
+  /// aligned on the right. 
   /// -> left | top | right | bottom
   align: right,
 
@@ -63,7 +63,7 @@
 
   display: it => e.get(e-get => {
     let angle = if it.align in (top, bottom) { 90deg } else { 0deg }
-    let factor = if it.sub { it.shorten-sub } else { 1 }
+    let factor = if it.sub { (it.shorten-sub / 100%) } else { 1 }
     let length = (it.inset + it.outset) * factor
     
     let stroke = it.stroke
@@ -91,7 +91,7 @@
     e.field("label", e.types.any, default: none),
     e.field("align", e.types.wrap(alignment, fold: none), default: right),
     e.field("stroke", e.types.smart(stroke), default: auto),
-    e.field("shorten-sub", float, default: 0.5),
+    e.field("shorten-sub", ratio, default: 50%),
     e.field("pad", length, default: 0.5em),
     e.field("inset", length, default: 3pt),
     e.field("outset", length, default: 0pt),

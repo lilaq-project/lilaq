@@ -574,7 +574,7 @@
     
     let align = position.inv()
     let pad = e-get(lq-tick).pad
-    let factor = if sub { e-get(lq-tick).shorten-sub } else { 1 }
+    let factor = if sub { (e-get(lq-tick).shorten-sub / 100%) } else { 1 }
     let outset = e-get(lq-tick).outset * factor
     let shorten-sub = e-get(lq-tick).shorten-sub
     let length = e-get(lq-tick).inset * factor + outset
