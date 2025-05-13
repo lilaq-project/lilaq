@@ -131,17 +131,34 @@
 // point data pt and size data coords -> makes no sense
 
 
-#let convert-rect(x, y, width, height, transform) = {
-  // at the end we only want lengths (or relative lengths)!
+#let convert-rect(
+  x, 
+  y, 
+  width, 
+  height, 
+  transform,
+  align: top + left
+) = {
+
+  // at the end we only want (relative) lengths
+
   let (x1, y1)  = transform-point(x, y, transform)
   if type(width) in (int, float) {
-    assert(type(x) in (int, float), message: "Setting the width in terms of data coordinates makes no sense if the origin x coordinate is not in data coordinates")
+    assert(type(x) in (int, float), message: "Setting the width in terms of data coordinates is only allowed if the origin x coordinate is given in data coordinates")
     width = transform(x + width, 1).at(0) - transform(x, 1).at(0)
   }
+
   if type(height) in (int, float) {
-    assert(type(y) in (int, float), message: "Setting the height in terms of data coordinates makes no sense if the origin y coordinate is not in data coordinates")
+    assert(type(y) in (int, float), message: "Setting the height in terms of data coordinates is only allowed if the origin y coordinate is given in data coordinates")
     height = transform(1, y + height).at(1) - transform(1, y).at(1) 
   }
+
+  if align.x == right { x1 -= width }
+  else if align.x == center { x1 -= width / 2 }
+  
+  if align.y == bottom { y1 -= height }
+  else if align.y == horizon { y1 -= height / 2 }
+
 
   return (x1, width, y1, height)
 }

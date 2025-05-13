@@ -1,6 +1,7 @@
 #import "../assertations.typ"
 #import "../logic/limits.typ": compute-primitive-limits
 #import "../logic/process-coordinates.typ": all-data-coordinates, convert-rect
+#import "../process-styles.typ": twod-ify-alignment
 
 
 /// Plots a rectangle or square with origin `(x, y)`. The origin coordinates as well
@@ -40,6 +41,10 @@
   /// The rectangle's height. 
   /// -> auto | float | relative
   height: auto, 
+
+  /// How to align the rectangle at the origin. 
+  /// -> alignment
+  align: left + top,
 
   /// How to fill the rectangle.  
   /// -> none | color | gradient | tiling
@@ -94,7 +99,14 @@
           fill: fill, stroke: stroke, radius: radius
         )
       }
-      let (x1, width, y1, height) = convert-rect(x, y, width, height, transform)
+
+      let (x1, width, y1, height) = convert-rect(
+        x, y, 
+        width, height, 
+        transform, 
+        align: twod-ify-alignment(align)
+      )
+
       place(dx: x1, dy: y1, 
         std.rect(
           width: width, 

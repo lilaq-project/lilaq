@@ -1,6 +1,7 @@
 #import "../assertations.typ"
 #import "../logic/limits.typ": compute-primitive-limits
 #import "../logic/process-coordinates.typ": all-data-coordinates, convert-rect
+#import "../process-styles.typ": twod-ify-alignment
 
 
 /// Plots an ellipse or circle with origin `(x, y)`. The origin coordinates as well
@@ -42,6 +43,10 @@
   /// The height of the ellipse. 
   /// -> auto | float | relative
   height: auto, 
+
+  /// How to align the ellipse at the origin. 
+  /// -> alignment
+  align: left + top,
 
   /// How to fill the ellipse.  
   /// -> none | color | gradient | tiling
@@ -90,7 +95,13 @@
         )
       }
 
-      let (x1, width, y1, height) = convert-rect(x, y, width, height, transform)
+      let (x1, width, y1, height) = convert-rect(
+        x, y, 
+        width, height, 
+        transform, 
+        align: twod-ify-alignment(align)
+      )
+
       place(dx: x1, dy: y1, 
         std.ellipse(
           width: width, 
