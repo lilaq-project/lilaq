@@ -23,6 +23,7 @@
   }))
 }
 
+#assert.eq(estimate-significant-digits((1,1.25)), 2)
 #assert.eq(estimate-significant-digits((1,)), 0)
 #assert.eq(estimate-significant-digits((2.4, 1)), 1)
 #assert.eq(estimate-significant-digits((2.4, 1.23424), threshold: 5), 5)
@@ -252,8 +253,12 @@
 
   let num-ticks = fit-down(x1 - x0-offset, tick-distance, offset: precision-offset) - fit-up(x0 - x0-offset, tick-distance, offset: precision-offset) + 1
 
-
-
+  let significant-digits = if calc.round(step) == step {
+    -calc.floor(calc.log(tick-distance))
+  } else {
+    estimate-significant-digits((0, tick-distance))
+  }
+  
   return (
     ticks: range(calc.min(max-ticks, num-ticks)).map(x => first-tick + x * tick-distance),
     tick-distance: tick-distance,
@@ -261,10 +266,11 @@
     // format-ticks-linear), because right now we have a lot of information. 
     exponent: exponent, // "Ideal" base-10 exponent to maybe factorize from the ticks. 
     offset: axis-offset, // "Ideal" offset to maybe subtract from the ticks. 
-    significant-digits: -calc.floor(calc.log(tick-distance)), 
+    significant-digits: significant-digits
   )
 }
 
+#assert.eq(locate-ticks-linear(0, 1, tick-distance: .25).ticks, (0, 0.25, .5, .75, 1))
 #assert.eq(locate-ticks-linear(-4, 19, tick-distance: auto).ticks, (0, 5, 10, 15))
 #assert.eq(locate-ticks-linear(-4, 19, tick-distance: 5).ticks, (0, 5, 10, 15))
 
