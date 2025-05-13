@@ -159,7 +159,8 @@
 /// Locate ticks manually on an axis with range $[x_0, x_1]$.
 #let locate-ticks-manual(
   x0, x1, ticks: (), ..args
-) = (ticks: ticks)//.filter(x => x0 <= x and x <= x1))
+) = (ticks: ticks.filter(x => x0 <= x and x <= x1))
+
 
 #assertations.approx(locate-ticks-manual(2, 200, ticks: (3, 4, 5, 6)).ticks, (3, 4, 5, 6))
 
