@@ -236,9 +236,9 @@
   if ticks != auto {
     if type(ticks) == dictionary {
       assert("ticks" in ticks, message: "When passing a dictionary for `ticks`, you need to provide the keys \"ticks\" and optionally \"labels\"")
-      locate-ticks = ticking.locate-ticks-manual.with(..ticks)
+      locate-ticks = ticking.locate-ticks-manual.with(ticks: ticks.ticks.zip(ticks.labels))
       if "labels" in ticks {
-        format-ticks = ticking.format-ticks-manual.with(labels: ticks.labels) 
+        format-ticks = ticking.format-ticks-manual 
       }
     } else if type(ticks) == array {
       if ticks.len() > 0 and type(ticks.first()) == array {
