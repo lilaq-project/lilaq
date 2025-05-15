@@ -163,7 +163,7 @@
         columns: 2, 
         stroke: none, 
         inset: 2pt, 
-        align: horizon + left
+        align: horizon + start
       )
       set table.cell(breakable: false)
       my-legend
