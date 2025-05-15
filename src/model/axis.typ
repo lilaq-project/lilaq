@@ -405,14 +405,13 @@
   }
 
 
+  if axis.inverted {
+    (x0, x1) = (x1, x0)
+  }
 
   let k0 = (axis.scale.transform)(x0)
   let k1 = (axis.scale.transform)(x1)
   let D = k1 - k0
-
-  if axis.inverted {
-    (x0, x1) = (x1, x0)
-  }
 
   if not tight0 {
     x0 = (axis.scale.inverse)(k0 - D * lower-margin/100%)
