@@ -303,7 +303,7 @@
     inset: 0pt, stroke: none, fill: it.fill,
     {
     set align(top + left) // sometimes alignment is messed up
-
+    set place(left)
 
     let update-bounds = update-bounds.with(width: it.width, height: it.height)
     
