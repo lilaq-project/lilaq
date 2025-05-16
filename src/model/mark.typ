@@ -1,4 +1,4 @@
-#import "@preview/tiptoe:0.3.0": arc
+#import "@preview/tiptoe:0.3.1": arc
 
 
 /// A mark for a plot. Refer to the #link("tutorials/marks")[mark tutorial] for

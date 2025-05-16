@@ -1,7 +1,7 @@
 #set page(width: auto, height: auto, margin: 5pt)
 #import "/src/lilaq.typ" as lq
 
-#import "@preview/tiptoe:0.3.0"
+#import "@preview/tiptoe:0.3.1"
 
 #let schoolbook-style = it => {
   let filter(value, distance) = value != 0 and distance >= 5pt

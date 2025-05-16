@@ -1,4 +1,4 @@
-#import "@preview/tiptoe:0.3.0"
+#import "@preview/tiptoe:0.3.1"
 #import "../typing.typ": *
 
 #let schoolbook = it => {

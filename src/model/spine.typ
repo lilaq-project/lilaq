@@ -1,5 +1,5 @@
 #import "../libs/elembic/lib.typ" as e
-#import "@preview/tiptoe:0.3.0"
+#import "@preview/tiptoe:0.3.1"
 
 
 /// The spine of a diagram axis (the line drawn along the axis). 
