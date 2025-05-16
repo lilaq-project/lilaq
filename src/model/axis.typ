@@ -454,11 +454,31 @@
     if axis.locate-ticks != none {
       let tick-info = (axis.locate-ticks)(x0, x1, ..axis.tick-args)
       ticks = tick-info.ticks
-      (tick-labels, exp, offset) = match(
-        axis.format-ticks,
-        none, (none, 0, 0),
-        default: () => (axis.format-ticks)(tick-info, exponent: axis.exponent, offset: axis.offset, auto-exponent-threshold: axis.auto-exponent-threshold),
-      )
+      let format-result = if axis.format-ticks != none {
+        
+        (axis.format-ticks)(
+          tick-info, 
+          exponent: axis.exponent, 
+          offset: axis.offset, 
+          auto-exponent-threshold: axis.auto-exponent-threshold
+        )
+      }
+
+
+      if type(format-result) == array {
+        tick-labels = format-result
+      } else if type(format-result) == dictionary {
+        tick-labels = format-result.labels
+        if "exponent" in format-result {
+          exp = format-result.exponent
+        }
+        if "offset" in format-result {
+          offset = format-result.offset
+        }
+      }
+      if exp == auto { exp = 0 }
+      if offset == auto { offset = 0 }
+
       
 
       if axis.locate-subticks != none {

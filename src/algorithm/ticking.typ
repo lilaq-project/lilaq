@@ -708,6 +708,9 @@
   )
 }
 
+
+
+
 #let format-ticks-manual(
   tick-info, ..args
 ) = {
@@ -715,7 +718,7 @@
     "labels" in tick-info, message: "No labels given to `format-ticks-manual`"
   )
 
-  return (tick-info.labels, 0, 0)
+  tick-info.labels
 }
 
 
@@ -723,9 +726,7 @@
 #let format-ticks-naive(
   ticks-info,
   ..args 
-) = {
-  return (ticks-info.ticks.map(str), 0, 0)
-}
+) = ticks-info.ticks.map(str)
 
 
 
@@ -733,11 +734,13 @@
   value, 
   e: none, 
   digits: auto, 
-  base: 10, omit-unit-mantissa: true
+  base: 10, 
+  omit-unit-mantissa: true
 ) = {
   if digits != auto {
     digits = calc.max(0, digits)
   }
+  if e == 0 { e = none }
   if e != none { 
     e = str(e)
   }
@@ -817,12 +820,17 @@
   
   let labels = ticks
    .map(calc.round.with(digits: significant-digits))
-   .map(default-generate-tick-label.with(
-     exponent: inline-exponent,
+   .map(num.with(
+     e: inline-exponent,
      digits: significant-digits
    )
   )
-  return (labels, additional-exponent, offset)
+
+  return (
+    labels: labels, 
+    exponent: additional-exponent, 
+    offset: offset
+  )
 }
 
 
@@ -839,16 +847,22 @@
   if "linear" in tick-info and tick-info.linear {
     return format-ticks-linear(tick-info, exponent: exponent, auto-exponent-threshold, auto-exponent-threshold)
   }
+
   if base-label == auto { 
     if base == calc.e { base-label = $e$}
     else { base-label = base }
   }
+
   let ticks = tick-info.ticks
+  
   if exponent == auto {
     let num = num.with(1, omit-unit-mantissa: true, base: base-label)
-    return (ticks.map(x => num(e: calc.round(calc.log(x, base: base), digits: round-exponent-digits))), 0, 0)
+
+    ticks.map(x => 
+      num(e: calc.round(calc.log(x, base: base), digits: round-exponent-digits))
+    )
   } else {
-    return (ticks.map(num), 0, 0)
+    ticks.map(num)
   }
 }
 
