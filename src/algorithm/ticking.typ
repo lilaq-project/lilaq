@@ -712,7 +712,7 @@
 
 
 #let format-ticks-manual(
-  tick-info, ..args
+  ticks, tick-info: (:), ..args
 ) = {
   assert(
     "labels" in tick-info, message: "No labels given to `format-ticks-manual`"
@@ -724,9 +724,9 @@
 
 
 #let format-ticks-naive(
-  ticks-info,
+  ticks,
   ..args 
-) = ticks-info.ticks.map(str)
+) = ticks.map(str)
 
 
 
@@ -773,7 +773,8 @@
 
 
 #let format-ticks-linear(
-  ticks-info,     // dictionary
+  ticks,
+  tick-info: (:),     // dictionary
   exponent: auto, // auto | int | "inline"
   offset: auto,   // auto | int | float
   auto-exponent-threshold: 3,
@@ -781,7 +782,7 @@
 ) = {
 
   if offset == auto {
-    offset = ticks-info.at("offset", default: 0)
+    offset = tick-info.at("offset", default: 0)
   } else {
     assert(type(offset) in (int, float), message: "Offsets need to be of integer or float type")
   }
@@ -789,7 +790,7 @@
   let additional-exponent = 0 // extra exp that will be shown on the axis
   let inline-exponent = 0     // extra exp that is shown for each tick
 
-  let inherited-exponent = ticks-info.at("exponent", default: 0)
+  let inherited-exponent = tick-info.at("exponent", default: 0)
   
   if exponent == none { exponent = 0 }
   if exponent == auto {
@@ -808,10 +809,10 @@
 
   let preapplied-exponent = inline-exponent + additional-exponent
   let preapplied-factor = 1 / pow10(preapplied-exponent)
-  let ticks = ticks-info.ticks.map(x => (x - offset) * preapplied-factor)
+  let ticks = ticks.map(x => (x - offset) * preapplied-factor)
 
   
-  let significant-digits = ticks-info.at("significant-digits", default: none)
+  let significant-digits = tick-info.at("significant-digits", default: none)
   if significant-digits == none {
     significant-digits = estimate-significant-digits(ticks)
   } else {
@@ -835,7 +836,8 @@
 
 
 #let format-ticks-log(
-  tick-info, 
+  ticks,
+  tick-info: (:), 
   base: 10,
   exponent: auto, 
   auto-exponent-threshold: 3,
@@ -845,7 +847,7 @@
 ) = {
   // Sometimes the log ticker resorts to linear ticking and then this is better
   if "linear" in tick-info and tick-info.linear {
-    return format-ticks-linear(tick-info, exponent: exponent, auto-exponent-threshold, auto-exponent-threshold)
+    return format-ticks-linear(ticks, tick-info: tick-info, exponent: exponent, auto-exponent-threshold, auto-exponent-threshold)
   }
 
   if base-label == auto { 
@@ -853,7 +855,6 @@
     else { base-label = base }
   }
 
-  let ticks = tick-info.ticks
   
   if exponent == auto {
     let num = num.with(1, omit-unit-mantissa: true, base: base-label)

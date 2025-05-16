@@ -438,7 +438,7 @@
 ) = {
   let ticks = ()
   let tick-labels
-  let subticks = (ticks: ())
+  let subticks = ()
   let subtick-labels
   let (exp, offset) = (axis.exponent, axis.offset)
 
@@ -450,52 +450,65 @@
   )
   let (x0, x1) = axis.lim
 
-  if x0 != none {
-    if axis.locate-ticks != none {
-      let tick-info = (axis.locate-ticks)(x0, x1, ..axis.tick-args)
-      ticks = tick-info.ticks
-      let format-result = if axis.format-ticks != none {
-        
-        (axis.format-ticks)(
-          tick-info, 
-          exponent: axis.exponent, 
-          offset: axis.offset, 
-          auto-exponent-threshold: axis.auto-exponent-threshold
-        )
-      }
 
+  if axis.locate-ticks != none {
 
-      if type(format-result) == array {
-        tick-labels = format-result
-      } else if type(format-result) == dictionary {
-        tick-labels = format-result.labels
-        if "exponent" in format-result {
-          exp = format-result.exponent
-        }
-        if "offset" in format-result {
-          offset = format-result.offset
-        }
-      }
-      if exp == auto { exp = 0 }
-      if offset == auto { offset = 0 }
-
-      
-
-      if axis.locate-subticks != none {
-        subticks = (axis.locate-subticks)(x0, x1, ..tick-info, ..axis.subtick-args)
-        subtick-labels = match(
-        axis.format-subticks,
-        none, none,
-        default: () => (axis.format-subticks)(ticks: subticks, exponent: axis.exponent, offset: axis.offset).at(0),
+    let tick-result = (axis.locate-ticks)(x0, x1, ..axis.tick-args)
+    ticks = tick-result.ticks
+    
+    let format-result = if axis.format-ticks != none {
+      (axis.format-ticks)(
+        tick-result.ticks,
+        tick-info: tick-result, 
+        exponent: axis.exponent, 
+        offset: axis.offset, 
+        auto-exponent-threshold: axis.auto-exponent-threshold
       )
+    }
+
+    if type(format-result) == array {
+      tick-labels = format-result
+    } else if type(format-result) == dictionary {
+      assertations.assert-dict-keys(
+        format-result,
+        mandatory: ("labels",),
+        optional: ("offset", "exponent")
+      )
+      tick-labels = format-result.labels
+      if "exponent" in format-result {
+        exp = format-result.exponent
       }
-    } 
-  }
+      if "offset" in format-result {
+        offset = format-result.offset
+      }
+    } else if format-result != none {
+      assert(
+        false, 
+        message: "The tick formatter must either return an array of labels or a dictionary with the keys \"labels\", \"exponent\", and \"offset\". Found " + repr(format-result)
+      )
+    }
+    if exp == auto { exp = 0 }
+    if offset == auto { offset = 0 }
+
+    if axis.locate-subticks != none {
+      let subtick-result = (axis.locate-subticks)(x0, x1, ..tick-result, ..axis.subtick-args)
+
+      subticks = subtick-result.ticks
+      subtick-labels = if axis.format-subticks != none {
+        (axis.format-subticks)(
+          ticks, 
+          tick-info: subtick-result,
+          exponent: axis.exponent, 
+          offset: axis.offset
+        ).labels
+      }
+    }
+  } 
 
   return (
     ticks: ticks,
     tick-labels: tick-labels,
-    subticks: subticks.ticks,
+    subticks: subticks,
     subtick-labels: subtick-labels,
     exp: exp,
     offset: offset
