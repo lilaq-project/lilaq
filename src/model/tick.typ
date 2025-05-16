@@ -118,7 +118,12 @@
 
   /// Content to show in the label. 
   /// -> content
-  body
+  body,
+
+  /// Whether this is a label for a subtick. 
+  /// -> bool
+  sub: false,
+
 
 ) = {}
 
@@ -134,5 +139,6 @@
 
   fields: (
     e.field("body", content, required: true),
+    e.field("sub", bool, default: false),
   )
 )
