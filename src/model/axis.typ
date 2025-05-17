@@ -449,6 +449,16 @@
     "y", length / (2 * em)
   )
   let (x0, x1) = axis.lim
+  
+
+  if x1 < x0 {
+    (x1, x0) = (x0, x1)
+  } else if x0 == x1 {
+    assert(
+      false, 
+      message: "Cannot generate ticks for empty range [" + str(x0) +", " + str(x1) + "]"
+    )
+  }
 
 
   if axis.locate-ticks != none {
