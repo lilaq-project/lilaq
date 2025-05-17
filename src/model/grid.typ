@@ -106,7 +106,7 @@
 
   fields: (
     e.field("ticks", array, required: true),
-    e.field("sub", bool, required: true),
+    e.field("sub", bool, default: false),
     e.field("kind", str, default: "x"),
     e.field("stroke", e.types.option(stroke), default: 0.5pt + luma(80%)),
     e.field("stroke-sub", auto-none-stroke, default: none),

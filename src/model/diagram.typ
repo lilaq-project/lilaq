@@ -315,25 +315,25 @@
         let y-transform = tick => transform(1, tick).at(1)
         lq-grid(
           axis-info.x.ticking.subticks.map(x-transform),
-          true,
+          sub: true,
           kind: "x",
           ..process-grid-arg(it.grid)
         )
         lq-grid(
           axis-info.y.ticking.subticks.map(y-transform),
-          true,
+          sub: true,
           kind: "y",
           ..process-grid-arg(it.grid)
         )
         lq-grid(
           axis-info.x.ticking.ticks.map(x-transform),
-          false,
+          sub: false,
           kind: "x",
           ..process-grid-arg(it.grid)
         )
         lq-grid(
           axis-info.y.ticking.ticks.map(y-transform),
-          false,
+          sub: false,
           kind: "y",
           ..process-grid-arg(it.grid)
         )
