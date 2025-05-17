@@ -496,11 +496,14 @@
       subticks = subtick-result.ticks
       subtick-labels = if axis.format-subticks != none {
         (axis.format-subticks)(
-          ticks, 
+          subticks, 
           tick-info: subtick-result,
           exponent: axis.exponent, 
           offset: axis.offset
-        ).labels
+        )
+      }
+      if type(subtick-labels) == dictionary {
+        subtick-labels = subtick-labels.labels
       }
     }
   } 
