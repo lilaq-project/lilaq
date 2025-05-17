@@ -4,19 +4,32 @@
 #import "@preview/zero:0.3.3"
 
 
-/// Estimates the number of significant digits from an array of values,
-/// i.e., the number of decimals places 
-#let estimate-significant-digits(values, threshold: 3) = {
+/// Estimates the maximum number of significant digits from
+/// an array of values. 
+#let estimate-significant-digits(
+
+  /// An array of flot values. 
+  /// -> array
+  values, 
+
+  /// 
+  threshold: 3
+
+) = {
   let range = calc.max(..values) - calc.min(..values)
   if range == 0 { range = 1 }
+
   let range-exponent = calc.floor(calc.log(range))
   let delta = calc.pow(10., range-exponent - threshold)
   let guess = calc.max(0, threshold - range-exponent)
-  calc.max(0, ..values.map(val => {
+
+  calc.max(0, ..values.map(value => {
     let g = guess
     while g >= 0 {
-      let p = calc.abs(val - calc.round(val, digits: g))
-      if calc.abs(val - calc.round(val, digits: g)) > delta { break }
+      let p = calc.abs(value - calc.round(value, digits: g))
+      if calc.abs(value - calc.round(value, digits: g)) > delta { 
+        break 
+      }
       g -= 1
     }
     g + 1
@@ -25,6 +38,7 @@
 
 #assert.eq(estimate-significant-digits((1,1.25)), 2)
 #assert.eq(estimate-significant-digits((1,)), 0)
+#assert.eq(estimate-significant-digits((1.001,1.002)), 3)
 #assert.eq(estimate-significant-digits((2.4, 1)), 1)
 #assert.eq(estimate-significant-digits((2.4, 1.23424), threshold: 5), 5)
 #assert.eq(estimate-significant-digits((2.4, 1.324)), 3)
@@ -35,8 +49,10 @@
 #assert.eq(estimate-significant-digits((-334.3, 23.2)), 1)
 #assert.eq(estimate-significant-digits((2.4e-10, 1.324e-10)), 13)
 
+/// Finds the nearest step base out of $\{1,2,5,10\}$ given an
+/// arbitrary mantissa in $\{0.1, 1\}$. 
 #let get-best-step(a) = {
-  if a >= 1 {assert(false)}
+  if a >= 1 { assert(false) }
   let b = int(calc.round(calc.log(base: calc.pow(10, 1/3), a * 10)))
   return (1, 2, 5, 10).at(b)
 }
@@ -52,6 +68,8 @@
 #assert.eq(get-best-step(0.8), 10)
 #assert.eq(get-best-step(0.9), 10)
 
+
+
 #let is-close-to(value, target, offset, step) = {
   let eps = 1e-14
   if offset > 0 {
@@ -62,15 +80,15 @@
   return calc.abs(value - target) < eps
 }
 
-/// Returns the smallest number n such that d*n > x
+/// Returns the smallest number n such that $d·n > x$. 
+/// The offset can be used to improve numerical precision and
+/// obtain a better result for extremely large or small numbers. 
 #let fit-up(x, d, offset: 0) = {
   let (div, mod) = divmod(x, d)
   if not is-close-to(mod / d, 0, offset, d) { div += 1 }
   return div
 }
-/// Returns the largest number n such that d*n < x
-/// The offset can be used to improve numerical precision and obtain
-/// a better result for extremely large or small numbers
+/// Returns the largest number n such that $d·n < x$. 
 #let fit-down(x, d, offset: 0) = {
   let (div, mod) = divmod(x, d)
   if is-close-to(mod / d, 1, offset, d) { div += 1 }
@@ -133,33 +151,53 @@
 
 
 #let compute-precision-offset(x0, x1, threshold: 100) = {
-  let dx = x1 - x0
-  let avg = (x1 + x0) * 0.5
-  let offset
-  if calc.abs(avg) / dx < threshold { offset = 0 }
-  else {
-    let avg-exponent = calc.log(calc.abs(avg), base: 10)
-    offset = pow10(calc.floor(avg-exponent))
-    if avg < 0 { offset *= -1 }
+  let range = x1 - x0
+  let average = (x1 + x0) * 0.5
+  let offset = 0
+  if calc.abs(average) / range >= threshold {
+    let average-exponent = calc.log(calc.abs(average), base: 10)
+    offset = pow10(calc.floor(average-exponent))
+    
+    if average < 0 { 
+      offset *= -1 
+    }
   }
   return offset
 }
 
-// Signature
+// Signature for tick locators
 #let locate-ticks(
   x0, x1,  // Input range (may be inverted, i.e. x0 > x1, but not x0 == x1)
-  ..kwargs // We need a sink for unknown (and possible unread) args. 
+  ..args   // We need a sink for unknown (and possible unread) args. 
 ) = {
   return (
     ticks: (), // Returning an array of ticks is mandatory. 
-    ..args // We may return additional args that can be read by the formatter. 
+    ..args     // We may return additional args that can be read by the formatter. 
   )
 }
 
 
-/// Locate ticks manually on an axis with range $[x_0, x_1]$.
+/// Locates ticks manually on an axis with range $[x_0, x_1]$. 
 #let locate-ticks-manual(
-  x0, x1, ticks: (), ..args
+  
+  /// The start of the range to locate ticks for. 
+  /// -> float
+  x0, 
+  
+  /// The end of the range to locate ticks for. 
+  /// -> float
+  x1, 
+
+  /// The manually specified tick locations, 
+  /// - either as an array of `float` locations,
+  /// - or pairs of `(location: float, label: content)`. 
+  /// 
+  /// Tick locations outside the range $[x_0, x_1]$ will be filtered. 
+  /// -> array
+  ticks: (), 
+
+  ..args
+
 ) = {
   if type(ticks.at(0, default: 0)) == array {
     let filtered-ticks = ticks.filter(((x, label)) => x0 <= x and x <= x1)
@@ -173,11 +211,14 @@
 }
 
 
-#assertations.approx(locate-ticks-manual(2, 200, ticks: (3, 4, 5, 6)).ticks, (3, 4, 5, 6))
+#assertations.approx(
+  locate-ticks-manual(2, 200, ticks: (3, 4, 5, 6)).ticks, 
+  (3, 4, 5, 6)
+)
 
 
-/// Locate linear ticks on an axis with range $[x_0, x_1]$. The range may be inverted, i.e., 
-/// $x_0>x_1$ but not $x_0 = x_1$. 
+/// Locates linear ticks on an axis with range $[x_0, x_1]$. The range may be 
+/// inverted, i.e., $x_0 > x_1$ but not $x_0 = x_1$. 
 ///
 /// This function returns a dictionary with the keys
 /// - `ticks`, containing an array of tick positions,
@@ -227,7 +268,10 @@
   ..args
 
 ) = {
-  assert.ne(x0, x1, message: "Start and end of the range to locate ticks on cannot be identical")
+  assert.ne(
+    x0, x1, 
+    message: "Start and end of the range to locate ticks on cannot be identical"
+  )
   if x1 < x0 {
     (x1, x0) = (x0, x1)
   }
@@ -246,7 +290,7 @@
     step = tick-distance / pow10(exponent - 1)
   }
   
-  tick-distance = float(tick-distance)
+  tick-distance = float(tick-distance) // important, calc.quo is a bit inconsistent
   
   let precision-offset = compute-precision-offset(x0, x1)
   let first-tick-first-guess = calc.quo(x0 - precision-offset, tick-distance) * tick-distance
@@ -272,10 +316,12 @@
   return (
     ticks: range(calc.min(max-ticks, num-ticks)).map(x => first-tick + x * tick-distance),
     tick-distance: tick-distance,
+
     // We provide additional args to ease the work of the formatter (in case it is
     // format-ticks-linear), because right now we have a lot of information. 
-    exponent: exponent, // "Ideal" base-10 exponent to maybe factorize from the ticks. 
-    offset: axis-offset, // "Ideal" offset to maybe subtract from the ticks. 
+
+    exponent: exponent, // Ideal base-10 exponent to maybe factorize from the ticks. 
+    offset: axis-offset, // Ideal offset to maybe subtract from the ticks. 
     significant-digits: significant-digits
   )
 }
@@ -316,12 +362,14 @@
 
 
 
-/// Locate linear ticks on a logarithmic axis with range $[x_0, x_1]$. The range may be
-/// inverted, i.e., $x_0>x_1$ but not $x_0 = x_1$. Ticks are placed on powers of the base
-/// or if the range is too large, on every other power of the base (starting with the lower 
-/// limit). In this case, the density of the ticks is determined by `num-ticks-suggestion`. 
-/// This function returns a dictionary with the key `ticks` containing an array of tick
-/// positions. 
+/// Locates linear ticks on a logarithmic axis with range $[x_0, x_1]$. The 
+/// range may be inverted, i.e., $x_0>x_1$ but not $x_0 = x_1$. Ticks are 
+/// placed on powers of the base or if the range is too large, on every other 
+/// power of the base (starting with the lower limit). In this case, the 
+/// density of the ticks is determined by `num-ticks-suggestion`. 
+/// 
+/// This function returns a dictionary with the key `ticks` containing an 
+/// array of tick positions. 
 ///
 /// -> dictionary
 #let locate-ticks-log(
@@ -362,10 +410,14 @@
   ..args
 
 ) = {
-  if x0 > x1 { (x0 ,x1) = (x1, x0) }
+  if x0 > x1 { 
+    (x0, x1) = (x1, x0) 
+  }
+
   let log = calc.log.with(base: base)
-  let g = log(x1) - log(x0)
-  if g < linear-threshold { 
+
+  let log-distance = log(x1) - log(x0)
+  if log-distance < linear-threshold { 
      let tick-info = locate-ticks-linear(x0, x1, ..args) 
      tick-info.linear = true // notify format-ticks-log that this is actually a "linear" ticking
      return tick-info
@@ -373,10 +425,14 @@
   
   let n0 = calc.ceil(log(x0))
   let n1 = calc.floor(log(x1))
-  let step = calc.max(1, int(calc.round((n1 - n0) / (num-ticks-suggestion * density / 100%))))
+  let step = calc.max(
+    1, 
+    int(calc.round((n1 - n0) / (num-ticks-suggestion * density / 100%)))
+  )
   
   (
-    ticks: range(calc.min(n1 - n0 + 1, max-ticks), step: step).map(x => calc.pow(base * 1., x + n0)),
+    ticks: range(calc.min(n1 - n0 + 1, max-ticks), step: step)
+      .map(x => calc.pow(float(base), x + n0)),
   )
 }
 
@@ -390,7 +446,7 @@
 
 
 
-/// Locate linear ticks on a symlog axis with range $[x_0, x_1]$. The range may be
+/// Locates linear ticks on a symlog axis with range $[x_0, x_1]$. The range may be
 /// inverted, i.e., $x_0>x_1$ but not $x_0 = x_1$. Ticks are placed on powers of the base
 /// or if the range is too large, on every other power of the base (starting with the lower 
 /// limit). In this case, the density of the ticks is determined by `num-ticks-suggestion`. 
@@ -439,7 +495,10 @@
   ..args
 
 ) = {
-  if x0 > x1 { (x0, x1) = (x1, x0) }
+  if x0 > x1 { 
+    (x0, x1) = (x1, x0) 
+  }
+
   let log = calc.log.with(base: base)
   
   let locate-ticks-log = locate-ticks-log.with(
@@ -451,6 +510,7 @@
 
 
   let ticks = ()
+
   if x1 > threshold {
     let x0-log = calc.max(x0, threshold)
     let f = (b - transform(x0-log)) / (b - a)
@@ -461,6 +521,7 @@
     )
     ticks += log-ticks.ticks
   }
+
   if x0 < -threshold {
     let x1-log = calc.min(x1, -threshold)
     let f = (transform(x1-log) - a) / (b - a)
@@ -471,6 +532,7 @@
     )
     ticks += log-ticks.ticks.map(tick => -tick).rev()
   }
+
   if x0 < threshold and x1 > -threshold { 
     let x0-log = calc.max(x0, -threshold + 1e-9) 
     let x1-log = calc.min(x1, threshold - 1e-9)
@@ -507,8 +569,7 @@
 
 
 
-/// Automatically locate linear subticks from an array of ticks. 
-///
+/// Automatically locates linear subticks from an array of ticks. 
 #let locate-subticks-linear(
 
   /// The start of the range to locate ticks for. 
@@ -537,29 +598,37 @@
   ..args // important!
 
 ) = {
-  assert.eq(args.pos().len(), 0, message: "Unexpected positional arguments")
-  if x0 > x1 { (x0, x1) = (x1, x0) }
+  if x0 > x1 { 
+    (x0, x1) = (x1, x0) 
+  }
 
   if ticks.len() == 0 { return (ticks: ()) }
+  
   if tick-distance == auto {
-    if ticks.len() < 2 { return (ticks: ()) }
+    if ticks.len() < 2 {
+      return (ticks: ()) 
+    }
+    
     tick-distance = ticks.at(1) - ticks.at(0)
   }
+
   if num == auto {
-    let (m, n) = decompose-floating-point(tick-distance)
-    if true in (.1, .25, .5).map(x => calc.abs(m - x) < 1e-7) {
+    let (mantissa, _) = decompose-floating-point(tick-distance)
+    if (.1, .25, .5).any(x => calc.abs(mantissa - x) < 1e-7) {
       num = 4
     } else {
       num = 3
     }
   }
-  let subticks = ticks.map(x => x + tick-distance / 2)
-  let subticks = ()
+
   let base-range = range(1, num + 1).map(x => x * tick-distance / (num + 1))
-  for tick in (ticks.first() - tick-distance,) + ticks {
-    subticks += base-range.map(x => x + tick)
-  }
-  return (ticks: subticks.filter(x => x0 <= x and x <= x1))
+
+  let subticks = ((ticks.first() - tick-distance,) + ticks)
+    .map(tick => base-range.map(x => x + tick))
+    .join()
+    .filter(x => x0 <= x and x <= x1)
+
+  return (ticks: subticks)
 }
 
 #assertations.approx(locate-subticks-linear(1, 2, ticks: (), num: 1).ticks, ())
@@ -607,19 +676,27 @@
   ..args // important!
 
 ) = {
+  if x0 > x1 { 
+    (x0, x1) = (x1, x0) 
+  }
+
   if ticks.len() == 0 { return (ticks: ()) }
+
   if base == auto {
     if ticks.len() < 2 { return (ticks: ()) }
     base = ticks.at(1) / ticks.at(0)
   }
+
   if subs == auto {
     subs = range(2, calc.floor(base))
   }
+
   let quo = if ticks.len() >= 2 {
     ticks.at(1) / ticks.at(0)
   } else {
     base
   }
+
   let subticks = ()
   
   if ticks.len() >= 2 and quo > base {
@@ -638,7 +715,7 @@
       subticks += subs.map(x => x * tick)
     }
   }
-  if x0 > x1 { (x0, x1) = (x1, x0) }
+
   return (ticks: subticks.filter(x => x0 <= x and x <= x1))
 }
 
@@ -681,11 +758,12 @@
   ..args
 
 ) = {
-  let subticks = ()
   let locate-subticks-log = locate-subticks-log.with(
     base: base, 
     subs: subs
   )
+  
+  let subticks = ()
   
   if x1 > threshold {
     subticks += locate-subticks-log(
@@ -775,8 +853,8 @@
 #let format-ticks-linear(
   ticks,
   tick-info: (:),     // dictionary
-  exponent: auto, // auto | int | "inline"
-  offset: auto,   // auto | int | float
+  exponent: auto,     // auto | int | "inline"
+  offset: auto,       // auto | int | float
   auto-exponent-threshold: 3,
   ..args // important
 ) = {
@@ -847,7 +925,12 @@
 ) = {
   // Sometimes the log ticker resorts to linear ticking and then this is better
   if "linear" in tick-info and tick-info.linear {
-    return format-ticks-linear(ticks, tick-info: tick-info, exponent: exponent, auto-exponent-threshold, auto-exponent-threshold)
+    return format-ticks-linear(
+      ticks, 
+      tick-info: tick-info, 
+      exponent: exponent, 
+      auto-exponent-threshold, auto-exponent-threshold
+    )
   }
 
   if base-label == auto { 
@@ -860,7 +943,10 @@
     let num = num.with(1, omit-unit-mantissa: true, base: base-label)
 
     ticks.map(x => 
-      num(e: calc.round(calc.log(x, base: base), digits: round-exponent-digits))
+      num(
+        e: calc.round(calc.log(x, base: base), 
+        digits: round-exponent-digits)
+      )
     )
   } else {
     ticks.map(num)

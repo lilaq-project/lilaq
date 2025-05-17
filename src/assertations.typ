@@ -1,12 +1,16 @@
 
 /// Assert that two floats or arrays are equal up to a (configurable) epsilon. 
 #let approx(
+
   /// First value.
   a, 
+
   /// Second value.
   b, 
+
   /// Epsilon.
   eps: 1e-12
+
 ) = {
   if type(a) == array and type(b) == array {
     assert(a.len() == b.len(), message: "Non-matching array lengths " + repr(a) + " / " + repr(b))
@@ -30,14 +34,19 @@
 
 /// Assert that coordinate arrays passed to plots have the same length. 
 #let assert-matching-data-dimensions(
+
   /// Array of $x$ coordinates. 
   x, 
+
   /// Array of $y$ coordinates. 
   y, 
+
   /// Other coordinate arrays (e.g., error bars) that should match the length of $x$ and $y$ coordinates. Only named arguments are accepted. 
   ..args,
+
   /// Function name. This can be used to improve the error message. Entries where the value is not an array are ignored. This is useful for cases like `xerr` that also take a single value. 
   fn-name: "", 
+
 ) = {
   let prefix = ""
   if fn-name != "" { prefix = "`" + fn-name + "()`: " }
@@ -63,10 +72,13 @@
 
 /// Assert that there are no additional named arguments in an argument sink. 
 #let assert-no-named(
+
   /// Argument sink.
   args, 
+
   /// Function name. This can be used to improve the error message. 
   fn: ""
+
 ) = {
   if args.named().len() == 0 { return }
   
@@ -76,6 +88,22 @@
     }
   )
 }
+
+
+
+/// Assert that there are no additional positional arguments in an argument sink. 
+#let assert-no-positional(
+
+  /// Argument sink.
+  args
+
+) = assert.eq(
+  args.pos().len(), 
+  0, 
+  message: "Unexpected positional arguments"
+)
+
+
 
 #let assert-dict-keys(
   dict, 
