@@ -71,11 +71,6 @@
   /// -> auto | alignment | float | relative | dictionary
   position: auto, 
 
-  /// How to stroke the spine of the axis. If not `auto`, this is forwarded to 
-  /// @spine.stroke. 
-  /// -> auto | stroke
-  stroke: auto,
-
   /// Whether to mirror the axis, i.e., whether to show the axis ticks also on 
   /// the side opposite of the one specified with @axis.position. When set to 
   /// `auto`, mirroring is only activated when `position: auto`. More control
@@ -87,31 +82,70 @@
   /// -> auto | bool | dictionary
   mirror: auto,
 
-  /// Specifies conversions between the data and the ticks. This can be used to
-  /// configure a secondary axis to display the same data in a different unit, 
-  /// e.g., the main axis displays the velocity of a particle while the 
-  /// secondary axis displays the associated energy. In this case, one would 
-  /// pick `functions: (x => m*x*x, y => calc.sqrt(y/m))` with some constant
-  /// `m`. Note that the first function computes the "forward" direction while
-  /// the second function computes the "backward" direction. The user needs to 
-  /// ensure that the two functions are really inverses of each other. 
-  /// By default, this parameter resolves to the identity. 
-  /// -> auto | array
-  functions: auto,
+  /// Instead of using the tick locator, specifies the tick locations explicitly
+  /// and optionally the tick labels. This can be an array with just the tick
+  /// location or tuples of tick location and label, or a dictionary with the 
+  /// keys `ticks` and `labels`, containing arrays of equal length. When `ticks` 
+  /// is `none`, no ticks are displayed. If it is `auto`, the `tick-locator` is 
+  /// used. 
+  /// 
+  /// Check out the #link("tutorials/ticks")[tutorial on ticks] for tips on how 
+  /// to work with ticks. 
+  /// -> auto | array | dictionary | none
+  ticks: auto, 
 
-  /// The tick locator for the (major) ticks. 
+  /// Instead of using the tick locator, specifies the tick positions explicitly
+  /// and optionally the tick labels.
+  /// 
+  /// Also see the #link("tutorials/ticks")[tutorial on ticks]. 
+  /// -> auto | array | dictionary | none
+  subticks: auto,
+
+  /// Passes the parameter `tick-distance` to the tick locator. The linear tick
+  /// locator respects this setting and sets the distance between consecutive 
+  /// ticks accordingly. If `tick-args` already contains an entry `tick-distance`, 
+  /// it takes precedence. 
+  /// -> auto | float
+  tick-distance: auto, 
+
+  /// Offset for all ticks on this axis. The offset is subtracted from all ticks 
+  /// and shown at the end of the axis (if it is not 0). An offset can be used 
+  /// to avoid overly long tick labels and to focus on the relative distance 
+  /// between data points. 
+  /// -> auto | float
+  offset: auto,
+
+  /// Exponent for all ticks on this axis. All ticks are divided by 
+  /// $10^\mathrm{exponent}$ and the $10^\mathrm{exponent}$ is shown at the end
+  /// of the axis (if the exponent is not 0). This setting can be used to avoid
+  /// overly long tick labels. 
+  /// 
+  /// In combination with logarithmic tick locators, `none` can be used to 
+  /// force writing out all numbers. 
+  /// -> auto | none | int | "inline"
+  exponent: auto,
+
+  /// Threshold for automatic exponents. 
+  /// -> int
+  auto-exponent-threshold: 3,
+
+  /// The tick locator for the regular ticks. 
+  /// Also see #link("tutorials/ticks#locating-ticks")[locating ticks]. 
   /// -> auto | function
   locate-ticks: auto,
   
   /// The formatter for the (major) ticks. 
+  /// Also see #link("tutorials/ticks#formatting-ticks")[formatting ticks]. 
   /// -> auto | function
   format-ticks: auto,
   
   /// The tick locator for the subticks. 
+  /// Also see #link("tutorials/ticks#locating-ticks")[locating ticks]. 
   /// -> auto | function
   locate-subticks: auto,
   
   /// The formatter for the subticks. 
+  /// Also see #link("tutorials/ticks#displaying-subtick-labels")[displaying subticks]. 
   /// -> auto | none | function
   format-subticks: none,
 
@@ -130,37 +164,27 @@
   /// Arguments to pass to the subtick locator. 
   /// -> dictionary
   subtick-args: (:),
-
-  /// Instead of using the tick locator, specifies the tick locations explicitly and optionally the tick labels. This can be an array with just the tick location or tuples of tick location and label, or a dictionary with the keys `ticks` and `labels`, containing arrays of equal length. When `ticks` is `none`, no ticks are displayed. If it is `auto`, the `tick-locator` is used. 
-  /// -> auto | array | dictionary | none
-  ticks: auto, 
-
-  /// Instead of using the tick locator, specifies the tick positions explicitly and optionally the tick labels.
-  /// -> auto | array | dictionary | none
-  subticks: auto,
-
-  /// Passes the parameter `tick-distance` to the tick locator. The linear tick locator respects this setting and sets the distance between consecutive ticks accordingly. If `tick-args` already contains an entry `tick-distance`, it takes precedence. 
-  /// -> auto | float
-  tick-distance: auto, 
-
-  /// Offset for all ticks on this axis. The offset is subtracted from all ticks and shown at the end of the axis (if it is not 0). An offset can be used to avoid overly long tick labels and to focus on the relative distance between data points. 
-  /// -> auto | float
-  offset: auto,
-
-  /// Exponent for all ticks on this axis. All ticks are divided by $10^\mathrm{exponent}$ and the $10^\mathrm{exponent}$ is shown at the end of the axis (if the exponent is not 0). This setting can be used to avoid overly long tick labels. 
-  /// 
-  /// In combination with logarithmic tick locators, `none` can be used to 
-  /// force writing out all numbers. 
-  /// -> auto | none | int | "inline"
-  exponent: auto,
-
-  /// Threshold for automatic exponents. 
-  /// -> int
-  auto-exponent-threshold: 3,
+  
+  /// Specifies conversions between the data and the ticks. This can be used to
+  /// configure a secondary axis to display the same data in a different unit, 
+  /// e.g., the main axis displays the velocity of a particle while the 
+  /// secondary axis displays the associated energy. In this case, one would 
+  /// pick `functions: (x => m*x*x, y => calc.sqrt(y/m))` with some constant
+  /// `m`. Note that the first function computes the "forward" direction while
+  /// the second function computes the "backward" direction. The user needs to 
+  /// ensure that the two functions are really inverses of each other. 
+  /// By default, this parameter resolves to the identity. 
+  /// -> auto | array
+  functions: auto,
 
   /// If set to `true`, the entire axis is hidden. 
   /// -> bool
   hidden: false,
+
+  /// How to stroke the spine of the axis. If not `auto`, this is forwarded to 
+  /// @spine.stroke. 
+  /// -> auto | stroke
+  stroke: auto,
 
   /// Places an arrow tip on the axis spine. This expects a mark as specified by
   /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
@@ -176,7 +200,10 @@
 
   filter: (value, distance) => true,
 
-  /// Plot objects to associate with this axis. This only applies when this is a secondary axis. Automatic limits are then computed according to this axis and transformations of the data coordinates linked to the scaling of this axis. 
+  /// Plot objects to associate with this axis. This only applies when this is 
+  /// a secondary axis. Automatic limits are then computed according to this 
+  /// axis and transformations of the data coordinates linked to the scaling of
+  /// this axis. 
   /// -> any
   ..plots
   
