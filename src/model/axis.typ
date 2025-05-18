@@ -98,7 +98,7 @@
   /// and optionally the tick labels.
   /// 
   /// Also see the #link("tutorials/ticks")[tutorial on ticks]. 
-  /// -> auto | array | dictionary | none
+  /// -> auto | none | int
   subticks: auto,
 
   /// Passes the parameter `tick-distance` to the tick locator. The linear tick
