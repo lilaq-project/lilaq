@@ -110,18 +110,6 @@
     }
   }
 
-  
-
-  let get-upper-lower(value, error) = {
-    if type(error) in (float, int) { 
-      return (value - error, value + error)
-    }
-    if type(error) == array { 
-      assert.eq(error.len(), 2, message: "Individual errors need to be numbers or pairs of numbers, encountered array of length " + str(error.len()))
-      return (value - error.at(0), value + error.at(1))
-    }
-    assert(false, "Invalid type \'" + str(type(err)) + "\' for error")
-  }
 
 
   let errorbar-stroke = prepare-path.with(
@@ -187,11 +175,12 @@
 
     points.zip(p, m).map((((x, y), p, m)) => {
       let (p0, p1) = (transform(x, y - m), transform(x, y + p))
+      let (y0, y1) = (p0.at(1), p1.at(1)).sorted()
 
       place(
-        dx: p0.at(0),
-        dy: p1.at(1),
-        box(height: p0.at(1) - p1.at(1), errorbar(kind: "y"))
+        dx: p1.at(0),
+        dy: y0,
+        box(height: y1 - y0, errorbar(kind: "y"))
       )
       
     }).join()
@@ -201,7 +190,7 @@
   
   show: prepare-mark.with(
     func: plot.mark.mark, 
-    color: merge-fills(plot.style.color),
+    color: plot.style.color,
     fill: plot.mark.fill,
     size: plot.mark.size
   )
