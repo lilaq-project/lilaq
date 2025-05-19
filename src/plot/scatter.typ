@@ -3,8 +3,8 @@
 #import "../logic/process-coordinates.typ": filter-nan-points
 #import "../logic/sample-colors.typ": sample-colors
 #import "../math.typ": minmax
-#import "../style/styling.typ": mark, prepare-mark, _auto
-#import "../utility.typ": if-auto, match-type
+#import "../style/styling.typ": mark, prepare-mark, _auto, style
+#import "../utility.typ": if-auto, match-type, if-none
 
 
 
@@ -37,12 +37,14 @@
     points = ((0.5,.5),)
   }
 
-  
-  
+
+
   show: prepare-mark.with(
     func: plot.style.mark, 
+    color: if type(plot.color) == array { _auto } else { plot.color },
+    stroke: plot.style.stroke
   )
-  set mark(stroke: plot.style.stroke) if plot.style.stroke != auto
+
 
   for (i, p) in points.enumerate() {
     let p = transform(..p)
@@ -55,9 +57,10 @@
     if mark-fill-color != _auto {
       options.fill = mark-fill-color
     }
-    if size != auto { options.inset = size }
-    if plot.style.stroke not in (none, auto) { options.stroke = merge-strokes(plot.style.stroke, mark-color) }
-    
+    if size != auto { 
+      options.inset = size
+    }
+
     place(dx: p.at(0), dy: p.at(1), mark(..options))
   }
 }
