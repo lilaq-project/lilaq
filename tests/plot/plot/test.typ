@@ -13,8 +13,8 @@
 
 
 #let plot = lq.plot.with(label: [])
-
 #show lq.selector(lq.legend): set table(columns: 4)
+
 
 // Cycling test
 #lq.diagram(
@@ -169,4 +169,17 @@
   lq.plot((3,), (0,), mark: lq.marks.at("*")),
   lq.plot((4,), (0,), mark-size: 2pt),
 
+)
+
+
+
+#pagebreak()
+
+
+// Interrupt at nan
+#lq.diagram(
+  lq.plot(
+    range(8),
+    (1,2,3,float.nan, 6, 4, float.nan, 3)
+  )
 )
