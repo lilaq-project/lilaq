@@ -27,17 +27,23 @@
     
   show mark: it => {
     let color = style.fill
+    let fill = if it.fill == _auto { color } else { it.fill }
+    if color == _auto { color = fill }
     (it.align)((
       size: it.inset.length, 
-      fill: if it.fill == _auto { color } else { it.fill }, 
-      stroke: process-stroke(it.stroke, color),
-      color: color
+      fill: fill, 
+      stroke: process-stroke(it.stroke, color)
     ))
   }
   
   
   set style(fill: black)
-  set mark(fill: _auto, stroke: _auto + .7pt, align: marks.at("."), inset: 4pt)
+  set mark(
+    fill: _auto, 
+    stroke: _auto + .7pt, 
+    align: marks.at("."), 
+    inset: 4pt
+  )
   body
 }
 
@@ -112,6 +118,7 @@
   set mark(align: func) if func != auto
   set mark(fill: fill) if fill != auto
   set mark(inset: size) if size != auto
+  set mark(stroke: stroke) if stroke != auto
   body
 }
 
