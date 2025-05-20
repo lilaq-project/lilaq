@@ -1,5 +1,7 @@
 #set page(width: auto, height: auto, margin: 1pt)
-#import "/src/lilaq.typ" as lq
+
+#import "../template.typ": *
+#show: minimal
 
 
 #show: lq.set-diagram(
