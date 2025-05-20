@@ -5,7 +5,7 @@
 #let minimal(it) = {
 
   show: lq.set-diagram(
-    margin: 6%,
+    margin: 5%,
     height: 3cm,
     width: 4cm,
     xaxis: (hidden: true),

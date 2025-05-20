@@ -1,15 +1,7 @@
 #set page(width: auto, height: auto, margin: 1pt)
-#import "/src/lilaq.typ" as lq
 
-
-#show: lq.set-diagram(
-  height: 1.5cm,
-  width: 2cm,
-  xaxis: (hidden: true),
-  yaxis: (hidden: true),
-  grid: none,
-  legend: (position: left, dx: 100%),
-)
+#import "../template.typ": *
+#show: minimal
 
 
 #let plot = lq.plot.with(label: [])
