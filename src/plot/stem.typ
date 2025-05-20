@@ -89,8 +89,8 @@
   /// -> array
   y, 
 
-  /// Combined color for line and marks. See also the parameters @stem.line 
-  /// and @stem.mark-color which take precedence over `color`, if set. 
+  /// Combined color for line and marks. See also the parameter @stem.line 
+  /// which takes precedence over `color`, if set. 
   /// -> auto | color
   color: auto,
   
@@ -103,12 +103,8 @@
   mark: auto, 
   
   /// Size of the marks. 
-  /// -> length
-  mark-size: 5pt,
-  
-  /// Color of the marks (takes precedence over @stem.color). 
-  /// -> auto | color
-  mark-color: auto,
+  /// -> auto | length
+  mark-size: auto,
   
   /// Defines the $y$ coordinate of the base line.
   /// -> int | float
@@ -142,7 +138,6 @@
       mark: mark,
       color: color,
       mark-size: mark-size,
-      mark-color: merge-fills(mark-color, color),
       stroke: merge-strokes(stroke, color),
       base-stroke: base-stroke
     ),

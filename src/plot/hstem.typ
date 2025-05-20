@@ -81,8 +81,7 @@
   /// -> array
   y, 
 
-  /// Combined color for line and marks. See also the parameters @hstem.line 
-  /// and @hstem.mark-color which take precedence over `color`, if set. 
+  /// Combined color for line and marks. See also the parameter @hstem.line which takes precedence over `color`, if set. 
   /// -> auto | color
   color: auto,
   
@@ -96,11 +95,7 @@
   
   /// Size of the marks. 
   /// -> length
-  mark-size: 5pt,
-  
-  /// Color of the marks (takes precedence over @hstem.color). 
-  /// -> auto | color
-  mark-color: auto,
+  mark-size: auto,
   
   /// Defines the $x$ coordinate of the base line.
   /// -> int | float
@@ -134,7 +129,6 @@
       color: color,
       mark: mark,
       mark-size: mark-size,
-      mark-color: merge-fills(mark-color, color),
       stroke: merge-strokes(stroke, color),
       base-stroke: base-stroke
     ),
