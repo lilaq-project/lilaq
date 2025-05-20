@@ -14,7 +14,6 @@
 
   let style = plot.style
 
-  let box-thickness = utility.if-auto(stroke(style.stroke).thickness, 1pt)
   
   for (i, statistics) in plot.statistics.enumerate() {
 
@@ -31,6 +30,13 @@
     let (whisker-high, _) = transform(statistics.whisker-high, y)
     let (_, xm1) = transform(statistics.q1, y - style.cap-length / 2)
     let (_, xm2) = transform(statistics.q1, y + style.cap-length / 2)
+
+
+    
+
+    let box-thickness = utility.if-auto(stroke(style.stroke).thickness, 1pt)
+    // y axis may be inverted:
+    if yy1 < yy2 { box-thickness *= -1 }
 
     
     place(line(
