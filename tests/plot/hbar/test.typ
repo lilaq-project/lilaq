@@ -182,3 +182,20 @@
     stroke: 4pt + aqua.darken(50%)
   ),
 )
+
+
+#pagebreak()
+
+
+// Inverted axes
+
+#lq.diagram(
+  xaxis: (inverted: true),
+  yaxis: (inverted: true),
+  lq.hbar(
+    (-5,-3,-4,-2,-1),
+    range(5),
+    stroke: red,
+    base: -2,
+  )
+)
