@@ -88,3 +88,23 @@
     (1,2,3,float.nan, 6, 4, float.nan, 3)
   )
 )
+
+
+#pagebreak()
+
+// Inverted axes
+#lq.diagram(
+  xaxis: (inverted: true),
+  yaxis: (inverted: true),
+  lq.fill-between(
+    range(4),
+    (1, 2, 3, 4),
+    stroke: black
+  ),
+  lq.fill-between(
+    range(4),
+    (0.9, 1.8, -1.2, 0.5),
+    y2: (0, 1, 2.1, 4),
+    stroke: black
+  )
+)

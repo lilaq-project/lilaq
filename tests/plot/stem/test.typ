@@ -72,3 +72,18 @@
     base-stroke: black
   ),
 )
+
+
+#pagebreak()
+
+
+// Inverted axes
+#lq.diagram(
+  xaxis: (inverted: true),
+  yaxis: (inverted: true),
+  lq.stem(
+    range(5),
+    (-5, -3, -4, -2, -1),
+    base: -2,
+  )
+)
