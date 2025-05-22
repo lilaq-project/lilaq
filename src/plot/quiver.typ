@@ -78,7 +78,7 @@
 ///     lq.arange(-2, 3),
 ///     (x, y) => (x + y, y - x)
 ///   )
-///  )
+/// )
 /// ```
 /// By default, arrow lengths and strokes are scaled automatically to 
 /// compensate for the density of a quiver plot. 
@@ -96,10 +96,13 @@
   y, 
 
   /// Direction vectors for the arrows. 
-  /// This can either be a two-dimensional array of dimensions $m×n$ 
-  /// where $m$ is the length of @quiver.x and $n$ is the length of @quiver.y, 
-  /// or a function that takes an `x` and a `y` value and returns a 
-  /// corresponding 2-dimensional vector. Masking is possible through `nan` values. 
+  /// This can either be 
+  /// - a two-dimensional array of dimensions $m×n$ where $m$ is the length
+  ///   of @quiver.x and $n$ is the length of @quiver.y, 
+  /// - or a function that takes two arguments `(x, y)` and returns a 
+  ///   two-dimensional direction vector. 
+  /// 
+  /// Masking is possible through `nan` values. 
   /// -> array | function
   directions,
 
@@ -120,26 +123,26 @@
   /// 
   /// #details[
   ///   ```example
-  ///   #let x = lq.arange(-2, 3)
-  ///   #let y = lq.arange(-2, 3)
-  ///   #let (directions) = lq.mesh(x, y, (x, y) => (x + y, y - x))
-  /// 
-  ///   #let quiver-diagram = lq.diagram.with(
+  ///   #show: lq.set-diagram(
   ///     xaxis: (tick-distance: 1),
   ///     xlim: (-3, 3),
   ///     ylim: (-3, 3),
   ///     width: 4cm
   ///   )
   /// 
-  ///   #quiver-diagram(
+  ///   #let x = lq.arange(-2, 3)
+  ///   #let y = lq.arange(-2, 3)
+  ///   #let directions = lq.mesh(x, y, (x, y) => (x + y, y - x))
+  /// 
+  ///   #lq.diagram(
   ///     title: [`pivot: end`],
   ///     lq.quiver(x, y, directions, pivot: end),
   ///   )
-  ///   #quiver-diagram(
+  ///   #lq.diagram(
   ///     title: [`pivot: center` (default)],
   ///     lq.quiver(x, y, directions, pivot: center),
   ///   )
-  ///   #quiver-diagram(
+  ///   #lq.diagram(
   ///     title: [`pivot: start`],
   ///     lq.quiver(x, y, directions, pivot: start),
   ///   )
@@ -160,29 +163,28 @@
 
   /// How to color the arrows. This can be a single color or a two-dimensional
   /// array with the same dimensions as @quiver or a function that receives 
-  /// `(x, y)` pairs from the given `x` and `y` coordinates and returns a 
-  /// scalar/color. 
+  /// `(x, y, u, v)` tuples of `x` and `y` coordinates and corresponding
+  /// direction components and returns a scalar (`float`) or `color`. 
+  /// 
   /// #details[
-  ///   In this example, we make a color-coding by taking the `x` value of the
+  ///   In this example, we make a color-coding by taking the length of the
   ///   direction vectors. 
   ///   ```example
-  ///   #let x = lq.arange(-2, 3)
-  ///   #let y = lq.arange(-2, 3)
-  ///   #let (directions) = lq.mesh(x, y, (x, y) => (x + y, y - x))
-  /// 
   ///   #lq.diagram(
   ///     lq.quiver(
-  ///       x, y, 
-  ///       directions,
-  ///       color: directions.map(d => d.map(d => d.at(0)))
-  ///     ),
+  ///       lq.arange(-2, 3),
+  ///       lq.arange(-2, 3),
+  ///       (x, y) => (x + 2 * y, y - x),
+  ///       color: (x, y, u, v) => calc.norm(u, v),
+  ///     )
   ///   )
   ///   ```
   /// ]
   /// -> color | array | function
   color: black,
   
-  /// A color map in form of a gradient or an array of colors to sample from. 
+  /// A color map to sample from. The color map can be given in form of a 
+  /// gradient or an array of colors. 
   /// -> array | gradient
   map: color.map.viridis,
 
@@ -219,8 +221,12 @@
   }
   
   if type(color) == function {
-    color = mesh(x, y, color)
+    color = mesh(
+      x.enumerate(), y.enumerate(), 
+      ((i, x), (j, y)) => color(x, y, ..directions.at(j).at(i))
+    )
   }
+  let cinfo
   
   if type(color) == array { 
     assert(type(color.first()) == array, message: "The argument `color` for `quiver` either needs to be a single value or a 2D array")
@@ -228,7 +234,6 @@
     assert(x.len() * y.len() == color-flat.len(), message: "The number of elements in `color` does not match the grid for `quiver()`")
     
     if type(color-flat.at(0, default: 0)) in (int, float) {
-      let cinfo
       (color, cinfo) = sample-colors(color-flat, map, norm, ignore-nan: true, min: min, max: max)
     }
   }
@@ -274,7 +279,9 @@
   )
   let arrow = tiptoe.line.with(tip: tip, toe: toe)
   
+
   (
+    cinfo: cinfo,
     x: x,
     y: y,
     directions: directions,
