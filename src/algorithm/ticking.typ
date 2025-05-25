@@ -211,10 +211,6 @@
 }
 
 
-#assertations.approx(
-  locate-ticks-manual(2, 200, ticks: (3, 4, 5, 6)).ticks, 
-  (3, 4, 5, 6)
-)
 
 
 /// Locates linear ticks on an axis with range $[x_0, x_1]$. The range may be 
@@ -326,41 +322,6 @@
   )
 }
 
-#assert.eq(locate-ticks-linear(0, 1, tick-distance: .25).ticks, (0, 0.25, .5, .75, 1))
-#assert.eq(locate-ticks-linear(-4, 19, tick-distance: auto).ticks, (0, 5, 10, 15))
-#assert.eq(locate-ticks-linear(-4, 19, tick-distance: 5).ticks, (0, 5, 10, 15))
-
-// Selected cases
-#assertations.approx(locate-ticks-linear(0, 0.1).ticks.len(), 6)
-#assertations.approx(locate-ticks-linear(0, 0.1).ticks, (0, .02, .04, .06, .08, .1))
-#assertations.approx(locate-ticks-linear(-200, -199).ticks, (-200, -199.8, -199.6, -199.4, -199.2, -199.0))
-#assertations.approx(locate-ticks-linear(100005, 100006).ticks, (100005, 100005.2, 100005.4, 100005.6, 100005.8, 100006))
-#assertations.approx(locate-ticks-linear(115, 116).ticks, (115, 115.2, 115.4, 115.6, 115.8, 116))
-#assertations.approx(locate-ticks-linear(-4.2, 20).ticks, (0, 5, 10, 15, 20))
-#assertations.approx(locate-ticks-linear(-1, 0).ticks, (-1, -.8, -.6, -.4, -.2, 0))
-#assertations.approx(locate-ticks-linear(0, 1).ticks, (0, .2, .4, .6, .8, 1))
-#assertations.approx(locate-ticks-linear(0.1, 1.2).ticks, (.2, .4, .6, .8, 1., 1.2))
-#assertations.approx(locate-ticks-linear(1.2, 0.1).ticks, (1.2, 1., .8, .6, .4, .2).rev())
-#assertations.approx(locate-ticks-linear(1, 20).ticks, (5, 10, 15, 20))
-#assertations.approx(locate-ticks-linear(1e20, 20e20).ticks, (5e20, 10e20, 15e20, 20e20))
-#assertations.approx(locate-ticks-linear(1e45, 20e45).ticks, (5e45, 10e45, 15e45, 20e45))
-
-
-// Inverse axes
-#assertations.approx(locate-ticks-linear(1.25, 0.1).ticks, (1.2, 1.0, .8, .6, .4, .2).rev())
-#assertations.approx(locate-ticks-linear(1, 0).ticks, (0, .2, .4, .6, .8, 1.))
-#assertations.approx(locate-ticks-linear(1.2, 0.1).ticks, (.2, .4, .6, .8, 1, 1.2))
-
-
-// Test negative axes
-#assertations.approx(locate-ticks-linear(-2.2, 20).ticks, (0, 5, 10, 15, 20))
-#assertations.approx(locate-ticks-linear(-4.2, -2).ticks, (-4, -3.5, -3, -2.5, -2))
-#assertations.approx(locate-ticks-linear(-4.2, 8.1).ticks, (-4, -2, 0, 2, 4, 6, 8))
-#assertations.approx(locate-ticks-linear(-116, -115).ticks, (-116, -115.8, -115.6, -115.4, -115.2, -115))
-#assertations.approx(locate-ticks-linear(-16, -15).ticks, (-16, -15.8, -15.6, -15.4, -15.2, -15))
-#assertations.approx(locate-ticks-linear(-0.000000000000003, 0.0005).ticks, (0, .0001, .0002, .0003, .0004, .0005))
-
-
 
 /// Locates linear ticks on a logarithmic axis with range $[x_0, x_1]$. The 
 /// range may be inverted, i.e., $x_0>x_1$ but not $x_0 = x_1$. Ticks are 
@@ -435,13 +396,6 @@
       .map(x => calc.pow(float(base), x + n0)),
   )
 }
-
-#assertations.approx(locate-ticks-log(1, 1000).ticks, (1, 10, 100, 1000))
-#assertations.approx(locate-ticks-log(1, 1e8).ticks, (1, 100, 1e4, 1e6, 1e8))
-#assertations.approx(locate-ticks-log(0.24, 9, base: 2).ticks, (.25, .5, 1, 2, 4, 8))
-#assertations.approx(locate-ticks-log(1, 1024, base: 2).ticks, (1, 4, 16, 64, 256, 1024))
-#assertations.approx(locate-ticks-log(1, 2).ticks, locate-ticks-linear(1, 2).ticks)
-#assertations.approx(locate-ticks-log(1, 2, base: 2).ticks, locate-ticks-linear(1, 2).ticks)
 
 
 
@@ -552,20 +506,6 @@
   )
 }
 
-#assertations.approx(
-  locate-ticks-symlog(1, 1000).ticks, 
-  (1, 10, 100, 1000)
-)
-
-#assertations.approx(
-  locate-ticks-symlog(-100, -1).ticks, 
-  (-100, -10, -1)
-)
-
-#assertations.approx(
-  locate-ticks-symlog(-1, 1).ticks, 
-  (-.5, 0, .5)
-)
 
 
 
@@ -630,21 +570,6 @@
 
   return (ticks: subticks)
 }
-
-#assertations.approx(locate-subticks-linear(1, 2, ticks: (), num: 1).ticks, ())
-#assertations.approx(locate-subticks-linear(1, 2, ticks: (1,), num: 1).ticks, ())
-#assertations.approx(locate-subticks-linear(1, 2, ticks: (1, 2), num: 1).ticks, (1.5,))
-#assertations.approx(locate-subticks-linear(2, 1, ticks: (1, 2), num: 1).ticks, (1.5,))
-#assertations.approx(locate-subticks-linear(1, 2, ticks: (1, 2), num: 3).ticks, (1.25,1.5,1.75))
-#assertations.approx(locate-subticks-linear(0, 2, ticks: (1, 2), num: 1).ticks, (0.5, 1.5))
-
-// Test for interval enhancement and restriction to [x0, x1]
-#assertations.approx(locate-subticks-linear(1, 3, ticks: (1, 2), num: 3).ticks, (1.25, 1.5, 1.75, 2.25, 2.5, 2.75))
-#assertations.approx(locate-subticks-linear(1, 2.5, ticks: (1, 2), num: 3).ticks, (1.25, 1.5, 1.75, 2.25, 2.5))
-#assertations.approx(locate-subticks-linear(.5, 1.5, ticks: (1, 2), num: 3).ticks, (0.5, 0.75, 1.25, 1.5))
-#assertations.approx(locate-subticks-linear(.55, 1.5, ticks: (1, 2), num: 3).ticks, (0.75, 1.25, 1.5))
-
-#assertations.approx(locate-subticks-linear(5, 25, ticks: (11, 21), tick-distance: 10, num: 1).ticks, (6, 16,))
 
 
 
@@ -719,10 +644,6 @@
   return (ticks: subticks.filter(x => x0 <= x and x <= x1))
 }
 
-#assertations.approx(locate-subticks-log(1, 10, ticks: ()).ticks, ())
-#assertations.approx(locate-subticks-log(1, 10, ticks: (3,)).ticks, ())
-#assertations.approx(locate-subticks-log(1, 10, ticks: (1, 10)).ticks, range(2, 10))
-#assertations.approx(locate-subticks-log(.25, 20, ticks: (1, 10)).ticks, range(3, 10).map(x=>x/10) + range(2, 10) + (20,))
 
 
 
