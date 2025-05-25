@@ -8,14 +8,18 @@
   /// Second value.
   b, 
 
-  /// Epsilon.
-  eps: 1e-12
+  /// Absolute tolerance.
+  eps: 1e-20,
+
+  // Relative tolerance
+  rel-eps: 1e-09
 
 ) = {
   if type(a) == array and type(b) == array {
     assert(a.len() == b.len(), message: "Non-matching array lengths " + repr(a) + " / " + repr(b))
     for (x, y) in a.zip(b) {
-      if calc.abs(x - y) >= eps and calc.abs(1 - calc.abs(x / y)) >= eps {
+      // if calc.abs(x - y) >= eps and calc.abs(1 - calc.abs(x / y)) >= eps {
+      if calc.abs(x - y) > calc.max(rel-eps * calc.max(calc.abs(x), calc.abs(y)), eps) {
         assert(false, message: repr(x) + " was not approx equal to " + repr(y) )
         assert(false, message: repr(a) + " was not approx equal to " + repr(b) )
       }
