@@ -289,7 +289,7 @@
       scale.name,
       "linear", () => ticking.format-ticks-linear,
       "log", () => ticking.format-ticks-log.with(base: scale.base),
-      "symlog", () => ticking.format-ticks-linear,
+      "symlog", () => ticking.format-ticks-symlog.with(base: scale.base, threshold: scale.threshold, linscale: scale.linscale),
       default: () => ticking.format-ticks-naive
     )
   }

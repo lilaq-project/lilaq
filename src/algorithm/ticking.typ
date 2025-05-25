@@ -667,7 +667,9 @@
 
 #let num(
   value, 
+  sign: 1,
   e: none, 
+  auto-e: true,
   digits: auto, 
   base: 10, 
   omit-unit-mantissa: true
@@ -675,7 +677,7 @@
   if digits != auto {
     digits = calc.max(0, digits)
   }
-  if e == 0 { e = none }
+  if e == 0 and auto-e { e = none }
   if e != none { 
     e = str(e)
   }
@@ -762,7 +764,7 @@
    )
   )
 
-  return (
+  (
     labels: labels, 
     exponent: additional-exponent, 
     offset: offset
@@ -797,16 +799,51 @@
 
   
   if exponent == auto {
-    let num = num.with(1, omit-unit-mantissa: true, base: base-label)
+    let num = num.with(omit-unit-mantissa: true, base: base-label, auto-e: false)
 
     ticks.map(x => 
       num(
-        e: calc.round(calc.log(x, base: base), 
+        float.signum(x), 
+        e: calc.round(calc.log(calc.abs(x), base: base), 
         digits: round-exponent-digits)
       )
     )
   } else {
     ticks.map(num)
   }
+}
+
+
+
+
+
+#let format-ticks-symlog(
+  ticks,
+  tick-info: (:), 
+  base: 10,
+  threshold: 1, 
+  exponent: auto, 
+  auto-exponent-threshold: 3,
+  round-exponent-digits: 4, 
+  base-label: auto,
+  ..args
+) = {
+
+  let upper-log = ticks.filter(tick => tick >= threshold or tick <= -threshold)
+
+  let log = format-ticks-log(
+    upper-log, 
+    tick-info: tick-info, 
+    base: base,
+    base-label: base-label,
+    exponent: exponent, 
+    auto-exponent-threshold, auto-exponent-threshold
+  )
+
+  let linear = format-ticks-linear(
+    ticks.filter(tick => tick < threshold and tick > -threshold)
+  )
+
+  log + linear.labels
 }
 
