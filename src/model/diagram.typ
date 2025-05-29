@@ -1,22 +1,24 @@
 
-#import "../process-styles.typ": update-stroke, process-margin, process-grid-arg
 #import "../assertations.typ"
-#import "../logic/scale.typ"
-#import "../logic/transform.typ": create-trafo
+#import "../utility.typ": if-auto
+#import "../bounds.typ": update-bounds, place-with-bounds
+#import "../process-styles.typ": update-stroke, process-margin, process-grid-arg
+
 #import "legend.typ": legend as lq-legend, _place-legend-with-bounds
 #import "grid.typ": grid as lq-grid
-
-#import "axis.typ": axis, draw-axis, _axis-compute-limits, _axis-generate-ticks
-#import "../algorithm/ticking.typ"
-#import "../bounds.typ": *
-#import "title.typ": title as lq-title
+#import "title.typ": title as lq-title, _place-title-with-bounds
 #import "label.typ": label as lq-label
-#import "../utility.typ": if-auto
+#import "axis.typ": axis as lq-axis, draw-axis, _axis-compute-limits, _axis-generate-ticks
 
-#let debug = false
+#import "../logic/scale.typ"
+#import "../logic/transform.typ": create-trafo
+#import "../algorithm/ticking.typ"
+
 #import "../style/styling.typ": init as cycle-init, style, process-cycles-arg
 #import "../style/map.typ": petroff10
 #import "../libs/elembic/lib.typ" as e
+
+#let debug = false
 
 
 
@@ -130,7 +132,6 @@
 
 
 
-#let axis-constructor = axis
 
 #let create-principle-axis(
   axis, lim, scale,
@@ -143,7 +144,9 @@
   if axis == none { axis = (hidden: true) }
 
   if type(axis) == dictionary {
-    axis = axis-constructor(kind: kind, label: label, scale: scale, lim: lim, ..axis)
+    axis = lq-axis(
+      kind: kind, label: label, scale: scale, lim: lim, ..axis
+    )
   }
   axis.plots = plots
 
@@ -170,6 +173,8 @@
 
 
 
+
+
 #let draw-diagram(it) = {
   set math.equation(numbering: none)
   set curve(stroke: .7pt)
@@ -183,6 +188,8 @@
   //     it
   //   }
   // )
+  
+
   // Either a plot object or a dict (axis-id: int, plot: dict). 
   let plots = () 
   // solely used for computing limits
@@ -254,10 +261,12 @@
     } else {
       (lower-margin: margin.bottom, upper-margin: margin.top)
     }
-    axes.at(i).lim = _axis-compute-limits(axis, default-lim: model-axis.lim, ..axes-margin)
+    axes.at(i).lim = _axis-compute-limits(
+      axis, default-lim: model-axis.lim, ..axes-margin
+    )
 
     if axis.plots.len() > 0 {
-      let other-axis = if axis.kind == "x" {yaxis} else {xaxis}
+      let other-axis = if axis.kind == "x" { yaxis } else { xaxis }
       let transform
       let scale-trafo = create-trafo(axis.scale.transform, ..axes.at(i).lim)
       if axis.kind == "x" {
@@ -271,7 +280,7 @@
       }
       axes-transforms.at(i) = transform
     } else {
-      axes.at(i).transform = if has-auto-lim {model-axis.transform} else {
+      axes.at(i).transform = if has-auto-lim { model-axis.transform } else {
         let trafo = x => (model-axis.normalized-scale-trafo)((axis.functions.inv)(x))
         if axis.kind == "y" {
           y => it.height * (1 - trafo(y))
@@ -282,15 +291,15 @@
     }
   }
 
-  
-  
-  e.get(e-get => {
-  
   let axis-info = (
     x: (ticking: _axis-generate-ticks(xaxis, length: it.width)), 
     y: (ticking: _axis-generate-ticks(yaxis, length: it.height)), 
     rest: ((:),) * axes.len()
   )
+  
+  
+  
+  e.get(e-get => {
     
 
   let bounds = (left: 0pt, right: it.width, top: 0pt, bottom: it.height)
@@ -300,7 +309,8 @@
     
   let diagram = box(
     width: it.width, height: it.height, 
-    inset: 0pt, stroke: none, fill: it.fill,
+    inset: 0pt, outset: 0pt,
+    stroke: none, fill: it.fill,
     {
     set align(top + left) // sometimes alignment is messed up
     set place(left)
@@ -369,7 +379,9 @@
       }
 
       if plot.at("clip", default: true) { 
-        plotted-plot = place(box(width: it.width, height: it.height, clip: true, plotted-plot))
+        plotted-plot = place(
+          box(width: it.width, height: it.height, clip: true, plotted-plot)
+        )
       }
       artists.push((content: plotted-plot, z: plot.at("z-index", default: 2)))
 
@@ -443,46 +455,38 @@
     }
 
     if it.title != none {
-      let title = it.title
-      if e.eid(title) != e.eid(lq-title) {
-        title = lq-title(title)
-      }
-
-      let position = get-settable-field(lq-title, title, "position")
-      let dx = get-settable-field(lq-title, title, "dx")
-      let dy = get-settable-field(lq-title, title, "dy")
-      let pad = get-settable-field(lq-title, title, "pad")
-
-      let wrapper = if position in (top, bottom) {
-        box.with(width: it.width)
-      } else if position in (left, right) {
-        box.with(height: it.height)
-      }
-
-      let body = wrapper(title)
+      let (title-content, title-bounds) = _place-title-with-bounds(
+        it.title, get-settable-field, it.width, it.height
+      )
       
-      let (title, b) = place-with-bounds(body, alignment: position, dx: dx, dy: dy, pad: pad)
-      
-      artists.push((content: title, z: 20))
-      bounds = update-bounds(bounds, b)
+      artists.push((content: title-content, z: 20))
+      bounds = update-bounds(bounds, title-bounds)
     }
 
     
     if it.legend != none and (legend-entries.len() > 0 or e.eid(it.legend) == e.eid(lq-legend)) {
-      let (legend-content, legend-bounds) = _place-legend-with-bounds(it.legend, legend-entries, e-get)
+      let (legend-content, legend-bounds) = _place-legend-with-bounds(
+        it.legend, legend-entries, e-get
+      )
 
       artists.push((content: legend-content, z: e-get(lq-legend).z-index))
-
       bounds = update-bounds(bounds, legend-bounds)
     }
 
     artists.sorted(key: artist => artist.z).map(artist => artist.content).join()
   })
+
   bounds.bottom -= it.height
   bounds.right -= it.width
   bounds.left *= -1
   bounds.top *= -1
-  box(box(inset: bounds, diagram, stroke: if debug {.1pt} else {0pt}), baseline: bounds.bottom)
+
+  box(
+    inset: bounds, 
+    diagram, 
+    stroke: if debug { 0.1pt } else { none },
+    baseline: bounds.bottom
+  )
 })
 }
 

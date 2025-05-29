@@ -55,3 +55,40 @@
     e.field("pad", length, default: 0.5em),
   )
 )
+
+
+
+
+#import "../bounds.typ": place-with-bounds
+
+
+
+#let lq-title = title
+
+#let _place-title-with-bounds(
+  title,
+  get-settable-field,
+  width,
+  height
+) = {
+
+  if e.eid(title) != e.eid(lq-title) {
+    title = lq-title(title)
+  }
+
+  let position = get-settable-field(lq-title, title, "position")
+  let dx = get-settable-field(lq-title, title, "dx")
+  let dy = get-settable-field(lq-title, title, "dy")
+  let pad = get-settable-field(lq-title, title, "pad")
+
+  let wrapper = if position in (top, bottom) {
+    box.with(width: width)
+  } else if position in (left, right) {
+    box.with(height: height)
+  }
+
+  
+  place-with-bounds(
+    wrapper(title), alignment: position, dx: dx, dy: dy, pad: pad
+  )
+}
