@@ -398,17 +398,7 @@
     if not debug {
       show-bounds = (args, clr: red) => none
     }
-
-    let minor-axis-style = (
-      inset: 2pt,
-      outset: 0pt,
-      type: "minor"
-    )
-    let major-axis-style = (
-      inset: 4pt,
-      outset: 0pt,
-      type: "major"
-    )
+    
     let get-axis-args(axis) = {
       if axis.kind == "x" { 
         (length: it.width)
@@ -416,10 +406,10 @@
         (length: it.height)
       }
     }
-    let (xaxis-, max-xtick-size) = draw-axis(xaxis, axis-info.x.ticking, major-axis-style, e-get: e-get)
+    let (xaxis-, max-xtick-size) = draw-axis(xaxis, axis-info.x.ticking, e-get: e-get)
     artists.push((content: xaxis-, z: 20))
 
-    let (yaxis-, max-ytick-size) = draw-axis(yaxis, axis-info.y.ticking, major-axis-style, e-get: e-get)
+    let (yaxis-, max-ytick-size) = draw-axis(yaxis, axis-info.y.ticking, e-get: e-get)
     artists.push((content: yaxis-, z: 20))
  
     if type(max-ytick-size) == array {
@@ -438,7 +428,7 @@
 
     for axis in axes {
       let ticking = _axis-generate-ticks(axis, ..get-axis-args(axis))
-      let (axis-, axis-bounds) = draw-axis(axis, ticking, major-axis-style, e-get: e-get)
+      let (axis-, axis-bounds) = draw-axis(axis, ticking, e-get: e-get)
       artists.push((content: axis-, z: 20))
 
       
