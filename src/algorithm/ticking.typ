@@ -198,11 +198,11 @@
   density: 100%,
 
 
-  /// A base relative to which the tick distance is taken. This can for example
+  /// A unit relative to which the tick distance is taken. This can for example
   /// be used to generate ticks based on multiples of $\pi$ while keeping the
   /// flexibility of an automatically determined tick distance. 
   /// -> float
-  base: 1.0,
+  unit: 1.0,
 
   ..args
 
@@ -214,8 +214,8 @@
   if x1 < x0 {
     (x1, x0) = (x0, x1)
   }
-  x1 /= base
-  x0 /= base
+  x1 /= unit
+  x0 /= unit
 
   let step
   let exponent
@@ -260,9 +260,9 @@
   return (
     ticks: range(calc.min(max-ticks, num-ticks))
       .map(x => first-tick + x * tick-distance)
-      .map(x => x * base),
-    tick-distance: tick-distance * base,
-    base: base,
+      .map(x => x * unit),
+    tick-distance: tick-distance * unit,
+    unit: unit,
     
     // We provide additional args to ease the work of the formatter (in case it is
     // format-ticks-linear), because right now we have a lot of information. 
@@ -734,7 +734,7 @@
   ..args // important
 ) = {
   
-  let factor = tick-info.at("factor", default: 1)
+  let unit = tick-info.at("unit", default: 1)
 
   if offset == auto {
     offset = tick-info.at("offset", default: 0)
@@ -763,8 +763,8 @@
 
 
   let preapplied-exponent = inline-exponent + additional-exponent
-  let preapplied-factor = 1 / pow10(preapplied-exponent) / factor
-  let ticks = ticks.map(x => (x - offset) * preapplied-factor)
+  let preapplied-factor = 1 / pow10(preapplied-exponent) / unit
+  let ticks = ticks.map(x => (x - offset*unit) * preapplied-factor)
 
   
   let significant-digits = tick-info.at("significant-digits", default: none)
