@@ -612,13 +612,15 @@
     }
 
     let max-value = (axis.transform)(axis.lim.at(if kind == "x" { 1 } else { 0 }))
+    
+    let lq-tick-label = lq-tick-label.with(sub: sub, kind: kind)
 
     let content = ticks.zip(labels).map(
       ((tick, label)) => {
         let loc = (axis.transform)(tick)
         if not (axis.filter)(tick, calc.min(loc, max-value - loc)) { return }
         let tick-label = if display-tick-labels { label }
-        if tick-label != none {tick-label = lq-tick-label(tick-label, sub: sub)}
+        if tick-label != none {tick-label = lq-tick-label(tick-label)}
         make-tick(tick-label, loc)
       }
     ).join()

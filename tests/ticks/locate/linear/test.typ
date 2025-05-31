@@ -148,3 +148,21 @@
   (2e307, 4e307, 6e307, 8e307)
 )
 
+
+// Custom unit
+#assert.eq(
+  locate-ticks-linear(0, 7, unit: calc.pi),
+  (
+    ticks: (0, calc.pi*0.5, calc.pi, calc.pi*1.5, 2*calc.pi),
+    offset: 0,
+    exponent: 0,
+    tick-distance: calc.pi/2,
+    unit: calc.pi,
+    significant-digits: 1,
+  ) 
+)
+
+#assert.eq(
+  locate-ticks-linear(calc.pi*1010, calc.pi*1015, unit: calc.pi).ticks, 
+  range(6).map(x => (1010 + x)*calc.pi)
+)
