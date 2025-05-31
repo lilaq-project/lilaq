@@ -45,6 +45,6 @@
 #import "typing.typ": set-grid, set-label, set-title, set-legend, set-tick, set-tick-label, set-spine, set-diagram, set-errorbar, selector, fields, elembic
 
 #import "logic/scale.typ"
-#import "algorithm/ticking.typ": locate-ticks-linear, locate-ticks-log, locate-ticks-symlog, locate-ticks-manual, locate-subticks-linear, locate-subticks-log, locate-subticks-symlog, format-ticks-linear, format-ticks-log, format-ticks-manual, 
+#import "algorithm/ticking.typ": locate-ticks-linear, locate-ticks-log, locate-ticks-symlog, locate-ticks-manual, locate-subticks-linear, locate-subticks-log, locate-subticks-symlog, format-ticks-linear, format-ticks-log, format-ticks-manual, format-multiple, format-ticks-symlog
 
 #import "theme/theme.typ"

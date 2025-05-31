@@ -197,6 +197,13 @@
   /// -> ratio
   density: 100%,
 
+
+  /// A base relative to which the tick distance is taken. This can for example
+  /// be used to generate ticks based on multiples of $\pi$ while keeping the
+  /// flexibility of an automatically determined tick distance. 
+  /// -> float
+  base: 1.0,
+
   ..args
 
 ) = {
@@ -207,6 +214,8 @@
   if x1 < x0 {
     (x1, x0) = (x0, x1)
   }
+  x1 /= base
+  x0 /= base
 
   let step
   let exponent
@@ -249,9 +258,12 @@
   }
   
   return (
-    ticks: range(calc.min(max-ticks, num-ticks)).map(x => first-tick + x * tick-distance),
-    tick-distance: tick-distance,
-
+    ticks: range(calc.min(max-ticks, num-ticks))
+      .map(x => first-tick + x * tick-distance)
+      .map(x => x * base),
+    tick-distance: tick-distance * base,
+    base: base,
+    
     // We provide additional args to ease the work of the formatter (in case it is
     // format-ticks-linear), because right now we have a lot of information. 
 
@@ -718,8 +730,11 @@
   exponent: auto,     // auto | int | "inline"
   offset: auto,       // auto | int | float
   auto-exponent-threshold: 3,
+  suffix: none,
   ..args // important
 ) = {
+  
+  let factor = tick-info.at("factor", default: 1)
 
   if offset == auto {
     offset = tick-info.at("offset", default: 0)
@@ -748,7 +763,7 @@
 
 
   let preapplied-exponent = inline-exponent + additional-exponent
-  let preapplied-factor = 1 / pow10(preapplied-exponent)
+  let preapplied-factor = 1 / pow10(preapplied-exponent) / factor
   let ticks = ticks.map(x => (x - offset) * preapplied-factor)
 
   
@@ -766,6 +781,20 @@
      digits: significant-digits
    )
   )
+
+
+  if suffix != none {
+    labels = ticks.zip(labels).map(((tick, label)) => {
+      if tick == 0 { return $0$ }
+      tick = calc.round(tick, digits: 3)
+
+      if tick == 1 { label = none }
+      else if tick == -1 { label = "−"}
+
+      label + suffix
+    })
+  }
+
 
   (
     labels: labels, 
@@ -850,3 +879,32 @@
   log + linear.labels
 }
 
+
+
+#let format-multiple(
+  ticks, 
+  factor: auto,
+  body: none,
+  tick-info: (:),
+  ..args
+) = {
+  if factor == auto {
+    factor = tick-info.at("factor", default: 1)
+  }
+  ticks = ticks.map(tick => tick / factor)
+  let result = format-ticks-linear(
+    ticks, 
+    tick-info: tick-info,
+    ..args
+  )
+  result.labels = ticks.zip(result.labels).map(((tick, label)) => {
+    if tick == 0 { return $0$ }
+    tick = calc.round(tick, digits: 3)
+
+    if tick == 1 { label = none }
+    else if tick == -1 { label = "−"}
+
+    label + body
+  })
+  result
+}
