@@ -223,26 +223,29 @@
   }
   
   tick-distance = float(tick-distance) // important, calc.quo is a bit inconsistent
-  
+
   let precision-offset = compute-precision-offset(x0, x1)
-  let first-tick-first-guess = calc.quo(x0 - precision-offset, tick-distance) * tick-distance
+  let first-tick = calc.ceil(x0 / tick-distance) * tick-distance
+  let x0-offset = precision-offset + first-tick
 
-  let x0-offset = precision-offset + first-tick-first-guess
+  let num-ticks = 1 + fit-down(
+    x1 - x0-offset, tick-distance, offset: precision-offset
+  ) - fit-up(
+    x0 - x0-offset, tick-distance, offset: precision-offset
+  )
 
-  let axis-offset = 0 
-  if calc.abs(calc.max(x1, x0) / tick-distance) >= 5000 {
-    // let fg = pow10(calc.ceil(calc.log(dx, base: 10) + 1))
-    axis-offset = discretize-down(x0, 1, exponent + 2)
-  }
-  
-  let first-tick = discretize-up(x0 - x0-offset, step, exponent - 1, offset: precision-offset) + x0-offset
-
-  let num-ticks = fit-down(x1 - x0-offset, tick-distance, offset: precision-offset) - fit-up(x0 - x0-offset, tick-distance, offset: precision-offset) + 1
 
   let significant-digits = if calc.round(step) == step {
     -calc.floor(calc.log(tick-distance))
   } else {
     estimate-significant-digits((0, tick-distance))
+  }
+
+  
+  let axis-offset = 0 
+  if calc.abs(calc.max(x1, x0) / tick-distance) >= 5000 {
+    // let fg = pow10(calc.ceil(calc.log(dx, base: 10) + 1))
+    axis-offset = discretize-down(x0, 1, exponent + 2)
   }
   
   return (
