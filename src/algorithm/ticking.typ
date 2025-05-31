@@ -197,6 +197,13 @@
   /// -> ratio
   density: 100%,
 
+
+  /// A unit relative to which the tick distance is taken. This can for example
+  /// be used to generate ticks based on multiples of $\pi$ while keeping the
+  /// flexibility of an automatically determined tick distance. 
+  /// -> float
+  unit: 1.0,
+
   ..args
 
 ) = {
@@ -207,6 +214,8 @@
   if x1 < x0 {
     (x1, x0) = (x0, x1)
   }
+  x1 /= unit
+  x0 /= unit
 
   let step
   let exponent
@@ -249,9 +258,12 @@
   }
   
   return (
-    ticks: range(calc.min(max-ticks, num-ticks)).map(x => first-tick + x * tick-distance),
-    tick-distance: tick-distance,
-
+    ticks: range(calc.min(max-ticks, num-ticks))
+      .map(x => first-tick + x * tick-distance)
+      .map(x => x * unit),
+    tick-distance: tick-distance * unit,
+    unit: unit,
+    
     // We provide additional args to ease the work of the formatter (in case it is
     // format-ticks-linear), because right now we have a lot of information. 
 
@@ -718,8 +730,11 @@
   exponent: auto,     // auto | int | "inline"
   offset: auto,       // auto | int | float
   auto-exponent-threshold: 3,
+  suffix: none,
   ..args // important
 ) = {
+  
+  let unit = tick-info.at("unit", default: 1)
 
   if offset == auto {
     offset = tick-info.at("offset", default: 0)
@@ -748,8 +763,8 @@
 
 
   let preapplied-exponent = inline-exponent + additional-exponent
-  let preapplied-factor = 1 / pow10(preapplied-exponent)
-  let ticks = ticks.map(x => (x - offset) * preapplied-factor)
+  let preapplied-factor = 1 / pow10(preapplied-exponent) / unit
+  let ticks = ticks.map(x => (x - offset*unit) * preapplied-factor)
 
   
   let significant-digits = tick-info.at("significant-digits", default: none)
@@ -766,6 +781,20 @@
      digits: significant-digits
    )
   )
+
+
+  if suffix != none {
+    labels = ticks.zip(labels).map(((tick, label)) => {
+      if tick == 0 { return $0$ }
+      tick = calc.round(tick, digits: 3)
+
+      if tick == 1 { label = none }
+      else if tick == -1 { label = "−"}
+
+      label + suffix
+    })
+  }
+
 
   (
     labels: labels, 
