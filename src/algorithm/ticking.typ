@@ -879,32 +879,3 @@
   log + linear.labels
 }
 
-
-
-#let format-multiple(
-  ticks, 
-  factor: auto,
-  body: none,
-  tick-info: (:),
-  ..args
-) = {
-  if factor == auto {
-    factor = tick-info.at("factor", default: 1)
-  }
-  ticks = ticks.map(tick => tick / factor)
-  let result = format-ticks-linear(
-    ticks, 
-    tick-info: tick-info,
-    ..args
-  )
-  result.labels = ticks.zip(result.labels).map(((tick, label)) => {
-    if tick == 0 { return $0$ }
-    tick = calc.round(tick, digits: 3)
-
-    if tick == 1 { label = none }
-    else if tick == -1 { label = "−"}
-
-    label + body
-  })
-  result
-}
