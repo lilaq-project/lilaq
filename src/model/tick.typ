@@ -88,6 +88,11 @@
   fields: (
     e.field("value", float, required: true),
     e.field("sub", bool, default: false),
+    e.field(
+      "kind", 
+      e.types.union(e.types.literal("x"), e.types.literal("y")), 
+      default: "x"
+    ),
     e.field("label", e.types.any, default: none),
     e.field("align", e.types.wrap(alignment, fold: none), default: right),
     e.field("stroke", e.types.smart(stroke), default: auto),
@@ -139,6 +144,11 @@
 
   fields: (
     e.field("body", content, required: true),
+    e.field(
+      "kind", 
+      e.types.union(e.types.literal("x"), e.types.literal("y")), 
+      default: "x"
+    ),
     e.field("sub", bool, default: false),
   )
 )
