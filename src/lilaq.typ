@@ -38,7 +38,7 @@
 
 
 #import "style/tilings.typ"
-#import "colorbar.typ": colorbar
+#import "model/colorbar.typ": colorbar
 #import "place-anchor.typ": place-anchor
 
 

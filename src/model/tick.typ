@@ -20,6 +20,10 @@
   /// -> bool
   sub: false,
 
+  /// The kind of axis that the tick is attached to.
+  /// -> "x" | "y"
+  kind: "x",
+
   /// How to stroke the tick mark. If set to `auto`, the stroke is inherited 
   /// the axis spine. 
   /// -> auto | stroke
@@ -129,6 +133,9 @@
   /// -> bool
   sub: false,
 
+  /// The kind of axis that the tick label is attached to.
+  /// -> "x" | "y"
+  kind: "x",
 
 ) = {}
 
