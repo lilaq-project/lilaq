@@ -149,10 +149,9 @@
   /// -> auto | none | function
   format-subticks: none,
 
-  /// An array of extra ticks to display. The ticks can be positions given as `float` or `lq.tick` objects. 
-  /// TODO: not implemented yet
+  /// An array of extra ticks to display. The ticks can be positions given as `float` data values or @tick instances. 
   /// -> array
-  extra-ticks: none, 
+  extra-ticks: (), 
 
   /// The formatter for the extra ticks. 
   format-extra-ticks: none,
@@ -560,12 +559,12 @@
 // Draws an axis and its mirror (if any)
 #let draw-axis(
   axis,
-  ticking,
+  tick-info,
   e-get: none
 ) = {
   if axis.hidden { return (none, ()) }
 
-  let (ticks, tick-labels, subticks, subtick-labels, exp, offset) = ticking
+  let (ticks, tick-labels, subticks, subtick-labels, exp, offset) = tick-info
   
 
   // Places a set of ticks together with labels
@@ -577,7 +576,8 @@
     // Whether to show tick labels
     display-tick-labels, 
     sub: false,
-    kind: "x"
+    kind: "x",
+    extra-ticks: ()
   ) = {
     if labels == none { labels = (none,) * ticks.len() }
     
@@ -625,6 +625,36 @@
       }
     ).join()
 
+  
+    for tick in extra-ticks {
+      let format-ticks = if-none(
+        axis.format-ticks,
+        ticking.format-ticks-linear
+      )
+
+      if type(tick) in (int, float) {
+        tick = lq-tick(
+          tick, 
+          label: format-ticks((tick,)).labels.first(),
+          align: position.inv(),
+          kind: axis.kind
+        )
+      }
+      let label = e.fields(tick).at("label", default: none)
+      if label != none { labels.push(label) }
+
+      let loc = (axis.transform)(e.fields(tick).value)
+      let offset = if kind == "x" { (dx: loc) } else { (dy: loc) }
+      content += place(..offset, {
+        show: e.set_(lq-tick, align: position.inv(), kind: axis.kind)
+        show e.selector(lq-tick-label): it => {
+          if display-tick-labels { it }
+        }
+        tick
+      })
+    } // end extra-ticks
+
+
     let max-padding = outset
 
     if display-tick-labels {
@@ -668,25 +698,17 @@
 
     if display-ticks {
       let (tick-content, tick-space) = place-ticks(
-        ticks, tick-labels, position, display-tick-labels, kind: kind
+        ticks, tick-labels, position, display-tick-labels, kind: kind, extra-ticks: axis.extra-ticks
       )
       content += tick-content
       space = tick-space
 
       let (subtick-content, _) = place-ticks(
-        subticks, subtick-labels, position, display-tick-labels, sub: true, kind: kind
+        subticks, subtick-labels, position, display-tick-labels, 
+        sub: true, kind: kind
       )
       content += subtick-content
 
-      if axis.extra-ticks != none {
-        // Todo
-        // for tick in axis.extra-ticks {
-          
-        //   if type(tick) in (int, float) {
-        //     tick = lq-tick(tick)
-        //   } 
-        // }
-      }
     }
 
 

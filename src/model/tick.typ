@@ -4,6 +4,47 @@
 #import "spine.typ": spine
 
 
+/// A tick label, usually a number denoting the coordinate value. 
+/// This type exists prominently to enable `show` rules on tick labels. 
+#let tick-label(
+
+  /// Content to show in the label. 
+  /// -> content
+  body,
+
+  /// Whether this is a label for a subtick. 
+  /// -> bool
+  sub: false,
+
+  /// The kind of axis that the tick label is attached to.
+  /// -> "x" | "y"
+  kind: "x",
+
+) = {}
+
+
+
+#let tick-label = e.element.declare(
+  "tick-label",
+  prefix: "lilaq",
+
+  display: it => {
+    it.body
+  },
+
+  fields: (
+    e.field("body", content, required: true),
+    e.field(
+      "kind", 
+      e.types.union(e.types.literal("x"), e.types.literal("y")), 
+      default: "x"
+    ),
+    e.field("sub", bool, default: false),
+  )
+)
+
+
+
 /// A tick or subtick on a diagram axis. A tick consists of a tick mark on the axis and
 /// a tick label, usually a number denoting the coordinate value. 
 #let tick(
@@ -12,8 +53,8 @@
   /// -> float
   value, 
 
-  /// The content for the tick label. 
-  /// -> any
+  /// The label for the tick. 
+  /// -> content | lq.tick-label
   label: none,
 
   /// Whether this is a subtick. 
@@ -75,16 +116,32 @@
       stroke = e-get(spine).stroke 
     }
 
-    box(inset: (repr(it.align): it.pad + it.outset * factor), {
-      place(
-        twod-ify-alignment(it.align), 
-        pad(
-          ..(repr(it.align): -it.pad - length),
-          line(length: length, angle: angle, stroke: stroke)
-        )
-      )
-      it.label
-    })
+    let label = it.label
+    if e.eid(label) != e.eid(tick-label) {
+      label = tick-label(label, sub: it.sub)
+    }
+
+    let tline = line(length: length, angle: angle, stroke: stroke)
+
+
+
+    if it.align == right {
+      move(dx: -it.outset, {
+        tline + place(dx: -length - it.pad, right + horizon, label)
+      })
+    } else if it.align == left {
+      move(dx: -length + it.outset, {
+        tline + place(dx: length + it.pad, left + horizon, label)
+      })
+    } else if it.align == top {
+      move(dy: -length + it.outset, {
+        tline + place(dy: length + it.pad, top + center, label)
+      });
+    } else if it.align == bottom {
+      move(dy: -it.outset,  {
+        tline + place(dy: -length - it.pad, bottom + center, label)
+      })
+    }
   }),
 
   labelable: false,
@@ -108,54 +165,41 @@
 )
 
 
-#tick(34, label: [34])
-#tick(34, label: [34], align: left)
-#tick(34, label: [34], align: top)
-#tick(34, label: [34], align: bottom)
-
-#tick(34, label: [34], inset: 2pt)
-#tick(34, label: [34], align: left, inset: 2pt)
-#tick(34, label: [34], align: top, inset: 2pt)
-#tick(34, label: [34], align: bottom, inset: 2pt)
-
-
-
-
-/// A tick label, usually a number denoting the coordinate value. 
-/// This type exists prominently to enable `show` rules on tick labels. 
-#let tick-label(
-
-  /// Content to show in the label. 
-  /// -> content
-  body,
-
-  /// Whether this is a label for a subtick. 
-  /// -> bool
-  sub: false,
-
-  /// The kind of axis that the tick label is attached to.
-  /// -> "x" | "y"
-  kind: "x",
-
-) = {}
-
-
-
-#let tick-label = e.element.declare(
-  "tick-label",
-  prefix: "lilaq",
-
-  display: it => {
-    it.body
-  },
-
-  fields: (
-    e.field("body", content, required: true),
-    e.field(
-      "kind", 
-      e.types.union(e.types.literal("x"), e.types.literal("y")), 
-      default: "x"
-    ),
-    e.field("sub", bool, default: false),
-  )
+#box(
+  stroke: red,
+  width: 1cm, height: 1cm, 
+  tick(34, label: [304])
 )
+
+#box(
+  stroke: red,
+  width: 1cm, height: 1cm, 
+  tick(34, label: [304], align: left)
+)
+
+#box(
+  stroke: red,
+  width: 1cm, height: 1cm, 
+  tick(34, label: [304], align: top)
+)
+#box(
+  stroke: red,
+  width: 1cm, height: 1cm, 
+  tick(34, label: [304], align: bottom)
+)
+
+\
+\
+
+// #tick(34, label: [34])
+// #tick(34, label: [34], align: left)
+// #tick(34, label: [34], align: top)
+// #tick(34, label: [34], align: bottom)
+
+// #tick(34, label: [34], inset: 2pt)
+// #tick(34, label: [34], align: left, inset: 2pt)
+// #tick(34, label: [34], align: top, inset: 2pt)
+// #tick(34, label: [34], align: bottom, inset: 2pt)
+
+
+
