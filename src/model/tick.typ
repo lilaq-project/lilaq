@@ -33,7 +33,7 @@
   },
 
   fields: (
-    e.field("body", content, required: true),
+    e.field("body", e.types.option(content), required: true),
     e.field(
       "kind", 
       e.types.union(e.types.literal("x"), e.types.literal("y")), 
