@@ -24,6 +24,7 @@
       0.1, 
       lq.tick(0.3),
       lq.tick(0.5, label: lq.tick-label(sub: true)[Test]),
+      lq.tick(0.8, label: [This is a very long tick label that shouldn't line break.]),
     )
 
   )
