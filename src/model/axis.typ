@@ -580,6 +580,25 @@
     extra-ticks: ()
   ) = {
     if labels == none { labels = (none,) * ticks.len() }
+
+    // Put the labels in boxes wide enough so that they don't try to line-break if the diagram is too narrow.
+    // Also computes the maximum extra margin required to fit the labels.
+    let measure-dimension = if axis.kind == "x" { "height" } else { "width" }
+    let measure-and-give-enough-space(label) = {
+      let measured = measure(label)
+      (box(label, width: measured.width, height: measured.height), measured.at(measure-dimension))
+    }
+    let (labels, label-space) = labels
+      .map(v => {
+        let (a, b) = measure-and-give-enough-space(v)
+        ((a,), b)
+      })
+      .fold(
+        ((), 0pt),
+        ((labels-a, max-space-a), (labels-b, max-space-b)) => {
+          (labels-a + labels-b, calc.max(max-space-a, max-space-b))
+        },
+      )
     
     let align = position.inv()
     let pad = e-get(lq-tick).pad
@@ -640,15 +659,15 @@
           kind: axis.kind
         )
       }
-      let label = e.fields(tick).at("label", default: none)
-      if label != none { labels.push(label) }
+      let (new-label, new-space) = measure-and-give-enough-space(e.fields(tick).at("label", default: none))
+      label-space = calc.max(label-space, new-space)
 
       let loc = (axis.transform)(e.fields(tick).value)
       let offset = if kind == "x" { (dx: loc) } else { (dy: loc) }
       content += place(..offset, {
         show: e.set_(lq-tick, align: position.inv(), kind: axis.kind)
         show e.selector(lq-tick-label): it => {
-          if display-tick-labels { it }
+          if display-tick-labels { box(it, width: new-label.width) }
         }
         tick
       })
@@ -658,10 +677,6 @@
     let max-padding = outset
 
     if display-tick-labels {
-      let dimension = if axis.kind == "x" { "height" } else { "width" }
-      let label-space = calc.max(
-        ..labels.map(label => measure(label).at(dimension)), 0pt
-      )
       max-padding += label-space
       if label-space > 0pt {
         max-padding += pad
