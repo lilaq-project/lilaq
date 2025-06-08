@@ -668,6 +668,9 @@
       }
     }
 
+    if kind == "y" {
+      content = place(box(width: max-padding, content))
+    } 
     
     return (content, max-padding)
   }

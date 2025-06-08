@@ -28,3 +28,11 @@
 
   )
 )
+
+#pagebreak()
+
+#lq.diagram(
+  width: 1cm, height: 2cm,
+  xaxis: none,
+  yaxis: (ticks: none, extra-ticks: (lq.tick(.5, label: [Long label]),))
+)
