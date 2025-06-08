@@ -656,21 +656,34 @@
 
 
     let max-padding = outset
+    let max-width = 0pt
 
     if display-tick-labels {
       let dimension = if axis.kind == "x" { "height" } else { "width" }
-      let label-space = calc.max(
-        ..labels.map(label => measure(label).at(dimension)), 0pt
-      )
+
+      let label-space
+      (label-space, max-width) = labels
+        .map(label => {
+          let measured = measure(label)
+          (measured.at(dimension), measured.width)
+        })
+        .fold(
+          (0pt, 0pt),
+          ((max-dim, max-w), (next-dim, next-w)) => (calc.max(max-dim, next-dim), calc.max(max-w, next-w)),
+        )
+
       max-padding += label-space
       if label-space > 0pt {
         max-padding += pad
       }
     }
 
-    if kind == "y" {
+    // Prevent ticks from line-wrapping by boxing them in enough space.
+    if kind == "x" {
+      content = place(box(width: max-width, content))
+    } else {
       content = place(box(width: max-padding, content))
-    } 
+    }
     
     return (content, max-padding)
   }
