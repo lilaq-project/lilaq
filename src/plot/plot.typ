@@ -100,36 +100,27 @@
       element: curve
     )
 
+    let (step, smooth) = (plot.style.step, plot.style.smooth)
+    if step != none and smooth {
+      panic("`step` and `smooth` are mututally exclusive")
+    }
+
     for run in runs {
       if run.len() == 0 { continue }
 
-      let (step, smooth) = (plot.style.step, plot.style.smooth)
-      if step != none and smooth != none and smooth {
-        panic("`step` and `smooth` are mututally exclusive")
-      }
-
       if step != none { run = stepify(run, step: step )}
       run = run.map(p => transform(..p))
-      // TODO: line is not rendered in legend
-      if smooth != none and smooth {
-        // There's probably a way to do this in one line
+      if run.len() > 2 and smooth {
         let x = run.map(((x, _)) => x)
         let y = run.map(((_, y)) => y)
-
-        // TODO: There's one run which has less than 3 elements, which causes the calculation to fail.
-        // We should figure out why and how to best solve it.
-        if x.len() < 3 {
-            continue
-        }
 
         let points = bezier-splines(x, y)
 
         place(curve(curve.move(points.at(0)), ..points
           .slice(1)
           .chunks(3)
-          .map(p => curve.cubic(p.at(0), p.at(1), p.at(2)))))
-      }
-      else {
+          .map(p => curve.cubic(..p))))
+      } else {
         place(curve(
           curve.move(run.first()),
           ..run.slice(1).map(curve.line)
@@ -350,7 +341,9 @@
   /// -> none | start | end | center
   step: none,
 
-  /// Interpolate the data set using Bézier splines instead of linear interpolation.
+  /// Interpolates the data set using Bézier splines instead of connecting the points with straight lines.
+  ///
+  /// Note: If 2 or less points are given, linear interpolation is used.
   ///
   /// #details[
   ///   ```example
@@ -364,8 +357,8 @@
   ///   ```
   /// ]
   ///
-  /// -> none | bool
-  smooth: none,
+  /// -> bool
+  smooth: false,
 
   /// Specifies the interval of marks to plot. This can be used to skip
   /// marks while still drawing lines between all points.

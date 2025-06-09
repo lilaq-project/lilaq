@@ -1,6 +1,6 @@
 #import "linear-system.typ": thomas-algorithm
 
-/// Solve for a system of linear equations $A dot arrow(x) = arrow(b)$
+/// Solves for a system of linear equations $A dot arrow(x) = arrow(b)$
 /// for the control points of the Bézier spline in either $x$ or $y$.
 ///
 /// Returns an array of all control points (including start and end points) in $x$ or $y$.
@@ -35,7 +35,7 @@
   points
 }
 
-/// Calculate the control points (including start and end points) for a Bézier spline
+/// Calculates the control points (including start and end points) for a Bézier spline
 /// which interpolates the given data set.
 /// For the boundary conditions a curvature of 0 was chosen for the start and end points.
 ///
@@ -46,8 +46,10 @@
 /// -> array
 #let bezier-splines(
   /// $x$ coordinates of the given points.
+  /// -> array
   x,
   /// $y$ coordinates of the given points.
+  /// -> array
   y,
 ) = {
   let n = y.len() - 1
