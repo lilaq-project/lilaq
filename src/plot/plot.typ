@@ -1,3 +1,4 @@
+#import "../algorithm/bezier-interpolation.typ": bezier-splines
 #import "../logic/limits.typ": plot-lim
 #import "../process-styles.typ": merge-strokes, merge-fills
 #import "../assertations.typ"
@@ -101,12 +102,39 @@
 
     for run in runs {
       if run.len() == 0 { continue }
-      if plot.style.step != none { run = stepify(run, step: plot.style.step )}
+
+      let (step, smooth) = (plot.style.step, plot.style.smooth)
+      if step != none and smooth != none and smooth {
+        panic("`step` and `smooth` are mututally exclusive")
+      }
+
+      if step != none { run = stepify(run, step: step )}
       run = run.map(p => transform(..p))
-      place(curve(
-        curve.move(run.first()),
-        ..run.slice(1).map(curve.line)
-      ))
+      // TODO: line is not rendered in legend
+      if smooth != none and smooth {
+        // There's probably a way to do this in one line
+        let x = run.map(((x, _)) => x)
+        let y = run.map(((_, y)) => y)
+
+        // TODO: There's one run which has less than 3 elements, which causes the calculation to fail.
+        // We should figure out why and how to best solve it.
+        if x.len() < 3 {
+            continue
+        }
+
+        let points = bezier-splines(x, y)
+
+        place(curve(curve.move(points.at(0)), ..points
+          .slice(1)
+          .chunks(3)
+          .map(p => curve.cubic(p.at(0), p.at(1), p.at(2)))))
+      }
+      else {
+        place(curve(
+          curve.move(run.first()),
+          ..run.slice(1).map(curve.line)
+        ))
+      }
     }
   }
 
@@ -322,6 +350,23 @@
   /// -> none | start | end | center
   step: none,
 
+  /// Interpolate the data set using Bézier splines instead of linear interpolation.
+  ///
+  /// #details[
+  ///   ```example
+  ///   #import lilaq
+  ///   #lq.diagram(
+  ///     lq.plot(
+  ///       range(8), (3,6,2,6,5,9,0,4),
+  ///       smooth: true
+  ///     )
+  ///   )
+  ///   ```
+  /// ]
+  ///
+  /// -> none | bool
+  smooth: none,
+
   /// Specifies the interval of marks to plot. This can be used to skip
   /// marks while still drawing lines between all points.
   /// - `none`: All marks are plotted.
@@ -421,7 +466,8 @@
     style: (
       stroke: stroke,
       color: color,
-      step: step
+      step: step,
+      smooth: smooth
     ),
     plot: render-plot,
     xlimits: () => plot-lim(x, err: xerr),
