@@ -175,3 +175,16 @@
     (1,2,3,float.nan, 6, 4, float.nan, 3)
   )
 )
+
+
+#pagebreak()
+
+
+#let x = range(3) + (float.nan, 3, 4, float.nan, 5)
+#let y = (2, -1, 3, float.nan, 2, 0, float.nan, 1)
+
+// Smooth
+#lq.diagram(
+  lq.plot(x, y, smooth: false),
+  lq.plot(x, y, smooth: true),
+)

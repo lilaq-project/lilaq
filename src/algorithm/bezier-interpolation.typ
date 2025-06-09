@@ -54,6 +54,10 @@
 ) = {
   let n = y.len() - 1
 
+  if n < 2 {
+    panic("at least 3 points are required for calculating a Bézier spline")
+  }
+
   let A = ((0,) * (n),) * (n)
   for i in range(1, n - 1) {
     A.at(i).at(i) = 4
