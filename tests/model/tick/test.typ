@@ -4,7 +4,7 @@
 #import "/src/lilaq.typ" as lq
 
 #show lq.selector(lq.tick-label): box.with(fill: yellow)
-// #show: lq.elembic.show_(lq.tick-label.with(sub: true), it => { set text(.8em); it })
+#show: lq.show_(lq.tick-label.with(sub: true), it => { set text(.8em); it })
 
 #lq.diagram(
   width: 3cm,
