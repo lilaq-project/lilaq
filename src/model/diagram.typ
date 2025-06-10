@@ -525,7 +525,7 @@
     } else if args.pos() == () {
       args
     } else {
-      assert(false, message: "element 'diagram': unexpected positional arguments\n  hint: these can only be passed to the constructor")
+      return (false, "element 'diagram': unexpected positional arguments\n  hint: these can only be passed to the constructor")
     }
 
     default-parser(args, include-required: include-required)
