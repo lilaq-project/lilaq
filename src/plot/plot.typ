@@ -1,3 +1,4 @@
+#import "../algorithm/bezier-interpolation.typ": bezier-splines
 #import "../logic/limits.typ": plot-lim
 #import "../process-styles.typ": merge-strokes, merge-fills
 #import "../assertations.typ"
@@ -99,14 +100,32 @@
       element: curve
     )
 
+    let (step, smooth) = (plot.style.step, plot.style.smooth)
+    if step != none and smooth {
+      panic("`step` and `smooth` are mututally exclusive")
+    }
+
     for run in runs {
       if run.len() == 0 { continue }
-      if plot.style.step != none { run = stepify(run, step: plot.style.step )}
+
+      if step != none { run = stepify(run, step: step )}
       run = run.map(p => transform(..p))
-      place(curve(
-        curve.move(run.first()),
-        ..run.slice(1).map(curve.line)
-      ))
+      if run.len() > 2 and smooth {
+        let x = run.map(((x, _)) => x)
+        let y = run.map(((_, y)) => y)
+
+        let points = bezier-splines(x, y)
+
+        place(curve(curve.move(points.at(0)), ..points
+          .slice(1)
+          .chunks(3)
+          .map(p => curve.cubic(..p))))
+      } else {
+        place(curve(
+          curve.move(run.first()),
+          ..run.slice(1).map(curve.line)
+        ))
+      }
     }
   }
 
@@ -322,6 +341,25 @@
   /// -> none | start | end | center
   step: none,
 
+  /// Interpolates the data set using Bézier splines instead of connecting the points with straight lines.
+  ///
+  /// Note: If 2 or less points are given, linear interpolation is used.
+  ///
+  /// #details[
+  ///   ```example
+  ///   #import lilaq
+  ///   #lq.diagram(
+  ///     lq.plot(
+  ///       range(8), (3,6,2,6,5,9,0,4),
+  ///       smooth: true
+  ///     )
+  ///   )
+  ///   ```
+  /// ]
+  ///
+  /// -> bool
+  smooth: false,
+
   /// Specifies the interval of marks to plot. This can be used to skip
   /// marks while still drawing lines between all points.
   /// - `none`: All marks are plotted.
@@ -421,7 +459,8 @@
     style: (
       stroke: stroke,
       color: color,
-      step: step
+      step: step,
+      smooth: smooth
     ),
     plot: render-plot,
     xlimits: () => plot-lim(x, err: xerr),
