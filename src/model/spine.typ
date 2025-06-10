@@ -1,4 +1,4 @@
-#import "../libs/elembic/lib.typ" as e
+#import "@preview/elembic:1.0.0" as e
 #import "@preview/tiptoe:0.3.1"
 
 

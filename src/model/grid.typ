@@ -1,4 +1,4 @@
-#import "../libs/elembic/lib.typ" as e
+#import "@preview/elembic:1.0.0" as e
 
 
 /// An axis grid for highlighting tick positions in the diagram area. The 

@@ -16,7 +16,7 @@
 
 #import "../style/styling.typ": init as cycle-init, style, process-cycles-arg
 #import "../style/map.typ": petroff10
-#import "../libs/elembic/lib.typ" as e
+#import "@preview/elembic:1.0.0" as e
 
 #let debug = false
 
@@ -525,7 +525,7 @@
     } else if args.pos() == () {
       args
     } else {
-      assert(false, message: "element 'diagram': unexpected positional arguments\n  hint: these can only be passed to the constructor")
+      return (false, "element 'diagram': unexpected positional arguments\n  hint: these can only be passed to the constructor")
     }
 
     default-parser(args, include-required: include-required)

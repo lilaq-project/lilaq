@@ -1,5 +1,5 @@
 
-#import "../libs/elembic/lib.typ" as e
+#import "@preview/elembic:1.0.0" as e
 
 
 /// An error bar object for a plot. This type allows for quick configuration and 

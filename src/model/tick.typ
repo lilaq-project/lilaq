@@ -1,6 +1,6 @@
 
 #import "../process-styles.typ": twod-ify-alignment
-#import "../libs/elembic/lib.typ" as e
+#import "@preview/elembic:1.0.0" as e
 #import "spine.typ": spine
 
 

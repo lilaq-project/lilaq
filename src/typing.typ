@@ -1,4 +1,4 @@
-#import "libs/elembic/lib.typ" as e: selector
+#import "@preview/elembic:1.0.0" as e: selector, cond-set, show_
 #import "model/grid.typ": grid
 #import "model/label.typ": label
 #import "model/title.typ": title
@@ -10,7 +10,6 @@
 
 #let set_ = e.set_
 #let fields = e.fields
-#let elembic = e
 #let set-grid = e.set_.with(grid)
 #let set-title = e.set_.with(title)
 #let set-label = e.set_.with(label)
