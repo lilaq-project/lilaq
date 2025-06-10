@@ -1,7 +1,7 @@
 #import "../process-styles.typ": twod-ify-alignment
 #import "../bounds.typ": place-with-bounds
 #import "../assertations.typ"
-#import "../libs/elembic/lib.typ" as e
+#import "@preview/elembic:1.0.0" as e
 
 /// A diagram legend listing all labeled plots. 
 /// 

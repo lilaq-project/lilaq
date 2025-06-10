@@ -42,7 +42,7 @@
 
 
 
-#import "../libs/elembic/lib.typ" as e
+#import "@preview/elembic:1.0.0" as e
 
 #let label = e.element.declare(
   "label",
