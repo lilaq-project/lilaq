@@ -93,6 +93,10 @@
 
 ) = {
   (
+    x: x, 
+    y: y,
+    align: align,
+    body: body,
     plot: (plot, transform) => { 
       let (px, py) = transform-point(x, y, transform)
       std.place(
@@ -100,6 +104,7 @@
         std.place(twod-ify-alignment(align), body),
       )
     },
+    id: "place",
     xlimits: () => none,
     ylimits: () => none,
     label: none,

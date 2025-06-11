@@ -2,7 +2,9 @@
 #import "../assertations.typ"
 #import "../utility.typ": if-auto
 #import "../bounds.typ": update-bounds, place-with-bounds
-#import "../process-styles.typ": update-stroke, process-margin, process-grid-arg
+#import "../process-styles.typ": update-stroke, process-margin, process-grid-arg, twod-ify-alignment
+#import "../logic/process-coordinates.typ": transform-point
+
 
 #import "legend.typ": legend as lq-legend, _place-legend-with-bounds
 #import "grid.typ": grid as lq-grid
@@ -362,6 +364,15 @@
       if type(plot) == dictionary and "axis-id" in plot {
         transform = axes-transforms.at(plot.axis-id)
         plot = plot.plot
+      }
+
+      if plot.at("id", default: none) == "place" and not plot.clip {
+        let (px, py) = transform-point(plot.x, plot.y, transform)
+        let (_, place-bounds) = place-with-bounds(
+          plot.body, dx: px, dy: py, 
+          content-alignment: twod-ify-alignment(plot.align)
+        )
+        bounds = update-bounds(bounds, place-bounds)
       }
 
 
