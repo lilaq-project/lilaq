@@ -89,6 +89,7 @@
     points = ((0.5, 0.5),)
     if plot.yerr != none { plot.yerr = (p: (.5,), m: (.5,),) }
     if plot.xerr != none { plot.xerr = (p: (.25,), m: (.25,)) }
+    plot.mark.every = none
   }
 
 
