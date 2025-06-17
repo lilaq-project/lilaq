@@ -1,6 +1,6 @@
 #set page(width: auto, height: auto, margin: 1pt)
 
-#import "../template.typ": *
+#import "../../template.typ": *
 #show: minimal
 
 
