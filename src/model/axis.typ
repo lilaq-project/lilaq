@@ -5,7 +5,7 @@
 #import "../assertations.typ"
 #import "../model/label.typ": xlabel, ylabel, label as lq-label
 #import "../process-styles.typ": update-stroke, merge-strokes
-#import "@preview/elembic:1.0.0" as e
+#import "@preview/elembic:1.1.0" as e
 
 #import "tick.typ": tick as lq-tick, tick-label as lq-tick-label
 #import "spine.typ": spine

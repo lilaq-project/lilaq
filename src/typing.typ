@@ -1,4 +1,4 @@
-#import "@preview/elembic:1.0.0" as e: selector, cond-set, show_
+#import "@preview/elembic:1.1.0" as e: selector, cond-set, show_
 #import "model/grid.typ": grid
 #import "model/label.typ": label
 #import "model/title.typ": title

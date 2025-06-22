@@ -18,7 +18,7 @@
 
 #import "../style/styling.typ": init as cycle-init, style, process-cycles-arg
 #import "../style/map.typ": petroff10
-#import "@preview/elembic:1.0.0" as e
+#import "@preview/elembic:1.1.0" as e
 
 #let debug = false
 
