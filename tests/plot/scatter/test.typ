@@ -13,7 +13,7 @@
 )
 
 
-#show lq.selector(lq.legend): set table(inset: 0pt)
+#show lq.selector(lq.legend): set grid(inset: 0pt)
 
 
 

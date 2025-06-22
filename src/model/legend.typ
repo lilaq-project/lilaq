@@ -85,7 +85,7 @@
     inset: it.inset,
     fill: it.fill,
     radius: it.radius,
-    table(..it.children)
+    grid(..it.children)
   ),
 
   fields: (
@@ -159,13 +159,13 @@
     dx: dx, dy: dy, pad: pad,
     wrap-in-box: true,
     {
-      set table(
+      set grid(
         columns: 2, 
         stroke: none, 
         inset: 2pt, 
         align: horizon + start
       )
-      set table.cell(breakable: false)
+      set grid.cell(breakable: false)
       my-legend
     }
   )
