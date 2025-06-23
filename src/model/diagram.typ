@@ -166,15 +166,6 @@
   } else {
     axis.transform = y => it.height * (1 - normalized-transform(y))
   }
-
-  if type(axis.translate) in (int, float) {
-    axis.translate = (axis.transform)(axis.translate) 
-    if kind == "y" {
-      axis.translate -= it.height
-    }
-  }
-
-
   
   return axis
 }
@@ -361,6 +352,17 @@
     it.yaxis, it.ylim, it.yscale,
     it.ylabel, yplots, margin, it
   )
+
+
+  
+  let maybe-transform(x, y) = {
+    if type(x) in (int, float) { x = (xaxis.transform)(x) }
+    if type(y) in (int, float) { y = (yaxis.transform)(y) - it.height }
+    return (x, y)
+  }
+  yaxis.translate = maybe-transform(..yaxis.translate)
+  xaxis.translate = maybe-transform(..xaxis.translate)
+
   
   
   let transform(x, y) = (
