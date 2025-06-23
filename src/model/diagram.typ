@@ -175,6 +175,38 @@
 
 
 
+#let generate-grid(axis-info, transform, grid: auto) = {
+  grid = process-grid-arg(grid)
+
+  let x-transform = tick => transform(tick, 1).at(0)
+  let y-transform = tick => transform(1, tick).at(1)
+  
+  lq-grid(
+    axis-info.x.ticking.subticks.map(x-transform),
+    sub: true,
+    kind: "x",
+    ..grid
+  )
+  lq-grid(
+    axis-info.y.ticking.subticks.map(y-transform),
+    sub: true,
+    kind: "y",
+    ..grid
+  )
+  lq-grid(
+    axis-info.x.ticking.ticks.map(x-transform),
+    sub: false,
+    kind: "x",
+    ..grid
+  )
+  lq-grid(
+    axis-info.y.ticking.ticks.map(y-transform),
+    sub: false,
+    kind: "y",
+    ..grid
+  )
+}
+
 
 
 #let draw-diagram(it) = {
@@ -321,35 +353,9 @@
     
 
     let artists = ()
+
     artists.push((
-      content: {
-        let x-transform = tick => transform(tick, 1).at(0)
-        let y-transform = tick => transform(1, tick).at(1)
-        lq-grid(
-          axis-info.x.ticking.subticks.map(x-transform),
-          sub: true,
-          kind: "x",
-          ..process-grid-arg(it.grid)
-        )
-        lq-grid(
-          axis-info.y.ticking.subticks.map(y-transform),
-          sub: true,
-          kind: "y",
-          ..process-grid-arg(it.grid)
-        )
-        lq-grid(
-          axis-info.x.ticking.ticks.map(x-transform),
-          sub: false,
-          kind: "x",
-          ..process-grid-arg(it.grid)
-        )
-        lq-grid(
-          axis-info.y.ticking.ticks.map(y-transform),
-          sub: false,
-          kind: "y",
-          ..process-grid-arg(it.grid)
-        )
-      }, z: e-get(lq-grid).z-index
+      content: generate-grid(axis-info, transform, grid: it.grid), z: e-get(lq-grid).z-index
     ))
 
     let legend-entries = ()
