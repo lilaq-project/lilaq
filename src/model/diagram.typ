@@ -146,11 +146,8 @@
   if axis == none { axis = (hidden: true) }
 
   if type(axis) == dictionary {
-    axis = lq-axis(
-      kind: kind, label: label, scale: scale, lim: lim, ..axis
-    )
+    axis = lq-axis(kind: kind, label: label, scale: scale, lim: lim, ..axis, ..plots)
   }
-  axis.plots = plots
 
   let margin = if kind == "x" {
     (lower-margin: margin.left, upper-margin: margin.right)
@@ -161,13 +158,13 @@
   axis.lim = _axis-compute-limits(axis, is-independant: true, ..margin)
 
   
-  let normalized-scale-trafo = create-trafo(axis.scale.transform, ..axis.lim)
-  axis.normalized-scale-trafo = normalized-scale-trafo
+  let normalized-transform = create-trafo(axis.scale.transform, ..axis.lim)
+  axis.normalized-transform = normalized-transform
   
   if kind == "x" {
-    axis.transform = x => normalized-scale-trafo(x) * it.width
+    axis.transform = x => normalized-transform(x) * it.width
   } else {
-    axis.transform = y => it.height * (1 - normalized-scale-trafo(y))
+    axis.transform = y => it.height * (1 - normalized-transform(y))
   }
   
   return axis
@@ -207,16 +204,18 @@
   )
 }
 
+
+
 #let generate-plots(
   plots, cycle, transform, axes-transforms, width, height
 ) = {
+  cycle = process-cycles-arg(cycle)
+
+  let update-bounds = update-bounds.with(width: width, height: height)
 
   let bounds = (left: 0pt, right: width, top: 0pt, bottom: height)
-  let update-bounds = update-bounds.with(width: width, height: height)
   let artists = ()
-  
   let legend-entries = ()
-  let cycle = process-cycles-arg(cycle)
   let cycle-index = 0
 
   for plot in plots {
@@ -281,7 +280,6 @@
     artists: artists,
     bounds: bounds
   )
-
 }
 
 
@@ -289,6 +287,10 @@
   if not debug { return none }
   place(dx: bounds.left, dy: bounds.top, rect(width: bounds.right - bounds.left, height: bounds.bottom - bounds.top, fill: clr))
 }
+
+
+
+
 
 
 #let draw-diagram(it) = {
@@ -314,25 +316,29 @@
   let axes = ()
 
   for child in it.children {
-    if type(child) == dictionary {
-      if child.at("type", default: "") == "axis" { // an axis
-        axes.push(child)
-        let axis-id = axes.len() - 1
-        if child.plots.len() > 0 {
-          plots += child.plots.map(plot => (axis-id: axis-id, plot: plot)) 
-          if child.kind == "x" {
-            yplots += child.plots
-          } else {
-            xplots += child.plots
-          }
+    if child == none { continue }
+    if type(child) != dictionary {
+      panic("Unexpected child `" + repr(child) + "`. Expected a plot or an axis. ")
+    }
+
+    if child.at("type", default: "") == "axis" { // is an axis
+      axes.push(child)
+      
+      if child.plots.len() > 0 {
+        plots += child.plots.map(plot => (axis-id: axes.len() - 1, plot: plot)) 
+        if child.kind == "x" {
+          yplots += child.plots
+        } else {
+          xplots += child.plots
         }
-      } else { // just a regular plot
-        yplots.push(child)
-        xplots.push(child)
-        plots.push(child)
       }
+    } else { // is a plot
+      yplots.push(child)
+      xplots.push(child)
+      plots.push(child)
     }
   }
+
 
   let margin = process-margin(it.margin)
 
@@ -348,14 +354,6 @@
   )
 
 
-
-  
-  
-  let transform(x, y) = (
-    (xaxis.transform)(x), 
-    (yaxis.transform)(y), 
-  )
-
   
   let maybe-transform(x, y) = {
     if type(x) in (int, float) { x = (xaxis.transform)(x) }
@@ -364,6 +362,14 @@
   }
   yaxis.translate = maybe-transform(..yaxis.translate)
   xaxis.translate = maybe-transform(..xaxis.translate)
+
+  
+  
+  let transform(x, y) = (
+    (xaxis.transform)(x), 
+    (yaxis.transform)(y), 
+  )
+
 
   let axes-transforms = (none,) * axes.len()
   
@@ -397,7 +403,7 @@
       axes-transforms.at(i) = transform
     } else {
       axes.at(i).transform = if has-auto-lim { model-axis.transform } else {
-        let trafo = x => (model-axis.normalized-scale-trafo)((axis.functions.inv)(x))
+        let trafo = x => (model-axis.normalized-transform)((axis.functions.inv)(x))
         if axis.kind == "y" {
           y => it.height * (1 - trafo(y))
         } else {
@@ -410,7 +416,6 @@
   let axis-info = (
     x: (ticking: _axis-generate-ticks(xaxis, length: it.width)), 
     y: (ticking: _axis-generate-ticks(yaxis, length: it.height)), 
-    // rest: ((:),) * axes.len()
   )
   
   
@@ -432,7 +437,7 @@
       stroke: none, fill: it.fill,
       {
       set align(top + left) // sometimes alignment is messed up
-      set place(left)
+      set place(left)       // important for RTL text direction
 
       let update-bounds = update-bounds.with(width: it.width, height: it.height)
       let artists = ()
