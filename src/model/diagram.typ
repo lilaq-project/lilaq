@@ -180,7 +180,7 @@
 
   let x-transform = tick => transform(tick, 1).at(0)
   let y-transform = tick => transform(1, tick).at(1)
-  
+
   lq-grid(
     axis-info.x.ticking.subticks.map(x-transform),
     sub: true,
@@ -207,6 +207,88 @@
   )
 }
 
+#let generate-plots(
+  plots, cycle, transform, axes-transforms, width, height
+) = {
+
+  let bounds = (left: 0pt, right: width, top: 0pt, bottom: height)
+  let update-bounds = update-bounds.with(width: width, height: height)
+  let artists = ()
+  
+  let legend-entries = ()
+  let cycle = process-cycles-arg(cycle)
+  let cycle-index = 0
+
+  for plot in plots {
+    let transform = transform
+
+    if type(plot) == dictionary and "axis-id" in plot {
+      transform = axes-transforms.at(plot.axis-id)
+      plot = plot.plot
+    }
+
+    if plot.at("id", default: none) == "place" and not plot.clip {
+      let (px, py) = transform-point(plot.x, plot.y, transform)
+      let (_, place-bounds) = place-with-bounds(
+        plot.body, dx: px, dy: py, 
+        content-alignment: twod-ify-alignment(plot.align)
+      )
+      bounds = update-bounds(bounds, place-bounds)
+    }
+
+
+    let takes-part-in-cycle = not plot.at("ignores-cycle", default: true)
+    let cycle-style = cycle.at(calc.rem(cycle-index, cycle.len()))
+
+    let plotted-plot = {
+      show: cycle-init
+      show: cycle-style
+      (plot.plot)(plot, transform)
+    }
+    
+    if takes-part-in-cycle {
+      cycle-index += 1
+    }
+
+    if plot.at("clip", default: true) { 
+      plotted-plot = place(
+        box(width: width, height: height, clip: true, plotted-plot)
+      )
+    }
+    artists.push((content: plotted-plot, z: plot.at("z-index", default: 2)))
+
+    
+    if "legend" in plot and plot.label != none {
+      plot.make-legend = true
+      let legend-trafo(x, y) = {
+        (x * 100%, (1 - y) * 100%)
+      }
+      let handle = {
+        show: cycle-init
+        show: cycle-style
+        (plot.plot)(plot, legend-trafo)
+      }
+      legend-entries.push((
+        box(width: 2em, height: .7em, handle),
+        plot.label
+      ))
+    }
+  }
+
+
+  (
+    legend-entries: legend-entries,
+    artists: artists,
+    bounds: bounds
+  )
+
+}
+
+
+#let show-bounds(bounds, clr: red) = {
+  if not debug { return none }
+  place(dx: bounds.left, dy: bounds.top, rect(width: bounds.right - bounds.left, height: bounds.bottom - bounds.top, fill: clr))
+}
 
 
 #let draw-diagram(it) = {
@@ -328,7 +410,7 @@
   let axis-info = (
     x: (ticking: _axis-generate-ticks(xaxis, length: it.width)), 
     y: (ticking: _axis-generate-ticks(yaxis, length: it.height)), 
-    rest: ((:),) * axes.len()
+    // rest: ((:),) * axes.len()
   )
   
   
@@ -336,176 +418,102 @@
   e.get(e-get => {
     
 
-  let bounds = (left: 0pt, right: it.width, top: 0pt, bottom: it.height)
-  
-
-
-    
-  let diagram = box(
-    width: it.width, height: it.height, 
-    inset: 0pt, outset: 0pt,
-    stroke: none, fill: it.fill,
-    {
-    set align(top + left) // sometimes alignment is messed up
-    set place(left)
-
-    let update-bounds = update-bounds.with(width: it.width, height: it.height)
-    
-
-    let artists = ()
-
-    artists.push((
-      content: generate-grid(axis-info, transform, grid: it.grid), z: e-get(lq-grid).z-index
-    ))
-
-    let legend-entries = ()
-
-    let cycle = process-cycles-arg(it.cycle)
-
-
-    let cycle-index = 0
-    for plot in plots {
-      let transform = transform
-
-      if type(plot) == dictionary and "axis-id" in plot {
-        transform = axes-transforms.at(plot.axis-id)
-        plot = plot.plot
-      }
-
-      if plot.at("id", default: none) == "place" and not plot.clip {
-        let (px, py) = transform-point(plot.x, plot.y, transform)
-        let (_, place-bounds) = place-with-bounds(
-          plot.body, dx: px, dy: py, 
-          content-alignment: twod-ify-alignment(plot.align)
-        )
-        bounds = update-bounds(bounds, place-bounds)
-      }
-
-
-      let takes-part-in-cycle = not plot.at("ignores-cycle", default: true)
-      let cycle-style = cycle.at(calc.rem(cycle-index, cycle.len()))
-
-      let plotted-plot = {
-        show: cycle-init
-        show: cycle-style
-        (plot.plot)(plot, transform)
-      }
-      
-      if takes-part-in-cycle {
-        cycle-index += 1
-      }
-
-      if plot.at("clip", default: true) { 
-        plotted-plot = place(
-          box(width: it.width, height: it.height, clip: true, plotted-plot)
-        )
-      }
-      artists.push((content: plotted-plot, z: plot.at("z-index", default: 2)))
-
-      
-      if "legend" in plot and plot.label != none {
-        plot.make-legend = true
-        let legend-trafo(x, y) = {
-          (x * 100%, (1 - y) * 100%)
-        }
-        let handle = {
-          show: cycle-init
-          show: cycle-style
-          (plot.plot)(plot, legend-trafo)
-        }
-        legend-entries.push((
-          box(width: 2em, height: .7em, handle),
-          plot.label
-        ))
-      }
-    }
-
-
-    let show-bounds(bounds, clr: red) = {
-      place(dx: bounds.left, dy: bounds.top, rect(width: bounds.right - bounds.left, height: bounds.bottom - bounds.top, fill: clr))
-    }
-    if not debug {
-      show-bounds = (args, clr: red) => none
-    }
-    
-    let get-axis-args(axis) = {
-      if axis.kind == "x" { 
-        (length: it.width)
-      } else {
-        (length: it.height)
-      }
-    }
-    let (xaxis-, max-xtick-size) = draw-axis(xaxis, axis-info.x.ticking, e-get: e-get)
-    artists.push((content: xaxis-, z: 20))
-
-    let (yaxis-, max-ytick-size) = draw-axis(yaxis, axis-info.y.ticking, e-get: e-get)
-    artists.push((content: yaxis-, z: 20))
- 
-    if type(max-ytick-size) == array {
-      for b in max-ytick-size {
-        bounds = update-bounds(bounds, b)
-        show-bounds(b, clr: rgb("#22AA2222"))
-      }
-      for b in max-xtick-size {
-        bounds = update-bounds(bounds, b)
-        show-bounds(b, clr: rgb("#AAAA2222"))
-      }
-    } else {
-      padding.left = max-ytick-size
-      padding.bottom = max-xtick-size
-    }
-
-    for axis in axes {
-      let ticking = _axis-generate-ticks(axis, ..get-axis-args(axis))
-      let (axis-, axis-bounds) = draw-axis(axis, ticking, e-get: e-get)
-      artists.push((content: axis-, z: 20))
-
-      
-      for b in axis-bounds {
-        bounds = update-bounds(bounds, b)
-        show-bounds(b, clr: rgb("#2222AA22"))
-      }
-    }
-    
     let get-settable-field(element, object, field) = {
       e.fields(object).at(field, default: e-get(element).at(field))
     }
-
-    if it.title != none {
-      let (title-content, title-bounds) = _place-title-with-bounds(
-        it.title, get-settable-field, it.width, it.height
-      )
-      
-      artists.push((content: title-content, z: 20))
-      bounds = update-bounds(bounds, title-bounds)
-    }
-
+    let bounds = (left: 0pt, right: it.width, top: 0pt, bottom: it.height)
     
-    if it.legend != none and (legend-entries.len() > 0 or e.eid(it.legend) == e.eid(lq-legend)) {
-      let (legend-content, legend-bounds) = _place-legend-with-bounds(
-        it.legend, legend-entries, e-get
+
+
+      
+    let diagram = box(
+      width: it.width, height: it.height, 
+      inset: 0pt, outset: 0pt,
+      stroke: none, fill: it.fill,
+      {
+      set align(top + left) // sometimes alignment is messed up
+      set place(left)
+
+      let update-bounds = update-bounds.with(width: it.width, height: it.height)
+      let artists = ()
+
+
+      // GRID
+      artists.push((
+        content: generate-grid(axis-info, transform, grid: it.grid), z: e-get(lq-grid).z-index
+      ))
+
+
+      // PLOTS
+      let (legend-entries, artists: plot-artists, bounds: plot-bounds) = generate-plots(
+        plots, it.cycle, transform, axes-transforms, it.width, it.height
       )
+      artists += plot-artists
+      bounds = update-bounds(bounds, plot-bounds)
 
-      artists.push((content: legend-content, z: e-get(lq-legend).z-index))
-      bounds = update-bounds(bounds, legend-bounds)
-    }
+      
+      // AXES
+      for axis in axes + (xaxis, yaxis) {
+        let ticking = _axis-generate-ticks(
+          axis, 
+          length: if axis.kind == "x" { it.width } else { it.height }
+        )
+        let (axis-content, axis-bounds) = draw-axis(axis, ticking, e-get: e-get)
+        artists.push((content: axis-content, z: 20))
+        
+        for axis-bound in axis-bounds {
+          bounds = update-bounds(bounds, axis-bound)
+          show-bounds(axis-bound, clr: rgb("#2222AA22"))
+        }
+      }
+      
+      
+      // TITLE
+      if it.title != none {
+        let (title-content, title-bounds) = _place-title-with-bounds(
+          it.title, get-settable-field, it.width, it.height
+        )
+        
+        artists.push((content: title-content, z: 20))
+        bounds = update-bounds(bounds, title-bounds)
+      }
 
-    artists.sorted(key: artist => artist.z).map(artist => artist.content).join()
+      
+      // LEGEND
+      if it.legend != none and (legend-entries.len() > 0 or e.eid(it.legend) == e.eid(lq-legend)) {
+        let (legend-content, legend-bounds) = _place-legend-with-bounds(
+          it.legend, legend-entries, e-get
+        )
+
+        artists.push((content: legend-content, z: e-get(lq-legend).z-index))
+        bounds = update-bounds(bounds, legend-bounds)
+      }
+
+
+      artists.sorted(key: artist => artist.z).map(artist => artist.content).join()
+    })
+
+
+    bounds.bottom -= it.height
+    bounds.right -= it.width
+    bounds.left *= -1
+    bounds.top *= -1
+
+    box(
+      inset: bounds, 
+      diagram, 
+      stroke: if debug { 0.1pt } else { none },
+      baseline: bounds.bottom
+    )
   })
-
-  bounds.bottom -= it.height
-  bounds.right -= it.width
-  bounds.left *= -1
-  bounds.top *= -1
-
-  box(
-    inset: bounds, 
-    diagram, 
-    stroke: if debug { 0.1pt } else { none },
-    baseline: bounds.bottom
-  )
-})
 }
+
+
+
+
+
+
+
 
 #let folding-dict = e.types.wrap(dictionary, fold: old-fold => (a, b) => a + b)
 
