@@ -308,11 +308,11 @@
   // )
   
 
-  // Either a plot object or a dict (axis-id: int, plot: dict). 
+  // Elements can be plot objects or plots on an axis: (axis-id: int, plot: dict). 
   let plots = () 
   // solely used for computing limits
   let (xplots, yplots) = ((), ()) 
-  // all addtional axes
+  // all additional axes
   let axes = ()
 
   for child in it.children {
@@ -354,7 +354,6 @@
   )
 
 
-  
   let maybe-transform(x, y) = {
     if type(x) in (int, float) { x = (xaxis.transform)(x) }
     if type(y) in (int, float) { y = (yaxis.transform)(y) - it.height }
