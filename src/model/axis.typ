@@ -217,29 +217,21 @@
     scale = lqscale.scales.at(scale)
   }
   assert(kind in ("x", "y"), message: "The `kind` of an axis can only be `x` or `y`")
-  let translate = (0pt, 0pt)
+  let translate = 0pt
 
 
   if position == auto {
     if kind == "x" { position = bottom }
     else if kind == "y" { position = left }
   } else if type(position) in (int, float, length, relative, ratio) {
-    if kind == "x" { 
-      translate = (0pt, position)
-      position = bottom 
-    }
-    else if kind == "y" { 
-      translate = (position, 0pt)
-      position = left 
-    }
+    translate = position
+    position = if kind == "x" { bottom } else { left }
     if mirror == auto { mirror = none }
   } else if type(position) == dictionary {
     assertations.assert-dict-keys(position, mandatory: ("align", "offset"))
 
     
     (position, translate) = (position.align, position.offset)
-    if kind == "x" { translate = (0pt, translate) }
-    else if kind == "y" { translate = (translate, 0pt) }
     if mirror == auto { mirror = none }
     
     if kind == "x" {
@@ -692,7 +684,7 @@
   // Draws a single axis (*or* a mirror)
   let the-axis(
     position: axis.position,
-    translate: (0pt, 0pt),
+    translation-offset: (0pt, 0pt),
     display-ticks: true, 
     display-tick-labels: true, 
     display-axis-label: true,
@@ -762,7 +754,7 @@
           ..args
         )
         content += attachment-content
-        attachment-bounds = offset-bounds(attachment-bounds, translate)
+        attachment-bounds = offset-bounds(attachment-bounds, translation-offset)
         bounds.push(attachment-bounds)
       }
     }
@@ -845,19 +837,22 @@
         main-bounds.left = 100% - inset
       }
     }
-    main-bounds = offset-bounds(main-bounds, translate)
+    main-bounds = offset-bounds(main-bounds, translation-offset)
     bounds.push(main-bounds)
     return (content, bounds)
   }
 
 
 
-  let (axis-content, bounds) = the-axis(kind: axis.kind, translate: axis.translate)
+  let translation-offset = if axis.kind == "x" { (0pt, axis.translate) } 
+    else if axis.kind == "y" { (axis.translate, 0pt) }
+    
+  let (axis-content, bounds) = the-axis(kind: axis.kind, translation-offset: translation-offset)
   let content = place(
     axis.position, 
     axis-content, 
-    dx: axis.translate.at(0), 
-    dy: axis.translate.at(1)
+    dx: translation-offset.at(0), 
+    dy: translation-offset.at(1)
   )
 
 
@@ -865,7 +860,7 @@
     let (mirror-axis-content, mirror-axis-bounds) = the-axis(
       kind: axis.kind,
       position: axis.position.inv(),
-      translate: axis.translate,
+      translation-offset: translation-offset,
       display-ticks: axis.mirror.at("ticks", default: false),
       display-tick-labels: axis.mirror.at("tick-labels", default: false),
       display-axis-label: axis.mirror.at("label", default: false),
