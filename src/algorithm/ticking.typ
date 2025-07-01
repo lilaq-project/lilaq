@@ -230,12 +230,21 @@
     (_, exponent) = decompose-floating-point(calc.abs(tick-distance))
     step = tick-distance / pow10(exponent - 1)
   }
+
+  
+  let significant-digits = if calc.round(step) == step {
+    -calc.floor(calc.log(tick-distance))
+  } else {
+    estimate-significant-digits((0, tick-distance))
+  }
+  tick-distance = calc.round(tick-distance, digits: significant-digits + 2)
   
   tick-distance = float(tick-distance) // important, calc.quo is a bit inconsistent
 
   let precision-offset = compute-precision-offset(x0, x1)
   let first-tick = calc.ceil(x0 / tick-distance) * tick-distance
   let x0-offset = precision-offset + first-tick
+  
 
   let num-ticks = 1 + fit-down(
     x1 - x0-offset, tick-distance, offset: precision-offset
@@ -244,11 +253,6 @@
   )
 
 
-  let significant-digits = if calc.round(step) == step {
-    -calc.floor(calc.log(tick-distance))
-  } else {
-    estimate-significant-digits((0, tick-distance))
-  }
 
   
   let axis-offset = 0 

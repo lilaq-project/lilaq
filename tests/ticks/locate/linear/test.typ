@@ -166,3 +166,17 @@
   locate-ticks-linear(calc.pi*1010, calc.pi*1015, unit: calc.pi).ticks, 
   range(6).map(x => (1010 + x)*calc.pi)
 )
+
+
+
+// High-precision tests
+#assertations.approx(
+  locate-ticks-linear(181145e-5, 181139e-5, num-ticks-suggestion: 7).ticks,
+  (39, 40, 41, 42, 43, 44, 45).map(x => x*1e-5 + 1.811)
+)
+
+
+#assertations.approx(
+  locate-ticks-linear(123181145e-8, 123181139e-8, num-ticks-suggestion: 7).ticks,
+  (39, 40, 41, 42, 43, 44, 45).map(x => x*1e-8 + 1.231811)
+)
