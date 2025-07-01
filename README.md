@@ -29,9 +29,9 @@ Clicking on any demo image below will bring you to the respective page of the do
 
 <table>
 <tr>
-    <th>Line plots</th>
+    <th>Line plot/th>
     <th>Scatter</th>
-    <th>Contour</th>
+    <th>Bar chart</th>
 </tr>
 <tr>
 <td>
@@ -47,7 +47,7 @@ Clicking on any demo image below will bring you to the respective page of the do
 </td>
 <td>
 
-[![contour](https://github.com/user-attachments/assets/b60d8bac-faf6-4465-bd78-0687f3912108)](https://lilaq.org/docs/reference/contour)
+[![bar chart](https://github.com/user-attachments/assets/7822cc4f-6f12-4622-9f38-18ca7dd2a4fa)](https://lilaq.org/docs/examples/bar)
 
 </td>
 </tr>
@@ -70,6 +70,55 @@ Clicking on any demo image below will bring you to the respective page of the do
 <td>
 
 [![marks](https://github.com/user-attachments/assets/26e9e478-1599-4ded-9e6d-7fe0193ae6b9)](https://lilaq.org/docs/examples/styled-marks)
+
+</td>
+</tr>
+
+<tr>
+    <th>Errorbars</th>
+    <th>Plot smoothing</th>
+    <th>Stem plot</th>
+</tr>
+<tr>
+<td>
+
+[![errorbars](https://github.com/user-attachments/assets/fdb054ad-e946-4ace-8a43-334676afebff)](https://lilaq.org/docs/reference/errorbar)
+
+</td>
+<td>
+
+[![plot smoothing](https://github.com/user-attachments/assets/912bfbda-b091-4074-8601-3c173a8168da)
+](https://lilaq.org/docs/reference/plot#smooth)
+
+</td>
+<td>
+
+[![stem plot](https://github.com/user-attachments/assets/070fb488-ff8b-401b-aba3-31f2ea02f996)](https://lilaq.org/docs/reference/stem)
+
+</td>
+</tr>
+
+<tr>
+    <th>Colormesh</th>
+    <th>Contour</th>
+    <th>Color bar</th>
+</tr>
+<tr>
+<td>
+
+[![colormesh](https://github.com/user-attachments/assets/db59b76b-7eda-4045-9faf-e74fa9e92043)
+](https://lilaq.org/docs/reference/colormesh)
+
+</td>
+<td>
+
+[![contour](https://github.com/user-attachments/assets/b60d8bac-faf6-4465-bd78-0687f3912108)](https://lilaq.org/docs/reference/contour)
+
+</td>
+<td>
+
+[![colorbar](https://github.com/user-attachments/assets/29e618af-04ff-441c-929b-b63b34155d34)
+](https://lilaq.org/docs/reference/colorbar)
 
 </td>
 </tr>
@@ -133,5 +182,4 @@ Clicking on any demo image below will bring you to the respective page of the do
 </td>
 </tr>
 </table>
-
 
