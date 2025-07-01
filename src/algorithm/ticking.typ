@@ -1,6 +1,6 @@
 #import "../math.typ": *
 #import "../logic/symlog.typ": symlog-transform
-#import "@preview/zero:0.3.3"
+#import "@preview/zero:0.4.0"
 
 
 /// Estimates the maximum number of significant digits from
