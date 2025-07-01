@@ -117,7 +117,7 @@ Clicking on any demo image below will bring you to the respective page of the do
 </td>
 <td>
 
-[![colorbar](https://github.com/user-attachments/assets/29e618af-04ff-441c-929b-b63b34155d34)
+[![color bar](https://github.com/user-attachments/assets/babf0319-e4e7-4c0d-90d4-ca80739773f6)
 ](https://lilaq.org/docs/reference/colorbar)
 
 </td>
@@ -128,6 +128,7 @@ Clicking on any demo image below will bring you to the respective page of the do
 
 <table>
 <tr>
+
     <th>Spectrum with secondary axis</th>
     <th>Climograph with twin axis</th>
 </tr>
