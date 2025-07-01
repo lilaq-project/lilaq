@@ -7,17 +7,12 @@
 /// respectively. 
 /// 
 /// One way to set up the grid stroke is with a style rule. The stroke 
-/// for the grid lines at the main ticks is controlled by @grid.stroke
+/// for the grid lines at the main ticks is controlled by @grid.stroke and the stroke of the subticks by @grid.stroke-sub:
 /// ```example
-/// #show: lq.set-grid(stroke: teal)
-/// 
-/// #lq.diagram(
-/// 
+/// #show: lq.set-grid(
+///   stroke: teal,
+///   stroke-sub: 0.5pt + luma(90%)
 /// )
-/// ```
-/// and the stroke of the subticks by @grid.stroke-sub:
-/// ```example
-/// #show: lq.set-grid(stroke-sub: 0.5pt + luma(90%))
 /// 
 /// #lq.diagram(
 /// 
@@ -31,12 +26,15 @@
 ///   grid: (stroke: black, stroke-sub: 0.25pt)
 /// )
 /// ```
+/// Here you can also pass `none` to deactivate the grid entirely (equivalent 
+/// to `#show: lq.set-grid(stroke: none)`). 
 /// 
-/// Aside from `#show: lq.set-grid(stroke: none)`, the grid can be turned off 
-/// entirely with the short-hand `grid: none`. 
+/// In order to address the $x$ and $y$ grid individually, use `cond-set`
 /// ```example
+/// #show: lq.cond-set(lq.grid.with(kind: "x"), stroke: orange)
+/// 
 /// #lq.diagram(
-///   grid: none
+///   width: 4.5cm, height: 3cm
 /// )
 /// ```
 #let grid(

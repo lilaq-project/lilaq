@@ -344,14 +344,14 @@
 
   /// Interpolates the data set using Bézier splines instead of connecting the points with straight lines.
   ///
-  /// Note: If 2 or less points are given, linear interpolation is used.
+  /// Note: If two or fewer points are given, linear interpolation is used.
   ///
   /// #details[
   ///   ```example
   ///   #import lilaq
   ///   #lq.diagram(
   ///     lq.plot(
-  ///       range(8), (3,6,2,6,5,9,0,4),
+  ///       range(8), (3, 6, 2, 6, 5, 9, 0, 4),
   ///       smooth: true
   ///     )
   ///   )
