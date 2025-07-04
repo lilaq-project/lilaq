@@ -29,7 +29,7 @@ Clicking on any demo image below will bring you to the respective page of the do
 
 <table>
 <tr>
-    <th>Line plot/th>
+    <th>Line plot</th>
     <th>Scatter</th>
     <th>Bar chart</th>
 </tr>
