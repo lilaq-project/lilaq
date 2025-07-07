@@ -1,6 +1,6 @@
 [package]
 name = "lilaq"
-version = "0.3.0"
+version = "0.4.0"
 entrypoint = "src/lilaq.typ"
 authors = ["Mc-Zen <https://github.com/Mc-Zen>"]
 license = "MIT"
@@ -11,4 +11,3 @@ repository = "https://github.com/lilaq-project/lilaq"
 homepage = "https://lilaq.org"
 keywords = ["plotting", "diagram", "axis", "matplotlib", "tikz", "pgfplots", "graph", "visualisation", "chart"]
 categories = ["visualization"]
-exclude = ["/docs/*", "/tests/*"]
