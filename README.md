@@ -87,8 +87,7 @@ Clicking on any demo image below will bring you to the respective page of the do
 </td>
 <td>
 
-[![plot smoothing](https://github.com/user-attachments/assets/912bfbda-b091-4074-8601-3c173a8168da)
-](https://lilaq.org/docs/reference/plot#smooth)
+[![plot smoothing](https://github.com/user-attachments/assets/912bfbda-b091-4074-8601-3c173a8168da)](https://lilaq.org/docs/reference/plot#smooth)
 
 </td>
 <td>
@@ -106,8 +105,7 @@ Clicking on any demo image below will bring you to the respective page of the do
 <tr>
 <td>
 
-[![colormesh](https://github.com/user-attachments/assets/db59b76b-7eda-4045-9faf-e74fa9e92043)
-](https://lilaq.org/docs/reference/colormesh)
+[![colormesh](https://github.com/user-attachments/assets/db59b76b-7eda-4045-9faf-e74fa9e92043)](https://lilaq.org/docs/reference/colormesh)
 
 </td>
 <td>
@@ -117,8 +115,7 @@ Clicking on any demo image below will bring you to the respective page of the do
 </td>
 <td>
 
-[![color bar](https://github.com/user-attachments/assets/babf0319-e4e7-4c0d-90d4-ca80739773f6)
-](https://lilaq.org/docs/reference/colorbar)
+[![color bar](https://github.com/user-attachments/assets/babf0319-e4e7-4c0d-90d4-ca80739773f6)](https://lilaq.org/docs/reference/colorbar)
 
 </td>
 </tr>
@@ -128,7 +125,6 @@ Clicking on any demo image below will bring you to the respective page of the do
 
 <table>
 <tr>
-
     <th>Spectrum with secondary axis</th>
     <th>Climograph with twin axis</th>
 </tr>
