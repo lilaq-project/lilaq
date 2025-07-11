@@ -256,7 +256,7 @@
 
 
 /// Performs integer (floored) division and returns `(quotient, remainder)` while 
-/// guaranteeing that `quotient * divisor + remainder = divident`. Note that using 
+/// guaranteeing that `quotient * divisor + remainder = dividend`. Note that using 
 /// `calc.quo` and `calc.rem` does not give this guarantee. 
 /// -> array
 #let divmod(
