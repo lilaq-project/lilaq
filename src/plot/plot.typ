@@ -259,8 +259,10 @@
   /// -> array
   x, 
   
-  /// An array of $y$ coordinates. The number of $x$ and $y$ coordinates must match. 
-  /// -> array
+  /// Specifies either an array of $y$ coordinates or a function that takes an `x` value
+  /// and returns a corresponding `y` coordinate. The number of $x$ and $y$ coordinates
+  /// must match. 
+  /// -> array | function
   y, 
   
   /// Optional errors/uncertainties for $x$ coordinates. Symmetric errors can
@@ -437,6 +439,10 @@
   z-index: 2,
   
 ) = {
+  if type(y) == function {
+    y = x.map(y)
+  }
+
   assertations.assert-matching-data-dimensions(x, y, fn-name: "plot")
   
   assert(step in (none, start, end, center))
