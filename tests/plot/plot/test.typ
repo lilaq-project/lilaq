@@ -188,3 +188,10 @@
   lq.plot(x, y, smooth: false),
   lq.plot(x, y, smooth: true),
 )
+
+#pagebreak()
+
+// Plot-Fn
+#lq.diagram(
+  lq.plot(lq.linspace(-1, 1), x => calc.max(0, x))
+)
