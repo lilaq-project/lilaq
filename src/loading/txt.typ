@@ -38,7 +38,7 @@
   
   /// Optional converter functions or types to use to convert the data entries. This
   /// can either be a single function or type that is applied to all columns likewise
-  /// or a dictionary with column indices as keys and functions or types as values. 
+  /// or a dictionary with column indices, or header names if enabled, as keys and functions or types as values. 
   /// Through the (optional) key `rest`, a default converter can be specified to be used 
   /// for all columns that have no explicit converter assigned. 
   /// -> function | type | dictionary
@@ -66,7 +66,11 @@
   if type(converters) == dictionary {
     let default-converter = converters.at("rest", default: float)
     cols = range(cols.len()).map(j => {
-      let converter = converters.at(str(j), default: default-converter)
+      let converter = if header == false { 
+        converters.at(str(j), default: default-converter)
+      } else {
+        converters.at(header.at(j), default: converters.at(str(j), default: default-converter))
+      }
       cols.at(j).map(str.trim).map(converter)
     })
   } else {
