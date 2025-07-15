@@ -38,7 +38,7 @@
   
   /// Optional converter functions or types to use to convert the data entries. This
   /// can either be a single function or type that is applied to all columns likewise
-  /// or a dictionary with column indices as keys and functions or types as values. 
+  /// or a dictionary with column indices, or header names if enabled, as keys and functions or types as values. 
   /// Through the (optional) key `rest`, a default converter can be specified to be used 
   /// for all columns that have no explicit converter assigned. 
   /// -> function | type | dictionary
@@ -65,8 +65,17 @@
   let cols = array.zip(..rows) 
   if type(converters) == dictionary {
     let default-converter = converters.at("rest", default: float)
+
+    if header != false {
+      for name in converters.keys() {
+        if name == "rest" { continue }
+        assert(name in header, message: "Found converter that doesn't map to a header: " + repr(name))
+      }
+    }
+
     cols = range(cols.len()).map(j => {
-      let converter = converters.at(str(j), default: default-converter)
+      let name = if header == false { str(j) } else { header.at(j) }
+      let converter = converters.at(name, default: default-converter)
       cols.at(j).map(str.trim).map(converter)
     })
   } else {
@@ -145,4 +154,10 @@
 #assert.eq(
    load-txt("1,2\n4,5", converters: ("0": float, rest: v => v)),
    ((1, 4), ("2","5"))
+)
+
+
+#assert.eq(
+   load-txt(" n, a, b\n1,2,3\n4,5,6", header: true, converters: (n: v => v, a: int, rest: v => v)),
+   (n: ("1","4"), a: (2,5), b: ("3","6"))
 )
