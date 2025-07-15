@@ -65,12 +65,17 @@
   let cols = array.zip(..rows) 
   if type(converters) == dictionary {
     let default-converter = converters.at("rest", default: float)
-    cols = range(cols.len()).map(j => {
-      let converter = if header == false { 
-        converters.at(str(j), default: default-converter)
-      } else {
-        converters.at(header.at(j), default: converters.at(str(j), default: default-converter))
+
+    if header != false {
+      for name in converters.keys() {
+        if name == "rest" { continue }
+        assert(name in header, message: "Found converter that doesn't map to a header: " + repr(name))
       }
+    }
+
+    cols = range(cols.len()).map(j => {
+      let name = if header == false { str(j) } else { header.at(j) }
+      let converter = converters.at(name, default: default-converter)
       cols.at(j).map(str.trim).map(converter)
     })
   } else {
@@ -153,6 +158,6 @@
 
 
 #assert.eq(
-   load-txt(" n, a, b\n1,2,3\n4,5,6", header: true, converters: ("n": v => v, "2": v => v)),
+   load-txt(" n, a, b\n1,2,3\n4,5,6", header: true, converters: (n: v => v, a: v => v, rest: v => v)),
    (n: ("1","4"), a: (2,5), b: ("3","6"))
 )
