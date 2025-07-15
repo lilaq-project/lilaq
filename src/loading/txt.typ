@@ -150,3 +150,9 @@
    load-txt("1,2\n4,5", converters: ("0": float, rest: v => v)),
    ((1, 4), ("2","5"))
 )
+
+
+#assert.eq(
+   load-txt(" n, a, b\n1,2,3\n4,5,6", header: true, converters: ("n": v => v, "2": v => v)),
+   (n: ("1","4"), a: (2,5), b: ("3","6"))
+)
