@@ -158,6 +158,6 @@
 
 
 #assert.eq(
-   load-txt(" n, a, b\n1,2,3\n4,5,6", header: true, converters: (n: v => v, a: v => v, rest: v => v)),
+   load-txt(" n, a, b\n1,2,3\n4,5,6", header: true, converters: (n: v => v, a: int, rest: v => v)),
    (n: ("1","4"), a: (2,5), b: ("3","6"))
 )
