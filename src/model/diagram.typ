@@ -172,32 +172,29 @@
 
 
 
-#let generate-grid(axis-info, transform, grid: auto) = {
+#let generate-grid(axis-info, xaxis, yaxis, grid: auto) = {
   grid = process-grid-arg(grid)
 
-  let x-transform = tick => transform(tick, 1).at(0)
-  let y-transform = tick => transform(1, tick).at(1)
-
   lq-grid(
-    axis-info.x.ticking.subticks.map(x-transform),
+    axis-info.x.ticking.subticks.map(xaxis.transform),
     sub: true,
     kind: "x",
     ..grid
   )
   lq-grid(
-    axis-info.y.ticking.subticks.map(y-transform),
+    axis-info.y.ticking.subticks.map(yaxis.transform),
     sub: true,
     kind: "y",
     ..grid
   )
   lq-grid(
-    axis-info.x.ticking.ticks.map(x-transform),
+    axis-info.x.ticking.ticks.map(xaxis.transform),
     sub: false,
     kind: "x",
     ..grid
   )
   lq-grid(
-    axis-info.y.ticking.ticks.map(y-transform),
+    axis-info.y.ticking.ticks.map(yaxis.transform),
     sub: false,
     kind: "y",
     ..grid
@@ -207,8 +204,13 @@
 
 
 #let generate-plots(
-  plots, cycle, transform, width, height, axes, xaxis, yaxis
+  plots, cycle, width, height, axes, xaxis, yaxis
 ) = {
+  
+  let transform(x, y) = (
+    (xaxis.transform)(x), 
+    (yaxis.transform)(y), 
+  )
   cycle = process-cycles-arg(cycle)
 
   let update-bounds = update-bounds.with(width: width, height: height)
@@ -288,6 +290,21 @@
 }
 
 
+
+/// Resolve the translate property of an axis ("translate" means translation along the orthogonal axis). 
+#let resolve-translate(axis, xaxis, yaxis, height) = {
+  
+  let maybe-transform(x, y) = {
+    if type(x) in (int, float) { x = (xaxis.transform)(x) }
+    if type(y) in (int, float) { y = (yaxis.transform)(y) - height }
+    return (x, y)
+  }
+
+  maybe-transform(..axis.translate)
+}
+
+
+
 #let show-bounds(bounds, clr: red) = {
   if not debug { return none }
   place(dx: bounds.left, dy: bounds.top, rect(width: bounds.right - bounds.left, height: bounds.bottom - bounds.top, fill: clr))
@@ -359,22 +376,6 @@
   )
 
 
-  let maybe-transform(x, y) = {
-    if type(x) in (int, float) { x = (xaxis.transform)(x) }
-    if type(y) in (int, float) { y = (yaxis.transform)(y) - it.height }
-    return (x, y)
-  }
-  yaxis.translate = maybe-transform(..yaxis.translate)
-  xaxis.translate = maybe-transform(..xaxis.translate)
-
-  
-  
-  let transform(x, y) = (
-    (xaxis.transform)(x), 
-    (yaxis.transform)(y), 
-  )
-
-
   // Compute limits for additional axes
   for i in range(axes.len()) {
     let axis = axes.at(i)
@@ -391,7 +392,7 @@
   }
 
 
-  // Tell additional axes how to transform their coordinates. 
+  // Tell additional axes how to transform their coordinates
   for i in range(axes.len()) {
     let axis = axes.at(i)
 
@@ -444,13 +445,13 @@
         y: (ticking: _axis-generate-ticks(yaxis, length: it.height)), 
       )
       artists.push((
-        content: generate-grid(axis-info, transform, grid: it.grid), z: e-get(lq-grid).z-index
+        content: generate-grid(axis-info, xaxis, yaxis, grid: it.grid), z: e-get(lq-grid).z-index
       ))
 
 
       // PLOTS
       let (legend-entries, artists: plot-artists, bounds: plot-bounds) = generate-plots(
-        plots, it.cycle, transform, it.width, it.height, 
+        plots, it.cycle, it.width, it.height, 
         axes, xaxis, yaxis
       )
       artists += plot-artists
@@ -463,6 +464,7 @@
           axis, 
           length: if axis.kind == "x" { it.width } else { it.height }
         )
+        axis.translate = resolve-translate(axis, xaxis, yaxis, it.height)
         let (axis-content, axis-bounds) = draw-axis(axis, ticking, e-get: e-get)
         artists.push((content: axis-content, z: 20))
         

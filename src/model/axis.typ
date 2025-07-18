@@ -562,6 +562,8 @@
   tick-info,
   e-get: none
 ) = {
+  
+  // assert(orthogonal-axis != none)
   if axis.hidden { return (none, ()) }
 
   let (ticks, tick-labels, subticks, subtick-labels, exp, offset) = tick-info
