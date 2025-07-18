@@ -207,7 +207,7 @@
 
 
 #let generate-plots(
-  plots, cycle, transform, axes-transforms, width, height
+  plots, cycle, transform, width, height, axes, xaxis, yaxis
 ) = {
   cycle = process-cycles-arg(cycle)
 
@@ -222,7 +222,12 @@
     let transform = transform
 
     if type(plot) == dictionary and "axis-id" in plot {
-      transform = axes-transforms.at(plot.axis-id)
+      let axis = axes.at(plot.axis-id)
+      transform = if axis.kind == "x" {
+        (x, y) => ((axis.transform)(x), (yaxis.transform)(y))
+      } else {
+        (x, y) => ((xaxis.transform)(x), (axis.transform)(y))
+      }
       plot = plot.plot
     }
 
@@ -370,52 +375,41 @@
   )
 
 
-  let axes-transforms = (none,) * axes.len()
-  
+  // Compute limits for additional axes
   for i in range(axes.len()) {
     let axis = axes.at(i)
-    let model-axis = if axis.kind == "x" { xaxis } else { yaxis }
-    let has-auto-lim = axis.lim == auto
-    let has-auto-lim = false
     let axes-margin = if axis.kind == "x" { 
       (lower-margin: margin.left, upper-margin: margin.right)
     } else {
       (lower-margin: margin.bottom, upper-margin: margin.top)
     }
+
+    let model-axis = if axis.kind == "x" { xaxis } else { yaxis }
     axes.at(i).lim = _axis-compute-limits(
       axis, default-lim: model-axis.lim, ..axes-margin
     )
+  }
 
-    if axis.plots.len() > 0 {
-      let other-axis = if axis.kind == "x" { yaxis } else { xaxis }
-      let transform
-      let scale-trafo = create-trafo(axis.scale.transform, ..axes.at(i).lim)
-      if axis.kind == "x" {
-        let normalized-x-trafo = scale-trafo
-        axes.at(i).transform = x => normalized-x-trafo(x) * it.width
-        transform = (x, y) => ((axes.at(i).transform)(x), (yaxis.transform)(y))
-      } else {
-        let normalized-y-trafo = scale-trafo
-        axes.at(i).transform = y => (1 - normalized-y-trafo(y)) * it.height
-        transform = (x, y) => ((xaxis.transform)(x), (axes.at(i).transform)(y))
-      }
-      axes-transforms.at(i) = transform
+
+  // Tell additional axes how to transform their coordinates. 
+  for i in range(axes.len()) {
+    let axis = axes.at(i)
+
+    let normalized_trafo = if axis.plots.len() > 0 { // is independent axis
+      create-trafo(axis.scale.transform, ..axis.lim)
+    } else { // is dependent axis
+      let model-axis = if axis.kind == "x" { xaxis } else { yaxis }
+      a => (model-axis.normalized-transform)((axis.functions.inv)(a))
+    }
+
+    axes.at(i).transform = if axis.kind == "x" {
+      x => normalized_trafo(x) * it.width
     } else {
-      axes.at(i).transform = if has-auto-lim { model-axis.transform } else {
-        let trafo = x => (model-axis.normalized-transform)((axis.functions.inv)(x))
-        if axis.kind == "y" {
-          y => it.height * (1 - trafo(y))
-        } else {
-          x => it.width * trafo(x)
-        }
-      }
+      y => (1 - normalized_trafo(y)) * it.height
     }
   }
 
-  let axis-info = (
-    x: (ticking: _axis-generate-ticks(xaxis, length: it.width)), 
-    y: (ticking: _axis-generate-ticks(yaxis, length: it.height)), 
-  )
+
   
   
   
@@ -425,6 +419,8 @@
     let get-settable-field(element, object, field) = {
       e.fields(object).at(field, default: e-get(element).at(field))
     }
+
+
     let bounds = (left: 0pt, right: it.width, top: 0pt, bottom: it.height)
     
 
@@ -443,6 +439,10 @@
 
 
       // GRID
+      let axis-info = (
+        x: (ticking: _axis-generate-ticks(xaxis, length: it.width)), 
+        y: (ticking: _axis-generate-ticks(yaxis, length: it.height)), 
+      )
       artists.push((
         content: generate-grid(axis-info, transform, grid: it.grid), z: e-get(lq-grid).z-index
       ))
@@ -450,7 +450,8 @@
 
       // PLOTS
       let (legend-entries, artists: plot-artists, bounds: plot-bounds) = generate-plots(
-        plots, it.cycle, transform, axes-transforms, it.width, it.height
+        plots, it.cycle, transform, it.width, it.height, 
+        axes, xaxis, yaxis
       )
       artists += plot-artists
       bounds = update-bounds(bounds, plot-bounds)
