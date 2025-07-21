@@ -617,13 +617,18 @@
     
     let lq-tick-label = lq-tick-label.with(sub: sub, kind: kind)
 
+    labels = labels.map(label => {
+      if display-tick-labels {
+        lq-tick-label(label)
+      }
+    })
+
     let content = ticks.zip(labels).map(
       ((tick, label)) => {
         let loc = (axis.transform)(tick)
-        if not (axis.filter)(tick, calc.min(loc, max-value - loc)) { return }
-        let tick-label = if display-tick-labels { label }
-        if tick-label != none {tick-label = lq-tick-label(tick-label)}
-        make-tick(tick-label, loc)
+        if (axis.filter)(tick, calc.min(loc, max-value - loc)) { 
+          make-tick(label, loc)
+        }
       }
     ).join()
 
@@ -659,6 +664,8 @@
 
     let max-padding = outset
     let max-width = 0pt
+
+    let size = measure(lq-tick-label[asd])
 
     if display-tick-labels {
       let dimension = if axis.kind == "x" { "height" } else { "width" }
