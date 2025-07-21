@@ -727,7 +727,7 @@
       )
       content += tick-content
       space = tick-space
-
+        // todo subtick space
       let (subtick-content, _) = place-ticks(
         subticks, subtick-labels, position, display-tick-labels, 
         sub: true, kind: kind
@@ -758,12 +758,18 @@
             alignment: bottom + right, 
             content-alignment: horizon + left
           )
+          if position == top {
+            args.dy -= 100%
+          }
         } else if axis.kind == "y" {
           args = (
             dx: 0pt, dy: -.5em,
             alignment: top + left, 
             content-alignment: center + bottom
           )
+          if position == right {
+            args.dx += 100%
+          }
         }
 
         let (attachment-content, attachment-bounds) = place-with-bounds(
@@ -771,8 +777,7 @@
           ..args
         )
         content += attachment-content
-        attachment-bounds = offset-bounds(attachment-bounds, translate)
-        bounds.push(attachment-bounds)
+        bounds.push(offset-bounds(attachment-bounds, translate))
       }
     }
     
