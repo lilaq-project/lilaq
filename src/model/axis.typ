@@ -694,7 +694,7 @@
       content = place(box(width: max-padding, content))
     }
     
-    return (content, max-padding)
+    return (content, max-padding.to-absolute())
   }
   
 
@@ -726,12 +726,11 @@
         ticks, tick-labels, position, display-tick-labels, kind: kind, extra-ticks: axis.extra-ticks
       )
       content += tick-content
-      space = tick-space
-        // todo subtick space
-      let (subtick-content, _) = place-ticks(
+      let (subtick-content, subtick-space) = place-ticks(
         subticks, subtick-labels, position, display-tick-labels, 
         sub: true, kind: kind
       )
+      space = calc.max(tick-space, subtick-space)
       content += subtick-content
 
     }
@@ -784,9 +783,6 @@
 
 
     if axis.label != none and display-axis-label {
-
-      space = space.to-absolute()
-      
       let label = axis.label
       if e.eid(label) != e.eid(lq-label) {
         let constructor = if kind == "x" { xlabel } else { ylabel }
