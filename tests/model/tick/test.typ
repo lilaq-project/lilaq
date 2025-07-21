@@ -42,3 +42,22 @@
     extra-ticks: (lq.tick(.5, label: [Long label]),),
   )
 )
+
+
+#pagebreak()
+
+
+// Check that labels are measured AFTER they are converted to lq.tick-label, 
+// see issue #89. 
+
+#{
+  show: lq.show_(lq.tick-label.with(kind: "x"), rotate.with(-90deg, reflow: true))
+
+  lq.diagram(
+    width: 3cm,
+    grid: none,
+    height: 1cm,
+    ylim: (-0.2, 1.2),
+    xlim: (-0.01, 0.11),
+  )
+}
