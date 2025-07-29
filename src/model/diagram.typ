@@ -320,14 +320,12 @@
 
 /// Resolve the translate property of an axis ("translate" means translation along the orthogonal axis). 
 #let resolve-translate(axis, xaxis, yaxis, height) = {
-  
-  let maybe-transform(x, y) = {
-    if type(x) in (int, float) { x = (xaxis.transform)(x) }
-    if type(y) in (int, float) { y = (yaxis.transform)(y) - height }
-    return (x, y)
-  }
+  let (x, y) = axis.translate
 
-  maybe-transform(..axis.translate)
+  if type(x) in (int, float) { x = (xaxis.transform)(x) }
+  if type(y) in (int, float) { y = (yaxis.transform)(y) -100%}
+
+  (x, y)
 }
 
 
@@ -338,6 +336,7 @@
   auto-height: true, auto-width: true,
   available-size: (0pt, 0pt)
 ) = {
+  axes = fill-in-transforms(axes, width, height)
 
   let get-settable-field(element, object, field) = {
     e.fields(object).at(field, default: e-get(element).at(field))
@@ -475,14 +474,13 @@
   }
 
   // Tell additional axes how to transform their coordinates
-  axes = (xaxis, yaxis) + axes
-  axes = fill-in-transforms(axes, 10pt, 10pt)
 
 
   
   
   
   e.get(e-get => {
+    let axes = (xaxis, yaxis) + axes
     
 
     let get-settable-field(element, object, field) = {
@@ -497,7 +495,7 @@
 
     // Diagram may have relative/ratio width or height
     if type(it.width) == relative or type(it.height) == relative {
-      let try-layout = attempt-layout.with(
+      let attempt-layout = attempt-layout.with(
         auto-width: type(it.width) != length,
         auto-height: type(it.height) != length,
         available-size: it.size, it: it, axes: axes, e-get: e-get, plots: plots
@@ -509,7 +507,7 @@
       }
 
       // First guess for diagram area
-      let (width, height, ..) = try-layout(
+      let (width, height, ..) = attempt-layout(
         exact-or-guess(it.width, it.size.width), 
         exact-or-guess(it.height, it.size.height), 
       )
@@ -519,14 +517,14 @@
       // let us re-evaluate the ticking because maybe our initial guess was really bad. 
       // In this step, we expect the size not too change very substantially,
       // so we fix the ticking now and re-use it again in the final layout step. 
-      (it.width, it.height, tickings) = try-layout(width, height)
+      (it.width, it.height, tickings) = attempt-layout(width, height)
 
     } else {
       tickings = axes.map(axis => _axis-generate-ticks(axis, length: if axis.kind == "x" { it.width } else { it.height }))
     }
 
+    axes = fill-in-transforms(axes, it.width, it.height)
 
-    let axes = fill-in-transforms(axes, it.width, it.height)
     let (xaxis, yaxis) = axes.slice(0, 2)
 
     let bounds = (left: 0pt, right: it.width, top: 0pt, bottom: it.height)
