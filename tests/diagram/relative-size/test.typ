@@ -1,10 +1,8 @@
-#set page(width: auto, height: auto, margin: 0pt)
-
-
 #import "/src/lilaq.typ" as lq
 
 
-#set page(width: 6cm, height: 4cm)
+#set page(width: 6cm, height: 4cm, margin: 0pt)
+
 #show: lq.set-diagram(
   xlim: (-.1, 1.1),
   ylim: (-.1, 1.1),
@@ -90,10 +88,10 @@
 #{
   show: lq.theme.schoolbook
 
-  box(stroke: 1pt + red, lq.diagram(
+  lq.diagram(
     width: 100%,
     height: 100%,
-  ))
+  )
 
 }
 
