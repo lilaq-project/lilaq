@@ -339,6 +339,10 @@
   available-size: (0pt, 0pt)
 ) = {
 
+  let get-settable-field(element, object, field) = {
+    e.fields(object).at(field, default: e-get(element).at(field))
+  }
+
   let bounds = (left: 0pt, right: width, top: 0pt, bottom: height)
   let update-bounds = update-bounds.with(width: width, height: height)
 
