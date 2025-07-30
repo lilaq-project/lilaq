@@ -28,12 +28,22 @@
 /// -> lq.diagram
 #let diagram(
   
-  /// The width of the diagram's data area (excluding axes, labels etc.). 
-  /// -> length
+  /// The width of the diagram. This can be
+  /// - A `length`; in this case, it defines just the width of the data area,
+  ///   excluding axes, labels, title etc.
+  /// - A `ratio` or `relative` where the ratio part is relative to the width 
+  ///   of the parent that the diagram is placed in. This is not allowed if the
+  ///   parent has an unbounded width, e.g., a page with `width: auto`.  
+  /// -> length | relative
   width: 6cm,
   
-  /// The height of the diagram's data area (excluding axes, labels, title etc.). 
-  /// -> length
+  /// The height of the diagram. This can be
+  /// - A `length`; in this case, it defines just the height of the data area,
+  ///   excluding axes, labels, title etc.
+  /// - A `ratio` or `relative` where the ratio part is relative to the height 
+  ///   of the parent that the diagram is placed in. This is not allowed if the
+  ///   parent has an unbounded height, e.g., a page with `height: auto`.  
+  /// -> length | relative
   height: 4cm,
 
   /// The title for the diagram. Use a @title object for more options. 
