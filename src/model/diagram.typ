@@ -328,15 +328,6 @@
   )
 }
 
-/// Resolve the translate property of an axis ("translate" means translation along the orthogonal axis). 
-#let resolve-translate(axis, xaxis, yaxis, height) = {
-  let (x, y) = axis.translate
-
-  if type(x) in (int, float) { x = (xaxis.transform)(x) }
-  if type(y) in (int, float) { y = (yaxis.transform)(y) -100%}
-
-  (x, y)
-}
 
 
 
@@ -347,6 +338,7 @@
   available-size: (0pt, 0pt)
 ) = {
   axes = fill-in-transforms(axes, width, height)
+  let (xaxis, yaxis) = axes.slice(0, 2)
 
   let get-settable-field(element, object, field) = {
     e.fields(object).at(field, default: e-get(element).at(field))
@@ -363,8 +355,9 @@
   )
 
   for (axis, ticking) in axes.zip(tickings) {
-    axis.translate = resolve-translate(axis, axes.at(0), axes.at(1), height)
-    let (_, axis-bounds) = draw-axis(axis, ticking, e-get: e-get)
+    let (_, axis-bounds) = draw-axis(
+      axis, ticking, e-get: e-get, orthogonal-axis-transform: (if axis.kind == "x" { yaxis} else {xaxis}).transform
+    )
     bounds = axis-bounds.fold(bounds, update-bounds)
   }
 
@@ -572,8 +565,10 @@
       
       // AXES
       for (axis, ticking) in axes.zip(tickings) {
-        axis.translate = resolve-translate(axis, xaxis, yaxis, it.height)
-        let (axis-content, axis-bounds) = draw-axis(axis, ticking, e-get: e-get)
+        let (axis-content, axis-bounds) = draw-axis(
+          axis, ticking, e-get: e-get, 
+          orthogonal-axis-transform: (if axis.kind == "x" { yaxis} else {xaxis}).transform
+        )
         artists.push((content: axis-content, z: 20))
         
         axis-bounds.map(show-bounds.with(clr: rgb("#2222AA22"))).join()

@@ -217,7 +217,7 @@
     scale = lqscale.scales.at(scale)
   }
   assert(kind in ("x", "y"), message: "The `kind` of an axis can only be `x` or `y`")
-  let translate = (0pt, 0pt)
+  let orthogonal-offset = 0pt
 
 
   if position == auto {
@@ -225,11 +225,11 @@
     else if kind == "y" { position = left }
   } else if type(position) in (int, float, length, relative, ratio) {
     if kind == "x" { 
-      translate = (0pt, position)
+      orthogonal-offset = position
       position = bottom 
     }
     else if kind == "y" { 
-      translate = (position, 0pt)
+      orthogonal-offset = position
       position = left 
     }
     if mirror == auto { mirror = none }
@@ -237,9 +237,9 @@
     assertations.assert-dict-keys(position, mandatory: ("align", "offset"))
 
     
-    (position, translate) = (position.align, position.offset)
-    if kind == "x" { translate = (0pt, translate) }
-    else if kind == "y" { translate = (translate, 0pt) }
+    if kind == "x" { orthogonal-offset = position.offset }
+    else if kind == "y" { orthogonal-offset = position.offset }
+    position = position.align
     if mirror == auto { mirror = none }
     
     if kind == "x" {
@@ -339,7 +339,7 @@
     stroke: stroke,
     kind: kind,
     position: position,
-    translate: translate,
+    orthogonal-offset: orthogonal-offset,
     mirror: mirror,
       
     locate-ticks: locate-ticks,
@@ -560,10 +560,9 @@
 #let draw-axis(
   axis,
   tick-info,
+  orthogonal-axis-transform: none,
   e-get: none
 ) = {
-  
-  // assert(orthogonal-axis != none)
   if axis.hidden { return (none, ()) }
 
   let (ticks, tick-labels, subticks, subtick-labels, exp, offset) = tick-info
@@ -701,7 +700,6 @@
   // Draws a single axis (*or* a mirror)
   let the-axis(
     position: axis.position,
-    translate: (0pt, 0pt),
     display-ticks: true, 
     display-tick-labels: true, 
     display-axis-label: true,
@@ -776,7 +774,7 @@
           ..args
         )
         content += attachment-content
-        bounds.push(offset-bounds(attachment-bounds, translate))
+        bounds.push(attachment-bounds)
       }
     }
     
@@ -855,19 +853,33 @@
         main-bounds.left = 100% - inset
       }
     }
-    main-bounds = offset-bounds(main-bounds, translate)
     bounds.push(main-bounds)
     return (content, bounds)
   }
 
 
+  let orthogonal-offset = axis.orthogonal-offset
+  if type(orthogonal-offset) in (int, float) {
+    orthogonal-offset = orthogonal-axis-transform(orthogonal-offset)
+    
+    if axis.position in (bottom,  right) {
+      orthogonal-offset -= 100%
+    }
+  }
+  if axis.kind == "x" {
+    orthogonal-offset = (0pt, orthogonal-offset)
+  } else {
+    orthogonal-offset = (orthogonal-offset, 0pt)
+  }
 
-  let (axis-content, bounds) = the-axis(kind: axis.kind, translate: axis.translate)
+
+
+  let (axis-content, bounds) = the-axis(kind: axis.kind)
   let content = place(
     axis.position, 
     axis-content, 
-    dx: axis.translate.at(0), 
-    dy: axis.translate.at(1)
+    dx: orthogonal-offset.at(0), 
+    dy: orthogonal-offset.at(1)
   )
 
 
@@ -875,7 +887,6 @@
     let (mirror-axis-content, mirror-axis-bounds) = the-axis(
       kind: axis.kind,
       position: axis.position.inv(),
-      translate: axis.translate,
       display-ticks: axis.mirror.at("ticks", default: false),
       display-tick-labels: axis.mirror.at("tick-labels", default: false),
       display-axis-label: axis.mirror.at("label", default: false),
@@ -884,5 +895,5 @@
     bounds += mirror-axis-bounds
   }
   
-  return (content, bounds)
+  return (content, bounds.map(b => offset-bounds(b, orthogonal-offset)))
 }
