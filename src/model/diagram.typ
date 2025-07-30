@@ -628,7 +628,7 @@
 
   display: it => {
     if type(it.width) == relative or type(it.height) == relative {
-      layout(size => {
+      box(layout(size => {
         if type(it.width) == relative {
           // We have an exception for 0% which is useful to fit the _entire_ 
           // diagram to fixed dimensions. 
@@ -648,7 +648,7 @@
           size.height = size.height*it.height.ratio + it.height.length.to-absolute()
         }
         draw-diagram(it + (size: size))
-      })
+      }))
     } else {
       draw-diagram(it)
     }
