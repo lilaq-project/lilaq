@@ -12,7 +12,6 @@
 #import "label.typ": label as lq-label
 #import "axis.typ": axis as lq-axis, draw-axis, _axis-compute-limits, _axis-generate-ticks
 
-#import "../logic/scale.typ"
 #import "../logic/transform.typ": create-trafo
 #import "../algorithm/ticking.typ"
 
@@ -29,12 +28,22 @@
 /// -> lq.diagram
 #let diagram(
   
-  /// The width of the diagram's data area (excluding axes, labels etc.). 
-  /// -> length
+  /// The width of the diagram. This can be
+  /// - A `length`; in this case, it defines just the width of the data area,
+  ///   excluding axes, labels, title etc.
+  /// - A `ratio` or `relative` where the ratio part is relative to the width 
+  ///   of the parent that the diagram is placed in. This is not allowed if the
+  ///   parent has an unbounded width, e.g., a page with `width: auto`.  
+  /// -> length | relative
   width: 6cm,
   
-  /// The height of the diagram's data area (excluding axes, labels, title etc.). 
-  /// -> length
+  /// The height of the diagram. This can be
+  /// - A `length`; in this case, it defines just the height of the data area,
+  ///   excluding axes, labels, title etc.
+  /// - A `ratio` or `relative` where the ratio part is relative to the height 
+  ///   of the parent that the diagram is placed in. This is not allowed if the
+  ///   parent has an unbounded height, e.g., a page with `height: auto`.  
+  /// -> length | relative
   height: 4cm,
 
   /// The title for the diagram. Use a @title object for more options. 
@@ -158,43 +167,56 @@
   axis.lim = _axis-compute-limits(axis, is-independant: true, ..margin)
 
   
-  let normalized-transform = create-trafo(axis.scale.transform, ..axis.lim)
-  axis.normalized-transform = normalized-transform
+  let normalized-trafo = create-trafo(axis.scale.transform, ..axis.lim)
+  axis.normalized-transform = normalized-trafo
   
-  if kind == "x" {
-    axis.transform = x => normalized-transform(x) * it.width
-  } else {
-    axis.transform = y => it.height * (1 - normalized-transform(y))
-  }
-  
-  return axis
+  axis
 }
 
 
+#let fill-in-transforms(axes, width, height) = {
+  let xaxis = axes.at(0)
+  let yaxis = axes.at(1)
+  axes.map(axis => {
+    let normalized-trafo = if axis.plots.len() > 0 { // is independent axis
+      create-trafo(axis.scale.transform, ..axis.lim)
+    } else { // is dependent axis
+      let model-axis = if axis.kind == "x" { xaxis } else { yaxis }
+      a => (model-axis.normalized-transform)((axis.functions.inv)(a))
+    }
+
+    axis.transform = if axis.kind == "x" {
+      x => normalized-trafo(x) * width
+    } else {
+      y => (1 - normalized-trafo(y)) * height
+    }
+    axis
+  })
+}
 
 #let generate-grid(axis-info, xaxis, yaxis, grid: auto) = {
   grid = process-grid-arg(grid)
 
   lq-grid(
-    axis-info.x.ticking.subticks.map(xaxis.transform),
+    axis-info.x.subticks.map(xaxis.transform),
     sub: true,
     kind: "x",
     ..grid
   )
   lq-grid(
-    axis-info.y.ticking.subticks.map(yaxis.transform),
+    axis-info.y.subticks.map(yaxis.transform),
     sub: true,
     kind: "y",
     ..grid
   )
   lq-grid(
-    axis-info.x.ticking.ticks.map(xaxis.transform),
+    axis-info.x.ticks.map(xaxis.transform),
     sub: false,
     kind: "x",
     ..grid
   )
   lq-grid(
-    axis-info.y.ticking.ticks.map(yaxis.transform),
+    axis-info.y.ticks.map(yaxis.transform),
     sub: false,
     kind: "y",
     ..grid
@@ -202,11 +224,26 @@
 }
 
 
+#let generate-legend(legend, legend-entries, e-get) = {
+  if legend != none and (legend-entries.len() > 0 or e.eid(legend) == e.eid(lq-legend)) {
+    let (legend-content, legend-bounds) = _place-legend-with-bounds(
+      legend, legend-entries, e-get
+    )
+
+    (
+      content: legend-content,
+      bounds: legend-bounds
+    )
+  }
+}
+
+
 
 #let generate-plots(
-  plots, cycle, width, height, axes, xaxis, yaxis
+  plots, cycle, width, height, axes, only-bounds: false
 ) = {
-  
+  let (xaxis, yaxis) = axes.slice(0, 2)
+
   let transform(x, y) = (
     (xaxis.transform)(x), 
     (yaxis.transform)(y), 
@@ -224,7 +261,7 @@
     let transform = transform
 
     if type(plot) == dictionary and "axis-id" in plot {
-      let axis = axes.at(plot.axis-id)
+      let axis = axes.at(plot.axis-id + 2)
       transform = if axis.kind == "x" {
         (x, y) => ((axis.transform)(x), (yaxis.transform)(y))
       } else {
@@ -246,22 +283,24 @@
     let takes-part-in-cycle = not plot.at("ignores-cycle", default: true)
     let cycle-style = cycle.at(calc.rem(cycle-index, cycle.len()))
 
-    let plotted-plot = {
-      show: cycle-init
-      show: cycle-style
-      (plot.plot)(plot, transform)
-    }
-    
-    if takes-part-in-cycle {
-      cycle-index += 1
-    }
+    if not only-bounds {
+      let plotted-plot = {
+        show: cycle-init
+        show: cycle-style
+        (plot.plot)(plot, transform)
+      }
+      
+      if takes-part-in-cycle {
+        cycle-index += 1
+      }
 
-    if plot.at("clip", default: true) { 
-      plotted-plot = place(
-        box(width: width, height: height, clip: true, plotted-plot)
-      )
+      if plot.at("clip", default: true) { 
+        plotted-plot = place(
+          box(width: width, height: height, clip: true, plotted-plot)
+        )
+      }
+      artists.push((content: plotted-plot, z: plot.at("z-index", default: 2)))
     }
-    artists.push((content: plotted-plot, z: plot.at("z-index", default: 2)))
 
     
     if "legend" in plot and plot.label != none {
@@ -289,18 +328,71 @@
   )
 }
 
-
-
 /// Resolve the translate property of an axis ("translate" means translation along the orthogonal axis). 
 #let resolve-translate(axis, xaxis, yaxis, height) = {
-  
-  let maybe-transform(x, y) = {
-    if type(x) in (int, float) { x = (xaxis.transform)(x) }
-    if type(y) in (int, float) { y = (yaxis.transform)(y) - height }
-    return (x, y)
+  let (x, y) = axis.translate
+
+  if type(x) in (int, float) { x = (xaxis.transform)(x) }
+  if type(y) in (int, float) { y = (yaxis.transform)(y) -100%}
+
+  (x, y)
+}
+
+
+
+#let attempt-layout(
+  width, height, 
+  it: (:), axes: (), plots: (), e-get: none, 
+  auto-height: true, auto-width: true,
+  available-size: (0pt, 0pt)
+) = {
+  axes = fill-in-transforms(axes, width, height)
+
+  let get-settable-field(element, object, field) = {
+    e.fields(object).at(field, default: e-get(element).at(field))
   }
 
-  maybe-transform(..axis.translate)
+  let bounds = (left: 0pt, right: width, top: 0pt, bottom: height)
+  let update-bounds = update-bounds.with(width: width, height: height)
+
+  let tickings = axes.map(axis => 
+    _axis-generate-ticks(
+      axis, 
+      length: if axis.kind == "x" { width } else { height }
+    )
+  )
+
+  for (axis, ticking) in axes.zip(tickings) {
+    axis.translate = resolve-translate(axis, axes.at(0), axes.at(1), height)
+    let (_, axis-bounds) = draw-axis(axis, ticking, e-get: e-get)
+    bounds = axis-bounds.fold(bounds, update-bounds)
+  }
+
+  if it.title != none {
+    let (_, title-bounds) = _place-title-with-bounds(
+      it.title, get-settable-field, width, height
+    )
+    bounds = update-bounds(bounds, title-bounds)
+  }
+
+  let (legend-entries, bounds: plot-bounds) = generate-plots(
+    plots, it.cycle, width, height, 
+    axes, only-bounds: true
+  )
+  bounds = update-bounds(bounds, plot-bounds)
+
+  let legend = generate-legend(it.legend, legend-entries, e-get)
+  if legend != none {
+    bounds = update-bounds(bounds, legend.bounds)
+  }
+
+  if auto-width {
+    width = available-size.width - bounds.right + bounds.left + width
+  }
+  if auto-height {
+    height = available-size.height - bounds.bottom + bounds.top + height
+  }
+  return (width, height, tickings)
 }
 
 
@@ -391,30 +483,14 @@
     )
   }
 
-
   // Tell additional axes how to transform their coordinates
-  for i in range(axes.len()) {
-    let axis = axes.at(i)
-
-    let normalized_trafo = if axis.plots.len() > 0 { // is independent axis
-      create-trafo(axis.scale.transform, ..axis.lim)
-    } else { // is dependent axis
-      let model-axis = if axis.kind == "x" { xaxis } else { yaxis }
-      a => (model-axis.normalized-transform)((axis.functions.inv)(a))
-    }
-
-    axes.at(i).transform = if axis.kind == "x" {
-      x => normalized_trafo(x) * it.width
-    } else {
-      y => (1 - normalized_trafo(y)) * it.height
-    }
-  }
 
 
   
   
   
   e.get(e-get => {
+    let axes = (xaxis, yaxis) + axes
     
 
     let get-settable-field(element, object, field) = {
@@ -422,11 +498,48 @@
     }
 
 
+
+
+    let it = it
+    let tickings = ()
+
+    // Diagram may have relative/ratio width or height
+    if type(it.width) == relative or type(it.height) == relative {
+      let attempt-layout = attempt-layout.with(
+        auto-width: type(it.width) != length,
+        auto-height: type(it.height) != length,
+        available-size: it.size, it: it, axes: axes, e-get: e-get, plots: plots
+      )
+
+      let exact-or-guess(length, container-length) = {
+        if type(length) == std.length { length }
+        else { 0.9 * container-length * length.ratio + length.length.to-absolute() }
+      }
+
+      // First guess for diagram area
+      let (width, height, ..) = attempt-layout(
+        exact-or-guess(it.width, it.size.width), 
+        exact-or-guess(it.height, it.size.height), 
+      )
+
+
+      // Now that we have a better guess for the size of the diagram area
+      // let us re-evaluate the ticking because maybe our initial guess was really bad. 
+      // In this step, we expect the size not too change very substantially,
+      // so we fix the ticking now and re-use it again in the final layout step. 
+      (it.width, it.height, tickings) = attempt-layout(width, height)
+
+    } else {
+      tickings = axes.map(axis => _axis-generate-ticks(axis, length: if axis.kind == "x" { it.width } else { it.height }))
+    }
+
+    axes = fill-in-transforms(axes, it.width, it.height)
+
+    let (xaxis, yaxis) = axes.slice(0, 2)
+
     let bounds = (left: 0pt, right: it.width, top: 0pt, bottom: it.height)
+    let update-bounds = update-bounds.with(width: it.width, height: it.height)
     
-
-
-      
     let diagram = box(
       width: it.width, height: it.height, 
       inset: 0pt, outset: 0pt,
@@ -435,14 +548,13 @@
       set align(top + left) // sometimes alignment is messed up
       set place(left)       // important for RTL text direction
 
-      let update-bounds = update-bounds.with(width: it.width, height: it.height)
       let artists = ()
 
 
       // GRID
       let axis-info = (
-        x: (ticking: _axis-generate-ticks(xaxis, length: it.width)), 
-        y: (ticking: _axis-generate-ticks(yaxis, length: it.height)), 
+        x: tickings.at(0),
+        y: tickings.at(1),
       )
       artists.push((
         content: generate-grid(axis-info, xaxis, yaxis, grid: it.grid), z: e-get(lq-grid).z-index
@@ -452,26 +564,20 @@
       // PLOTS
       let (legend-entries, artists: plot-artists, bounds: plot-bounds) = generate-plots(
         plots, it.cycle, it.width, it.height, 
-        axes, xaxis, yaxis
+        axes
       )
       artists += plot-artists
       bounds = update-bounds(bounds, plot-bounds)
 
       
       // AXES
-      for axis in axes + (xaxis, yaxis) {
-        let ticking = _axis-generate-ticks(
-          axis, 
-          length: if axis.kind == "x" { it.width } else { it.height }
-        )
+      for (axis, ticking) in axes.zip(tickings) {
         axis.translate = resolve-translate(axis, xaxis, yaxis, it.height)
         let (axis-content, axis-bounds) = draw-axis(axis, ticking, e-get: e-get)
         artists.push((content: axis-content, z: 20))
         
-        for axis-bound in axis-bounds {
-          bounds = update-bounds(bounds, axis-bound)
-          show-bounds(axis-bound, clr: rgb("#2222AA22"))
-        }
+        axis-bounds.map(show-bounds.with(clr: rgb("#2222AA22"))).join()
+        bounds = axis-bounds.fold(bounds, update-bounds)
       }
       
       
@@ -487,13 +593,10 @@
 
       
       // LEGEND
-      if it.legend != none and (legend-entries.len() > 0 or e.eid(it.legend) == e.eid(lq-legend)) {
-        let (legend-content, legend-bounds) = _place-legend-with-bounds(
-          it.legend, legend-entries, e-get
-        )
-
-        artists.push((content: legend-content, z: e-get(lq-legend).z-index))
-        bounds = update-bounds(bounds, legend-bounds)
+      let legend = generate-legend(it.legend, legend-entries, e-get)
+      if legend != none {
+        artists.push((content: legend.content, z: e-get(lq-legend).z-index))
+        bounds = update-bounds(bounds, legend.bounds)
       }
 
 
@@ -528,12 +631,38 @@
   "diagram",
   prefix: "lilaq",
 
-  display: draw-diagram, 
+  display: it => {
+    if type(it.width) == relative or type(it.height) == relative {
+      layout(size => {
+        if type(it.width) == relative {
+          // We have an exception for 0% which is useful to fit the _entire_ 
+          // diagram to fixed dimensions. 
+          assert(
+            size.width != float.inf * 1pt or it.width.ratio == 0%, 
+            message: "Cannot create diagram with relative width (" + 
+              repr(it.width) + ") placed in a container with automatic width"
+          )
+          size.width = size.width*it.width.ratio + it.width.length.to-absolute()
+        }
+        if type(it.height) == relative {
+          assert(
+            size.height != float.inf * 1pt or it.height.ratio == 0%, 
+            message: "Cannot create diagram with relative height (" + 
+              repr(it.height) + ") placed in a container with automatic height"
+          )
+          size.height = size.height*it.height.ratio + it.height.length.to-absolute()
+        }
+        draw-diagram(it + (size: size))
+      })
+    } else {
+      draw-diagram(it)
+    }
+  }, 
 
   fields: (
     e.field("children", e.types.any, required: true),
-    e.field("width", length, default: 6cm),
-    e.field("height", length, default: 4cm),
+    e.field("width", e.types.union(length, relative), default: 6cm),
+    e.field("height", e.types.union(length, relative), default: 4cm),
     e.field("title", e.types.union(none, str, content, lq-title), default: none),
     e.field("legend", e.types.option(e.types.union(dictionary, lq-legend)), default: (:)),
     e.field("xlim", e.types.wrap(e.types.union(auto, array), fold: none), default: auto),
