@@ -635,8 +635,10 @@
     if type(it.width) == relative or type(it.height) == relative {
       layout(size => {
         if type(it.width) == relative {
+          // We have an exception for 0% which is useful to fit the _entire_ 
+          // diagram to fixed dimensions. 
           assert(
-            size.width != float.inf * 1pt, 
+            size.width != float.inf * 1pt or it.width.ratio == 0%, 
             message: "Cannot create diagram with relative width (" + 
               repr(it.width) + ") placed in a container with automatic width"
           )
@@ -644,7 +646,7 @@
         }
         if type(it.height) == relative {
           assert(
-            size.height != float.inf * 1pt, 
+            size.height != float.inf * 1pt or it.height.ratio == 0%, 
             message: "Cannot create diagram with relative height (" + 
               repr(it.height) + ") placed in a container with automatic height"
           )
