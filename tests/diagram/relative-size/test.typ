@@ -152,18 +152,3 @@
   ),
   background: rect(width: 3cm, height: 3cm, stroke: .2pt + red)
 )
-
-
-#set page("a4", flipped: true)
-
-#lq.diagram(
-  width: 100%,
-  xlim: auto,
-  lq.plot(
-    range(100),
-    // x => x
-    x => calc.sin(x),
-    label: []
-  ),
-  legend: (position: left, dx: 100%)
-)
