@@ -109,6 +109,7 @@
   display: it => e.get(e-get => {
     let angle = if it.align in (top, bottom) { 90deg } else { 0deg }
     let factor = if it.sub { 1 - (it.shorten-sub / 100%) } else { 1 }
+    let outset = it.outset * factor
     let length = (it.inset + it.outset) * factor
     
     let stroke = it.stroke
@@ -126,19 +127,19 @@
 
 
     if it.align == right {
-      move(dx: -it.outset, {
+      move(dx: -outset, {
         tline + place(dx: -length - it.pad, right + horizon, label)
       })
     } else if it.align == left {
-      move(dx: -length + it.outset, {
+      move(dx: -length + outset, {
         tline + place(dx: length + it.pad, left + horizon, label)
       })
     } else if it.align == top {
-      move(dy: -length + it.outset, {
+      move(dy: -length + outset, {
         tline + place(dy: length + it.pad, top + center, label)
       });
     } else if it.align == bottom {
-      move(dy: -it.outset,  {
+      move(dy: -outset,  {
         tline + place(dy: -length - it.pad, bottom + center, label)
       })
     }
