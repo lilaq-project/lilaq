@@ -231,12 +231,15 @@
 /// #let x = lq.linspace(0, 10)
 /// 
 /// #lq.diagram(
-///   lq.plot(x, x.map(x => calc.sin(x)))
+///   lq.plot(x, x => calc.sin(x + 0.541))
 /// )
 /// ```
+/// The $y$ coordinates can be given either as an array or as a function to be
+/// evaluated for all $x$ coordinates. 
 /// 
-/// By default, the line and mark style is determined by the current @diagram.cycle. 
-/// However, they can be configured per plot with the options @plot.color, @plot.mark,
+/// By default, the line and mark style is determined by the current 
+/// @diagram.cycle. However, they can be configured per plot with the options 
+/// @plot.color, @plot.mark,
 /// and @plot.stroke. 
 /// 
 /// This function is also intended for creating plots with error bars. 
@@ -259,9 +262,9 @@
   /// -> array
   x, 
   
-  /// Specifies either an array of $y$ coordinates or a function that takes an `x` value
-  /// and returns a corresponding `y` coordinate. The number of $x$ and $y$ coordinates
-  /// must match. 
+  /// Specifies either an array of $y$ coordinates or a function that takes an
+  /// `x` value and returns a corresponding `y` coordinate. The number of $x$ 
+  /// and $y$ coordinates must match. 
   /// -> array | function
   y, 
   

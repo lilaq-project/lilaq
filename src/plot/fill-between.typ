@@ -64,15 +64,16 @@
   /// An array of $x$ data coordinates. Data coordinates need to be of type `int` or `float`. 
   /// -> array
   x, 
-
   
-  /// An array of $y$ data coordinates. The number of $x$ and $y$ coordinates must match. 
-  /// -> array
+  /// Specifies either an array of $y$ coordinates or a function that takes an
+  /// `x` value and returns a corresponding `y` coordinate. The number of $x$ 
+  /// and $y$ coordinates must match. 
+  /// -> array | function
   y1, 
-
   
-  /// An second array of $y$ data coordinates. If this is `none`, the area between the coordinates `y1` and the $x$-axis is filled. 
-  /// -> none | array
+  /// An second array (or function) of $y$ data coordinates. If this is `none`, 
+  /// the area between the coordinates `y1` and the $x$-axis is filled. 
+  /// -> none | array | function
   y2: none,
 
   /// How to stroke the area. 
@@ -96,10 +97,17 @@
   /// -> int | float
   z-index: 2,
   
-) = {
+) = {  
+  if type(y1) == function {
+    y1 = x.map(y1)
+  }
+  if type(y2) == function {
+    y2 = x.map(y2)
+  }
   
   assertations.assert-matching-data-dimensions(x, x, y1: y1, y2: y2, fn-name: "fill-between")
   assert(step in (none, start, end, center))
+
   
   (
     x: x,

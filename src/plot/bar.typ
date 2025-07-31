@@ -126,9 +126,10 @@
   /// -> array
   x, 
   
-  /// An array of $y$ coordinates specifying the bar heights. The number of
-  /// $x$ and $y$ coordinates must match. 
-  /// -> array
+  /// Specifies the bar heights either through an array of $y$ coordinates or 
+  /// a function that takes an `x` value and returns a corresponding `y` 
+  /// coordinate. The number of $x$ and $y$ coordinates must match. 
+  /// -> array | function
   y, 
 
   /// How to fill the bars. This can be a single value applied to all bars or
@@ -233,6 +234,10 @@
   z-index: 2,
   
 ) = {
+  if type(y) == function {
+    y = x.map(y)
+  }
+
   assertations.assert-matching-data-dimensions(
     x, y, width: width, base: base, fill: fill, fn-name: "bar"
   )

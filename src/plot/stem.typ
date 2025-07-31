@@ -63,12 +63,12 @@
 /// Creates a vertical stem plot. 
 /// 
 /// ```example
-/// #let xs = lq.linspace(0, 10, num: 30)
+/// #let x = lq.linspace(0, 10, num: 30)
 ///   
 /// #lq.diagram(
 ///   lq.stem(
-///     xs, 
-///     xs.map(calc.cos), 
+///     x, 
+///     x.map(calc.cos), 
 ///     color: orange, 
 ///     mark: "d",
 ///     base: -0.25,
@@ -84,9 +84,10 @@
   /// -> array
   x, 
   
-  /// An array of $y$ coordinates. The number of $x$ and $y$ coordinates 
-  /// must match. 
-  /// -> array
+  /// Specifies either an array of $y$ coordinates or a function that takes an
+  /// `x` value and returns a corresponding `y` coordinate. The number of $x$ 
+  /// and $y$ coordinates must match. 
+  /// -> array | function
   y, 
 
   /// Combined color for line and marks. See also the parameter @stem.line 
@@ -128,7 +129,14 @@
   z-index: 2,
   
 ) = {
+  if type(y) == function {
+    y = x.map(y)
+  }
+  
   assertations.assert-matching-data-dimensions(x, y, fn-name: "stem")
+
+  
+
   (
     x: x,
     y: y,
