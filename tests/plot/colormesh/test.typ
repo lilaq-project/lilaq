@@ -1,6 +1,8 @@
 #set page(width: auto, height: auto, margin: 1pt)
 
 #import "../template.typ": *
+
+
 #show: minimal
 
 
@@ -84,4 +86,48 @@
     interpolation: "smooth"
 
   )
+)
+
+
+
+#pagebreak()
+
+// Inverted axes
+#{
+
+  show: lq.set-diagram(width: 2cm, height: 2cm)
+  let colormesh = lq.colormesh(
+    lq.linspace(0, 1, num: 3),
+    lq.linspace(0, 1, num: 3),
+    (x, y) => x*y
+  )
+  
+  grid(
+    columns: 2,
+    lq.diagram(colormesh),
+    lq.diagram(colormesh, xaxis: (inverted: true)),
+    lq.diagram(colormesh, yaxis: (inverted: true)),
+    lq.diagram(colormesh, yaxis: (inverted: true), xaxis: (inverted: true)),
+  )
+}
+
+
+#pagebreak()
+
+
+// Zoomed-in case, see #95
+#lq.diagram(
+  ylim: (0, .8),
+  xlim: (0, .8),
+  width: 3cm,
+  height: 3cm,
+  yaxis: (subticks: 3, tick-distance: .5),
+  xaxis: (subticks: 3, tick-distance: .5),
+
+  lq.colormesh(
+    lq.linspace(0, 1, num: 5),
+    lq.linspace(0, 1, num: 5),
+    (x, y) => 2 * x * y,
+    min: -.3,
+  ),
 )

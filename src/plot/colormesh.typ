@@ -50,16 +50,6 @@
     let h = heights.at(0)
     let (x1, y1) = transform(x0 - w / 2, y0 - h / 2)
     let (x2, y2) = transform(xn + w / 2, yn + h / 2)
-    let scale-x = 100%
-    let scale-y = -100%
-    if x1 > x2 { 
-      (x1, x2) = (x2, x1)
-      scale-x *= -1
-    }
-    if y1 < y2 { 
-      (y1, y2) = (y2, y1)
-      scale-y *= -1
-    }
 
     let img = image(
       bytes(plot.color.map(c => rgb(c).components().map(x => int(x / 100% * 255))).join()),
@@ -69,13 +59,22 @@
         height: plot.y.len(),
       ),
       scaling: plot.interpolation,
-      width: x2 - x1,
+      width: calc.abs(x2 - x1),
       fit: "stretch",
-      height: y1 - y2
+      height: calc.abs(y2 - y1)
     )
+    
+    if x1 > x2 { 
+      img = scale(origin: left, x: -100%, img)
+    }
+    if y1 > y2 { 
+      img = scale(origin: top, y: -100%, img)
+    } 
     place(
-      dx: x1, dy: y2, 
-      scale(x: scale-x, y: scale-y, img)
+      top + left,
+      dx: x1, 
+      dy: y1, 
+      img
     )
 
   } else {
