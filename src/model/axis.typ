@@ -799,12 +799,12 @@
 
       let dx = get-settable-field(lq-label, label, "dx")
       let dy = get-settable-field(lq-label, label, "dy")
-      let pad = get-settable-field(lq-label, label, "pad").to-absolute()
+      let pad = get-settable-field(lq-label, label, "pad")
 
       if pad == none { 
         pad = 0pt
-      } else { 
-        pad += space
+      } else {
+        pad = pad.to-absolute() + space
       }
 
 
