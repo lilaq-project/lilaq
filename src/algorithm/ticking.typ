@@ -175,10 +175,15 @@
   /// -> float
   x1, 
 
-  /// Sets the distance between consecutive ticks manually. If set to `auto`,  
+  /// Sets the distance between consecutive ticks manually. If set to `auto`, 
   /// the distance will be determined automatically according to 
   /// `num-ticks-suggestion`, `density`, and the given range. 
-  /// -> auto | float
+  /// 
+  /// The automatic distance can be constrained by passing a dictionary with 
+  /// the possible keys `"min"` and `"max"`. For example, by using 
+  /// `tick-distance: (min: 1)`, you can ensure that the tick distance is never
+  /// less than 1 while still being automatically chosen for large ranges. 
+  /// -> auto | float | dictionary
   tick-distance: auto,
 
   /// Suggested number of ticks to use. This may for example be chosen 
@@ -220,15 +225,32 @@
   let step
   let exponent
   
-  if tick-distance == auto {
+  if type(tick-distance) in (int, float) {
+    (_, exponent) = decompose-floating-point(calc.abs(tick-distance))
+    step = tick-distance / pow10(exponent - 1)
+  } else {
     let approx-step = (x1 - x0) / (num-ticks-suggestion * density / 100%)
     let mantissa
     (mantissa, exponent) = decompose-floating-point(calc.abs(approx-step))
     step = get-best-step(mantissa)
-    tick-distance = step * pow10(exponent - 1)
-  } else {
-    (_, exponent) = decompose-floating-point(calc.abs(tick-distance))
-    step = tick-distance / pow10(exponent - 1)
+    let distance = step * pow10(exponent - 1)
+    if type(tick-distance) == dictionary {
+      if "min" in tick-distance {
+        distance = calc.max(distance, tick-distance.min)
+        tick-distance.remove("min")
+      }
+      if "max" in tick-distance {
+        distance = calc.min(distance, tick-distance.max)
+        tick-distance.remove("max")
+      }
+      if tick-distance.len() != 0 {
+        assert(
+          false,
+          message: "Unexpected key \"" + tick-distance.keys().first() + "\" in `tick-distance` (expected \"min\" or/and \"max\")"
+        )
+      }
+    }
+    tick-distance = distance
   }
 
   

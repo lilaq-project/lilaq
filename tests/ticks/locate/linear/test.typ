@@ -180,3 +180,22 @@
   locate-ticks-linear(123181145e-8, 123181139e-8, num-ticks-suggestion: 7).ticks,
   (39, 40, 41, 42, 43, 44, 45).map(x => x*1e-8 + 1.231811)
 )
+
+
+
+
+// Tick-distance min/max
+#assert.eq(
+  locate-ticks-linear(0, 3, tick-distance: (min: 1)).ticks, 
+  (0., 1., 2., 3.)
+)
+
+#assert.eq(
+  locate-ticks-linear(0, 5, tick-distance: (max: 0.5)).ticks, 
+  (0., 0.5, 1., 1.5, 2., 2.5, 3., 3.5, 4., 4.5, 5.)
+)
+
+#assert.eq(
+  catch(() => locate-ticks-linear(0, 5, tick-distance: ("baa": 2))), 
+  "assertion failed: Unexpected key \"baa\" in `tick-distance` (expected \"min\" or/and \"max\")"
+)
