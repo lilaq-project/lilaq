@@ -199,3 +199,13 @@
   catch(() => locate-ticks-linear(0, 5, tick-distance: ("baa": 2))), 
   "assertion failed: Unexpected key \"baa\" in `tick-distance` (expected \"min\" or/and \"max\")"
 )
+
+#assert.eq(
+  locate-ticks-linear(0, 5, tick-distance: (min: .5, max: 1)).ticks, 
+  (0., 1., 2., 3., 4., 5.)
+)
+
+#assert.eq(
+  catch(() => locate-ticks-linear(0, 5, tick-distance: ("baa": 2))), 
+  "assertion failed: Unexpected key \"baa\" in `tick-distance` (expected \"min\" or/and \"max\")"
+)

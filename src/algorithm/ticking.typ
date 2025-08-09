@@ -237,11 +237,11 @@
     if type(tick-distance) == dictionary {
       if "min" in tick-distance {
         distance = calc.max(distance, tick-distance.min)
-        tick-distance.remove("min")
+        let _ = tick-distance.remove("min")
       }
       if "max" in tick-distance {
         distance = calc.min(distance, tick-distance.max)
-        tick-distance.remove("max")
+        let _ = tick-distance.remove("max")
       }
       if tick-distance.len() != 0 {
         assert(
