@@ -1,5 +1,6 @@
 #import "../logic/scale.typ" as lqscale
 #import "../utility.typ": place-in-out, match, match-type, if-auto, if-none
+#import "../logic/time.typ"
 #import "../algorithm/ticking.typ"
 #import "../bounds.typ": *
 #import "../assertations.typ"
@@ -312,6 +313,13 @@
 
   if type(lim) == array {
     assert.eq(lim.len(), 2, message: "Limit arrays must contain exactly two items")
+    lim = lim.map(
+      lim => if type(lim) == datetime {
+        time.to-seconds(lim).first()
+      } else {
+        lim
+      }
+    )
     
   } else if lim == auto { 
     lim = (auto, auto)
