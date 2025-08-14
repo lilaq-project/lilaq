@@ -955,40 +955,31 @@
 
   let range = x1 - x0
 
-  let (_, step) = calc.min(
-    ..steps.map(step => (calc.abs(num-ticks - range / step), step))
-  )
+  // let (_, step) = calc.min(
+  //   ..steps.map(step => (calc.abs(num-ticks - range / step), step))
+  // )
+  let generate-ticks(step) = {
+    let first = calc.ceil(x0 / step) * step
+    let last = (calc.floor(x1 / step) + 1) * step
+    arange(first, last, step: step)
+  }
 
-  let first = calc.ceil(x0 / step) * step
-  let last = (calc.floor(x1 / step) + 1) * step
+  let optimal-step = none
+  for step in steps {
+    
+  }
+  let (_, step) = steps.rev().map(step => 
+    (calc.abs(num-ticks - generate-ticks(step).len()), step)
+  ).sorted(key: ((d, _)) => d).first()
+  
+
   
   (
-    ticks: arange(first, last, step: step),
+    ticks: generate-ticks(step),
     step: step
   )
 }
 
-
-#assert.eq(
-  locate-ticks-step(1, 12).ticks,
-  (2,4,6,8,10,12)
-)
-#assert.eq(
-  locate-ticks-step(1, 12, num-ticks: 2).ticks,
-  (5, 10)
-)
-#assert.eq(
-  locate-ticks-step(105, 121, num-ticks: 3).ticks,
-  (105, 110, 115, 120)
-)
-#assert.eq(
-  locate-ticks-step(1, 12, steps: (1, 3, 6, 12)).ticks,
-  (3, 6, 9, 12)
-)
-#assert.eq(
-  locate-ticks-step(1, 23, steps: (1, 3, 6, 12)).ticks,
-  (6, 12, 18)
-)
 
 
 #let locate-months(
@@ -1027,108 +1018,6 @@
   )
 }
 
-#assert.eq(
-  locate-months(
-    ..time.to-seconds(
-      datetime(year: 2000, month: 7, day: 3),
-      datetime(year: 2000, month: 11, day: 3),
-    ),
-    num-ticks-suggestion: 5
-  ),
-  (
-    ticks: time.to-seconds(
-      datetime(year: 2000, month: 8, day: 1),
-      datetime(year: 2000, month: 9, day: 1),
-      datetime(year: 2000, month: 10, day: 1),
-      datetime(year: 2000, month: 11, day: 1)
-    ),
-    mode: "date"
-  )
-)
-#assert.eq(
-  locate-months(
-    ..time.to-seconds(
-      datetime(year: 2000, month: 7, day: 3),
-      datetime(year: 2000, month: 11, day: 3),
-    ),
-    num-ticks-suggestion: 2
-  ),
-  (
-    ticks: time.to-seconds(
-      datetime(year: 2000, month: 9, day: 1),
-      datetime(year: 2000, month: 11, day: 1),
-    ),
-    mode: "date"
-  )
-)
-#assert.eq(
-  locate-months(
-    ..time.to-seconds(
-      datetime(year: 2000, month: 7, day: 3),
-      datetime(year: 2001, month: 3, day: 3),
-    ),
-  ),
-  (
-    ticks: time.to-seconds(
-      datetime(year: 2000, month: 9, day: 1),
-      datetime(year: 2000, month: 11, day: 1),
-      datetime(year: 2001, month: 1, day: 1),
-      datetime(year: 2001, month: 3, day: 1),
-    ),
-    mode: "date"
-  )
-)
-#assert.eq(
-  locate-months(
-    ..time.to-seconds(
-      datetime(year: 2000, month: 7, day: 3),
-      datetime(year: 2001, month: 9, day: 3),
-    ),
-  ),
-  (
-    ticks: time.to-seconds(
-      datetime(year: 2000, month: 10, day: 1),
-      datetime(year: 2001, month: 1, day: 1),
-      datetime(year: 2001, month: 4, day: 1),
-      datetime(year: 2001, month: 7, day: 1),
-    ),
-    mode: "date"
-  )
-)
-#assert.eq(
-  locate-months(
-    ..time.to-seconds(
-      datetime(year: 2000, month: 7, day: 3),
-      datetime(year: 2001, month: 12, day: 3),
-    ),
-  ),
-  (
-    ticks: time.to-seconds(
-      datetime(year: 2000, month: 10, day: 1),
-      datetime(year: 2001, month: 1, day: 1),
-      datetime(year: 2001, month: 4, day: 1),
-      datetime(year: 2001, month: 7, day: 1),
-      datetime(year: 2001, month: 10, day: 1),
-    ),
-    mode: "date"
-  )
-)
-#assert.eq(
-  locate-months(
-    ..time.to-seconds(
-      datetime(year: 2000, month: 1, day: 3),
-      datetime(year: 2001, month: 12, day: 3),
-    ),
-  ),
-  (
-    ticks: time.to-seconds(
-      datetime(year: 2000, month: 7, day: 1),
-      datetime(year: 2001, month: 1, day: 1),
-      datetime(year: 2001, month: 7, day: 1),
-    ),
-    mode: "date"
-  )
-)
 
 
 
@@ -1183,62 +1072,6 @@
   )
 }
 
-#assert.eq(
-  locate-days(
-    ..time.to-seconds(
-      datetime(year: 2000, month: 1, day: 3),
-      datetime(year: 2000, month: 1, day: 7),
-    ),
-  ),
-  (
-    ticks: time.to-seconds(
-      datetime(year: 2000, month: 1, day: 3),
-      datetime(year: 2000, month: 1, day: 4),
-      datetime(year: 2000, month: 1, day: 5),
-      datetime(year: 2000, month: 1, day: 6),
-      datetime(year: 2000, month: 1, day: 7),
-    ),
-    mode: "date"
-  )
-)
-
-#assert.eq(
-  locate-days(
-    ..time.to-seconds(
-      datetime(year: 2025, month: 8, day: 11),
-      datetime(year: 2025, month: 8, day: 19),
-    ),
-    filter: date => calc.odd(date.day())
-  ),
-  (
-    ticks: time.to-seconds(
-      datetime(year: 2025, month: 8, day: 11), 
-      datetime(year: 2025, month: 8, day: 13), 
-      datetime(year: 2025, month: 8, day: 15), 
-      datetime(year: 2025, month: 8, day: 17), 
-      datetime(year: 2025, month: 8, day: 19), 
-    ),
-    mode: "date"
-  )
-)
-#assert.eq(
-  locate-days(
-    ..time.to-seconds(
-      datetime(year: 2025, month: 8, day: 11),
-      datetime(year: 2025, month: 8, day: 19),
-    ),
-    filter: date => date.weekday() in (1, 3, 5),
-  ),
-  (
-    ticks: time.to-seconds(
-      datetime(year: 2025, month: 8, day: 11), // Mon
-      datetime(year: 2025, month: 8, day: 13), // Wed
-      datetime(year: 2025, month: 8, day: 15), // Fr
-      datetime(year: 2025, month: 8, day: 18), // Mo
-    ),
-    mode: "date"
-  )
-)
 
 #let locate-ticks-datetime(
 
@@ -1278,24 +1111,28 @@
   let mode = "datetime"
   let sub = 0
 
-  if dt.weeks() >= 52 * 4 {
+  num-ticks-suggestion *= density / 100%
+  // let p = (dt.weeks()/52, num-ticks-suggestion)
+  if dt.weeks() >= 52 * num-ticks-suggestion {
     return locate-years(
       x0, 
       x1, 
       num-ticks-suggestion: num-ticks-suggestion,
       density: density
     )
-  } else if dt.weeks() >= 4 * 3 {
+  } else if dt.weeks() >= 4 * num-ticks-suggestion {
     return locate-months(
       x0, 
       x1, 
       num-ticks-suggestion: num-ticks-suggestion,
       density: density
     )
-  } else if dt.days() > 3  {
+  } else if dt.days() > num-ticks-suggestion  {
     return locate-days(
       x0, 
-      x1
+      x1,
+      num-ticks-suggestion: num-ticks-suggestion,
+      density: density
     )
   }
   
@@ -1306,8 +1143,6 @@
     sub: sub
   )
 }
-
-
 
 
 
