@@ -1110,3 +1110,112 @@
   )
 )
 
+
+
+
+
+#let locate-days(
+  x0, 
+  x1,
+  filter: auto,
+  num-ticks-suggestion: 5, 
+  density: 100%
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+
+  let first-day = time.with(t0, hour: 0, minute: 0, second: 0)
+  let last-day = time.with(t1, hour: 0, minute: 0, second: 0)
+  if first-day < t0 {
+    first-day += duration(days: 1)
+  }
+
+  let num-days = int(calc.round((last-day - first-day).days()))
+  let times = range(num-days + 1)
+    .map(days => first-day + duration(days: days))
+
+  if type(filter) == function {
+    times = times.filter(filter)
+  } else if filter == auto {
+    let filters = (
+      date => true,
+      date => calc.rem(date.day(), 2) == 1,
+      date => calc.rem(date.day(), 4) == 1,
+      date => date.day() in (1, 8, 15, 22),
+      date => date.day() in (1, 15),
+    )
+    
+    let num-ticks-target = num-ticks-suggestion * density / 100%
+    
+    (_, times) = calc.min(
+      ..filters.map(filter => {
+        let filtered = times.filter(filter)
+        (
+          calc.abs(filtered.len() - num-ticks-target),
+          filtered
+        )
+      })
+    )
+  }
+
+  (
+    ticks: time.to-seconds(..times),
+    mode: "date"
+  )
+}
+
+#assert.eq(
+  locate-days(
+    ..time.to-seconds(
+      datetime(year: 2000, month: 1, day: 3),
+      datetime(year: 2000, month: 1, day: 7),
+    ),
+  ),
+  (
+    ticks: time.to-seconds(
+      datetime(year: 2000, month: 1, day: 3),
+      datetime(year: 2000, month: 1, day: 4),
+      datetime(year: 2000, month: 1, day: 5),
+      datetime(year: 2000, month: 1, day: 6),
+      datetime(year: 2000, month: 1, day: 7),
+    ),
+    mode: "date"
+  )
+)
+
+#assert.eq(
+  locate-days(
+    ..time.to-seconds(
+      datetime(year: 2025, month: 8, day: 11),
+      datetime(year: 2025, month: 8, day: 19),
+    ),
+    filter: date => calc.odd(date.day())
+  ),
+  (
+    ticks: time.to-seconds(
+      datetime(year: 2025, month: 8, day: 11), 
+      datetime(year: 2025, month: 8, day: 13), 
+      datetime(year: 2025, month: 8, day: 15), 
+      datetime(year: 2025, month: 8, day: 17), 
+      datetime(year: 2025, month: 8, day: 19), 
+    ),
+    mode: "date"
+  )
+)
+#assert.eq(
+  locate-days(
+    ..time.to-seconds(
+      datetime(year: 2025, month: 8, day: 11),
+      datetime(year: 2025, month: 8, day: 19),
+    ),
+    filter: date => date.weekday() in (1, 3, 5),
+  ),
+  (
+    ticks: time.to-seconds(
+      datetime(year: 2025, month: 8, day: 11), // Mon
+      datetime(year: 2025, month: 8, day: 13), // Wed
+      datetime(year: 2025, month: 8, day: 15), // Fr
+      datetime(year: 2025, month: 8, day: 18), // Mo
+    ),
+    mode: "date"
+  )
+)
