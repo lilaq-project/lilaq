@@ -6,6 +6,7 @@
 #import "../utility.typ": if-auto
 #import "../style/styling.typ": mark, prepare-mark, prepare-path
 #import "../model/errorbar.typ": errorbar
+#import "../logic/time.typ"
 
 #let get-errorbar-stroke(base-stroke) = {
   if base-stroke == auto { return stroke() }
@@ -444,6 +445,10 @@
 ) = {
   if type(y) == function {
     y = x.map(y)
+  }
+
+  if x.any(x => type(x) == datetime) {
+    x = time.to-seconds(..x)
   }
 
   assertations.assert-matching-data-dimensions(x, y, fn-name: "plot")
