@@ -1,5 +1,6 @@
 #import "../math.typ": *
 #import "../logic/symlog.typ": symlog-transform
+#import "../logic/time.typ"
 #import "@preview/zero:0.4.0"
 
 
@@ -142,7 +143,14 @@
       labels: filtered-ticks.map(x => x.at(1))
     )
   } else {
-    (ticks: ticks.filter(x => x0 <= x and x <= x1))
+    let result = (:)
+    if type(ticks.at(0, default: 0)) == datetime {
+      let (seconds, mode) = time.to-seconds(..ticks, return-mode: true)
+      ticks = seconds
+      result.mode = mode
+    }
+    result.ticks = ticks.filter(x => x0 <= x and x <= x1)
+    result
   }
 }
 
@@ -201,7 +209,6 @@
   /// ticks. 
   /// -> ratio
   density: 100%,
-
 
   /// A unit relative to which the tick distance is taken. This can for example
   /// be used to generate ticks based on multiples of $\pi$ while keeping the
