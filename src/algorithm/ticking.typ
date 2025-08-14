@@ -1073,6 +1073,149 @@
 }
 
 
+#let locate-hours(
+  x0, 
+  x1,
+  filter: auto,
+  num-ticks-suggestion: 5, 
+  density: 100%
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+
+  let reference = time.with(t0, hour: 0, minute: 0, second: 0)
+
+  let (ticks, ..) = locate-ticks-step(
+    (t0 - reference).hours(), 
+    (t1 - reference).hours(),
+    steps: (1, 2, 3, 4, 6, 12, 24),
+    num-ticks: num-ticks-suggestion * density / 100%
+  )
+
+  let times = ticks.map(tick => 
+    reference + duration(hours: tick)
+  )
+  
+  (
+    ticks: time.to-seconds(..times),
+    mode: "time" // check if day differ from t0 to t1 and if so return datetime
+  )
+}
+
+#let locate-minutes(
+  x0, 
+  x1,
+  filter: auto,
+  num-ticks-suggestion: 5, 
+  density: 100%
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+
+  let reference = time.with(t0, minute: 0, second: 0)
+
+  let (ticks, ..) = locate-ticks-step(
+    (t0 - reference).minutes(), 
+    (t1 - reference).minutes(),
+    steps: (1, 2, 5, 10, 15, 20, 30, 60),
+    num-ticks: num-ticks-suggestion * density / 100%
+  )
+
+  let times = ticks.map(tick => 
+    reference + duration(minutes: tick)
+  )
+
+  (
+    ticks: time.to-seconds(..times),
+    mode: "time"
+  )
+}
+
+#let locate-seconds(
+  x0, 
+  x1,
+  filter: auto,
+  num-ticks-suggestion: 5, 
+  density: 100%
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+
+  let reference = time.with(t0, second: 0)
+
+  let (ticks, ..) = locate-ticks-step(
+    (t0 - reference).seconds(), 
+    (t1 - reference).seconds(),
+    steps: (1, 2, 5, 10, 15, 20, 30, 60),
+    num-ticks: num-ticks-suggestion * density / 100%
+  )
+
+  let times = ticks.map(tick => 
+    reference + duration(seconds: tick)
+  )
+
+  (
+    ticks: time.to-seconds(..times),
+    mode: "time"
+  )
+}
+
+
+#assert.eq(
+  locate-hours(
+    ..time.to-seconds(
+      datetime(hour: 0, minute: 0, second: 0),
+      datetime(hour: 5, minute: 0, second: 0),
+    ),
+  ),
+  (
+    ticks: time.to-seconds(
+      datetime(hour: 0, minute: 0, second: 0),
+      datetime(hour: 1, minute: 0, second: 0),
+      datetime(hour: 2, minute: 0, second: 0),
+      datetime(hour: 3, minute: 0, second: 0),
+      datetime(hour: 4, minute: 0, second: 0),
+      datetime(hour: 5, minute: 0, second: 0),
+    ),
+    mode: "time",
+  ),
+)
+
+#assert.eq(
+  locate-hours(
+    ..time.to-seconds(
+      datetime(hour: 2, minute: 0, second: 0),
+      datetime(hour: 7, minute: 0, second: 0),
+    ),
+  ),
+  (
+    ticks: time.to-seconds(
+      datetime(hour: 2, minute: 0, second: 0),
+      datetime(hour: 3, minute: 0, second: 0),
+      datetime(hour: 4, minute: 0, second: 0),
+      datetime(hour: 5, minute: 0, second: 0),
+      datetime(hour: 6, minute: 0, second: 0),
+      datetime(hour: 7, minute: 0, second: 0),
+    ),
+    mode: "time",
+  ),
+)
+
+// #assert.eq(
+//   locate-hours(
+//     ..time.to-seconds(
+//       datetime(hour: 1, minute: 20, second: 2),
+//       datetime(hour: 8, minute: 10, second: 2),
+//     ),
+//   ),
+//   (
+//     ticks: time.to-seconds(
+//       datetime(hour: 2, minute: 0, second: 0),
+//       datetime(hour: 4, minute: 0, second: 0),
+//       datetime(hour: 6, minute: 0, second: 0),
+//       datetime(hour: 8, minute: 0, second: 0),
+//     ),
+//     mode: "time",
+//   ),
+// )
+
 #let locate-ticks-datetime(
 
   /// The start of the range to locate ticks for. 
@@ -1112,30 +1255,28 @@
   let sub = 0
 
   num-ticks-suggestion *= density / 100%
-  // let p = (dt.weeks()/52, num-ticks-suggestion)
+  let args = arguments(
+    x0, 
+    x1, 
+    num-ticks-suggestion: num-ticks-suggestion,
+    density: density
+  )
+
   if dt.weeks() >= 52 * num-ticks-suggestion {
-    return locate-years(
-      x0, 
-      x1, 
-      num-ticks-suggestion: num-ticks-suggestion,
-      density: density
-    )
+    return locate-years(..args)
   } else if dt.weeks() >= 4 * num-ticks-suggestion {
-    return locate-months(
-      x0, 
-      x1, 
-      num-ticks-suggestion: num-ticks-suggestion,
-      density: density
-    )
+    return locate-months(..args)
   } else if dt.days() > num-ticks-suggestion  {
-    return locate-days(
-      x0, 
-      x1,
-      num-ticks-suggestion: num-ticks-suggestion,
-      density: density
-    )
+    return locate-days(..args)
+  } else if dt.hours() > num-ticks-suggestion  {
+    return locate-hours(..args)
+  } else if dt.minutes() > num-ticks-suggestion  {
+    return locate-minutes(..args)
+  } else if dt.seconds() > num-ticks-suggestion  {
+    return locate-seconds(..args)
   }
   
+  ticks = ()
   
   (
     mode: mode,
