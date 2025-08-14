@@ -1,0 +1,68 @@
+#let reference-datetime = datetime(year: 0, month: 1, day: 1, hour: 0, minute: 0, second: 0)
+#let reference-time = datetime(hour: 0, minute: 0, second: 0)
+#let reference-date = datetime(year: 0, month: 1, day: 1)
+
+#let to-seconds(..datetimes, return-mode: false) = {
+  datetimes = datetimes.pos()
+  if datetimes.len() == 0 { return () }
+  assert(
+    datetimes.all(dt => type(dt) == datetime),
+    message: "When passing datetime values, all entries need to be of type datetime"
+  )
+
+  let reference
+  let mode
+  let dt = datetimes.first()
+  let assert-same-type = assert.with(
+    message: "All datetimes must be of the same type (all time, all date, or all datetime)."
+  )
+  if dt.hour() == none {
+    mode = "date"
+    reference = reference-date
+    assert-same-type(datetimes.all(dt => dt.hour() == none))
+  } else if dt.year() == none {
+    mode = "time"
+    reference = reference-time
+    assert-same-type(datetimes.all(dt => dt.year() == none))
+  } else {
+    mode = "datetime"
+    reference = reference-datetime
+    assert-same-type(datetimes.all(dt => dt.hour() != none and dt.year() != none))
+  }
+
+  let seconds = datetimes.map(dt => (dt - reference).seconds())
+  if return-mode {
+    (mode: mode, seconds: seconds)
+  } else {
+    seconds
+  }
+}
+
+
+#let to-datetime(..seconds, mode: "datetime") = {
+  seconds = seconds.pos()
+  let reference = if mode == "datetime" {
+    reference-datetime
+  } else if mode == "date" {
+    reference-date
+  } else if mode == "time" {
+    reference-time
+  } else {
+    assert(false, "Unsupported mode")
+  }
+
+  
+  seconds.map(seconds => reference + duration(seconds: int(seconds)))
+}
+
+
+#to-seconds(
+  datetime(year: 2025, month: 8, day: 4),
+  datetime(year: 2025, month: 8, day: 7),
+  // reference-datetime
+)
+#to-seconds(
+  // reference-time,
+  reference-datetime,
+  reference-datetime
+)
