@@ -938,3 +938,34 @@
   )
 }
 
+
+#let locate-ticks-step(
+  x0, x1, steps: (1, 2, 5), num-ticks: 5
+) = {
+  
+  assert.ne(
+    x0, x1, 
+    message: "Start and end of the range to locate ticks on cannot be identical"
+  )
+  if x1 < x0 {
+    (x1, x0) = (x0, x1)
+  }
+
+  
+
+  let range = x1 - x0
+
+  let (_, step) = calc.min(
+    ..steps.map(step => (calc.abs(num-ticks - range / step), step))
+  )
+
+  let first = calc.ceil(x0 / step) * step
+  let last = (calc.floor(x1 / step) + 1) * step
+  
+  (
+    ticks: arange(first, last, step: step),
+    step: step
+  )
+}
+
+
