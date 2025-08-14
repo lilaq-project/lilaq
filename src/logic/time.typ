@@ -106,3 +106,30 @@
     )
   }
 }
+
+
+#assert.eq(
+  with(datetime(year: 2002, month: 3, day: 3), year: 1999),
+  datetime(year: 1999, month: 3, day: 3)
+)
+#assert.eq(
+  with(datetime(year: 2002, month: 3, day: 3), year: 1999, month: 12),
+  datetime(year: 1999, month: 12, day: 3)
+)
+#assert.eq(
+  with(datetime(year: 2002, month: 3, day: 3), day: 31, month: 12),
+  datetime(year: 2002, month: 12, day: 31)
+)
+
+#assert.eq(
+  with(datetime(hour: 2, minute: 22, second: 8), second: 7),
+  datetime(hour: 2, minute: 22, second: 7)
+)
+#assert.eq(
+  with(datetime(hour: 2, minute: 22, second: 8), minute: 27),
+  datetime(hour: 2, minute: 27, second: 8)
+)
+#assert.eq(
+  with(datetime(hour: 2, minute: 22, second: 8), hour: 7),
+  datetime(hour: 7, minute: 22, second: 8)
+)
