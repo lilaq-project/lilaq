@@ -47,7 +47,7 @@ Clicking on any demo image below will bring you to the respective page of the do
 </td>
 <td>
 
-[![bar chart](https://github.com/user-attachments/assets/7822cc4f-6f12-4622-9f38-18ca7dd2a4fa)](https://lilaq.org/docs/examples/bar)
+[![bar chart](https://github.com/user-attachments/assets/7822cc4f-6f12-4622-9f38-18ca7dd2a4fa)](https://lilaq.org/docs/reference/bar)
 
 </td>
 </tr>
