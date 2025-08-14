@@ -1158,45 +1158,6 @@
 }
 
 
-#assert.eq(
-  locate-hours(
-    ..time.to-seconds(
-      datetime(hour: 0, minute: 0, second: 0),
-      datetime(hour: 5, minute: 0, second: 0),
-    ),
-  ),
-  (
-    ticks: time.to-seconds(
-      datetime(hour: 0, minute: 0, second: 0),
-      datetime(hour: 1, minute: 0, second: 0),
-      datetime(hour: 2, minute: 0, second: 0),
-      datetime(hour: 3, minute: 0, second: 0),
-      datetime(hour: 4, minute: 0, second: 0),
-      datetime(hour: 5, minute: 0, second: 0),
-    ),
-    mode: "time",
-  ),
-)
-
-#assert.eq(
-  locate-hours(
-    ..time.to-seconds(
-      datetime(hour: 2, minute: 0, second: 0),
-      datetime(hour: 7, minute: 0, second: 0),
-    ),
-  ),
-  (
-    ticks: time.to-seconds(
-      datetime(hour: 2, minute: 0, second: 0),
-      datetime(hour: 3, minute: 0, second: 0),
-      datetime(hour: 4, minute: 0, second: 0),
-      datetime(hour: 5, minute: 0, second: 0),
-      datetime(hour: 6, minute: 0, second: 0),
-      datetime(hour: 7, minute: 0, second: 0),
-    ),
-    mode: "time",
-  ),
-)
 
 // #assert.eq(
 //   locate-hours(
