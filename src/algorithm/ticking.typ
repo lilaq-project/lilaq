@@ -912,3 +912,29 @@
   log + linear.labels
 }
 
+
+
+#let locate-years(
+  x0, 
+  x1,
+  num-ticks-suggestion: 5, 
+  density: 100%
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+
+  let years = locate-ticks-linear(
+    t0.year(), t1.year(), tick-distance: (min: 1)
+  ).ticks
+
+  let times = years
+    .map(int)
+    .map(y => datetime(year: y, month: 1, day: 1))
+
+  let ticks = time.to-seconds(..times)
+  
+  (
+    ticks: ticks.filter(x => x >= x0 and x <= x1),
+    mode: "date"
+  )
+}
+
