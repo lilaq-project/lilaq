@@ -66,3 +66,43 @@
   reference-datetime,
   reference-datetime
 )
+
+
+#let with(
+  date, 
+  year: auto, month: auto, day: auto,
+  hour: auto, minute: auto, second: auto
+) = {
+  if year == auto { year = date.year() }
+  if month == auto { month = date.month() }
+  if day == auto { day = date.day() }
+
+  if hour == auto { hour = date.hour() }
+  if minute == auto { minute = date.minute() }
+  if second == auto { second = date.second() }
+  
+  let has-date = (year, month, day).any(x => x != none)
+  let has-time = (hour, minute, second).any(x => x != none)
+  if has-date and has-time {
+    datetime(
+      year: year,
+      month: month,
+      day: day,
+      hour: hour,
+      minute: minute,
+      second: second
+    )
+  } else if has-date {
+    datetime(
+      year: year,
+      month: month,
+      day: day
+    )
+  } else {
+    datetime(
+      hour: hour,
+      minute: minute,
+      second: second
+    )
+  }
+}
