@@ -1032,19 +1032,25 @@
 ) = {
   let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
 
-  let first-day = time.with(t0, hour: 0, minute: 0, second: 0)
-  let last-day = time.with(t1, hour: 0, minute: 0, second: 0)
-  if first-day < t0 {
-    first-day += duration(days: 1)
-  }
+  let reference = time.with(t0, day: 1, hour: 0, minute: 0, second: 0)
 
-  let num-days = int(calc.round((last-day - first-day).days()))
-  let times = range(num-days + 1)
-    .map(days => first-day + duration(days: days))
+  let (ticks, ..) = locate-ticks-step(
+    (t0 - reference).days(), 
+    (t1 - reference).days(),
+    steps: (1,),
+    num-ticks: num-ticks-suggestion * density / 100%
+  )
 
+  let times = ticks.map(tick => 
+    reference + duration(days: tick)
+  )
+  
   if type(filter) == function {
+
     times = times.filter(filter)
+    
   } else if filter == auto {
+
     let filters = (
       date => true,
       date => calc.rem(date.day(), 2) == 1,
