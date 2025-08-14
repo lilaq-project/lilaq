@@ -969,3 +969,144 @@
 }
 
 
+
+
+#let locate-months(
+  x0, 
+  x1,
+  num-ticks-suggestion: 5, 
+  density: 100%
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+
+  let month-start = t0.month()
+  if t0 > time.with(t0, day: 1, hour: 0, minute: 0, second: 0) {
+    month-start += 1
+  }
+
+  let month-end = t1.month() + (t1.year() - t0.year()) * 12
+  let (ticks: months, step) = locate-ticks-step(
+    month-start - 1, month-end - 1, 
+    steps: (1, 2, 3, 6, 12),
+    num-ticks: num-ticks-suggestion * density / 100%
+  )
+
+
+  let times = months
+    .map(month => datetime(
+      year: t0.year() + calc.quo(month, 12), 
+      month: calc.rem(int(month), 12) + 1, 
+      day: 1
+    ))
+  let ticks = time.to-seconds(..times)
+  // sub = step - 1
+  
+  (
+    ticks: ticks.filter(x => x >= x0 and x <= x1),
+    mode: "date"
+  )
+}
+
+#assert.eq(
+  locate-months(
+    ..time.to-seconds(
+      datetime(year: 2000, month: 7, day: 3),
+      datetime(year: 2000, month: 11, day: 3),
+    ),
+    num-ticks-suggestion: 5
+  ),
+  (
+    ticks: time.to-seconds(
+      datetime(year: 2000, month: 8, day: 1),
+      datetime(year: 2000, month: 9, day: 1),
+      datetime(year: 2000, month: 10, day: 1),
+      datetime(year: 2000, month: 11, day: 1)
+    ),
+    mode: "date"
+  )
+)
+#assert.eq(
+  locate-months(
+    ..time.to-seconds(
+      datetime(year: 2000, month: 7, day: 3),
+      datetime(year: 2000, month: 11, day: 3),
+    ),
+    num-ticks-suggestion: 2
+  ),
+  (
+    ticks: time.to-seconds(
+      datetime(year: 2000, month: 9, day: 1),
+      datetime(year: 2000, month: 11, day: 1),
+    ),
+    mode: "date"
+  )
+)
+#assert.eq(
+  locate-months(
+    ..time.to-seconds(
+      datetime(year: 2000, month: 7, day: 3),
+      datetime(year: 2001, month: 3, day: 3),
+    ),
+  ),
+  (
+    ticks: time.to-seconds(
+      datetime(year: 2000, month: 9, day: 1),
+      datetime(year: 2000, month: 11, day: 1),
+      datetime(year: 2001, month: 1, day: 1),
+      datetime(year: 2001, month: 3, day: 1),
+    ),
+    mode: "date"
+  )
+)
+#assert.eq(
+  locate-months(
+    ..time.to-seconds(
+      datetime(year: 2000, month: 7, day: 3),
+      datetime(year: 2001, month: 9, day: 3),
+    ),
+  ),
+  (
+    ticks: time.to-seconds(
+      datetime(year: 2000, month: 10, day: 1),
+      datetime(year: 2001, month: 1, day: 1),
+      datetime(year: 2001, month: 4, day: 1),
+      datetime(year: 2001, month: 7, day: 1),
+    ),
+    mode: "date"
+  )
+)
+#assert.eq(
+  locate-months(
+    ..time.to-seconds(
+      datetime(year: 2000, month: 7, day: 3),
+      datetime(year: 2001, month: 12, day: 3),
+    ),
+  ),
+  (
+    ticks: time.to-seconds(
+      datetime(year: 2000, month: 10, day: 1),
+      datetime(year: 2001, month: 1, day: 1),
+      datetime(year: 2001, month: 4, day: 1),
+      datetime(year: 2001, month: 7, day: 1),
+      datetime(year: 2001, month: 10, day: 1),
+    ),
+    mode: "date"
+  )
+)
+#assert.eq(
+  locate-months(
+    ..time.to-seconds(
+      datetime(year: 2000, month: 1, day: 3),
+      datetime(year: 2001, month: 12, day: 3),
+    ),
+  ),
+  (
+    ticks: time.to-seconds(
+      datetime(year: 2000, month: 7, day: 1),
+      datetime(year: 2001, month: 1, day: 1),
+      datetime(year: 2001, month: 7, day: 1),
+    ),
+    mode: "date"
+  )
+)
+
