@@ -969,6 +969,26 @@
 }
 
 
+#assert.eq(
+  locate-ticks-step(1, 12).ticks,
+  (2,4,6,8,10,12)
+)
+#assert.eq(
+  locate-ticks-step(1, 12, num-ticks: 2).ticks,
+  (5, 10)
+)
+#assert.eq(
+  locate-ticks-step(105, 121, num-ticks: 3).ticks,
+  (105, 110, 115, 120)
+)
+#assert.eq(
+  locate-ticks-step(1, 12, steps: (1, 3, 6, 12)).ticks,
+  (3, 6, 9, 12)
+)
+#assert.eq(
+  locate-ticks-step(1, 23, steps: (1, 3, 6, 12)).ticks,
+  (6, 12, 18)
+)
 
 
 #let locate-months(
@@ -1219,3 +1239,127 @@
     mode: "date"
   )
 )
+
+#let locate-ticks-datetime(
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
+  x0, 
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
+  x1, 
+
+  /// Suggested number of ticks to use. This may for example be chosen 
+  /// according to the length of the axis and the font size. 
+  /// -> int | float
+  num-ticks-suggestion: 5, 
+
+  /// The maximum number of ticks to generate. This guard prevents an 
+  /// accidental generation of a huge number of ticks. 
+  /// -> int
+  max-ticks: 200,
+
+  /// The density of ticks. This can be used as a qualitative knob to tune
+  /// the number of generated ticks in relation to the suggested number of
+  /// ticks. 
+  /// -> ratio
+  density: 100%,
+
+  ..args
+
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+  let dt = t1 - t0
+
+  // todo: xlim needs to accept datetimes
+  let ticks = locate-ticks-linear(x0, x1).ticks
+  let times 
+  let mode = "datetime"
+  let sub = 0
+
+  if dt.weeks() >= 52 * 4 {
+    return locate-years(
+      x0, 
+      x1, 
+      num-ticks-suggestion: num-ticks-suggestion,
+      density: density
+    )
+  } else if dt.weeks() >= 4 * 3 {
+    return locate-months(
+      x0, 
+      x1, 
+      num-ticks-suggestion: num-ticks-suggestion,
+      density: density
+    )
+  } else if dt.days() > 3  {
+    return locate-days(
+      x0, 
+      x1
+    )
+  }
+  
+  
+  (
+    mode: mode,
+    ticks: ticks.filter(x => x >= x0 and x <= x1),
+    sub: sub
+  )
+}
+
+
+
+
+
+#let locate-subticks-datetime(
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
+  x0, 
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
+  x1, 
+
+  /// Ticks produced by some tick locator. 
+  /// -> array
+  ticks: (), 
+
+  sub: none,
+
+  ..args // important!
+
+
+) = {
+
+  if sub == none { 
+    return (ticks: ())
+  }
+
+  let ticks = ticks.windows(2).map(((t0, t1)) => {
+    let distance = t1 - t0
+    range(1, sub + 1).map(s => t0 + distance * s / (sub + 1))
+  }).join()
+  (ticks: ticks)
+}
+
+#let format-ticks-datetime(
+  ticks,
+  tick-info: (:), 
+  format: auto,
+  ..args
+) = {
+  assert(
+    "mode" in tick-info,
+    message: "format-ticks-datetime can only be used with a datetime tick locator"
+  )
+  let p = time.to-datetime(..ticks, mode: tick-info.mode)
+  p = p.map(p => p.display(format))
+
+  (
+    labels: p, 
+    exponent: 0, 
+    offset: 0
+  )
+}
+
