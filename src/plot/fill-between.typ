@@ -107,8 +107,10 @@
     y2 = x.map(y2)
   }
 
+  let datetime-axes = (:)
   if type(x.first()) == datetime {
     x = time.to-seconds(..x)
+    datetime-axes.x = true
   }
   
   assertations.assert-matching-data-dimensions(x, x, y1: y1, y2: y2, fn-name: "fill-between")
@@ -128,6 +130,7 @@
     plot: render-fill-between,
     xlimits: () => minmax(x),
     ylimits: () => minmax(y1 + y2 + if y2 == none {(0,)}),
+    datetime: datetime-axes,
     legend: true,
     ignores-cycle: false,
     z-index: z-index

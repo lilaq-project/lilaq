@@ -74,8 +74,10 @@
   assertations.assert-no-named(x)
   x = x.pos()
 
+  let datetime-axes = (:)
   if type(x.first()) == datetime {
     x = time.to-seconds(..x)
+    datetime-axes.x = true
   }
 
   let ylimits = none
@@ -97,6 +99,7 @@
     plot: render-vlines,
     xlimits: () => minmax(x),
     ylimits: () => ylimits,
+    datetime: datetime-axes,
     legend: true,
     z-index: z-index
   )

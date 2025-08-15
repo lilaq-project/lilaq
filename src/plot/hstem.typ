@@ -121,11 +121,14 @@
   
 ) = {
 
+  let datetime-axes = (:)
   if type(x.first()) == datetime {
     x = time.to-seconds(..x)
+    datetime-axes.x = true
   }
   if type(y.first()) == datetime {
     y = time.to-seconds(..y)
+    datetime-axes.y = true
   }
 
   assertations.assert-matching-data-dimensions(x, y, fn-name: "hstem")
@@ -145,6 +148,7 @@
     plot: render-hstem,
     xlimits: () => bar-lim(x, (base,)),
     ylimits: () => minmax(y),
+    datetime: datetime-axes,
     legend: true,
     ignores-cycle: false,
     clip: clip,

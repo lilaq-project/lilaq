@@ -127,13 +127,16 @@
   z-index: 2,
   
 ) = {
+  let datetime-axes = (:)
   if type(x.first()) == datetime {
     x = time.to-seconds(..x)
+    datetime-axes.x = true
   }
   if type(y.first()) == datetime {
     y = time.to-seconds(..y)
+    datetime-axes.y = true
   }
-  
+
   assertations.assert-matching-data-dimensions(
     x, y, width: width, base: base, fn-name: "hbar"
   )
@@ -183,6 +186,7 @@
     plot: render-bar.with(orientation: "horizontal"),
     xlimits: () => bar-lim(x, base),
     ylimits: () => ylim,
+    datetime: datetime-axes,
     legend: true,
     ignores-cycle: false,
     clip: clip,

@@ -447,11 +447,14 @@
     y = x.map(y)
   }
 
+  let datetime-axes = (:)
   if type(x.first()) == datetime {
     x = time.to-seconds(..x)
+    datetime-axes.x = true
   }
   if type(y.first()) == datetime {
     y = time.to-seconds(..y)
+    datetime-axes.y = true
   }
 
   assertations.assert-matching-data-dimensions(x, y, fn-name: "plot")
@@ -483,6 +486,7 @@
     plot: render-plot,
     xlimits: () => plot-lim(x, err: xerr),
     ylimits: () => plot-lim(y, err: yerr),
+    datetime: datetime-axes,
     legend: true,
     ignores-cycle: false,
     clip: clip,

@@ -283,8 +283,10 @@
   if type(x) in (int, float, datetime) { x = (x,) }
   else if x == auto { x = range(1, num-boxplots + 1) }
 
+  let datetime-axes = (:)
   if type(x.first()) == datetime {
     x = time.to-seconds(..x)
+    datetime-axes.x = true
   }
 
   assert(
@@ -334,6 +336,7 @@
     plot: render-boxplot,
     xlimits: () => (xmin, xmax),
     ylimits: () => (ymin, ymax),
+    datetime: datetime-axes,
     legend: true,
     clip: clip,
     z-index: z-index

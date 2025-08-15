@@ -85,14 +85,22 @@
   grid: auto,
 
   /// Sets the scale of the $x$-axis. This may be a @scale object or the name
-  /// of one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
-  /// -> str | lq.scale
-  xscale: "linear",
+  /// of one of the built-in scales `"linear"`, `"log"`, `"symlog"`, and 
+  /// `"datetime"`. 
+  /// 
+  /// If left at `auto`, the scale will be set to `"datetime"` if any of the 
+  /// plots uses datetime coordinates and `"linear"` otherwise. 
+  /// -> auto | str | lq.scale
+  xscale: auto,
   
   /// Sets the scale of the $y$-axis. This may be a @scale object or the name
-  /// of one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
-  /// -> str | lq.scale
-  yscale: "linear",
+  /// of one of the built-in scales `"linear"`, `"log"`, `"symlog"`, and 
+  /// `"datetime"`. 
+  /// 
+  /// If left at `auto`, the scale will be set to `"datetime"` if any of the 
+  /// plots uses datetime coordinates and `"linear"` otherwise. 
+  /// -> auto | str | lq.scale
+  yscale: auto,
 
   /// Configures the $x$-axis through a dictionary of arguments to pass to the 
   /// constructor of the axis. See @axis for available options. 
@@ -665,8 +673,8 @@
     e.field("xlabel", e.types.option(e.types.union(lq-label, str, content)), default: none),
     e.field("ylabel", e.types.option(e.types.union(lq-label, str, content)), default: none),
     e.field("grid", e.types.union(auto, none, dictionary, stroke, color, length), default: auto),
-    e.field("xscale", e.types.union(str, dictionary), default: "linear"),
-    e.field("yscale", e.types.union(str, dictionary), default: "linear"),
+    e.field("xscale", e.types.union(auto, str, dictionary), default: auto),
+    e.field("yscale", e.types.union(auto, str, dictionary), default: auto),
     e.field("xaxis", e.types.option(folding-dict), default: (:)),
     e.field("yaxis", e.types.option(folding-dict), default: (:)),
     e.field("margin", e.types.union(ratio, dictionary), default: 6%),

@@ -78,8 +78,10 @@
   assertations.assert-no-named(y)
   y = y.pos()
   
+  let datetime-axes = (:)
   if type(y.first()) == datetime {
     y = time.to-seconds(..y)
+    datetime-axes.y = true
   }
 
   stroke = merge-strokes(stroke)
@@ -103,6 +105,7 @@
     plot: render-hlines,
     xlimits: () => xlimits,
     ylimits: () => minmax(y),
+    datetime: datetime-axes,
     legend: true,
     z-index: z-index
   )
