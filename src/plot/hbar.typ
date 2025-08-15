@@ -127,6 +127,13 @@
   z-index: 2,
   
 ) = {
+  if type(x.first()) == datetime {
+    x = time.to-seconds(..x)
+  }
+  if type(y.first()) == datetime {
+    y = time.to-seconds(..y)
+  }
+  
   assertations.assert-matching-data-dimensions(
     x, y, width: width, base: base, fn-name: "hbar"
   )

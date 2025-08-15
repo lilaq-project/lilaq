@@ -1,5 +1,6 @@
 #import "../assertations.typ"
 #import "../logic/limits.typ": bar-lim
+#import "../logic/time.typ"
 #import "../process-styles.typ": merge-strokes, merge-fills
 #import "../logic/process-coordinates.typ": filter-nan-points
 #import "../math.typ": minmax
@@ -119,7 +120,16 @@
   z-index: 2,
   
 ) = {
+
+  if type(x.first()) == datetime {
+    x = time.to-seconds(..x)
+  }
+  if type(y.first()) == datetime {
+    y = time.to-seconds(..y)
+  }
+
   assertations.assert-matching-data-dimensions(x, y, fn-name: "hstem")
+
   (
     x: x,
     y: y,

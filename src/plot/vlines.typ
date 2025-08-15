@@ -2,6 +2,7 @@
 #import "../process-styles.typ": merge-strokes
 #import "../math.typ": minmax
 #import "../assertations.typ"
+#import "../logic/time.typ"
 
 
 
@@ -72,6 +73,10 @@
 ) = {
   assertations.assert-no-named(x)
   x = x.pos()
+
+  if type(x.first()) == datetime {
+    x = time.to-seconds(..x)
+  }
 
   let ylimits = none
   if min != auto {

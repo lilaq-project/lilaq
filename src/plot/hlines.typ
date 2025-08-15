@@ -1,6 +1,8 @@
 #import "../process-styles.typ": merge-strokes
 #import "../math.typ": minmax
 #import "../assertations.typ"
+#import "../logic/time.typ"
+
 
 
 #let render-hlines(plot, transform) = {
@@ -75,6 +77,10 @@
 ) = {
   assertations.assert-no-named(y)
   y = y.pos()
+  
+  if type(y.first()) == datetime {
+    y = time.to-seconds(..y)
+  }
 
   stroke = merge-strokes(stroke)
 

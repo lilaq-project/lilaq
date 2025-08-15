@@ -447,8 +447,11 @@
     y = x.map(y)
   }
 
-  if x.any(x => type(x) == datetime) {
+  if type(x.first()) == datetime {
     x = time.to-seconds(..x)
+  }
+  if type(y.first()) == datetime {
+    y = time.to-seconds(..y)
   }
 
   assertations.assert-matching-data-dimensions(x, y, fn-name: "plot")

@@ -1,11 +1,11 @@
 #import "../assertations.typ"
-#import "../utility.typ": match
+#import "../utility.typ" as utility: match
 #import "../algorithm/boxplot.typ": *
-#import "../utility.typ"
 #import "../style/styling.typ": mark, prepare-mark
+#import "../logic/time.typ"
+
 
 #let render-boxplot(plot, transform) = {
-
   
   if "make-legend" in plot {
     return std.line(length: 100%, stroke: plot.style.stroke)
@@ -280,8 +280,13 @@
   data = data.pos()
   let num-boxplots = data.len()
   
-  if type(x) in (int, float) { x = (x,) }
-  if x == auto { x = range(1, num-boxplots + 1) }
+  if type(x) in (int, float, datetime) { x = (x,) }
+  else if x == auto { x = range(1, num-boxplots + 1) }
+
+  if type(x.first()) == datetime {
+    x = time.to-seconds(..x)
+  }
+
   assert(
     x.len() == num-boxplots, 
     message: "The number of x coordinates does not match the number of data arrays"

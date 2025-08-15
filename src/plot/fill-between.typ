@@ -1,8 +1,10 @@
 #import "../assertations.typ"
 #import "../process-styles.typ": merge-strokes, merge-fills
 #import "../logic/process-coordinates.typ": filter-nan-points, stepify
+#import "../logic/time.typ"
 #import "../math.typ": minmax
 #import "../style/styling.typ": prepare-path
+
 
 #let render-fill-between(plot, transform) = {
   
@@ -103,6 +105,10 @@
   }
   if type(y2) == function {
     y2 = x.map(y2)
+  }
+
+  if type(x.first()) == datetime {
+    x = time.to-seconds(..x)
   }
   
   assertations.assert-matching-data-dimensions(x, x, y1: y1, y2: y2, fn-name: "fill-between")

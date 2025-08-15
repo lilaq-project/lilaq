@@ -2,6 +2,7 @@
 #import "../assertations.typ"
 #import "../logic/process-coordinates.typ": filter-nan-points
 #import "../logic/sample-colors.typ": sample-colors
+#import "../logic/time.typ"
 #import "../math.typ": minmax
 #import "../style/styling.typ": mark, prepare-mark, _auto, style
 #import "../utility.typ": if-auto, match-type, if-none
@@ -168,6 +169,13 @@
   z-index: 2,
   
 ) = {
+  if type(x.first()) == datetime {
+    x = time.to-seconds(..x)
+  }
+  if type(y.first()) == datetime {
+    y = time.to-seconds(..y)
+  }
+
   assertations.assert-matching-data-dimensions(x, y, fn-name: "scatter")
   
   

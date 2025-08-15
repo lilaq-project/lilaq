@@ -1,5 +1,6 @@
 #import "../assertations.typ"
 #import "../logic/limits.typ": bar-lim
+#import "../logic/time.typ"
 #import "../process-styles.typ": merge-fills
 #import "../utility.typ": match-type, match
 
@@ -236,6 +237,13 @@
 ) = {
   if type(y) == function {
     y = x.map(y)
+  }
+
+  if type(x.first()) == datetime {
+    x = time.to-seconds(..x)
+  }
+  if type(y.first()) == datetime {
+    y = time.to-seconds(..y)
   }
 
   assertations.assert-matching-data-dimensions(
