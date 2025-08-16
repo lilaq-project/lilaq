@@ -934,7 +934,8 @@
   
   (
     ticks: ticks.filter(x => x >= x0 and x <= x1),
-    mode: "date"
+    mode: "date",
+    primary: "year"
   )
 }
 
@@ -1014,7 +1015,8 @@
   
   (
     ticks: ticks.filter(x => x >= x0 and x <= x1),
-    mode: "date"
+    mode: "date",
+    primary: "month"
   )
 }
 
@@ -1074,7 +1076,8 @@
 
   (
     ticks: time.to-seconds(..times),
-    mode: "date"
+    mode: "date",
+    primary: "day"
   )
 }
 
@@ -1103,7 +1106,8 @@
   
   (
     ticks: time.to-seconds(..times),
-    mode: "time" // check if day differ from t0 to t1 and if so return datetime
+    mode: "time", // check if day differ from t0 to t1 and if so return datetime
+    primary: "hour"
   )
 }
 
@@ -1131,7 +1135,8 @@
 
   (
     ticks: time.to-seconds(..times),
-    mode: "time"
+    mode: "time",
+    primary: "minute"
   )
 }
 
@@ -1159,7 +1164,8 @@
 
   (
     ticks: time.to-seconds(..times),
-    mode: "time"
+    mode: "time",
+    primary: "second"
   )
 }
 
@@ -1296,13 +1302,75 @@
     "mode" in tick-info,
     message: "format-ticks-datetime can only be used with a datetime tick locator"
   )
-  let p = time.to-datetime(..ticks, mode: tick-info.mode)
-  p = p.map(p => p.display(format))
+  let datetimes = time.to-datetime(..ticks, mode: "datetime")
+
+  let labels = datetimes.map(p => p.display(format))
+  let offset = auto
+
+  if format == auto {
+    let primary = tick-info.primary
+    if primary == "year" {
+      labels = datetimes.map(dt => dt.display("[year]"))
+    } else if primary == "month" {
+      labels = datetimes.map(dt => 
+        if dt.month() == 1 {
+          dt.display("[year]")
+        } else {
+          dt.display("[month repr:short]")
+        }
+      )
+      offset = datetimes.last().display("[year]")
+    } else if primary == "day" {
+      labels = datetimes.map(dt => 
+        if dt.day() == 1 {
+          dt.display("[month repr:short]")
+        } else {
+          dt.display("[day]")
+        }
+      )
+      offset = datetimes.last().display("[year]-[month repr:short]")
+    } else if primary == "hour" {
+      labels = datetimes.map(dt => 
+        if dt.hour() == 0 {
+          dt.display("[month repr:short]-[day]")
+        } else {
+          dt.display("[hour]:[minute]")
+        }
+      )
+      if datetimes.first().year() != 0 {
+        offset = datetimes.last().display("[year]-[month repr:short]-[day]")
+      }
+    } else if primary == "minute" {
+      labels = datetimes.map(dt => 
+        if dt.hour() == 0 {
+          dt.display("[month repr:short]-[day]")
+        } else {
+          dt.display("[hour]:[minute]")
+        }
+      )
+      if datetimes.first().year() != 0 {
+        offset = datetimes.last().display("[year]-[month repr:short]-[day]")
+      }
+    } else if primary == "second" {
+      labels = datetimes.map(dt => 
+        if dt.hour() == 0 {
+          dt.display("[month repr:short]-[day]")
+        } else {
+          dt.display("[hour]:[minute]:[second]")
+        }
+      )
+      if datetimes.first().year() != 0 {
+        offset = datetimes.last().display("[year]-[month repr:short]-[day]")
+      }
+    }
+  } else {
+
+  }
 
   (
-    labels: p, 
+    labels: labels, 
     exponent: 0, 
-    offset: 0
+    offset: offset
   )
 }
 
