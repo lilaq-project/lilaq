@@ -1093,7 +1093,7 @@
 
   let reference = time.with(t0, hour: 0, minute: 0, second: 0)
 
-  let (ticks, ..) = locate-ticks-step(
+  let (ticks, step) = locate-ticks-step(
     (t0 - reference).hours(), 
     (t1 - reference).hours(),
     steps: (1, 2, 3, 4, 6, 12, 24),
@@ -1107,7 +1107,7 @@
   (
     ticks: time.to-seconds(..times),
     mode: "time", // check if day differ from t0 to t1 and if so return datetime
-    primary: "hour"
+    primary: if step == 24 { "day" } else { "hour" }
   )
 }
 
@@ -1122,7 +1122,7 @@
 
   let reference = time.with(t0, minute: 0, second: 0)
 
-  let (ticks, ..) = locate-ticks-step(
+  let (ticks, step) = locate-ticks-step(
     (t0 - reference).minutes(), 
     (t1 - reference).minutes(),
     steps: (1, 2, 5, 10, 15, 20, 30, 60),
@@ -1136,7 +1136,7 @@
   (
     ticks: time.to-seconds(..times),
     mode: "time",
-    primary: "minute"
+    primary: if step == 60 { "hour" } else { "minute" }
   )
 }
 
@@ -1151,7 +1151,7 @@
 
   let reference = time.with(t0, second: 0)
 
-  let (ticks, ..) = locate-ticks-step(
+  let (ticks, step) = locate-ticks-step(
     (t0 - reference).seconds(), 
     (t1 - reference).seconds(),
     steps: (1, 2, 5, 10, 15, 20, 30, 60),
@@ -1165,29 +1165,11 @@
   (
     ticks: time.to-seconds(..times),
     mode: "time",
-    primary: "second"
+    primary: if step == 60 { "minute" } else { "second" }
   )
 }
 
 
-
-// #assert.eq(
-//   locate-hours(
-//     ..time.to-seconds(
-//       datetime(hour: 1, minute: 20, second: 2),
-//       datetime(hour: 8, minute: 10, second: 2),
-//     ),
-//   ),
-//   (
-//     ticks: time.to-seconds(
-//       datetime(hour: 2, minute: 0, second: 0),
-//       datetime(hour: 4, minute: 0, second: 0),
-//       datetime(hour: 6, minute: 0, second: 0),
-//       datetime(hour: 8, minute: 0, second: 0),
-//     ),
-//     mode: "time",
-//   ),
-// )
 
 #let locate-ticks-datetime(
 
@@ -1292,79 +1274,90 @@
   (ticks: ticks)
 }
 
+
+#let concise-format(dt, primary) = {
+  if primary == "year" {
+    dt.display("[year]")
+  } else if primary == "month" {
+    if dt.month() == 1 {
+      dt.display("[year]")
+    } else {
+      dt.display("[month repr:short]")
+    }
+  } else if primary == "day" {
+    if dt.day() == 1 {
+      dt.display("[month repr:short]")
+    } else {
+      dt.display("[day]")
+    }
+  } else if primary == "hour" {
+    if dt.hour() == 0 {
+      dt.display("[month repr:short]-[day]")
+    } else {
+      dt.display("[hour]:[minute]")
+    }
+  } else if primary == "minute" {
+    if dt.hour() == 0 {
+      dt.display("[month repr:short]-[day]")
+    } else {
+      dt.display("[hour]:[minute]")
+    }
+  } else if primary == "second" {
+    if dt.hour() == 0 {
+      dt.display("[month repr:short]-[day]")
+    } else {
+      dt.display("[hour]:[minute]:[second]")
+    }
+  } else if primary == none {
+    dt.display()
+  }
+}
+
+#let concise-offset(dt, primary) = {
+  if primary == "year" {
+  } else if primary == "month" {
+    dt.display("[year]")
+  } else if primary == "day" {
+    dt.display("[year]-[month repr:short]")
+  } else if primary == "hour" {
+    if dt.year() != 0 {
+      dt.display("[year]-[month repr:short]-[day]")
+    }
+  } else if primary == "minute" {
+    if dt.year() != 0 {
+      dt.display("[year]-[month repr:short]-[day]")
+    }
+  } else if primary == "second" {
+    if dt.year() != 0 {
+      dt.display("[year]-[month repr:short]-[day]")
+    }
+  }
+}
+
 #let format-ticks-datetime(
   ticks,
   tick-info: (:), 
-  format: auto,
+  format: concise-format,
+  format-offset: concise-offset,
   ..args
 ) = {
   assert(
     "mode" in tick-info,
     message: "format-ticks-datetime can only be used with a datetime tick locator"
   )
-  let datetimes = time.to-datetime(..ticks, mode: "datetime")
 
-  let labels = datetimes.map(p => p.display(format))
-  let offset = auto
+  let primary = tick-info.at("primary", default: none)
+  let datetimes = time.to-datetime(
+    ..ticks, 
+    mode: if primary == none { tick-info.mode } else { "datetime" }
+  )
 
-  if format == auto {
-    let primary = tick-info.primary
-    if primary == "year" {
-      labels = datetimes.map(dt => dt.display("[year]"))
-    } else if primary == "month" {
-      labels = datetimes.map(dt => 
-        if dt.month() == 1 {
-          dt.display("[year]")
-        } else {
-          dt.display("[month repr:short]")
-        }
-      )
-      offset = datetimes.last().display("[year]")
-    } else if primary == "day" {
-      labels = datetimes.map(dt => 
-        if dt.day() == 1 {
-          dt.display("[month repr:short]")
-        } else {
-          dt.display("[day]")
-        }
-      )
-      offset = datetimes.last().display("[year]-[month repr:short]")
-    } else if primary == "hour" {
-      labels = datetimes.map(dt => 
-        if dt.hour() == 0 {
-          dt.display("[month repr:short]-[day]")
-        } else {
-          dt.display("[hour]:[minute]")
-        }
-      )
-      if datetimes.first().year() != 0 {
-        offset = datetimes.last().display("[year]-[month repr:short]-[day]")
-      }
-    } else if primary == "minute" {
-      labels = datetimes.map(dt => 
-        if dt.hour() == 0 {
-          dt.display("[month repr:short]-[day]")
-        } else {
-          dt.display("[hour]:[minute]")
-        }
-      )
-      if datetimes.first().year() != 0 {
-        offset = datetimes.last().display("[year]-[month repr:short]-[day]")
-      }
-    } else if primary == "second" {
-      labels = datetimes.map(dt => 
-        if dt.hour() == 0 {
-          dt.display("[month repr:short]-[day]")
-        } else {
-          dt.display("[hour]:[minute]:[second]")
-        }
-      )
-      if datetimes.first().year() != 0 {
-        offset = datetimes.last().display("[year]-[month repr:short]-[day]")
-      }
-    }
-  } else {
+  let offset = format-offset(datetimes.last(), primary)
 
+  let labels = if type(format) == function {
+    datetimes.map(dt => format(dt, primary))
+  } else if type(format) == str {
+    datetimes.map(dt => dt.display(format))
   }
 
   (
