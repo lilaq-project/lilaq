@@ -152,11 +152,22 @@
 #check-sym(3)
 
 
+#let datetime() = {
+  scale(
+    name: "datetime",
+    x => x,
+    x => x,
+    locate-ticks: ticking.locate-ticks-datetime,
+    locate-subticks: ticking.locate-subticks-datetime,
+  )
+}
+
 
 
 #let scales = (
   linear: linear(),
   log: log(base: 10),
   symlog: symlog(base: 10),
+  datetime: datetime()
 )
 

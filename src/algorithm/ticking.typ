@@ -1,5 +1,6 @@
 #import "../math.typ": *
 #import "../logic/symlog.typ": symlog-transform
+#import "../logic/time.typ"
 #import "@preview/zero:0.4.0"
 
 
@@ -142,7 +143,14 @@
       labels: filtered-ticks.map(x => x.at(1))
     )
   } else {
-    (ticks: ticks.filter(x => x0 <= x and x <= x1))
+    let result = (:)
+    if type(ticks.at(0, default: 0)) == datetime {
+      let (seconds, mode) = time.to-seconds(..ticks, return-mode: true)
+      ticks = seconds
+      result.mode = mode
+    }
+    result.ticks = ticks.filter(x => x0 <= x and x <= x1)
+    result
   }
 }
 
@@ -201,7 +209,6 @@
   /// ticks. 
   /// -> ratio
   density: 100%,
-
 
   /// A unit relative to which the tick distance is taken. This can for example
   /// be used to generate ticks based on multiples of $\pi$ while keeping the
@@ -903,5 +910,460 @@
   )
 
   log + linear.labels
+}
+
+
+
+#let locate-years(
+  x0, 
+  x1,
+  num-ticks-suggestion: 5, 
+  density: 100%
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+
+  let years = locate-ticks-linear(
+    t0.year(), t1.year(), tick-distance: (min: 1)
+  ).ticks
+
+  let times = years
+    .map(int)
+    .map(y => datetime(year: y, month: 1, day: 1))
+
+  let ticks = time.to-seconds(..times)
+  
+  (
+    ticks: ticks.filter(x => x >= x0 and x <= x1),
+    mode: "date",
+    primary: "year"
+  )
+}
+
+
+#let locate-ticks-step(
+  x0, x1, steps: (1, 2, 5), num-ticks: 5
+) = {
+  
+  assert.ne(
+    x0, x1, 
+    message: "Start and end of the range to locate ticks on cannot be identical"
+  )
+  if x1 < x0 {
+    (x1, x0) = (x0, x1)
+  }
+
+  
+
+  let range = x1 - x0
+
+  // let (_, step) = calc.min(
+  //   ..steps.map(step => (calc.abs(num-ticks - range / step), step))
+  // )
+  let generate-ticks(step) = {
+    let first = calc.ceil(x0 / step) * step
+    let last = (calc.floor(x1 / step) + 1) * step
+    arange(first, last, step: step)
+  }
+
+  let optimal-step = none
+  for step in steps {
+    
+  }
+  let (_, step) = steps.rev().map(step => 
+    (calc.abs(num-ticks - generate-ticks(step).len()), step)
+  ).sorted(key: ((d, _)) => d).first()
+  
+
+  
+  (
+    ticks: generate-ticks(step),
+    step: step
+  )
+}
+
+
+
+#let locate-months(
+  x0, 
+  x1,
+  num-ticks-suggestion: 5, 
+  density: 100%
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+
+  let month-start = t0.month()
+  if t0 > time.with(t0, day: 1, hour: 0, minute: 0, second: 0) {
+    month-start += 1
+  }
+
+  let month-end = t1.month() + (t1.year() - t0.year()) * 12
+  let (ticks: months, step) = locate-ticks-step(
+    month-start - 1, month-end - 1, 
+    steps: (1, 2, 3, 6, 12),
+    num-ticks: num-ticks-suggestion * density / 100%
+  )
+
+
+  let times = months
+    .map(month => datetime(
+      year: t0.year() + calc.quo(month, 12), 
+      month: calc.rem(int(month), 12) + 1, 
+      day: 1
+    ))
+  let ticks = time.to-seconds(..times)
+  // sub = step - 1
+  
+  (
+    ticks: ticks.filter(x => x >= x0 and x <= x1),
+    mode: "date",
+    primary: "month"
+  )
+}
+
+
+
+
+
+
+#let locate-days(
+  x0, 
+  x1,
+  filter: auto,
+  num-ticks-suggestion: 5, 
+  density: 100%
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+
+  let reference = time.with(t0, day: 1, hour: 0, minute: 0, second: 0)
+
+  let (ticks, ..) = locate-ticks-step(
+    (t0 - reference).days(), 
+    (t1 - reference).days(),
+    steps: (1,),
+    num-ticks: num-ticks-suggestion * density / 100%
+  )
+
+  let times = ticks.map(tick => 
+    reference + duration(days: tick)
+  )
+  
+  if type(filter) == function {
+
+    times = times.filter(filter)
+    
+  } else if filter == auto {
+
+    let filters = (
+      date => true,
+      date => calc.rem(date.day(), 2) == 1,
+      date => calc.rem(date.day(), 4) == 1,
+      date => date.day() in (1, 8, 15, 22),
+      date => date.day() in (1, 15),
+    )
+    
+    let num-ticks-target = num-ticks-suggestion * density / 100%
+    
+    (_, times) = calc.min(
+      ..filters.map(filter => {
+        let filtered = times.filter(filter)
+        (
+          calc.abs(filtered.len() - num-ticks-target),
+          filtered
+        )
+      })
+    )
+  }
+
+  (
+    ticks: time.to-seconds(..times),
+    mode: "date",
+    primary: "day"
+  )
+}
+
+
+#let locate-hours(
+  x0, 
+  x1,
+  filter: auto,
+  num-ticks-suggestion: 5, 
+  density: 100%
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+
+  let reference = time.with(t0, hour: 0, minute: 0, second: 0)
+
+  let (ticks, step) = locate-ticks-step(
+    (t0 - reference).hours(), 
+    (t1 - reference).hours(),
+    steps: (1, 2, 3, 4, 6, 12, 24),
+    num-ticks: num-ticks-suggestion * density / 100%
+  )
+
+  let times = ticks.map(tick => 
+    reference + duration(hours: tick)
+  )
+  
+  (
+    ticks: time.to-seconds(..times),
+    mode: "time", // check if day differ from t0 to t1 and if so return datetime
+    primary: if step == 24 { "day" } else { "hour" }
+  )
+}
+
+#let locate-minutes(
+  x0, 
+  x1,
+  filter: auto,
+  num-ticks-suggestion: 5, 
+  density: 100%
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+
+  let reference = time.with(t0, minute: 0, second: 0)
+
+  let (ticks, step) = locate-ticks-step(
+    (t0 - reference).minutes(), 
+    (t1 - reference).minutes(),
+    steps: (1, 2, 5, 10, 15, 20, 30, 60),
+    num-ticks: num-ticks-suggestion * density / 100%
+  )
+
+  let times = ticks.map(tick => 
+    reference + duration(minutes: tick)
+  )
+
+  (
+    ticks: time.to-seconds(..times),
+    mode: "time",
+    primary: if step == 60 { "hour" } else { "minute" }
+  )
+}
+
+#let locate-seconds(
+  x0, 
+  x1,
+  filter: auto,
+  num-ticks-suggestion: 5, 
+  density: 100%
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+
+  let reference = time.with(t0, second: 0)
+
+  let (ticks, step) = locate-ticks-step(
+    (t0 - reference).seconds(), 
+    (t1 - reference).seconds(),
+    steps: (1, 2, 5, 10, 15, 20, 30, 60),
+    num-ticks: num-ticks-suggestion * density / 100%
+  )
+
+  let times = ticks.map(tick => 
+    reference + duration(seconds: tick)
+  )
+
+  (
+    ticks: time.to-seconds(..times),
+    mode: "time",
+    primary: if step == 60 { "minute" } else { "second" }
+  )
+}
+
+
+
+#let locate-ticks-datetime(
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
+  x0, 
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
+  x1, 
+
+  /// Suggested number of ticks to use. This may for example be chosen 
+  /// according to the length of the axis and the font size. 
+  /// -> int | float
+  num-ticks-suggestion: 5, 
+
+  /// The maximum number of ticks to generate. This guard prevents an 
+  /// accidental generation of a huge number of ticks. 
+  /// -> int
+  max-ticks: 200,
+
+  /// The density of ticks. This can be used as a qualitative knob to tune
+  /// the number of generated ticks in relation to the suggested number of
+  /// ticks. 
+  /// -> ratio
+  density: 100%,
+
+  ..args
+
+) = {
+  let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
+  let dt = t1 - t0
+
+  // todo: xlim needs to accept datetimes
+  let ticks = locate-ticks-linear(x0, x1).ticks
+  let times 
+  let mode = "datetime"
+  let sub = 0
+
+  num-ticks-suggestion *= density / 100%
+  let args = arguments(
+    x0, 
+    x1, 
+    num-ticks-suggestion: num-ticks-suggestion,
+    density: density
+  )
+
+  if dt.weeks() >= 52 * num-ticks-suggestion {
+    return locate-years(..args)
+  } else if dt.weeks() >= 4 * num-ticks-suggestion {
+    return locate-months(..args)
+  } else if dt.days() > num-ticks-suggestion  {
+    return locate-days(..args)
+  } else if dt.hours() > num-ticks-suggestion  {
+    return locate-hours(..args)
+  } else if dt.minutes() > num-ticks-suggestion  {
+    return locate-minutes(..args)
+  } else if dt.seconds() > num-ticks-suggestion  {
+    return locate-seconds(..args)
+  }
+  
+  ticks = ()
+  
+  (
+    mode: mode,
+    ticks: ticks.filter(x => x >= x0 and x <= x1),
+    sub: sub
+  )
+}
+
+
+
+#let locate-subticks-datetime(
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
+  x0, 
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
+  x1, 
+
+  /// Ticks produced by some tick locator. 
+  /// -> array
+  ticks: (), 
+
+  sub: none,
+
+  ..args // important!
+
+
+) = {
+
+  if sub == none { 
+    return (ticks: ())
+  }
+
+  let ticks = ticks.windows(2).map(((t0, t1)) => {
+    let distance = t1 - t0
+    range(1, sub + 1).map(s => t0 + distance * s / (sub + 1))
+  }).join()
+  (ticks: ticks)
+}
+
+
+#let concise-format(dt, primary) = {
+  if primary == "year" {
+    dt.display("[year]")
+  } else if primary == "month" {
+    if dt.month() == 1 {
+      dt.display("[year]")
+    } else {
+      dt.display("[month repr:short]")
+    }
+  } else if primary == "day" {
+    if dt.day() == 1 {
+      dt.display("[month repr:short]")
+    } else {
+      dt.display("[day]")
+    }
+  } else if primary == "hour" {
+    if dt.hour() == 0 {
+      dt.display("[month repr:short]-[day]")
+    } else {
+      dt.display("[hour]:[minute]")
+    }
+  } else if primary == "minute" {
+    if dt.hour() == 0 {
+      dt.display("[month repr:short]-[day]")
+    } else {
+      dt.display("[hour]:[minute]")
+    }
+  } else if primary == "second" {
+    if dt.hour() == 0 {
+      dt.display("[month repr:short]-[day]")
+    } else {
+      dt.display("[hour]:[minute]:[second]")
+    }
+  } else if primary == none {
+    dt.display()
+  }
+}
+
+#let concise-offset(dt, primary) = {
+  if primary == "year" {
+  } else if primary == "month" {
+    dt.display("[year]")
+  } else if primary == "day" {
+    dt.display("[year]-[month repr:short]")
+  } else if primary == "hour" {
+    if dt.year() != 0 {
+      dt.display("[year]-[month repr:short]-[day]")
+    }
+  } else if primary == "minute" {
+    if dt.year() != 0 {
+      dt.display("[year]-[month repr:short]-[day]")
+    }
+  } else if primary == "second" {
+    if dt.year() != 0 {
+      dt.display("[year]-[month repr:short]-[day]")
+    }
+  }
+}
+
+#let format-ticks-datetime(
+  ticks,
+  tick-info: (:), 
+  format: concise-format,
+  format-offset: concise-offset,
+  ..args
+) = {
+  assert(
+    "mode" in tick-info,
+    message: "format-ticks-datetime can only be used with a datetime tick locator"
+  )
+
+  let primary = tick-info.at("primary", default: none)
+  let datetimes = time.to-datetime(
+    ..ticks, 
+    mode: if primary == none { tick-info.mode } else { "datetime" }
+  )
+
+  let offset = format-offset(datetimes.last(), primary)
+
+  let labels = if type(format) == function {
+    datetimes.map(dt => format(dt, primary))
+  } else if type(format) == str {
+    datetimes.map(dt => dt.display(format))
+  }
+
+  (
+    labels: labels, 
+    exponent: 0, 
+    offset: offset
+  )
 }
 

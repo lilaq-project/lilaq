@@ -1,12 +1,12 @@
 #import "../assertations.typ"
-#import "../utility.typ": match
+#import "../utility.typ" as utility: match
 #import "../algorithm/boxplot.typ": *
-#import "../utility.typ"
 #import "../style/styling.typ": mark, prepare-mark
+#import "../logic/time.typ"
+
 
 #let render-boxplot(plot, transform) = {
 
-  
   if "make-legend" in plot {
     return std.line(length: 100%, stroke: plot.style.stroke)
   }
@@ -224,7 +224,13 @@
   let num-boxplots = data.len()
   
   if type(y) in (int, float) { y = (y,) }
-  if y == auto { y = range(1, num-boxplots + 1) }
+  else if y == auto { y = range(1, num-boxplots + 1) }
+
+  let datetime-axes = (:)
+  if type(y.first()) == datetime {
+    y = time.to-seconds(..y)
+    datetime-axes.y = true
+  }
   assert(
     y.len() == num-boxplots, 
     message: "The number of y coordinates does not match the number of data arrays"
@@ -272,6 +278,7 @@
     plot: render-boxplot,
     xlimits: () => (xmin, xmax),
     ylimits: () => (ymin, ymax),
+    datetime: datetime-axes,
     legend: true,
     clip: clip,
     z-index: z-index
