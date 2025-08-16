@@ -117,7 +117,10 @@
   /// and shown at the end of the axis (if it is not 0). An offset can be used 
   /// to avoid overly long tick labels and to focus on the relative distance 
   /// between data points. 
-  /// -> auto | float
+  /// 
+  /// If `none` or a value of type `content`, the offset is just displayed and 
+  /// has no effect on how the data is presented. 
+  /// -> auto | int | float | content | none
   offset: auto,
 
   /// Exponent for all ticks on this axis. All ticks are divided by 
@@ -307,6 +310,7 @@
       "linear", () => ticking.format-ticks-linear,
       "log", () => ticking.format-ticks-log.with(base: scale.base),
       "symlog", () => ticking.format-ticks-symlog.with(base: scale.base, threshold: scale.threshold, linscale: scale.linscale),
+      "datetime", () => ticking.format-ticks-datetime,
       default: () => ticking.format-ticks-naive
     )
   }
@@ -522,7 +526,7 @@
         tick-result.ticks,
         tick-info: tick-result, 
         exponent: axis.exponent, 
-        offset: axis.offset, 
+        offset: if type(offset) in (int, float, auto) { offset } else { 0 }, 
         auto-exponent-threshold: axis.auto-exponent-threshold
       )
     }
@@ -539,7 +543,7 @@
       if "exponent" in format-result {
         exp = format-result.exponent
       }
-      if "offset" in format-result {
+      if "offset" in format-result and offset == auto {
         offset = format-result.offset
       }
     } else if format-result != none {
@@ -764,6 +768,8 @@
       let attachment = none
       if type(offset) in (int, float) and offset != 0 {
         attachment += zero.num(positive-sign: true, offset)
+      } else if offset not in (0, auto) {
+        attachment += offset
       }
       if type(exp) == int and exp != 0 {
         attachment += {
