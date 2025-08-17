@@ -918,7 +918,8 @@
   x0, 
   x1,
   num-ticks-suggestion: 5, 
-  density: 100%
+  density: 100%,
+  ..args
 ) = {
   if x0 > x1 { 
     (x0, x1) = (x1, x0) 
@@ -990,7 +991,9 @@
   x0, 
   x1,
   num-ticks-suggestion: 5, 
-  density: 100%
+  density: 100%,
+  steps: (1, 2, 3, 6, 12),
+  ..args
 ) = {
   if x0 > x1 { 
     (x0, x1) = (x1, x0) 
@@ -1005,7 +1008,7 @@
   let month-end = t1.month() + (t1.year() - t0.year()) * 12
   let (ticks: months, step) = locate-ticks-step(
     month-start - 1, month-end - 1, 
-    steps: (1, 2, 3, 6, 12),
+    steps: steps,
     num-ticks: num-ticks-suggestion * density / 100%
   )
 
@@ -1035,7 +1038,8 @@
   x1,
   filter: auto,
   num-ticks-suggestion: 5, 
-  density: 100%
+  density: 100%,
+  ..args
 ) = {
   if x0 > x1 { 
     (x0, x1) = (x1, x0) 
@@ -1063,8 +1067,8 @@
 
     let filters = (
       date => true,
-      date => calc.rem(date.day(), 2) == 1,
-      date => calc.rem(date.day(), 4) == 1,
+      date => calc.rem(date.day(), 2) == 1 and not date.day() == 31 and not (date.day() == 29 and date.month() == 2),
+      date => calc.rem(date.day(), 5) == 1 and not date.day() == 31,
       date => date.day() in (1, 8, 15, 22),
       date => date.day() in (1, 15),
     )
@@ -1095,7 +1099,8 @@
   x1,
   filter: auto,
   num-ticks-suggestion: 5, 
-  density: 100%
+  density: 100%,
+  ..args
 ) = {
   if x0 > x1 { 
     (x0, x1) = (x1, x0) 
@@ -1127,7 +1132,8 @@
   x1,
   filter: auto,
   num-ticks-suggestion: 5, 
-  density: 100%
+  density: 100%,
+  ..args
 ) = {
   if x0 > x1 { 
     (x0, x1) = (x1, x0) 
@@ -1159,7 +1165,8 @@
   x1,
   filter: auto,
   num-ticks-suggestion: 5, 
-  density: 100%
+  density: 100%,
+  ..args
 ) = {
   if x0 > x1 { 
     (x0, x1) = (x1, x0) 
