@@ -507,7 +507,7 @@
   
 
   if x1 < x0 {
-    (x1, x0) = (x0, x1)
+    // (x1, x0) = (x0, x1)
   } else if x0 == x1 {
     assert(
       false, 
@@ -527,7 +527,9 @@
         tick-info: tick-result, 
         exponent: axis.exponent, 
         offset: if type(offset) in (int, float, auto) { offset } else { 0 }, 
-        auto-exponent-threshold: axis.auto-exponent-threshold
+        auto-exponent-threshold: axis.auto-exponent-threshold,
+        min: x0, 
+        max: x1
       )
     }
 
