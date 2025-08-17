@@ -920,6 +920,9 @@
   num-ticks-suggestion: 5, 
   density: 100%
 ) = {
+  if x0 > x1 { 
+    (x0, x1) = (x1, x0) 
+  }
   let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
 
   let years = locate-ticks-linear(
@@ -989,6 +992,9 @@
   num-ticks-suggestion: 5, 
   density: 100%
 ) = {
+  if x0 > x1 { 
+    (x0, x1) = (x1, x0) 
+  }
   let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
 
   let month-start = t0.month()
@@ -1011,7 +1017,6 @@
       day: 1
     ))
   let ticks = time.to-seconds(..times)
-  // sub = step - 1
   
   (
     ticks: ticks.filter(x => x >= x0 and x <= x1),
@@ -1032,6 +1037,9 @@
   num-ticks-suggestion: 5, 
   density: 100%
 ) = {
+  if x0 > x1 { 
+    (x0, x1) = (x1, x0) 
+  }
   let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
 
   let reference = time.with(t0, day: 1, hour: 0, minute: 0, second: 0)
@@ -1089,6 +1097,9 @@
   num-ticks-suggestion: 5, 
   density: 100%
 ) = {
+  if x0 > x1 { 
+    (x0, x1) = (x1, x0) 
+  }
   let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
 
   let reference = time.with(t0, hour: 0, minute: 0, second: 0)
@@ -1118,6 +1129,9 @@
   num-ticks-suggestion: 5, 
   density: 100%
 ) = {
+  if x0 > x1 { 
+    (x0, x1) = (x1, x0) 
+  }
   let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
 
   let reference = time.with(t0, minute: 0, second: 0)
@@ -1147,6 +1161,9 @@
   num-ticks-suggestion: 5, 
   density: 100%
 ) = {
+  if x0 > x1 { 
+    (x0, x1) = (x1, x0) 
+  }
   let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
 
   let reference = time.with(t0, second: 0)
@@ -1202,12 +1219,10 @@
 ) = {
   let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
   let dt = t1 - t0
-
-  // todo: xlim needs to accept datetimes
-  let ticks = locate-ticks-linear(x0, x1).ticks
-  let times 
-  let mode = "datetime"
-  let sub = 0
+  if x0 > x1 { 
+    dt = -dt
+  }
+  
 
   num-ticks-suggestion *= density / 100%
   let args = arguments(
@@ -1230,14 +1245,6 @@
   } else if dt.seconds() > num-ticks-suggestion  {
     return locate-seconds(..args)
   }
-  
-  ticks = ()
-  
-  (
-    mode: mode,
-    ticks: ticks.filter(x => x >= x0 and x <= x1),
-    sub: sub
-  )
 }
 
 
@@ -1259,7 +1266,6 @@
   sub: none,
 
   ..args // important!
-
 
 ) = {
 
@@ -1339,6 +1345,8 @@
   tick-info: (:), 
   format: concise-format,
   format-offset: concise-offset,
+  min: 0,
+  max: 1,
   ..args
 ) = {
   assert(
@@ -1352,7 +1360,12 @@
     mode: if primary == none { tick-info.mode } else { "datetime" }
   )
 
-  let offset = format-offset(datetimes.last(), primary)
+  let offset-datetime = if min > max {
+    datetimes.first()
+  } else {
+    datetimes.last()
+  }
+  let offset = format-offset(offset-datetime, primary)
 
   let labels = if type(format) == function {
     datetimes.map(dt => format(dt, primary))
