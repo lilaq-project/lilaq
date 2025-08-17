@@ -919,6 +919,7 @@
   x1,
   num-ticks-suggestion: 5, 
   density: 100%,
+  tick-distance: auto,
   ..args
 ) = {
   if x0 > x1 { 
@@ -926,8 +927,15 @@
   }
   let (t0, t1) = time.to-datetime(x0, x1, mode: "datetime")
 
+  if tick-distance == auto {
+    tick-distance = (min: 1)
+  }
+
   let years = locate-ticks-linear(
-    t0.year(), t1.year(), tick-distance: (min: 1)
+    t0.year(), t1.year(), 
+    tick-distance: tick-distance,
+    num-ticks-suggestion: num-ticks-suggestion,
+    density: density
   ).ticks
 
   let times = years
@@ -959,20 +967,13 @@
   
 
   let range = x1 - x0
-
-  // let (_, step) = calc.min(
-  //   ..steps.map(step => (calc.abs(num-ticks - range / step), step))
-  // )
+  
   let generate-ticks(step) = {
     let first = calc.ceil(x0 / step) * step
     let last = (calc.floor(x1 / step) + 1) * step
     arange(first, last, step: step)
   }
-
-  let optimal-step = none
-  for step in steps {
-    
-  }
+  
   let (_, step) = steps.rev().map(step => 
     (calc.abs(num-ticks - generate-ticks(step).len()), step)
   ).sorted(key: ((d, _)) => d).first()
@@ -993,6 +994,7 @@
   num-ticks-suggestion: 5, 
   density: 100%,
   steps: (1, 2, 3, 6, 12),
+  filter: none,
   ..args
 ) = {
   if x0 > x1 { 
@@ -1019,6 +1021,10 @@
       month: calc.rem(int(month), 12) + 1, 
       day: 1
     ))
+    
+  if type(filter) == function {
+    times = times.filter(filter)
+  }
   let ticks = time.to-seconds(..times)
   
   (
@@ -1097,9 +1103,10 @@
 #let locate-hours(
   x0, 
   x1,
-  filter: auto,
   num-ticks-suggestion: 5, 
   density: 100%,
+  steps: (1, 2, 3, 4, 6, 12, 24),
+  filter: none,
   ..args
 ) = {
   if x0 > x1 { 
@@ -1112,13 +1119,17 @@
   let (ticks, step) = locate-ticks-step(
     (t0 - reference).hours(), 
     (t1 - reference).hours(),
-    steps: (1, 2, 3, 4, 6, 12, 24),
+    steps: steps,
     num-ticks: num-ticks-suggestion * density / 100%
   )
 
   let times = ticks.map(tick => 
     reference + duration(hours: tick)
   )
+  
+  if type(filter) == function {
+    times = times.filter(filter)
+  }
   
   (
     ticks: time.to-seconds(..times),
@@ -1130,9 +1141,10 @@
 #let locate-minutes(
   x0, 
   x1,
-  filter: auto,
   num-ticks-suggestion: 5, 
   density: 100%,
+  steps: (1, 2, 5, 10, 15, 20, 30, 60),
+  filter: none,
   ..args
 ) = {
   if x0 > x1 { 
@@ -1145,13 +1157,17 @@
   let (ticks, step) = locate-ticks-step(
     (t0 - reference).minutes(), 
     (t1 - reference).minutes(),
-    steps: (1, 2, 5, 10, 15, 20, 30, 60),
+    steps: steps,
     num-ticks: num-ticks-suggestion * density / 100%
   )
 
   let times = ticks.map(tick => 
     reference + duration(minutes: tick)
   )
+  
+  if type(filter) == function {
+    times = times.filter(filter)
+  }
 
   (
     ticks: time.to-seconds(..times),
@@ -1163,9 +1179,10 @@
 #let locate-seconds(
   x0, 
   x1,
-  filter: auto,
   num-ticks-suggestion: 5, 
   density: 100%,
+  steps: (1, 2, 5, 10, 15, 20, 30, 60),
+  filter: none,
   ..args
 ) = {
   if x0 > x1 { 
@@ -1178,13 +1195,17 @@
   let (ticks, step) = locate-ticks-step(
     (t0 - reference).seconds(), 
     (t1 - reference).seconds(),
-    steps: (1, 2, 5, 10, 15, 20, 30, 60),
+    steps: steps,
     num-ticks: num-ticks-suggestion * density / 100%
   )
 
   let times = ticks.map(tick => 
     reference + duration(seconds: tick)
   )
+  
+  if type(filter) == function {
+    times = times.filter(filter)
+  }
 
   (
     ticks: time.to-seconds(..times),

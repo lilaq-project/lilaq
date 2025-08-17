@@ -83,3 +83,42 @@
     datetime(year: 2, month: 1, day: 1, hour: 0, minute: 1, second: 0),
   ),
 )
+
+
+#assert.eq(
+  locate-seconds(
+    ..time.to-seconds(
+      datetime(hour: 0, minute: 0, second: 0),
+      datetime(hour: 0, minute: 1, second: 30),
+    ),
+    steps: (13,),
+  ).ticks,
+  time.to-seconds(
+    datetime(hour: 0, minute: 0, second: 0),
+    datetime(hour: 0, minute: 0, second: 13),
+    datetime(hour: 0, minute: 0, second: 26),
+    datetime(hour: 0, minute: 0, second: 39),
+    datetime(hour: 0, minute: 0, second: 52),
+    datetime(hour: 0, minute: 1, second: 5),
+    datetime(hour: 0, minute: 1, second: 18),
+  ),
+)
+
+
+#assert.eq(
+  locate-seconds(
+    ..time.to-seconds(
+      datetime(hour: 0, minute: 0, second: 0),
+      datetime(hour: 0, minute: 1, second: 30),
+    ),
+    steps: (1,),
+    filter: time => time.second() in (2, 22, 42)
+  ).ticks,
+  time.to-seconds(
+    datetime(hour: 0, minute: 0, second: 2),
+    datetime(hour: 0, minute: 0, second: 22),
+    datetime(hour: 0, minute: 0, second: 42),
+    datetime(hour: 0, minute: 1, second: 2),
+    datetime(hour: 0, minute: 1, second: 22),
+  ),
+)

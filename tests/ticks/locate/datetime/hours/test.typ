@@ -51,3 +51,35 @@
     datetime(year: 2, month: 1, day: 1, hour: 2, minute: 0, second: 0),
   ),
 )
+
+
+#assert.eq(
+  locate-hours(
+    ..time.to-seconds(
+      datetime(hour: 2, minute: 0, second: 0),
+      datetime(hour: 7, minute: 0, second: 0),
+    ),
+    steps: (2,)
+  ).ticks,
+  time.to-seconds(
+    datetime(hour: 2, minute: 0, second: 0),
+    datetime(hour: 4, minute: 0, second: 0),
+    datetime(hour: 6, minute: 0, second: 0),
+  ),
+)
+
+#assert.eq(
+  locate-hours(
+    ..time.to-seconds(
+      datetime(hour: 0, minute: 0, second: 0),
+      datetime(hour: 23, minute: 0, second: 0),
+    ),
+    steps: (1,),
+    filter: datetime => datetime.hour() in (5, 12, 18)
+  ).ticks,
+  time.to-seconds(
+    datetime(hour: 5, minute: 0, second: 0),
+    datetime(hour: 12, minute: 0, second: 0),
+    datetime(hour: 18, minute: 0, second: 0),
+  ),
+)
