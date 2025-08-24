@@ -1,5 +1,6 @@
 #import "../logic/scale.typ" as lqscale
 #import "../utility.typ": place-in-out, match, match-type, if-auto, if-none
+#import "../logic/time.typ"
 #import "../algorithm/ticking.typ"
 #import "../bounds.typ": *
 #import "../assertations.typ"
@@ -31,9 +32,13 @@
 #let axis(
 
   /// Sets the scale of the axis. This may be a @scale object or the name of 
-  /// one of the built-in scales `"linear"`, `"log"`, `"symlog"`.
-  /// -> lq.scale | str 
-  scale: "linear", 
+  /// one of the built-in scales `"linear"`, `"log"`, `"symlog"`, and 
+  /// `"datetime"`. 
+  /// 
+  /// If left at `auto`, the scale will be set to `"datetime"` if any of the 
+  /// plots uses datetime coordinates and `"linear"` otherwise. 
+  /// -> auto | str | lq.scale
+  scale: auto, 
 
   /// Data limits of the axis. This can be used to fix the minimum and/or maximum value
   /// displayed along this axis. This parameter expects `auto` or a tuple `(min, max)` 
@@ -112,7 +117,10 @@
   /// and shown at the end of the axis (if it is not 0). An offset can be used 
   /// to avoid overly long tick labels and to focus on the relative distance 
   /// between data points. 
-  /// -> auto | float
+  /// 
+  /// If `none` or a value of type `content`, the offset is just displayed and 
+  /// has no effect on how the data is presented. 
+  /// -> auto | int | float | content | none
   offset: auto,
 
   /// Exponent for all ticks on this axis. All ticks are divided by 
@@ -212,6 +220,19 @@
   if "tick-distance" not in tick-args {
     tick-args.tick-distance = tick-distance
   }
+  
+  if scale == auto {
+    scale = "linear"
+
+    for plot in plots {
+      if "axis-id" in plot { plot = plot.plot }
+      if "datetime" in plot and plot.datetime.at(kind, default: false) {
+        scale = "datetime"
+        break
+      }
+    }
+  }
+
   if type(scale) == str {
     assert(scale in lqscale.scales, message: "Unknown scale " + scale)
     scale = lqscale.scales.at(scale)
@@ -289,6 +310,7 @@
       "linear", () => ticking.format-ticks-linear,
       "log", () => ticking.format-ticks-log.with(base: scale.base),
       "symlog", () => ticking.format-ticks-symlog.with(base: scale.base, threshold: scale.threshold, linscale: scale.linscale),
+      "datetime", () => ticking.format-ticks-datetime,
       default: () => ticking.format-ticks-naive
     )
   }
@@ -312,6 +334,13 @@
 
   if type(lim) == array {
     assert.eq(lim.len(), 2, message: "Limit arrays must contain exactly two items")
+    lim = lim.map(
+      lim => if type(lim) == datetime {
+        time.to-seconds(lim).first()
+      } else {
+        lim
+      }
+    )
     
   } else if lim == auto { 
     lim = (auto, auto)
@@ -478,7 +507,7 @@
   
 
   if x1 < x0 {
-    (x1, x0) = (x0, x1)
+    // (x1, x0) = (x0, x1)
   } else if x0 == x1 {
     assert(
       false, 
@@ -497,8 +526,10 @@
         tick-result.ticks,
         tick-info: tick-result, 
         exponent: axis.exponent, 
-        offset: axis.offset, 
-        auto-exponent-threshold: axis.auto-exponent-threshold
+        offset: if type(offset) in (int, float, auto) { offset } else { 0 }, 
+        auto-exponent-threshold: axis.auto-exponent-threshold,
+        min: x0, 
+        max: x1
       )
     }
 
@@ -514,7 +545,7 @@
       if "exponent" in format-result {
         exp = format-result.exponent
       }
-      if "offset" in format-result {
+      if "offset" in format-result and offset == auto {
         offset = format-result.offset
       }
     } else if format-result != none {
@@ -739,6 +770,8 @@
       let attachment = none
       if type(offset) in (int, float) and offset != 0 {
         attachment += zero.num(positive-sign: true, offset)
+      } else if offset not in (0, auto) {
+        attachment += offset
       }
       if type(exp) == int and exp != 0 {
         attachment += {
