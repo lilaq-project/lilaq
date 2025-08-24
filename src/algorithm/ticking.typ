@@ -947,7 +947,7 @@
   (
     ticks: ticks.filter(x => x >= x0 and x <= x1),
     mode: "date",
-    primary: "year"
+    key: "year"
   )
 }
 
@@ -1030,7 +1030,7 @@
   (
     ticks: ticks.filter(x => x >= x0 and x <= x1),
     mode: "date",
-    primary: "month"
+    key: "month"
   )
 }
 
@@ -1095,7 +1095,7 @@
   (
     ticks: time.to-seconds(..times),
     mode: "date",
-    primary: "day"
+    key: "day"
   )
 }
 
@@ -1134,7 +1134,7 @@
   (
     ticks: time.to-seconds(..times),
     mode: "time", // check if day differ from t0 to t1 and if so return datetime
-    primary: if step == 24 { "day" } else { "hour" }
+    key: if step == 24 { "day" } else { "hour" }
   )
 }
 
@@ -1172,7 +1172,7 @@
   (
     ticks: time.to-seconds(..times),
     mode: "time",
-    primary: if step == 60 { "hour" } else { "minute" }
+    key: if step == 60 { "hour" } else { "minute" }
   )
 }
 
@@ -1210,7 +1210,7 @@
   (
     ticks: time.to-seconds(..times),
     mode: "time",
-    primary: if step == 60 { "minute" } else { "second" }
+    key: if step == 60 { "minute" } else { "second" }
   )
 }
 
@@ -1261,17 +1261,17 @@
   )
 
   if dt.weeks() >= 52 * num-ticks-suggestion {
-    return locate-years(..args)
+    locate-years(..args)
   } else if dt.weeks() >= 4 * num-ticks-suggestion {
-    return locate-months(..args)
+    locate-months(..args)
   } else if dt.days() > num-ticks-suggestion  {
-    return locate-days(..args)
+    locate-days(..args)
   } else if dt.hours() > num-ticks-suggestion  {
-    return locate-hours(..args)
+    locate-hours(..args)
   } else if dt.minutes() > num-ticks-suggestion  {
-    return locate-minutes(..args)
+    locate-minutes(..args)
   } else if dt.seconds() > num-ticks-suggestion  {
-    return locate-seconds(..args)
+    locate-seconds(..args)
   }
 }
 
@@ -1309,70 +1309,192 @@
 }
 
 
-#let concise-format(dt, primary) = {
-  if primary == "year" {
-    dt.display("[year]")
-  } else if primary == "month" {
-    if dt.month() == 1 {
-      dt.display("[year]")
-    } else {
-      dt.display("[month repr:short]")
+
+
+#import "@preview/elembic:1.1.0" as e
+
+#let tick-datetime-smart-first = e.element.declare(
+  "tick-datetime-smart-first",
+  prefix: "lilaq",
+
+  display: it => {
+    if type(it.body) == content { 
+      return it.body
     }
-  } else if primary == "day" {
-    if dt.day() == 1 {
-      dt.display("[month repr:short]")
+    
+    let format = it.at(it.key)
+    if type(format) == str { it.body.display(format) }
+    else { format(it.body) }
+  },
+
+  fields: (
+    e.field("body", e.types.union(content, datetime), required: true),
+    e.field("key", str, default: "month"),
+    e.field("month", e.types.union(str, function), default: "[year]"),
+    e.field("day", e.types.union(str, function), default: "[month repr:short]"),
+    e.field("hour", e.types.union(str, function), default: "[month repr:short]-[day]"),
+    e.field("minute", e.types.union(str, function), default: "[month repr:short]-[day]"),
+    e.field("second", e.types.union(str, function), default: "[month repr:short]-[day]"),
+  )
+)
+
+
+
+#let smart-format = e.element.declare(
+  "smart-format",
+  prefix: "lilaq",
+
+  display: it => {
+
+    if it.key == none {
+      return it.datetime.display()
+    } 
+
+    let first = if it.key in ("month", "day") { 1 } else { 0 }
+
+    let component = (
+      "year": datetime.year,
+      "month": datetime.month,
+      "day": datetime.day,
+      "hour": datetime.hour,
+      "minute": datetime.hour,
+      "second": datetime.hour,
+    ).at(it.key)
+
+    if it.smart-first and component(it.datetime) == first and it.key != "year" {
+      tick-datetime-smart-first(it.datetime, key: it.key)
     } else {
-      dt.display("[day]")
+      let format = it.at(it.key)
+      if type(format) == str { it.datetime.display(format) }
+      else { format(it.datetime) }
     }
-  } else if primary == "hour" {
-    if dt.hour() == 0 {
-      dt.display("[month repr:short]-[day]")
-    } else {
-      dt.display("[hour]:[minute]")
+  },
+
+  fields: (
+    e.field("datetime", datetime, required: true),
+    e.field("smart-first", bool, default: true),
+    e.field("key", e.types.option(str), default: "month"),
+    e.field("year", e.types.union(str, function), default: "[year]"),
+    e.field("month", e.types.union(str, function), default: "[month repr:short]"),
+    e.field("day", e.types.union(str, function), default: "[day]"),
+    e.field("hour", e.types.union(str, function), default: "[hour]:[minute]"),
+    e.field("minute", e.types.union(str, function), default: "[hour]:[minute]"),
+    e.field("second", e.types.union(str, function), default: "[hour]:[minute]:[second]"),
+  )
+)
+
+
+#let display-smart-offset = (it, smart-first: true) => {
+
+  if it.key == none {
+    return none
+  }
+
+  let format-by-key(datetime, key) = {
+    let format = it.at(key)
+    if type(format) == str { datetime.display(format) }
+    else { format(datetime) }
+  }
+
+  let (first, .., last) = it.ticks
+
+  if it.key == "month" {
+
+    let has-no-first = first.month() != 1 or not smart-first
+    if (first.year() == last.year() and has-no-first) or not it.avoid-redundant { 
+      format-by-key(first, "year")
     }
-  } else if primary == "minute" {
-    if dt.hour() == 0 {
-      dt.display("[month repr:short]-[day]")
-    } else {
-      dt.display("[hour]:[minute]")
+
+  } else if it.key == "day" {
+
+    let has-no-first = first.day() != 1 or not smart-first
+    if (first.year() == last.year() and first.month() == last.month() and has-no-first) or not it.avoid-redundant   { 
+      format-by-key(first, "month")
+    } else if first.year() == last.year() { 
+      format-by-key(first, "year")
     }
-  } else if primary == "second" {
-    if dt.hour() == 0 {
-      dt.display("[month repr:short]-[day]")
-    } else {
-      dt.display("[hour]:[minute]:[second]")
+
+  } else if it.key in ("hour", "minute", "second") {
+    
+    if first.year() == 0 { return }
+    
+    let has-no-first = first.hour() != 0 or not smart-first
+    if (first.year() == last.year() and first.month() == last.month() and first.day() == last.day() and has-no-first) or not it.avoid-redundant { 
+      format-by-key(first, "day")
+    } else if first.year() == last.year() { 
+      format-by-key(first, "year")
     }
-  } else if primary == none {
-    dt.display()
+
   }
 }
 
-#let concise-offset(dt, primary) = {
-  if primary == "year" {
-  } else if primary == "month" {
-    dt.display("[year]")
-  } else if primary == "day" {
-    dt.display("[year]-[month repr:short]")
-  } else if primary == "hour" {
-    if dt.year() != 0 {
-      dt.display("[year]-[month repr:short]-[day]")
+
+#let smart-offset = e.element.declare(
+  "smart-offset",
+  prefix: "lilaq",
+
+  display: it => e.get(e-get =>
+    display-smart-offset(it, smart-first: e-get(smart-format).smart-first)
+  ),
+
+  fields: (
+    e.field("ticks", e.types.array(datetime), required: true),
+    e.field("avoid-redundant", bool, default: true),
+    e.field("key", e.types.option(str), default: "month"),
+    e.field("year", e.types.union(str, function), default: "[year]"),
+    e.field("month", e.types.union(str, function), default: "[year]-[month repr:short]"),
+    e.field("day", e.types.union(str, function), default: "[year]-[month repr:short]-[day]"),
+  )
+)
+
+
+
+
+
+#let concise-offset(ticks, key) = {
+  let (first, .., last) = ticks
+
+  if key == "month" {
+
+    if first.year() == last.year() and last.month() != 1 { 
+      first.display("[year]")
     }
-  } else if primary == "minute" {
-    if dt.year() != 0 {
-      dt.display("[year]-[month repr:short]-[day]")
+
+  } else if key == "day" {
+
+    let offset = none
+    if first.year() == last.year() { 
+      offset += first.display("[year]")
     }
-  } else if primary == "second" {
-    if dt.year() != 0 {
-      dt.display("[year]-[month repr:short]-[day]")
+    if first.month() == last.month() { 
+      offset += first.display("-[month repr:short]")
     }
+    
+    offset
+
+  } else if key in ("hour", "minute", "second") {
+    
+    if first.year() == 0 { return }
+    
+    let offset = none
+    if first.year() == last.year() { 
+      offset += first.display("[year]")
+    }
+    if first.day() == last.day() { 
+      offset += first.display("-[month repr:short]-[day]")
+    }
+
+    offset
+
   }
 }
+
 
 #let format-ticks-datetime(
   ticks,
   tick-info: (:), 
-  format: concise-format,
-  format-offset: concise-offset,
+  format: smart-format,
+  format-offset: smart-offset,
   min: 0,
   max: 1,
   ..args
@@ -1382,21 +1504,21 @@
     message: "format-ticks-datetime can only be used with a datetime tick locator"
   )
 
-  let primary = tick-info.at("primary", default: none)
+  let key = tick-info.at("key", default: none)
   let datetimes = time.to-datetime(
     ..ticks, 
-    mode: if primary == none { tick-info.mode } else { "datetime" }
+    mode: if key == none { tick-info.mode } else { "datetime" }
   )
 
-  let offset-datetime = if min > max {
-    datetimes.first()
-  } else {
-    datetimes.last()
-  }
-  let offset = format-offset(offset-datetime, primary)
+  // let offset-datetime = if min > max {
+  //   datetimes.first()
+  // } else {
+  //   datetimes.last()
+  // }
+  let offset = format-offset(datetimes, key: key)
 
   let labels = if type(format) == function {
-    datetimes.map(dt => format(dt, primary))
+    datetimes.map(dt => format(dt, key: key))
   } else if type(format) == str {
     datetimes.map(dt => dt.display(format))
   }

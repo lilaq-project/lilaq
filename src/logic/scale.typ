@@ -158,7 +158,7 @@
     x => x,
     x => x,
     locate-ticks: ticking.locate-ticks-datetime,
-    locate-subticks: ticking.locate-subticks-datetime,
+    locate-subticks: none,
   )
 }
 
