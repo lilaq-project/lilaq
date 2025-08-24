@@ -1353,15 +1353,15 @@
     let first = if it.key in ("month", "day") { 1 } else { 0 }
 
     let component = (
-      "year": datetime.year,
-      "month": datetime.month,
-      "day": datetime.day,
-      "hour": datetime.hour,
-      "minute": datetime.hour,
-      "second": datetime.hour,
+      "year": dt => false,
+      "month": dt => dt.month() == 1,
+      "day": dt => dt.day() == 1,
+      "hour": dt => dt.hour() == 0,
+      "minute": dt => dt.hour() == 0 and dt.minute() == 0,
+      "second": dt => dt.hour() == 0 and dt.minute() == 0 and dt.second() == 0,
     ).at(it.key)
 
-    if it.smart-first and component(it.datetime) == first and it.key != "year" {
+    if it.smart-first and component(it.datetime) and it.key != "year" {
       tick-datetime-smart-first(it.datetime, key: it.key)
     } else {
       let format = it.at(it.key)
