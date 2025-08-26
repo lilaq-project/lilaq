@@ -88,7 +88,7 @@
   /// the array passed to @bar.y with `y.map(y => y + offset)`. Using an offset
   /// can be useful to avoid overlaps when plotting multiple bar plots into one
   /// diagram. 
-  /// -> int | float
+  /// -> int | float | array
   offset: 0,
 
 
@@ -140,9 +140,16 @@
   assertations.assert-matching-data-dimensions(
     x, y, width: width, base: base, fn-name: "hbar"
   )
-
+  
   if offset != 0 {
-    y = y.map(y => y + offset)
+    if type(offset) == array {
+      assertations.assert-matching-data-dimensions(
+        x, y, offset: offset, fn-name: "bar"
+      )
+      y = y.zip(offset).map(array.sum)
+    } else {
+      y = y.map(y => y + offset)
+    }
   }
   
   if type(base) != array {

@@ -189,3 +189,17 @@
     base: -2,
   )
 )
+
+#pagebreak()
+
+
+// Variable offset
+
+#lq.diagram(
+  lq.bar(
+    range(5),
+    (2, 3, 4, 5, 6),
+    offset: (.5, 0, 0, -.5, 0),
+    width: .5,
+  )
+)
