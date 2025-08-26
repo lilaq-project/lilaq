@@ -1,5 +1,6 @@
 #import "../assertations.typ"
 #import "../logic/limits.typ": bar-lim
+#import "../logic/time.typ"
 #import "../process-styles.typ": merge-fills
 #import "../utility.typ": match-type, match
 
@@ -238,6 +239,16 @@
     y = x.map(y)
   }
 
+  let datetime-axes = (:)
+  if type(x.first()) == datetime {
+    x = time.to-seconds(..x)
+    datetime-axes.x = true
+  }
+  if type(y.first()) == datetime {
+    y = time.to-seconds(..y)
+    datetime-axes.y = true
+  }
+
   assertations.assert-matching-data-dimensions(
     x, y, width: width, base: base, fill: fill, fn-name: "bar"
   )
@@ -287,6 +298,7 @@
     plot: render-bar,
     xlimits: () => xlim,
     ylimits: () => bar-lim(y, base),
+    datetime: datetime-axes,
     legend: true,
     ignores-cycle: false,
     clip: clip,

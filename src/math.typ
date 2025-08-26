@@ -140,7 +140,8 @@
   
   /// Difference between consecutive values. 
   /// -> int | float
-  step: 1,
+  step: 1
+  
 ) = {
   let num = calc.quo(end - start, step)
   range(num).map(x => x * step + start)

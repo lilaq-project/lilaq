@@ -6,6 +6,7 @@
 #import "../utility.typ": if-auto
 #import "../style/styling.typ": mark, prepare-mark, prepare-path
 #import "../model/errorbar.typ": errorbar
+#import "../logic/time.typ"
 
 #let get-errorbar-stroke(base-stroke) = {
   if base-stroke == auto { return stroke() }
@@ -446,6 +447,16 @@
     y = x.map(y)
   }
 
+  let datetime-axes = (:)
+  if type(x.first()) == datetime {
+    x = time.to-seconds(..x)
+    datetime-axes.x = true
+  }
+  if type(y.first()) == datetime {
+    y = time.to-seconds(..y)
+    datetime-axes.y = true
+  }
+
   assertations.assert-matching-data-dimensions(x, y, fn-name: "plot")
   
   assert(step in (none, start, end, center))
@@ -475,6 +486,7 @@
     plot: render-plot,
     xlimits: () => plot-lim(x, err: xerr),
     ylimits: () => plot-lim(y, err: yerr),
+    datetime: datetime-axes,
     legend: true,
     ignores-cycle: false,
     clip: clip,
