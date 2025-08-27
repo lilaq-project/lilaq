@@ -1,8 +1,10 @@
 #import "/src/lilaq.typ" as lq
+#import "@preview/elembic:1.1.0" as e
+#import "/src/logic/tick-format.typ": display-smart-offset
 
 #let test-smart-offset(offset, expected) = e.get(e-get => {
   assert.eq(
-    display-smart-offset(e-get(smart-offset) + e.fields(offset)),
+    display-smart-offset(e-get(lq.tick-format.datetime-smart-offset) + e.fields(offset)),
     expected
   )
 })
