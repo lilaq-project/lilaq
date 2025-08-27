@@ -1,5 +1,5 @@
 #import "../assertations.typ"
-#import "../algorithm/contour.typ": *
+#import "../algorithm/contour.typ": close-path-at-boundaries, compute-polygon-orientation
 #import "../logic/sample-colors.typ": sample-colors
 #import "../math.typ": minmax, mesh
 
@@ -98,8 +98,8 @@
 
   /// Specifies the $z$ coordinates (height) for all combinations of $x$ and $y$ 
   /// coordinates. This can either be a 
-  /// - two-dimensional $m×n$-array where $m$ is the length of @colormesh.y 
-  ///   and $n$ is the length of @colormesh.x (for each $y$ value, a row of $x$
+  /// - two-dimensional $m×n$-array where $m$ is the length of @contour.y 
+  ///   and $n$ is the length of @contour.x (for each $y$ value, a row of $x$
   ///   values), 
   /// - or a function that takes an `x` and a `y` value and returns a 
   ///   corresponding `z` coordinate. 
@@ -158,7 +158,6 @@
 ) = {
   if type(z) == function {
     z = mesh(x, y, z)
-
   }
   assert.eq(
     y.len(), z.len(), 
@@ -185,10 +184,13 @@
   
   if min == auto { min = calc.min(..z-flat) }
   if max == auto { max = calc.max(..z-flat) }
+  // if min == auto { min = calc.min(..levels) }
+  // if max == auto { max = calc.max(..levels) }
   let (color, cinfo) = sample-colors(levels, map, norm, min: min, max: max)
 
 
-  let contours = generate-contours(x, y, z, levels, z-range: z1 - z0)
+  import "@preview/komet:0.1.0"
+  let contours = komet.contour(x, y, z, levels)
 
   if fill {
 
