@@ -1,4 +1,5 @@
-#import "/src/algorithm/ticking.typ": *
+#import "/src/lilaq.typ" as lq
+
 #let test-smart-offset(offset, expected) = e.get(e-get => {
   assert.eq(
     display-smart-offset(e-get(smart-offset) + e.fields(offset)),
@@ -7,7 +8,7 @@
 })
 
 #test-smart-offset(
-  smart-offset(
+  lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 4, day: 5),
       datetime(year: 3, month: 7, day: 5),
@@ -18,7 +19,7 @@
 )
 
 #test-smart-offset(
-  smart-offset(
+  lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 4, day: 5),
       datetime(year: 3, month: 7, day: 5),
@@ -29,7 +30,7 @@
 )
 
 #test-smart-offset(
-  smart-offset(
+  lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 1, day: 5),
       datetime(year: 3, month: 7, day: 5),
@@ -40,7 +41,7 @@
 )
 
 #test-smart-offset(
-  smart-offset(
+  lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 2, month: 11, day: 5),
       datetime(year: 3, month: 7, day: 5),
@@ -51,7 +52,7 @@
 )
 
 #test-smart-offset(
-  smart-offset(
+  lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 1, day: 5),
       datetime(year: 3, month: 7, day: 5),
@@ -63,7 +64,7 @@
 )
 
 #test-smart-offset(
-  smart-offset(
+  lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 1, day: 5),
       datetime(year: 3, month: 7, day: 5),
@@ -79,7 +80,7 @@
 
 
 #test-smart-offset(
-  smart-offset(
+  lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 7, day: 5),
       datetime(year: 3, month: 7, day: 9),
@@ -90,7 +91,7 @@
 )
 
 #test-smart-offset(
-  smart-offset(
+  lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 7, day: 5),
       datetime(year: 3, month: 7, day: 9),
@@ -102,7 +103,7 @@
 )
 
 #test-smart-offset(
-  smart-offset(
+  lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 2, month: 7, day: 5),
       datetime(year: 3, month: 7, day: 9),
@@ -113,7 +114,7 @@
 )
 
 #test-smart-offset(
-  smart-offset(
+  lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 7, day: 5),
       datetime(year: 3, month: 8, day: 9),
@@ -124,7 +125,7 @@
 )
 
 #test-smart-offset(
-  smart-offset(
+  lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 7, day: 1),
       datetime(year: 3, month: 7, day: 7),
@@ -135,7 +136,7 @@
 )
 
 #test-smart-offset(
-  smart-offset(
+  lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 7, day: 1),
       datetime(year: 3, month: 7, day: 7),

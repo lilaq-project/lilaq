@@ -5,7 +5,7 @@
 
 
 #import "../math.typ": sign
-#import "../algorithm/ticking.typ"
+#import "../logic/tick-locate.typ"
 
 /// Constructor for the scale type. Scales are used to transform data coordinates 
 /// into scaled coordinates. Commonly, data is displayed with a linear scale, i.e., 
@@ -67,8 +67,8 @@
   name: "linear",
   x => x,
   x => x,
-  locate-ticks: ticking.locate-ticks-linear,
-  locate-subticks: ticking.locate-subticks-linear,
+  locate-ticks: tick-locate.linear,
+  locate-subticks: tick-locate.subticks-linear,
 )
 
 
@@ -87,8 +87,8 @@
   x => calc.pow(10., x),
   base: base,
   identity: 1,
-  locate-ticks: ticking.locate-ticks-log.with(base: base),
-  locate-subticks: ticking.locate-subticks-log.with(base: base),
+  locate-ticks: tick-locate.log.with(base: base),
+  locate-subticks: tick-locate.subticks-log.with(base: base),
 )
 
 
@@ -129,12 +129,12 @@
     threshold: threshold,
     base: base,
     linscale: linscale,
-    locate-ticks: ticking.locate-ticks-symlog.with(
+    locate-ticks: tick-locate.symlog.with(
       base: base, 
       threshold: threshold, 
       linscale: linscale
     ),
-    locate-subticks: ticking.locate-subticks-symlog.with(
+    locate-subticks: tick-locate.subticks-symlog.with(
       base: base, 
       threshold: threshold
     )
@@ -151,13 +151,14 @@
 #check-sym(2)
 #check-sym(3)
 
-
+/// A linear scale with a datetime tick locator. This scale can also be 
+/// accessed through the shorthand "datetime". 
 #let datetime() = {
   scale(
     name: "datetime",
     x => x,
     x => x,
-    locate-ticks: ticking.locate-ticks-datetime,
+    locate-ticks: tick-locate.datetime,
     locate-subticks: none,
   )
 }

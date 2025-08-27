@@ -1,8 +1,8 @@
-#import "/src/algorithm/ticking.typ": *
-
+#import "/src/lilaq.typ" as lq
+#import "/src/logic/time.typ"
 
 #assert.eq(
-  locate-ticks-datetime(
+  lq.tick-locate.datetime(
     ..time.to-seconds(
       datetime(year: 1970, month: 1, day: 1),
       datetime(year: 1975, month: 1, day: 1),
@@ -18,7 +18,7 @@
   ),
 )
 #assert.eq(
-  locate-ticks-datetime(
+  lq.tick-locate.datetime(
     ..time.to-seconds(
       datetime(year: 1970, month: 2, day: 1),
       datetime(year: 1975, month: 1, day: 1),
@@ -34,7 +34,7 @@
 )
 
 #assert.eq(
-  locate-ticks-datetime(
+  lq.tick-locate.datetime(
     ..time.to-seconds(
       datetime(year: 1970, month: 1, day: 1),
       datetime(year: 1975, month: 1, day: 1),
@@ -57,7 +57,7 @@
 )
 
 #assert.eq(
-  locate-ticks-datetime(
+  lq.tick-locate.datetime(
     ..time.to-seconds(
       datetime(year: 1970, month: 6, day: 1),
       datetime(year: 1973, month: 1, day: 2),
@@ -73,7 +73,7 @@
   ),
 )
 #assert.eq(
-  locate-ticks-datetime(
+  lq.tick-locate.datetime(
     ..time.to-seconds(
       datetime(year: 1970, month: 1, day: 1),
       datetime(year: 1971, month: 1, day: 1),
@@ -88,7 +88,7 @@
   ),
 )
 #assert.eq(
-  locate-ticks-datetime(
+  lq.tick-locate.datetime(
     ..time.to-seconds(
       datetime(year: 1970, month: 1, day: 1),
       datetime(year: 1971, month: 1, day: 1),
@@ -102,7 +102,7 @@
   ),
 )
 #assert.eq(
-  locate-ticks-datetime(
+  lq.tick-locate.datetime(
     ..time.to-seconds(
       datetime(year: 1969, month: 11, day: 2),
       datetime(year: 1970, month: 5, day: 1),
@@ -119,7 +119,7 @@
 )
 
 #assert.eq(
-  locate-ticks-datetime(
+  lq.tick-locate.datetime(
     ..time.to-seconds(
       datetime(year: 1969, month: 11, day: 2),
       datetime(year: 1970, month: 1, day: 1),
@@ -133,7 +133,7 @@
   ),
 )
 #assert.eq(
-  locate-ticks-datetime(
+  lq.tick-locate.datetime(
     ..time.to-seconds(
       datetime(year: 1969, month: 11, day: 2),
       datetime(year: 1970, month: 1, day: 1),
@@ -152,7 +152,7 @@
   ),
 )
 #assert.eq(
-  locate-ticks-datetime(
+  lq.tick-locate.datetime(
     ..time.to-seconds(
       datetime(year: 1969, month: 11, day: 2),
       datetime(year: 1970, month: 1, day: 1),

@@ -1,12 +1,11 @@
 #import "../math.typ": *
 #import "../logic/symlog.typ": symlog-transform
 #import "../logic/time.typ"
-#import "@preview/zero:0.4.0"
 
 
 /// Estimates the maximum number of significant digits from
 /// an array of values. 
-#let estimate-significant-digits(
+#let _estimate-significant-digits(
 
   /// An array of flot values. 
   /// -> array
@@ -38,7 +37,7 @@
 
 /// Finds the nearest step base out of $\{1,2,5,10\}$ given an
 /// arbitrary mantissa in $\{0.1, 1\}$. 
-#let get-best-step(a) = {
+#let _get-best-step(a) = {
   if a >= 1 { assert(false) }
   let b = int(calc.round(calc.log(base: calc.pow(10, 1/3), a * 10)))
   return (1, 2, 5, 10).at(b)
@@ -60,13 +59,14 @@
 /// Returns the smallest number n such that $d·n > x$. 
 /// The offset can be used to improve numerical precision and
 /// obtain a better result for extremely large or small numbers. 
-#let fit-up(x, d, offset: 0) = {
+#let _fit-up(x, d, offset: 0) = {
   let (div, mod) = divmod(x, d)
   if not is-close-to(mod / d, 0, offset, d) { div += 1 }
   return div
 }
+
 /// Returns the largest number n such that $d·n < x$. 
-#let fit-down(x, d, offset: 0) = {
+#let _fit-down(x, d, offset: 0) = {
   let (div, mod) = divmod(x, d)
   if is-close-to(mod / d, 1, offset, d) { div += 1 }
   return div
@@ -74,15 +74,15 @@
 
 
 /// Returns the nearest number $x'*10^exp >= x*10^exp$ that is divisible by $d$. 
-#let discretize-up(x, d, exp, offset: 0) = {
+#let _discretize-up(x, d, exp, offset: 0) = {
   let dd = d * pow10(exp)
-  return calc.round(fit-up(x, dd, offset: offset) * dd, digits: -exp)
+  return calc.round(_fit-up(x, dd, offset: offset) * dd, digits: -exp)
 }
 
 /// Returns the nearest number $x'*10^exp <= x*10^exp$ that is divisible by $d$. 
-#let discretize-down(x, d, exp, offset: 0) = {
+#let _discretize-down(x, d, exp, offset: 0) = {
   let dd = d * pow10(exp)
-  return calc.round(fit-down(x, dd, offset: offset) * dd, digits: -exp)
+  return calc.round(_fit-down(x, dd, offset: offset) * dd, digits: -exp)
 }
 
 
@@ -115,7 +115,7 @@
 
 
 /// Locates ticks manually on an axis with range $[x_0, x_1]$. 
-#let locate-ticks-manual(
+#let manual(
   
   /// The start of the range to locate ticks for. 
   /// -> float
@@ -133,6 +133,8 @@
   /// -> array
   ticks: (), 
 
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
   ..args
 
 ) = {
@@ -173,7 +175,7 @@
 ///   returned ticks. This is an optimization for label formatting because this
 ///   function has the information for free while a formatter needs to 
 ///   expensively estimate it. 
-#let locate-ticks-linear(
+#let linear(
 
   /// The start of the range to locate ticks for. 
   /// -> float
@@ -216,6 +218,8 @@
   /// -> float
   unit: 1.0,
 
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
   ..args
 
 ) = {
@@ -239,7 +243,7 @@
     let approx-step = (x1 - x0) / (num-ticks-suggestion * density / 100%)
     let mantissa
     (mantissa, exponent) = decompose-floating-point(calc.abs(approx-step))
-    step = get-best-step(mantissa)
+    step = _get-best-step(mantissa)
     let distance = step * pow10(exponent - 1)
     if type(tick-distance) == dictionary {
       if "min" in tick-distance {
@@ -264,7 +268,7 @@
   let significant-digits = if calc.round(step) == step {
     -calc.floor(calc.log(tick-distance))
   } else {
-    estimate-significant-digits((0, tick-distance))
+    _estimate-significant-digits((0, tick-distance))
   }
   tick-distance = calc.round(tick-distance, digits: significant-digits + 2)
   
@@ -275,9 +279,9 @@
   let x0-offset = precision-offset + first-tick
   
 
-  let num-ticks = 1 + fit-down(
+  let num-ticks = 1 + _fit-down(
     x1 - x0-offset, tick-distance, offset: precision-offset
-  ) - fit-up(
+  ) - _fit-up(
     x0 - x0-offset, tick-distance, offset: precision-offset
   )
 
@@ -287,7 +291,7 @@
   let axis-offset = 0 
   if calc.abs(calc.max(x1, x0) / tick-distance) >= 5000 {
     // let fg = pow10(calc.ceil(calc.log(dx, base: 10) + 1))
-    axis-offset = discretize-down(x0, 1, exponent + 2)
+    axis-offset = _discretize-down(x0, 1, exponent + 2)
   }
   
   return (
@@ -307,7 +311,7 @@
 }
 
 
-/// Locates linear ticks on a logarithmic axis with range $[x_0, x_1]$. The 
+/// Locates ticks on a logarithmic axis with range $[x_0, x_1]$. The 
 /// range may be inverted, i.e., $x_0>x_1$ but not $x_0 = x_1$. Ticks are 
 /// placed on powers of the base or if the range is too large, on every other 
 /// power of the base (starting with the lower limit). In this case, the 
@@ -317,7 +321,7 @@
 /// array of tick positions. 
 ///
 /// -> dictionary
-#let locate-ticks-log(
+#let log(
 
   /// The start of the range to locate ticks for. 
   /// -> float
@@ -352,6 +356,8 @@
   /// -> float
   linear-threshold: 2,
 
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
   ..args
 
 ) = {
@@ -363,7 +369,7 @@
 
   let log-distance = log(x1) - log(x0)
   if log-distance < linear-threshold { 
-     let tick-info = locate-ticks-linear(x0, x1, ..args) 
+     let tick-info = linear(x0, x1, ..args) 
      tick-info.linear = true // notify format-ticks-log that this is actually a "linear" ticking
      return tick-info
   }
@@ -392,7 +398,7 @@
 /// positions. 
 ///
 /// -> dictionary
-#let locate-ticks-symlog(
+#let symlog(
 
   /// The start of the range to locate ticks for. 
   /// -> float
@@ -430,6 +436,8 @@
   /// -> ratio
   density: 100%,
 
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
   ..args
 
 ) = {
@@ -437,9 +445,9 @@
     (x0, x1) = (x1, x0) 
   }
 
-  let log = calc.log.with(base: base)
+  // let based-log = calc.log.with(base: base)
   
-  let locate-ticks-log = locate-ticks-log.with(
+  let log = log.with(
     linear-threshold: 0, base: base, density: density
   )
 
@@ -453,7 +461,7 @@
     let x0-log = calc.max(x0, threshold)
     let f = (b - transform(x0-log)) / (b - a)
 
-    let log-ticks = locate-ticks-log(
+    let log-ticks = log(
       x0-log, x1, 
       num-ticks-suggestion: num-ticks-suggestion * f
     )
@@ -464,7 +472,7 @@
     let x1-log = calc.min(x1, -threshold)
     let f = (transform(x1-log) - a) / (b - a)
 
-    let log-ticks = locate-ticks-log(
+    let log-ticks = log(
       -x1-log, -x0,
       num-ticks-suggestion: num-ticks-suggestion * f
     )
@@ -476,7 +484,7 @@
     let x1-log = calc.min(x1, threshold - 1e-9)
     let f = (transform(x1-log) - transform(x0-log)) / (b - a)
 
-    let linear-ticks = locate-ticks-linear(
+    let linear-ticks = linear(
       x0-log, x1-log,
       base: base,
       density: density,
@@ -494,7 +502,7 @@
 
 
 /// Automatically locates linear subticks from an array of ticks. 
-#let locate-subticks-linear(
+#let subticks-linear(
 
   /// The start of the range to locate ticks for. 
   /// -> float
@@ -519,7 +527,9 @@
   /// -> auto | float
   tick-distance: auto, 
 
-  ..args // important!
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
+  ..args 
 
 ) = {
   if x0 > x1 { 
@@ -557,8 +567,8 @@
 
 
 
-/// Automatically locate logarithmic subticks from an array of ticks. 
-#let locate-subticks-log(
+/// Automatically locates logarithmic subticks from an array of ticks. 
+#let subticks-log(
 
   /// The start of the range to locate ticks for. 
   /// -> float
@@ -582,7 +592,9 @@
   /// -> auto | float
   base: auto,
 
-  ..args // important!
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
+  ..args
 
 ) = {
   if x0 > x1 { 
@@ -609,7 +621,7 @@
   let subticks = ()
   
   if ticks.len() >= 2 and quo > base {
-    // locate-ticks-log might have skipped base positions
+    // log might have skipped base positions
     // (e.g., chosen 1e3, 1e5, 1e7). Then it makes no sense to display
     // the small subticks and we could just show the exponential positions
     let prev = ticks.first() / quo
@@ -632,8 +644,8 @@
 
 
 
-/// Automatically locate symlog subticks from an array of ticks. 
-#let locate-subticks-symlog(
+/// Automatically locates symlog subticks from an array of ticks. 
+#let subticks-symlog(
 
   /// The start of the range to locate ticks for. 
   /// -> float
@@ -660,10 +672,12 @@
   /// -> float
   threshold: 1, 
 
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
   ..args
 
 ) = {
-  let locate-subticks-log = locate-subticks-log.with(
+  let subticks-log = subticks-log.with(
     base: base, 
     subs: subs
   )
@@ -671,7 +685,7 @@
   let subticks = ()
   
   if x1 > threshold {
-    subticks += locate-subticks-log(
+    subticks += subticks-log(
       calc.max(x0, threshold),
       x1,
       ticks: ticks.filter(x => x > threshold)
@@ -679,7 +693,7 @@
   }
   
   if x0 < -threshold {
-    subticks += locate-subticks-log(
+    subticks += subticks-log(
       -x0,
       -calc.min(x1, -threshold),
       ticks: ticks.filter(x => x > threshold)
@@ -692,235 +706,36 @@
 }
 
 
+/// Locates years on a datetime interval. 
+#let years(
 
-
-#let format-ticks-manual(
-  ticks, tick-info: (:), ..args
-) = {
-  assert(
-    "labels" in tick-info, message: "No labels given to `format-ticks-manual`"
-  )
-
-  tick-info.labels
-}
-
-
-
-#let format-ticks-naive(
-  ticks,
-  ..args 
-) = ticks.map(str)
-
-
-
-#let num(
-  value, 
-  sign: 1,
-  e: none, 
-  auto-e: true,
-  digits: auto, 
-  base: 10, 
-  omit-unit-mantissa: true
-) = {
-  if digits != auto {
-    digits = calc.max(0, digits)
-  }
-  if e == 0 and auto-e { e = none }
-  if e != none { 
-    e = str(e)
-  }
-  zero.num(
-    (
-      mantissa: str(value).replace(sym.minus, "-"), 
-      pm: none, 
-      e: e
-    ), 
-    base: base, 
-    digits: digits, 
-    omit-unity-mantissa: omit-unit-mantissa
-  )
-}
-
-
-#let default-generate-tick-label(
-  value, 
-  exponent: 0, 
-  digits: auto, 
-  simple: false
-) = {
-  if simple {
-    if exponent == 0 { return $#value$ }
-    return $#value dot 10^#exponent$
-  }
-  if exponent == 0 { exponent = none }
-  return num(value, e: exponent, digits: digits)
-}
-
-
-#let format-ticks-linear(
-  ticks,
-  tick-info: (:),     // dictionary
-  exponent: auto,     // auto | int | "inline"
-  offset: auto,       // auto | int | float
-  auto-exponent-threshold: 3,
-  suffix: none,
-  ..args // important
-) = {
-  
-  let unit = tick-info.at("unit", default: 1)
-
-  if offset == auto {
-    offset = tick-info.at("offset", default: 0)
-  } else {
-    assert(type(offset) in (int, float), message: "Offsets need to be of integer or float type")
-  }
-  
-  let additional-exponent = 0 // extra exp that will be shown on the axis
-  let inline-exponent = 0     // extra exp that is shown for each tick
-
-  let inherited-exponent = tick-info.at("exponent", default: 0)
-  
-  if exponent == none { exponent = 0 }
-  if exponent == auto {
-    if calc.abs(inherited-exponent) >= auto-exponent-threshold {
-      additional-exponent = inherited-exponent
-    }
-  } else if exponent == "inline" {
-    if calc.abs(inherited-exponent) >= auto-exponent-threshold {
-      inline-exponent = inherited-exponent
-    }
-  } else {
-    assert.eq(type(exponent), int, message: "Exponents need to be of integer type")
-    additional-exponent = exponent
-  }
-
-
-  let preapplied-exponent = inline-exponent + additional-exponent
-  let preapplied-factor = 1 / pow10(preapplied-exponent) / unit
-  let ticks = ticks.map(x => (x - offset*unit) * preapplied-factor)
-
-  
-  let significant-digits = tick-info.at("significant-digits", default: none)
-  if significant-digits == none {
-    significant-digits = estimate-significant-digits(ticks)
-  } else {
-    significant-digits += preapplied-exponent
-  }
-  
-  let labels = ticks
-   .map(calc.round.with(digits: significant-digits))
-   .map(num.with(
-     e: inline-exponent,
-     digits: significant-digits
-   )
-  )
-
-
-  if suffix != none {
-    labels = ticks.zip(labels).map(((tick, label)) => {
-      if tick == 0 { return $0$ }
-      tick = calc.round(tick, digits: 3)
-
-      if tick == 1 { label = none }
-      else if tick == -1 { label = "−"}
-
-      label + suffix
-    })
-  }
-
-
-  (
-    labels: labels, 
-    exponent: additional-exponent, 
-    offset: offset
-  )
-}
-
-
-#let format-ticks-log(
-  ticks,
-  tick-info: (:), 
-  base: 10,
-  exponent: auto, 
-  auto-exponent-threshold: 3,
-  round-exponent-digits: 4, 
-  base-label: auto,
-  ..args
-) = {
-  // Sometimes the log ticker resorts to linear ticking and then this is better
-  if "linear" in tick-info and tick-info.linear {
-    return format-ticks-linear(
-      ticks, 
-      tick-info: tick-info, 
-      exponent: exponent, 
-      auto-exponent-threshold, auto-exponent-threshold
-    )
-  }
-
-  if base-label == auto { 
-    if base == calc.e { base-label = $e$}
-    else { base-label = base }
-  }
-
-  
-  if exponent == auto {
-    let num = num.with(omit-unit-mantissa: true, base: base-label, auto-e: false)
-
-    ticks.map(x => 
-      num(
-        float.signum(x), 
-        e: calc.round(calc.log(calc.abs(x), base: base), 
-        digits: round-exponent-digits)
-      )
-    )
-  } else {
-    ticks.map(num)
-  }
-}
-
-
-
-
-
-#let format-ticks-symlog(
-  ticks,
-  tick-info: (:), 
-  base: 10,
-  threshold: 1, 
-  exponent: auto, 
-  auto-exponent-threshold: 3,
-  round-exponent-digits: 4, 
-  base-label: auto,
-  ..args
-) = {
-
-  let upper-log = ticks.filter(tick => tick >= threshold or tick <= -threshold)
-
-  let log = format-ticks-log(
-    upper-log, 
-    tick-info: tick-info, 
-    base: base,
-    base-label: base-label,
-    exponent: exponent, 
-    auto-exponent-threshold, auto-exponent-threshold
-  )
-
-  let linear = format-ticks-linear(
-    ticks.filter(tick => tick < threshold and tick > -threshold)
-  )
-
-  log + linear.labels
-}
-
-
-
-#let locate-years(
+  /// The start of the range to locate ticks for. 
+  /// -> float
   x0, 
-  x1,
-  num-ticks-suggestion: 5, 
-  density: 100%,
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
+  x1, 
+
+  /// Sets the distance between consecutive ticks, see @tick-locate.linear.
+  /// -> auto | int | float | dictionary
   tick-distance: auto,
+
+  /// Suggested number of ticks to use. This may for example be chosen 
+  /// according to the length of the axis and the font size. 
+  /// -> int | float
+  num-ticks-suggestion: 5,
+
+  /// The density of ticks. This can be used as a qualitative knob to tune
+  /// the number of generated ticks in relation to the suggested number of
+  /// ticks. 
+  /// -> ratio
+  density: 100%,
+
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
   ..args
+
 ) = {
   if x0 > x1 { 
     (x0, x1) = (x1, x0) 
@@ -931,7 +746,7 @@
     tick-distance = (min: 1)
   }
 
-  let years = locate-ticks-linear(
+  let years = linear(
     t0.year(), t1.year(), 
     tick-distance: tick-distance,
     num-ticks-suggestion: num-ticks-suggestion,
@@ -952,7 +767,7 @@
 }
 
 
-#let locate-ticks-step(
+#let step(
   x0, x1, steps: (1, 2, 5), num-ticks: 5
 ) = {
   
@@ -988,14 +803,40 @@
 
 
 
-#let locate-months(
+/// Locates months on a datetime interval. 
+#let months(
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
   x0, 
-  x1,
-  num-ticks-suggestion: 5, 
-  density: 100%,
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
+  x1, 
+
+  /// Which steps are possible between months. 
+  /// -> array
   steps: (1, 2, 3, 6, 12),
-  filter: none,
+  
+  /// Specifies a filter that can be used to filter out ticks. 
+  /// -> function
+  filter: time => true,
+
+  /// Suggested number of ticks to use. This may for example be chosen 
+  /// according to the length of the axis and the font size. 
+  /// -> int | float
+  num-ticks-suggestion: 5,
+
+  /// The density of ticks. This can be used as a qualitative knob to tune
+  /// the number of generated ticks in relation to the suggested number of
+  /// ticks. 
+  /// -> ratio
+  density: 100%,
+
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
   ..args
+
 ) = {
   if x0 > x1 { 
     (x0, x1) = (x1, x0) 
@@ -1008,7 +849,7 @@
   }
 
   let month-end = t1.month() + (t1.year() - t0.year()) * 12
-  let (ticks: months, step) = locate-ticks-step(
+  let (ticks: months, step) = step(
     month-start - 1, month-end - 1, 
     steps: steps,
     num-ticks: num-ticks-suggestion * density / 100%
@@ -1021,10 +862,8 @@
       month: calc.rem(int(month), 12) + 1, 
       day: 1
     ))
+    .filter(filter)
     
-  if type(filter) == function {
-    times = times.filter(filter)
-  }
   let ticks = time.to-seconds(..times)
   
   (
@@ -1039,13 +878,38 @@
 
 
 
-#let locate-days(
+/// Locates days on a datetime interval. 
+#let days(
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
   x0, 
-  x1,
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
+  x1, 
+  
+  /// Specifies a filter that can be used to filter out ticks. If left at 
+  /// `auto`, a suitable subset of days is selected based on the range and
+  /// month. 
+  /// -> auto | function
   filter: auto,
-  num-ticks-suggestion: 5, 
+
+  /// Suggested number of ticks to use. This may for example be chosen 
+  /// according to the length of the axis and the font size. 
+  /// -> int | float
+  num-ticks-suggestion: 5,
+
+  /// The density of ticks. This can be used as a qualitative knob to tune
+  /// the number of generated ticks in relation to the suggested number of
+  /// ticks. 
+  /// -> ratio
   density: 100%,
+  
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
   ..args
+
 ) = {
   if x0 > x1 { 
     (x0, x1) = (x1, x0) 
@@ -1054,7 +918,7 @@
 
   let reference = time.with(t0, day: 1, hour: 0, minute: 0, second: 0)
 
-  let (ticks, ..) = locate-ticks-step(
+  let (ticks, ..) = step(
     (t0 - reference).days(), 
     (t1 - reference).days(),
     steps: (1,),
@@ -1100,14 +964,40 @@
 }
 
 
-#let locate-hours(
+/// Locates hours on a datetime interval. 
+#let hours(
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
   x0, 
-  x1,
-  num-ticks-suggestion: 5, 
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
+  x1, 
+
+  /// Suggested number of ticks to use. This may for example be chosen 
+  /// according to the length of the axis and the font size. 
+  /// -> int | float
+  num-ticks-suggestion: 5,
+
+  /// The density of ticks. This can be used as a qualitative knob to tune
+  /// the number of generated ticks in relation to the suggested number of
+  /// ticks. 
+  /// -> ratio
   density: 100%,
+
+  /// Which steps are possible between hours. 
+  /// -> array
   steps: (1, 2, 3, 4, 6, 12, 24),
-  filter: none,
+  
+  /// Specifies a filter that can be used to filter out ticks. 
+  /// -> function
+  filter: time => true,
+
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
   ..args
+  
 ) = {
   if x0 > x1 { 
     (x0, x1) = (x1, x0) 
@@ -1116,20 +1006,16 @@
 
   let reference = time.with(t0, hour: 0, minute: 0, second: 0)
 
-  let (ticks, step) = locate-ticks-step(
+  let (ticks, step) = step(
     (t0 - reference).hours(), 
     (t1 - reference).hours(),
     steps: steps,
     num-ticks: num-ticks-suggestion * density / 100%
   )
 
-  let times = ticks.map(tick => 
-    reference + duration(hours: tick)
-  )
-  
-  if type(filter) == function {
-    times = times.filter(filter)
-  }
+  let times = ticks
+    .map(tick => reference + duration(hours: tick))
+    .filter(filter)
   
   (
     ticks: time.to-seconds(..times),
@@ -1138,14 +1024,40 @@
   )
 }
 
-#let locate-minutes(
+/// Locates minutes on a datetime interval. 
+#let minutes(
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
   x0, 
-  x1,
-  num-ticks-suggestion: 5, 
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
+  x1, 
+
+  /// Suggested number of ticks to use. This may for example be chosen 
+  /// according to the length of the axis and the font size. 
+  /// -> int | float
+  num-ticks-suggestion: 5,
+
+  /// The density of ticks. This can be used as a qualitative knob to tune
+  /// the number of generated ticks in relation to the suggested number of
+  /// ticks. 
+  /// -> ratio
   density: 100%,
+
+  /// Which steps are possible between minutes. 
+  /// -> array
   steps: (1, 2, 5, 10, 15, 20, 30, 60),
-  filter: none,
+  
+  /// Specifies a filter that can be used to filter out ticks. 
+  /// -> function
+  filter: time => true,
+
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
   ..args
+
 ) = {
   if x0 > x1 { 
     (x0, x1) = (x1, x0) 
@@ -1154,7 +1066,7 @@
 
   let reference = time.with(t0, minute: 0, second: 0)
 
-  let (ticks, step) = locate-ticks-step(
+  let (ticks, step) = step(
     (t0 - reference).minutes(), 
     (t1 - reference).minutes(),
     steps: steps,
@@ -1176,14 +1088,40 @@
   )
 }
 
-#let locate-seconds(
+/// Locates seconds on a datetime interval. 
+#let seconds(
+
+  /// The start of the range to locate ticks for. 
+  /// -> float
   x0, 
-  x1,
-  num-ticks-suggestion: 5, 
+
+  /// The end of the range to locate ticks for. 
+  /// -> float
+  x1, 
+
+  /// Suggested number of ticks to use. This may for example be chosen 
+  /// according to the length of the axis and the font size. 
+  /// -> int | float
+  num-ticks-suggestion: 5,
+
+  /// The density of ticks. This can be used as a qualitative knob to tune
+  /// the number of generated ticks in relation to the suggested number of
+  /// ticks. 
+  /// -> ratio
   density: 100%,
+
+  /// Which steps are possible between secondsy. 
+  /// -> array
   steps: (1, 2, 5, 10, 15, 20, 30, 60),
-  filter: none,
+  
+  /// Specifies a filter that can be used to filter out ticks. 
+  /// -> function
+  filter: time => true,
+
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
   ..args
+
 ) = {
   if x0 > x1 { 
     (x0, x1) = (x1, x0) 
@@ -1192,7 +1130,7 @@
 
   let reference = time.with(t0, second: 0)
 
-  let (ticks, step) = locate-ticks-step(
+  let (ticks, step) = step(
     (t0 - reference).seconds(), 
     (t1 - reference).seconds(),
     steps: steps,
@@ -1216,7 +1154,7 @@
 
 
 
-#let locate-ticks-datetime(
+#let datetime(
 
   /// The start of the range to locate ticks for. 
   /// -> float
@@ -1241,7 +1179,9 @@
   /// ticks. 
   /// -> ratio
   density: 100%,
-
+  
+  /// Ignored arguments that do not apply to this locator. 
+  /// -> any
   ..args
 
 ) = {
@@ -1261,272 +1201,16 @@
   )
 
   if dt.weeks() >= 52 * num-ticks-suggestion {
-    locate-years(..args)
+    years(..args)
   } else if dt.weeks() >= 4 * num-ticks-suggestion {
-    locate-months(..args)
+    months(..args)
   } else if dt.days() > num-ticks-suggestion  {
-    locate-days(..args)
+    days(..args)
   } else if dt.hours() > num-ticks-suggestion  {
-    locate-hours(..args)
+    hours(..args)
   } else if dt.minutes() > num-ticks-suggestion  {
-    locate-minutes(..args)
-  } else if dt.seconds() > num-ticks-suggestion  {
-    locate-seconds(..args)
+    minutes(..args)
+  } else if dt.seconds() >= 2  {
+    seconds(..args)
   }
 }
-
-
-
-#let locate-subticks-datetime(
-
-  /// The start of the range to locate ticks for. 
-  /// -> float
-  x0, 
-
-  /// The end of the range to locate ticks for. 
-  /// -> float
-  x1, 
-
-  /// Ticks produced by some tick locator. 
-  /// -> array
-  ticks: (), 
-
-  sub: none,
-
-  ..args // important!
-
-) = {
-
-  if sub == none { 
-    return (ticks: ())
-  }
-
-  let ticks = ticks.windows(2).map(((t0, t1)) => {
-    let distance = t1 - t0
-    range(1, sub + 1).map(s => t0 + distance * s / (sub + 1))
-  }).join()
-  (ticks: ticks)
-}
-
-
-
-
-#import "@preview/elembic:1.1.0" as e
-
-#let tick-datetime-smart-first = e.element.declare(
-  "tick-datetime-smart-first",
-  prefix: "lilaq",
-
-  display: it => {
-    if type(it.body) == content { 
-      return it.body
-    }
-    
-    let format = it.at(it.key)
-    if type(format) == str { it.body.display(format) }
-    else { format(it.body) }
-  },
-
-  fields: (
-    e.field("body", e.types.union(content, datetime), required: true),
-    e.field("key", str, default: "month"),
-    e.field("month", e.types.union(str, function), default: "[year]"),
-    e.field("day", e.types.union(str, function), default: "[month repr:short]"),
-    e.field("hour", e.types.union(str, function), default: "[month repr:short]-[day]"),
-    e.field("minute", e.types.union(str, function), default: "[month repr:short]-[day]"),
-    e.field("second", e.types.union(str, function), default: "[month repr:short]-[day]"),
-  )
-)
-
-
-
-#let smart-format = e.element.declare(
-  "smart-format",
-  prefix: "lilaq",
-
-  display: it => {
-
-    if it.key == none {
-      return it.datetime.display()
-    } 
-
-    let first = if it.key in ("month", "day") { 1 } else { 0 }
-
-    let component = (
-      "year": dt => false,
-      "month": dt => dt.month() == 1,
-      "day": dt => dt.day() == 1,
-      "hour": dt => dt.hour() == 0,
-      "minute": dt => dt.hour() == 0 and dt.minute() == 0,
-      "second": dt => dt.hour() == 0 and dt.minute() == 0 and dt.second() == 0,
-    ).at(it.key)
-
-    if it.smart-first and component(it.datetime) and it.key != "year" {
-      tick-datetime-smart-first(it.datetime, key: it.key)
-    } else {
-      let format = it.at(it.key)
-      if type(format) == str { it.datetime.display(format) }
-      else { format(it.datetime) }
-    }
-  },
-
-  fields: (
-    e.field("datetime", datetime, required: true),
-    e.field("smart-first", bool, default: true),
-    e.field("key", e.types.option(str), default: "month"),
-    e.field("year", e.types.union(str, function), default: "[year]"),
-    e.field("month", e.types.union(str, function), default: "[month repr:short]"),
-    e.field("day", e.types.union(str, function), default: "[day]"),
-    e.field("hour", e.types.union(str, function), default: "[hour]:[minute]"),
-    e.field("minute", e.types.union(str, function), default: "[hour]:[minute]"),
-    e.field("second", e.types.union(str, function), default: "[hour]:[minute]:[second]"),
-  )
-)
-
-
-#let display-smart-offset = (it, smart-first: true) => {
-
-  if it.key == none {
-    return none
-  }
-
-  let format-by-key(datetime, key) = {
-    let format = it.at(key)
-    if type(format) == str { datetime.display(format) }
-    else { format(datetime) }
-  }
-
-  let (first, .., last) = it.ticks
-
-  if it.key == "month" {
-
-    let has-no-first = first.month() != 1 or not smart-first
-    if (first.year() == last.year() and has-no-first) or not it.avoid-redundant { 
-      format-by-key(first, "year")
-    }
-
-  } else if it.key == "day" {
-
-    let has-no-first = first.day() != 1 or not smart-first
-    if (first.year() == last.year() and first.month() == last.month() and has-no-first) or not it.avoid-redundant   { 
-      format-by-key(first, "month")
-    } else if first.year() == last.year() { 
-      format-by-key(first, "year")
-    }
-
-  } else if it.key in ("hour", "minute", "second") {
-    
-    if first.year() == 0 { return }
-    
-    let has-no-first = first.hour() != 0 or not smart-first
-    if (first.year() == last.year() and first.month() == last.month() and first.day() == last.day() and has-no-first) or not it.avoid-redundant { 
-      format-by-key(first, "day")
-    } else if first.year() == last.year() { 
-      format-by-key(first, "year")
-    }
-
-  }
-}
-
-
-#let smart-offset = e.element.declare(
-  "smart-offset",
-  prefix: "lilaq",
-
-  display: it => e.get(e-get =>
-    display-smart-offset(it, smart-first: e-get(smart-format).smart-first)
-  ),
-
-  fields: (
-    e.field("ticks", e.types.array(datetime), required: true),
-    e.field("avoid-redundant", bool, default: true),
-    e.field("key", e.types.option(str), default: "month"),
-    e.field("year", e.types.union(str, function), default: "[year]"),
-    e.field("month", e.types.union(str, function), default: "[year]-[month repr:short]"),
-    e.field("day", e.types.union(str, function), default: "[year]-[month repr:short]-[day]"),
-  )
-)
-
-
-
-
-
-#let concise-offset(ticks, key) = {
-  let (first, .., last) = ticks
-
-  if key == "month" {
-
-    if first.year() == last.year() and last.month() != 1 { 
-      first.display("[year]")
-    }
-
-  } else if key == "day" {
-
-    let offset = none
-    if first.year() == last.year() { 
-      offset += first.display("[year]")
-    }
-    if first.month() == last.month() { 
-      offset += first.display("-[month repr:short]")
-    }
-    
-    offset
-
-  } else if key in ("hour", "minute", "second") {
-    
-    if first.year() == 0 { return }
-    
-    let offset = none
-    if first.year() == last.year() { 
-      offset += first.display("[year]")
-    }
-    if first.day() == last.day() { 
-      offset += first.display("-[month repr:short]-[day]")
-    }
-
-    offset
-
-  }
-}
-
-
-#let format-ticks-datetime(
-  ticks,
-  tick-info: (:), 
-  format: smart-format,
-  format-offset: smart-offset,
-  min: 0,
-  max: 1,
-  ..args
-) = {
-  assert(
-    "mode" in tick-info,
-    message: "format-ticks-datetime can only be used with a datetime tick locator"
-  )
-
-  let key = tick-info.at("key", default: none)
-  let datetimes = time.to-datetime(
-    ..ticks, 
-    mode: if key == none { tick-info.mode } else { "datetime" }
-  )
-
-  // let offset-datetime = if min > max {
-  //   datetimes.first()
-  // } else {
-  //   datetimes.last()
-  // }
-  let offset = format-offset(datetimes, key: key)
-
-  let labels = if type(format) == function {
-    datetimes.map(dt => format(dt, key: key))
-  } else if type(format) == str {
-    datetimes.map(dt => dt.display(format))
-  }
-
-  (
-    labels: labels, 
-    exponent: 0, 
-    offset: offset
-  )
-}
-

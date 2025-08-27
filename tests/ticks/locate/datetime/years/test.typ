@@ -1,7 +1,9 @@
-#import "/src/algorithm/ticking.typ": *
+#import "/src/lilaq.typ" as lq
+#import "/src/logic/time.typ"
+
 
 #assert.eq(
-  locate-years(
+  lq.tick-locate.years(
     ..time.to-seconds(
       datetime(year: 2000, month: 7, day: 3),
       datetime(year: 2010, month: 11, day: 3),
@@ -18,7 +20,7 @@
 )
 
 #assert.eq(
-  locate-years(
+  lq.tick-locate.years(
     ..time.to-seconds(
       datetime(year: 2000, month: 7, day: 3),
       datetime(year: 2010, month: 11, day: 3),
@@ -40,7 +42,7 @@
 )
 
 #assert.eq(
-  locate-years(
+  lq.tick-locate.years(
     ..time.to-seconds(
       datetime(year: 2000, month: 7, day: 3),
       datetime(year: 2010, month: 11, day: 3),
@@ -63,7 +65,7 @@
 
 
 #assert.eq(
-  locate-years(
+  lq.tick-locate.years(
     ..time.to-seconds(
       datetime(year: 2000, month: 7, day: 3),
       datetime(year: 2010, month: 11, day: 3),
@@ -78,7 +80,7 @@
 
 
 #assert.eq(
-  locate-years(
+  lq.tick-locate.years(
     ..time.to-seconds(
       datetime(year: 0, month: 7, day: 3),
       datetime(year: 2010, month: 11, day: 3),

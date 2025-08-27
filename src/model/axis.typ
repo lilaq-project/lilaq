@@ -1,7 +1,8 @@
 #import "../logic/scale.typ" as lqscale
 #import "../utility.typ": place-in-out, match, match-type, if-auto, if-none
 #import "../logic/time.typ"
-#import "../algorithm/ticking.typ"
+#import "../logic/tick-locate.typ"
+#import "../logic/tick-format.typ"
 #import "../bounds.typ": *
 #import "../assertations.typ"
 #import "../model/label.typ": xlabel, ylabel, label as lq-label
@@ -283,17 +284,17 @@
   if ticks != auto {
     if type(ticks) == dictionary {
       assert("ticks" in ticks, message: "When passing a dictionary for `ticks`, you need to provide the keys \"ticks\" and optionally \"labels\"")
-      locate-ticks = ticking.locate-ticks-manual.with(ticks: ticks.ticks.zip(ticks.labels))
+      locate-ticks = tick-locate.manual.with(ticks: ticks.ticks.zip(ticks.labels))
       if "labels" in ticks {
-        format-ticks = ticking.format-ticks-manual 
+        format-ticks = tick-locate.format-ticks-manual 
       }
     } else if type(ticks) == array {
       if ticks.len() > 0 and type(ticks.first()) == array {
         // let (ticks, labels) = array.zip(..ticks)
-        locate-ticks = ticking.locate-ticks-manual.with(ticks: ticks)
-        format-ticks = ticking.format-ticks-manual 
+        locate-ticks = tick-locate.manual.with(ticks: ticks)
+        format-ticks = tick-format.manual 
       } else {
-        locate-ticks = ticking.locate-ticks-manual.with(ticks: ticks)
+        locate-ticks = tick-locate.manual.with(ticks: ticks)
       }
     } else if ticks == none {
       locate-ticks = none
@@ -302,22 +303,22 @@
   }
   
   if locate-ticks == auto {
-    locate-ticks = if-none(scale.locate-ticks, ticking.locate-ticks-linear)
+    locate-ticks = if-none(scale.locate-ticks, tick-locate.linear)
   }
   if format-ticks == auto {
     format-ticks = match(
       scale.name,
-      "linear", () => ticking.format-ticks-linear,
-      "log", () => ticking.format-ticks-log.with(base: scale.base),
-      "symlog", () => ticking.format-ticks-symlog.with(base: scale.base, threshold: scale.threshold, linscale: scale.linscale),
-      "datetime", () => ticking.format-ticks-datetime,
-      default: () => ticking.format-ticks-naive
+      "linear", () => tick-format.linear,
+      "log", () => tick-format.log.with(base: scale.base),
+      "symlog", () => tick-format.symlog.with(base: scale.base, threshold: scale.threshold, linscale: scale.linscale),
+      "datetime", () => tick-format.datetime,
+      default: () => tick-format.naive
     )
   }
   if subticks == none {
     locate-subticks = none
   } else if type(subticks) == int {
-    locate-subticks = ticking.locate-subticks-linear.with(num: subticks)
+    locate-subticks = tick-locate.subticks-linear.with(num: subticks)
   } else if subticks != auto {
     assert(false, message: "Unsupported argument type `" + str(type(subticks)) + "` for parameter `subticks`")
   }
@@ -666,7 +667,7 @@
     for tick in extra-ticks {
       let format-ticks = if-none(
         axis.format-ticks,
-        ticking.format-ticks-linear
+        tick-format.linear
       )
 
       if type(tick) in (int, float) {

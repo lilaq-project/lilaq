@@ -45,6 +45,7 @@
 #import "typing.typ": set-grid, set-label, set-title, set-legend, set-tick, set-tick-label, set-spine, set-diagram, set-errorbar, selector, fields, show_, cond-set
 
 #import "logic/scale.typ"
-#import "algorithm/ticking.typ": locate-ticks-linear, locate-ticks-log, locate-ticks-symlog, locate-ticks-manual, locate-subticks-linear, locate-subticks-log, locate-subticks-symlog, format-ticks-linear, format-ticks-log, format-ticks-manual, format-ticks-symlog, locate-ticks-datetime, format-ticks-datetime
+#import "logic/tick-locate.typ" as tick-locate: linear as locate-ticks-linear, log as locate-ticks-log, symlog as locate-ticks-symlog, manual as locate-ticks-manual, subticks-linear as locate-subticks-linear, subticks-log as locate-subticks-log, subticks-symlog as locate-subticks-symlog, datetime as locate-ticks-datetime
+#import "logic/tick-format.typ" as tick-format: linear as format-ticks-linear, log as format-ticks-log, manual as format-ticks-manual, symlog as format-ticks-symlog, datetime as format-ticks-datetime
 
 #import "theme/theme.typ"

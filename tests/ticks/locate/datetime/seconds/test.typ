@@ -1,9 +1,10 @@
-#import "/src/algorithm/ticking.typ": *
+#import "/src/lilaq.typ" as lq
+#import "/src/logic/time.typ"
 
 
 
 #assert.eq(
-  locate-seconds(
+  lq.tick-locate.seconds(
     ..time.to-seconds(
       datetime(hour: 0, minute: 0, second: 0),
       datetime(hour: 0, minute: 1, second: 0),
@@ -20,7 +21,7 @@
 
 
 #assert.eq(
-  locate-seconds(
+  lq.tick-locate.seconds(
     ..time.to-seconds(
       datetime(hour: 0, minute: 30, second: 40),
       datetime(hour: 0, minute: 31, second: 0),
@@ -36,7 +37,7 @@
 )
 
 #assert.eq(
-  locate-seconds(
+  lq.tick-locate.seconds(
     ..time.to-seconds(
       datetime(hour: 11, minute: 0, second: 58),
       datetime(hour: 11, minute: 1, second: 0),
@@ -50,7 +51,7 @@
 )
 
 #assert.eq(
-  locate-seconds(
+  lq.tick-locate.seconds(
     ..time.to-seconds(
       datetime(hour: 9, minute: 0, second: 0),
       datetime(hour: 9, minute: 5, second: 0),
@@ -68,7 +69,7 @@
 
 
 #assert.eq(
-  locate-seconds(
+  lq.tick-locate.seconds(
     ..time.to-seconds(
       datetime(year: 1, month: 12, day: 31, hour: 23, minute: 58, second: 23),
       datetime(year: 2, month: 1, day: 1, hour: 0, minute: 1, second: 1),
@@ -86,7 +87,7 @@
 
 
 #assert.eq(
-  locate-seconds(
+  lq.tick-locate.seconds(
     ..time.to-seconds(
       datetime(hour: 0, minute: 0, second: 0),
       datetime(hour: 0, minute: 1, second: 30),
@@ -106,7 +107,7 @@
 
 
 #assert.eq(
-  locate-seconds(
+  lq.tick-locate.seconds(
     ..time.to-seconds(
       datetime(hour: 0, minute: 0, second: 0),
       datetime(hour: 0, minute: 1, second: 30),

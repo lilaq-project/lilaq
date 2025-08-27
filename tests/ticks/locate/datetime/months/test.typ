@@ -1,7 +1,9 @@
-#import "/src/algorithm/ticking.typ": *
+#import "/src/lilaq.typ" as lq
+#import "/src/logic/time.typ"
+
 
 #assert.eq(
-  locate-months(
+  lq.tick-locate.months(
     ..time.to-seconds(
       datetime(year: 2000, month: 7, day: 3),
       datetime(year: 2000, month: 11, day: 3),
@@ -16,7 +18,7 @@
   ),
 )
 #assert.eq(
-  locate-months(
+  lq.tick-locate.months(
     ..time.to-seconds(
       datetime(year: 2000, month: 7, day: 3),
       datetime(year: 2000, month: 11, day: 3),
@@ -29,7 +31,7 @@
   ),
 )
 #assert.eq(
-  locate-months(
+  lq.tick-locate.months(
     ..time.to-seconds(
       datetime(year: 2000, month: 7, day: 3),
       datetime(year: 2001, month: 3, day: 3),
@@ -43,7 +45,7 @@
   ),
 )
 #assert.eq(
-  locate-months(
+  lq.tick-locate.months(
     ..time.to-seconds(
       datetime(year: 2000, month: 7, day: 3),
       datetime(year: 2001, month: 9, day: 3),
@@ -57,7 +59,7 @@
   ),
 )
 #assert.eq(
-  locate-months(
+  lq.tick-locate.months(
     ..time.to-seconds(
       datetime(year: 2000, month: 7, day: 3),
       datetime(year: 2001, month: 12, day: 3),
@@ -72,7 +74,7 @@
   ),
 )
 #assert.eq(
-  locate-months(
+  lq.tick-locate.months(
     ..time.to-seconds(
       datetime(year: 2000, month: 1, day: 3),
       datetime(year: 2001, month: 12, day: 3),
@@ -88,7 +90,7 @@
 
 
 #assert.eq(
-  locate-months(
+  lq.tick-locate.months(
     ..time.to-seconds(
       datetime(year: 2000, month: 1, day: 3),
       datetime(year: 2000, month: 12, day: 3),
@@ -106,7 +108,7 @@
 )
 
 #assert.eq(
-  locate-months(
+  lq.tick-locate.months(
     ..time.to-seconds(
       datetime(year: 2000, month: 1, day: 3),
       datetime(year: 2000, month: 12, day: 3),

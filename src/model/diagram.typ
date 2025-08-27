@@ -13,7 +13,6 @@
 #import "axis.typ": axis as lq-axis, draw-axis, _axis-compute-limits, _axis-generate-ticks
 
 #import "../logic/transform.typ": create-trafo
-#import "../algorithm/ticking.typ"
 
 #import "../style/styling.typ": init as cycle-init, style, process-cycles-arg
 #import "../style/map.typ": petroff10

@@ -1,9 +1,10 @@
-#import "/src/algorithm/ticking.typ": *
+#import "/src/lilaq.typ" as lq
+#import "/src/logic/time.typ"
 
 
 
 #assert.eq(
-  locate-days(
+  lq.tick-locate.days(
     ..time.to-seconds(
       datetime(year: 2000, month: 1, day: 3),
       datetime(year: 2000, month: 1, day: 7),
@@ -19,7 +20,7 @@
 )
 
 #assert.eq(
-  locate-days(
+  lq.tick-locate.days(
     ..time.to-seconds(
       datetime(year: 2000, month: 1, day: 28),
       datetime(year: 2000, month: 2, day: 5),
@@ -35,7 +36,7 @@
 )
 
 #assert.eq(
-  locate-days(
+  lq.tick-locate.days(
     ..time.to-seconds(
       datetime(year: 2000, month: 2, day: 27),
       datetime(year: 2000, month: 3, day: 5),
@@ -51,7 +52,7 @@
 )
 
 #assert.eq(
-  locate-days(
+  lq.tick-locate.days(
     ..time.to-seconds(
       datetime(year: 2000, month: 1, day: 16),
       datetime(year: 2000, month: 2, day: 5),
@@ -70,7 +71,7 @@
 1,5,9,13,17,21,25,29,33
 
 #assert.eq(
-  locate-days(
+  lq.tick-locate.days(
     ..time.to-seconds(
       datetime(year: 2025, month: 8, day: 11),
       datetime(year: 2025, month: 8, day: 19),
@@ -86,7 +87,7 @@
   ),
 )
 #assert.eq(
-  locate-days(
+  lq.tick-locate.days(
     ..time.to-seconds(
       datetime(year: 2025, month: 8, day: 11),
       datetime(year: 2025, month: 8, day: 19),

@@ -1,4 +1,4 @@
-#import "/lilaq/src/algorithm/ticking.typ": *
+#import "/lilaq/src/logic/tick-format.typ": *
 #import "/lilaq/src/model/axis.typ": draw-axis, _axis-compute-limits, yaxis
 #import "../src/logic/scale.typ": *
 #import "../src/logic/transform.typ": create-trafo
