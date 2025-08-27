@@ -6,16 +6,9 @@
   
   let stat = if type(x) == array {
 
-    x = x.sorted()
-    (
-      mean: x.sum() / x.len(),
-      median: percentile(x, 50%),
-      q1: percentile(x, 25%),
-      q3: percentile(x, 75%),
-      min: x.at(0),
-      max: x.at(-1),
-    )
-
+    import "@preview/komet:0.1.0"
+    return komet.boxplot(x, whisker-pos: whiskers)
+    
   } else if type(x) == dictionary {
 
     assertations.assert-dict-keys(
@@ -40,7 +33,7 @@
     let wlo = x.filter(x => x >= stat.q1 - iqr * whiskers)
     let whi = x.filter(x => x <= stat.q3 + iqr * whiskers)
     stat.whisker-low = calc.min(stat.q1, wlo.at(0, default: stat.q1))
-    stat.whisker-high = calc.max(stat.q3, whi.at(-1, default: stat.q1))
+    stat.whisker-high = calc.max(stat.q3, whi.at(-1, default: stat.q3))
     stat.outliers = x.filter(x => x < stat.whisker-low or x > stat.whisker-high)
   }
   
