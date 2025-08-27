@@ -227,7 +227,7 @@
   else if y == auto { y = range(1, num-boxplots + 1) }
 
   let datetime-axes = (:)
-  if type(y.first()) == datetime {
+  if type(y.at(0, default: 0)) == datetime {
     y = time.to-seconds(..y)
     datetime-axes.y = true
   }

@@ -448,11 +448,11 @@
   }
 
   let datetime-axes = (:)
-  if type(x.first()) == datetime {
+  if type(x.at(0, default: 0)) == datetime {
     x = time.to-seconds(..x)
     datetime-axes.x = true
   }
-  if type(y.first()) == datetime {
+  if type(y.at(0, default: 0)) == datetime {
     y = time.to-seconds(..y)
     datetime-axes.y = true
   }

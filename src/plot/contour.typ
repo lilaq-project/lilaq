@@ -177,8 +177,8 @@
   if z0 == z1 { z0 -= 1; z1 += 1}
 
   if type(levels) == int {
-    import "../algorithm/ticking.typ"
-    let range = ticking.locate-ticks-linear(z0, z1, num-ticks-suggestion: levels)
+    import "../logic/tick-locate.typ"
+    let range = tick-locate.linear(z0, z1, num-ticks-suggestion: levels)
     levels = range.ticks
   }
   

@@ -79,7 +79,7 @@
   y = y.pos()
   
   let datetime-axes = (:)
-  if type(y.first()) == datetime {
+  if type(y.at(0, default: 0)) == datetime {
     y = time.to-seconds(..y)
     datetime-axes.y = true
   }
