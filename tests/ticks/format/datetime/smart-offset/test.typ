@@ -1,15 +1,15 @@
 #import "/src/lilaq.typ" as lq
 #import "@preview/elembic:1.1.0" as e
-#import "/src/logic/tick-format.typ": display-smart-offset
+#import "/src/logic/tick-format.typ": display-datetime-smart-offset
 
-#let test-smart-offset(offset, expected) = e.get(e-get => {
+#let test-datetime-smart-offset(offset, expected) = e.get(e-get => {
   assert.eq(
-    display-smart-offset(e-get(lq.tick-format.datetime-smart-offset) + e.fields(offset)),
+    display-datetime-smart-offset(e-get(lq.tick-format.datetime-smart-offset) + e.fields(offset)),
     expected
   )
 })
 
-#test-smart-offset(
+#test-datetime-smart-offset(
   lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 4, day: 5),
@@ -20,7 +20,7 @@
   none
 )
 
-#test-smart-offset(
+#test-datetime-smart-offset(
   lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 4, day: 5),
@@ -31,7 +31,7 @@
   "0003"
 )
 
-#test-smart-offset(
+#test-datetime-smart-offset(
   lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 1, day: 5),
@@ -42,7 +42,7 @@
   none
 )
 
-#test-smart-offset(
+#test-datetime-smart-offset(
   lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 2, month: 11, day: 5),
@@ -53,7 +53,7 @@
   none
 )
 
-#test-smart-offset(
+#test-datetime-smart-offset(
   lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 1, day: 5),
@@ -65,7 +65,7 @@
   "0003"
 )
 
-#test-smart-offset(
+#test-datetime-smart-offset(
   lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 1, day: 5),
@@ -81,7 +81,7 @@
 
 
 
-#test-smart-offset(
+#test-datetime-smart-offset(
   lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 7, day: 5),
@@ -92,7 +92,7 @@
   "0003-Jul"
 )
 
-#test-smart-offset(
+#test-datetime-smart-offset(
   lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 7, day: 5),
@@ -104,7 +104,7 @@
   "July"
 )
 
-#test-smart-offset(
+#test-datetime-smart-offset(
   lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 2, month: 7, day: 5),
@@ -115,7 +115,7 @@
   none
 )
 
-#test-smart-offset(
+#test-datetime-smart-offset(
   lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 7, day: 5),
@@ -126,7 +126,7 @@
   "0003"
 )
 
-#test-smart-offset(
+#test-datetime-smart-offset(
   lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 7, day: 1),
@@ -137,7 +137,7 @@
   "0003"
 )
 
-#test-smart-offset(
+#test-datetime-smart-offset(
   lq.tick-format.datetime-smart-offset(
     (
       datetime(year: 3, month: 7, day: 1),

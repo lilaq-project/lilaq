@@ -310,9 +310,38 @@
 
 
 
+/// Displays a smart first of a period (month, day, hour, minute, or second). 
+#let datetime-smart-first(
 
+  /// The time to display. 
+  /// -> datetime
+  time,
+  
+  /// Which first to display, e.g., `"month"` for the first month of a year. 
+  /// -> str
+  key: "month", 
 
+  /// What to display for the first month in a year. 
+  /// -> str | function
+  month: "[year]",
 
+  /// What to display for the first day in a month. 
+  /// -> str | function
+  day: "[month repr:short]",
+
+  /// What to display for the first hour of a day. 
+  /// -> str | function
+  hour: "[month repr:short]-[day]",
+
+  /// What to display for the first minute of an hour. 
+  /// -> str | function
+  minute: "[month repr:short]-[day]",
+
+  /// What to display for the first second of a minute. 
+  /// -> str | function
+  second: "[month repr:short]-[day]",
+
+) = {}
 
 
 
@@ -323,17 +352,13 @@
   prefix: "lilaq",
 
   display: it => {
-    if type(it.body) == content { 
-      return it.body
-    }
-    
     let format = it.at(it.key)
-    if type(format) == str { it.body.display(format) }
-    else { format(it.body) }
+    if type(format) == str { it.time.display(format) }
+    else { format(it.time) }
   },
 
   fields: (
-    e.field("body", e.types.union(content, datetime), required: true),
+    e.field("time", datetime, required: true),
     e.field("key", str, default: "month"),
     e.field("month", e.types.union(str, function), default: "[year]"),
     e.field("day", e.types.union(str, function), default: "[month repr:short]"),
@@ -342,6 +367,49 @@
     e.field("second", e.types.union(str, function), default: "[month repr:short]-[day]"),
   )
 )
+
+
+/// Displays a datetime tick. 
+#let datetime-smart-format(
+
+  /// The date/time to display. 
+  /// -> datetime
+  time,
+
+  /// Whether to use @datetime-smart-first for first instances in a period. 
+  /// -> bool
+  smart-first: true,
+  
+  /// The smallest changing period type between consecutive ticks.  
+  /// -> str
+  key: "month", 
+
+  /// How to display years. 
+  /// -> str | function
+  year: "[year]",
+
+  /// How to display months. 
+  /// -> str | function
+  month: "[month repr:short]",
+
+  /// How to display days. 
+  /// -> str | function
+  day: "[day]",
+
+  /// How to display hours. 
+  /// -> str | function
+  hour: "[hour]:[minute]",
+
+  /// How to display minutes. 
+  /// -> str | function
+  minute: "[hour]:[minute]",
+
+  /// How to display seconds. 
+  /// -> str | function
+  second: "[hour]:[minute]:[second]",
+
+) = {}
+
 
 
 
@@ -367,7 +435,7 @@
     ).at(it.key)
 
     if it.smart-first and component(it.datetime) and it.key != "year" {
-      tick-datetime-smart-first(it.datetime, key: it.key)
+      datetime-smart-first(it.datetime, key: it.key)
     } else {
       let format = it.at(it.key)
       if type(format) == str { it.datetime.display(format) }
@@ -389,7 +457,8 @@
 )
 
 
-#let display-smart-offset = (it, smart-first: true) => {
+
+#let display-datetime-smart-offset = (it, smart-first: true) => {
 
   if it.key == none {
     return none
@@ -434,12 +503,44 @@
 }
 
 
+/// Displays an offset for a set of datetime ticks. 
+#let datetime-smart-offset(
+
+  /// The ticks as `datetime` instances. 
+  /// -> array
+  ticks,
+
+  /// Whether to avoid redundant information between ticks and offset. 
+  /// For example, if the year is already displayed as a @datetime.smart-fist, 
+  /// it is omitted here. 
+  /// -> bool
+  avoid-redundant: true,
+  
+  /// The smallest changing period type between consecutive ticks.  
+  /// -> str
+  key: "month", 
+
+  /// How to display years offsets. 
+  /// -> str | function
+  year: "[year]",
+
+  /// How to display month offsets. 
+  /// -> str | function
+  month: "[year]-[month repr:short]",
+
+  /// How to display day offsets. 
+  /// -> str | function
+  day: "[year]-[month repr:short]-[day]"
+
+) = {}
+
+
 #let datetime-smart-offset = e.element.declare(
   "datetime-smart-offset",
   prefix: "lilaq",
 
   display: it => e.get(e-get =>
-    display-smart-offset(it, smart-first: e-get(datetime-smart-format).smart-first)
+    display-datetime-smart-offset(it, smart-first: e-get(datetime-smart-format).smart-first)
   ),
 
   fields: (
@@ -454,15 +555,31 @@
 
 
 
-
+/// Formats datetime ticks. 
 #let datetime(
+  
+  /// The ticks to format.
+  /// -> array. 
   ticks,
-  tick-info: (:), 
+  
+  /// How to format the ticks. This can be a format string to be used with 
+  /// #link(https://typst.app/docs/reference/foundations/datetime/#definitions-display)[`datetime.display`] 
+  /// or a function that receives a datetime. 
+  /// -> str | function
   format: datetime-smart-format,
+
+  /// How to format the offset. 
+  /// -> function
   format-offset: datetime-smart-offset,
-  min: 0,
-  max: 1,
+
+  /// Additional information from the tick locator. 
+  /// -> dictionary
+  tick-info: (:), 
+  
+  /// Arguments that are ignored by this formatter. 
+  /// -> any
   ..args
+
 ) = {
   assert(
     "mode" in tick-info,
@@ -495,3 +612,6 @@
   )
 }
 
+#let set-datetime-smart-format = e.set_.with(datetime-smart-format)
+#let set-datetime-smart-first = e.set_.with(datetime-smart-first)
+#let set-datetime-smart-format = e.set_.with(datetime-smart-format)
