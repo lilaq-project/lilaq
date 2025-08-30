@@ -4,8 +4,8 @@
 #import "../typing.typ": set-diagram
 
 
-/// Creates a color bar using the color information of a colored plot instance 
-/// like @scatter or @colormesh. 
+/// Creates a visual representation of the color mapping used in a plot 
+/// instance like @scatter or @colormesh. 
 /// 
 /// This generates a new (usually slim) diagram with a filled gradient 
 /// according to the color map used in the plot, appropriate ticks, and 
@@ -28,6 +28,16 @@
 /// )
 /// #lq.colorbar(mesh, thickness: 2mm)
 /// ```
+/// 
+/// The color bar is a separate inline object and can be placed anywhere in the 
+/// document. Note that if the example above were in code mode, Typst would 
+/// place the color bar directly after the diagram with no space in-between. 
+/// You can insert a manual space through `h(.5em)` (or similar). 
+/// 
+/// Also, the color bar has a fixed length by default and does not know about 
+/// the dimensions of the previous diagram. In order to guarentee the same 
+/// height, it is advisable to use a set rule on `diagram` (as demonstrated 
+/// above) to set the height for both the diagram and the color bar at once. 
 #let colorbar(
 
   /// A plot instance that uses color-coding, e.g., @scatter, @colormesh, @contour, and @quiver. 
