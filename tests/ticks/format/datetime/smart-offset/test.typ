@@ -15,7 +15,7 @@
       datetime(year: 3, month: 4, day: 5),
       datetime(year: 3, month: 7, day: 5),
     ),
-    key: none
+    period: none
   ),
   none
 )
@@ -26,7 +26,7 @@
       datetime(year: 3, month: 4, day: 5),
       datetime(year: 3, month: 7, day: 5),
     ),
-    key: "month"
+    period: "month"
   ),
   "0003"
 )
@@ -37,7 +37,7 @@
       datetime(year: 3, month: 1, day: 5),
       datetime(year: 3, month: 7, day: 5),
     ),
-    key: "month"
+    period: "month"
   ),
   none
 )
@@ -48,7 +48,7 @@
       datetime(year: 2, month: 11, day: 5),
       datetime(year: 3, month: 7, day: 5),
     ),
-    key: "month"
+    period: "month"
   ),
   none
 )
@@ -59,7 +59,7 @@
       datetime(year: 3, month: 1, day: 5),
       datetime(year: 3, month: 7, day: 5),
     ),
-    key: "month",
+    period: "month",
     avoid-redundant: false
   ),
   "0003"
@@ -71,7 +71,7 @@
       datetime(year: 3, month: 1, day: 5),
       datetime(year: 3, month: 7, day: 5),
     ),
-    key: "month",
+    period: "month",
     avoid-redundant: false,
     year: "[year padding:none]"
   ),
@@ -87,7 +87,7 @@
       datetime(year: 3, month: 7, day: 5),
       datetime(year: 3, month: 7, day: 9),
     ),
-    key: "day"
+    period: "day"
   ),
   "0003-Jul"
 )
@@ -98,7 +98,7 @@
       datetime(year: 3, month: 7, day: 5),
       datetime(year: 3, month: 7, day: 9),
     ),
-    key: "day",
+    period: "day",
     month: "[month repr:long]"
   ),
   "July"
@@ -110,7 +110,7 @@
       datetime(year: 2, month: 7, day: 5),
       datetime(year: 3, month: 7, day: 9),
     ),
-    key: "day"
+    period: "day"
   ),
   none
 )
@@ -121,7 +121,7 @@
       datetime(year: 3, month: 7, day: 5),
       datetime(year: 3, month: 8, day: 9),
     ),
-    key: "day"
+    period: "day"
   ),
   "0003"
 )
@@ -132,7 +132,7 @@
       datetime(year: 3, month: 7, day: 1),
       datetime(year: 3, month: 7, day: 7),
     ),
-    key: "day"
+    period: "day"
   ),
   "0003"
 )
@@ -143,7 +143,7 @@
       datetime(year: 3, month: 7, day: 1),
       datetime(year: 3, month: 7, day: 7),
     ),
-    key: "day",
+    period: "day",
     avoid-redundant: false
   ),
   "0003-Jul"

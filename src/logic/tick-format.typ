@@ -319,7 +319,7 @@
   
   /// Which first to display, e.g., `"month"` for the first month of a year. 
   /// -> str
-  key: "month", 
+  period: "month", 
 
   /// What to display for the first month in a year. 
   /// -> str | function
@@ -352,14 +352,14 @@
   prefix: "lilaq",
 
   display: it => {
-    let format = it.at(it.key)
+    let format = it.at(it.period)
     if type(format) == str { it.time.display(format) }
     else { format(it.time) }
   },
 
   fields: (
     e.field("time", datetime, required: true),
-    e.field("key", str, default: "month"),
+    e.field("period", str, default: "month"),
     e.field("month", e.types.union(str, function), default: "[year]"),
     e.field("day", e.types.union(str, function), default: "[month repr:short]"),
     e.field("hour", e.types.union(str, function), default: "[month repr:short]-[day]"),
@@ -382,7 +382,7 @@
   
   /// The smallest changing period type between consecutive ticks.  
   /// -> str
-  key: "month", 
+  period: "month", 
 
   /// How to display years. 
   /// -> str | function
@@ -419,11 +419,11 @@
 
   display: it => {
 
-    if it.key == none {
+    if it.period == none {
       return it.datetime.display()
     } 
 
-    let first = if it.key in ("month", "day") { 1 } else { 0 }
+    let first = if it.period in ("month", "day") { 1 } else { 0 }
 
     let component = (
       "year": dt => false,
@@ -432,12 +432,12 @@
       "hour": dt => dt.hour() == 0,
       "minute": dt => dt.hour() == 0 and dt.minute() == 0,
       "second": dt => dt.hour() == 0 and dt.minute() == 0 and dt.second() == 0,
-    ).at(it.key)
+    ).at(it.period)
 
-    if it.smart-first and component(it.datetime) and it.key != "year" {
-      datetime-smart-first(it.datetime, key: it.key)
+    if it.smart-first and component(it.datetime) and it.period != "year" {
+      datetime-smart-first(it.datetime, period: it.period)
     } else {
-      let format = it.at(it.key)
+      let format = it.at(it.period)
       if type(format) == str { it.datetime.display(format) }
       else { format(it.datetime) }
     }
@@ -446,7 +446,7 @@
   fields: (
     e.field("datetime", datetime, required: true),
     e.field("smart-first", bool, default: true),
-    e.field("key", e.types.option(str), default: "month"),
+    e.field("period", e.types.option(str), default: "month"),
     e.field("year", e.types.union(str, function), default: "[year]"),
     e.field("month", e.types.union(str, function), default: "[month repr:short]"),
     e.field("day", e.types.union(str, function), default: "[day]"),
@@ -460,43 +460,44 @@
 
 #let display-datetime-smart-offset = (it, smart-first: true) => {
 
-  if it.key == none {
+  if it.period == none {
     return none
   }
 
-  let format-by-key(datetime, key) = {
-    let format = it.at(key)
+  let period(datetime, period) = {
+    let format = it.at(period)
     if type(format) == str { datetime.display(format) }
     else { format(datetime) }
   }
 
-  let (first, .., last) = it.ticks
+  let first = it.ticks.first()
+  let last = it.ticks.last()
 
-  if it.key == "month" {
+  if it.period == "month" {
 
     let has-no-first = first.month() != 1 or not smart-first
     if (first.year() == last.year() and has-no-first) or not it.avoid-redundant { 
-      format-by-key(first, "year")
+      period(first, "year")
     }
 
-  } else if it.key == "day" {
+  } else if it.period == "day" {
 
     let has-no-first = first.day() != 1 or not smart-first
     if (first.year() == last.year() and first.month() == last.month() and has-no-first) or not it.avoid-redundant   { 
-      format-by-key(first, "month")
+      period(first, "month")
     } else if first.year() == last.year() { 
-      format-by-key(first, "year")
+      period(first, "year")
     }
 
-  } else if it.key in ("hour", "minute", "second") {
+  } else if it.period in ("hour", "minute", "second") {
     
     if first.year() == 0 { return }
     
     let has-no-first = first.hour() != 0 or not smart-first
     if (first.year() == last.year() and first.month() == last.month() and first.day() == last.day() and has-no-first) or not it.avoid-redundant { 
-      format-by-key(first, "day")
+      period(first, "day")
     } else if first.year() == last.year() { 
-      format-by-key(first, "year")
+      period(first, "year")
     }
 
   }
@@ -518,7 +519,7 @@
   
   /// The smallest changing period type between consecutive ticks.  
   /// -> str
-  key: "month", 
+  period: "month", 
 
   /// How to display years offsets. 
   /// -> str | function
@@ -546,7 +547,7 @@
   fields: (
     e.field("ticks", e.types.array(datetime), required: true),
     e.field("avoid-redundant", bool, default: true),
-    e.field("key", e.types.option(str), default: "month"),
+    e.field("period", e.types.option(str), default: "month"),
     e.field("year", e.types.union(str, function), default: "[year]"),
     e.field("month", e.types.union(str, function), default: "[year]-[month repr:short]"),
     e.field("day", e.types.union(str, function), default: "[year]-[month repr:short]-[day]"),
@@ -586,10 +587,10 @@
     message: "datetime can only be used with a datetime tick locator"
   )
 
-  let key = tick-info.at("key", default: none)
+  let period = tick-info.at("period", default: none)
   let datetimes = time.to-datetime(
     ..ticks, 
-    mode: if key == none { tick-info.mode } else { "datetime" }
+    mode: if period == none { tick-info.mode } else { "datetime" }
   )
 
   // let offset-datetime = if min > max {
@@ -597,10 +598,10 @@
   // } else {
   //   datetimes.last()
   // }
-  let offset = format-offset(datetimes, key: key)
+  let offset = format-offset(datetimes, period: period)
 
   let labels = if type(format) == function {
-    datetimes.map(dt => format(dt, key: key))
+    datetimes.map(dt => format(dt, period: period))
   } else if type(format) == str {
     datetimes.map(dt => dt.display(format))
   }
@@ -614,4 +615,4 @@
 
 #let set-datetime-smart-format = e.set_.with(datetime-smart-format)
 #let set-datetime-smart-first = e.set_.with(datetime-smart-first)
-#let set-datetime-smart-format = e.set_.with(datetime-smart-format)
+#let set-datetime-smart-offset = e.set_.with(datetime-smart-offset)

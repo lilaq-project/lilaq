@@ -762,7 +762,7 @@
   (
     ticks: ticks.filter(x => x >= x0 and x <= x1),
     mode: "date",
-    key: "year"
+    period: "year"
   )
 }
 
@@ -869,7 +869,7 @@
   (
     ticks: ticks.filter(x => x >= x0 and x <= x1),
     mode: "date",
-    key: "month"
+    period: "month"
   )
 }
 
@@ -959,7 +959,7 @@
   (
     ticks: time.to-seconds(..times),
     mode: "date",
-    key: "day"
+    period: "day"
   )
 }
 
@@ -1020,7 +1020,7 @@
   (
     ticks: time.to-seconds(..times),
     mode: "time", // check if day differ from t0 to t1 and if so return datetime
-    key: if step == 24 { "day" } else { "hour" }
+    period: if step == 24 { "day" } else { "hour" }
   )
 }
 
@@ -1084,7 +1084,7 @@
   (
     ticks: time.to-seconds(..times),
     mode: "time",
-    key: if step == 60 { "hour" } else { "minute" }
+    period: if step == 60 { "hour" } else { "minute" }
   )
 }
 
@@ -1148,7 +1148,7 @@
   (
     ticks: time.to-seconds(..times),
     mode: "time",
-    key: if step == 60 { "minute" } else { "second" }
+    period: if step == 60 { "minute" } else { "second" }
   )
 }
 
