@@ -20,3 +20,62 @@
     labels: ("Label1", "Label2")
   )
 )
+
+#assert.eq(
+  lq.tick-locate.manual(
+    0, 10, 
+    ticks: (
+      datetime(hour: 0, minute: 0, second: 3),
+      datetime(hour: 0, minute: 0, second: 4),
+    )
+  ), 
+  (ticks: (3, 4), mode: "time")
+)
+
+#assert.eq(
+  lq.tick-locate.manual(
+    0, 3, 
+    ticks: (
+      datetime(hour: 0, minute: 0, second: 3),
+      datetime(hour: 0, minute: 0, second: 4),
+    )
+  ), 
+  (ticks: (3,), mode: "time")
+)
+
+#assert.eq(
+  lq.tick-locate.manual(
+    0, 10, 
+    ticks: (
+      datetime(year: 0, month: 1, day: 1, hour: 0, minute: 0, second: 3),
+      datetime(year: 0, month: 1, day: 1, hour: 0, minute: 0, second: 4),
+    )
+  ), 
+  (ticks: (3, 4), mode: "datetime")
+)
+
+#assert.eq(
+  lq.tick-locate.manual(
+    0, 10, 
+    ticks: (
+      datetime(year: 0, month: 1, day: 1),
+    )
+  ), 
+  (ticks: (0,), mode: "date")
+)
+
+
+#assert.eq(
+  lq.tick-locate.manual(
+    2, 4, 
+    ticks: (
+      (datetime(hour: 0, minute: 0, second: 3), "A"),
+      (datetime(hour: 0, minute: 0, second: 4), "B"),
+    )
+  ), 
+  (
+    ticks: (3, 4),
+    labels: ("A", "B"),
+    mode: "time"
+  )
+)

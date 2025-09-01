@@ -139,11 +139,30 @@
 
 ) = {
   if type(ticks.at(0, default: 0)) == array {
-    let filtered-ticks = ticks.filter(((x, label)) => x0 <= x and x <= x1)
-    (
-      ticks: filtered-ticks.map(x => x.at(0)), 
-      labels: filtered-ticks.map(x => x.at(1))
+    
+    let result = (
+      ticks: ticks.map(x => x.at(0)), 
+      labels: ticks.map(x => x.at(1))
     )
+    if type(result.ticks.at(0, default: 0)) == datetime {
+      let (seconds, mode) = time.to-seconds(..result.ticks, return-mode: true)
+      result.ticks = seconds
+      result.mode = mode
+    }
+    let filtered-ticks = result.ticks
+      .zip(result.labels)
+      .filter(((x, label)) => x0 <= x and x <= x1)
+
+
+    (result.ticks, result.labels) = array.zip(..filtered-ticks)
+
+    result
+
+    // let filtered-ticks = ticks.filter(((x, label)) => x0 <= x and x <= x1)
+    // (
+    //   ticks: filtered-ticks.map(x => x.at(0)), 
+    //   labels: filtered-ticks.map(x => x.at(1))
+    // )
   } else {
     let result = (:)
     if type(ticks.at(0, default: 0)) == datetime {

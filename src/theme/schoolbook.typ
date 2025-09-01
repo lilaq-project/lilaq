@@ -12,14 +12,15 @@
 
   show: set-diagram(xaxis: axis-args, yaxis: axis-args)
 
-  show: set-label(
-    dx: 100% + .5em, 
-    dy: -100% + .5em, 
-    angle: 0deg, 
-    pad: none
+  show: set-label(pad: none, angle: 0deg)
+  show: show_(
+    label.with(kind: "y"),
+    it => place(bottom + right, dy: -100% - .0em, dx: -.5em, it)
   )
-
-  show selector(label): set align(left + bottom)
+  show: show_(
+    label.with(kind: "x"),
+    it => place(left + top, dx: 100% + .0em, dy: .4em, it)
+  )
   
   it
 }
