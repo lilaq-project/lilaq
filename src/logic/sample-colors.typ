@@ -11,7 +11,8 @@
   norm,
   min: auto, 
   max: auto,
-  ignore-nan: false
+  ignore-nan: false,
+  excess: "clamp"  // "clamp" | "mask"
 ) = {
   if ignore-nan {
     if min == auto { min = pmath.cmin(values) }
@@ -21,6 +22,13 @@
     if max == auto { max = calc.max(..values) }
   }
   if min == max { min -= 1; max += 1}
+
+  
+  if excess == "mask" {
+    values = values.map(v => if v < min or v > max { float.nan } else { v })
+  } else if excess == "clamp" {
+    // values = values.map(v => if v < min { min } else if v > max { max } else { v })
+  }
 
   let norm-fn = match-type(
     norm,

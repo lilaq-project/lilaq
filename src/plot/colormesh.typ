@@ -161,6 +161,16 @@
   /// -> auto | int | float
   max: auto,
 
+  /// Determines how values outside the range defined by @colormesh.min and 
+  /// @colormesh.max are handled.
+  /// 
+  /// - `"clamp"`: Values below @colormesh.min are mapped to the first color of
+  ///   the color map, values above @colormesh.max are mapped to the last color. 
+  /// - `"mask"`: Values outside the range are not drawn and appear transparent. 
+  /// 
+  /// -> "clamp" | "mask"
+  excess: "clamp",
+
   /// The normalization method used to scale $z$ coordinates to the range 
   /// $[0,1]$ before mapping them to colors using the color map. This can be a 
   /// @scale, a string that is the identifier of a built-in scale or a function 
@@ -206,11 +216,24 @@
     message: "`colormesh`: The number of `x` coordinates and the row length in `z` must match. Found " + str(x.len()) + " != " + str(z.first().len())
   )
 
+  assert(
+    excess in ("clamp", "mask"), 
+    message: "`colormesh`: Invalid value for argument `excess`. Expected \"clamp\" or \"mask\", found \"" + str(excess) + "\""
+  )
+
   let color = z.flatten()
 
   let cinfo
   if type(color.at(0, default: 0)) in (int, float) {
-    (color, cinfo) = sample-colors(color, map, norm, ignore-nan: true, min: min, max: max)
+    (color, cinfo) = sample-colors(
+      color, 
+      map, 
+      norm, 
+      ignore-nan: true, 
+      min: min, 
+      max: max,
+      excess: excess
+    )
   }
   
   (

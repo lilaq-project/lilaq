@@ -131,3 +131,19 @@
     min: -.3,
   ),
 )
+
+
+#pagebreak()
+
+
+// Masking out-of-bounds values
+#lq.diagram(
+  lq.colormesh(
+    lq.linspace(-4, 4, num: 6), 
+    lq.linspace(-4, 4, num: 6), 
+    (x, y) => x * y, 
+    min: -2,
+    max: 15,
+    excess: "mask",
+  )
+)
