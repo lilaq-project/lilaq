@@ -376,6 +376,33 @@
   )
 }
 
+#let resolve-proportional-lengths(
+  xaxis, yaxis, 
+  // width and height as lengths, when one dimension is a fration, used for computing the other dimension, respectively. 
+  width, height,
+  // width and height as originally passed to diagram, these can also be of type dictionary or relative. 
+  width-arg: auto,
+  height-arg: auto,
+) = {
+  if width-arg == auto { width-arg = width }
+  if height-arg == auto { height-arg = height }
+
+  let tx = (xaxis.normalized-transform)
+  let ty = (yaxis.normalized-transform)
+
+  if type(height-arg) == dictionary {
+    assert(
+      type(width-arg) != dictionary, 
+      message: "Only the width or the height of a diagram can be specified in terms of the other through an aspect ratio but not both at the same time."
+    )
+
+    height = height-arg.aspect * width * (tx(1) - tx(2)) / (ty(1) - ty(2))
+  } else if type(width-arg) == dictionary {
+    width = width-arg.aspect * height * (ty(1) - ty(2)) / (tx(1) - tx(2))
+  }
+  
+  (width, height)
+}
 
 
 
@@ -385,6 +412,12 @@
   auto-height: true, auto-width: true,
   available-size: (0pt, 0pt)
 ) = {
+  (width, height) = resolve-proportional-lengths(
+    ..axes.slice(0, 2), 
+    width, height, 
+    width-arg: it.width, height-arg: it.height
+  )
+
   axes = fill-in-transforms(axes, width, height, margin: it.margin, aspect-ratio: it.aspect-ratio)
   let (xaxis, yaxis) = axes.slice(0, 2)
 
@@ -404,7 +437,7 @@
 
   for (axis, ticking) in axes.zip(tickings) {
     let (_, axis-bounds) = draw-axis(
-      axis, ticking, e-get: e-get, orthogonal-axis-transform: (if axis.kind == "x" { yaxis} else {xaxis}).transform
+      axis, ticking, e-get: e-get, orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform
     )
     bounds = axis-bounds.fold(bounds, update-bounds)
   }
@@ -540,13 +573,14 @@
     // Diagram may have relative/ratio width or height
     if type(it.width) == relative or type(it.height) == relative {
       let attempt-layout = attempt-layout.with(
-        auto-width: type(it.width) != length,
-        auto-height: type(it.height) != length,
+        auto-width: type(it.width) == relative,
+        auto-height: type(it.height) == relative,
         available-size: it.size, it: it, axes: axes, e-get: e-get, plots: plots
       )
 
       let exact-or-guess(length, container-length) = {
         if type(length) == std.length { length }
+        else if type(length) == dictionary { length }
         else { 0.9 * container-length * length.ratio + length.length.to-absolute() }
       }
 
@@ -569,7 +603,9 @@
       }
 
     } else {
+      (it.width, it.height) = resolve-proportional-lengths(xaxis, yaxis, it.width, it.height)
       axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin, aspect-ratio: it.aspect-ratio)
+
       tickings = axes.map(axis => _axis-generate-ticks(axis, length: if axis.kind == "x" { it.width } else { it.height }))
     }
 
@@ -703,8 +739,8 @@
   fields: (
     e.field("children", e.types.any, required: true),
     e.field("aspect-ratio", e.types.option(float), default: none),
-    e.field("width", e.types.union(length, relative), default: 6cm),
-    e.field("height", e.types.union(length, relative), default: 4cm),
+    e.field("width", e.types.union(length, relative, dictionary), default: 6cm),
+    e.field("height", e.types.union(length, relative, dictionary), default: 4cm),
     e.field("title", e.types.union(none, str, content, lq-title), default: none),
     e.field("legend", e.types.option(e.types.union(dictionary, lq-legend)), default: (:)),
     e.field("xlim", e.types.wrap(e.types.union(auto, array), fold: none), default: auto),
