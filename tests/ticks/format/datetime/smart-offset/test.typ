@@ -1,5 +1,5 @@
 #import "/src/lilaq.typ" as lq
-#import "@preview/elembic:1.1.0" as e
+#import "@preview/elembic:1.1.1" as e
 #import "/src/logic/tick-format.typ": display-datetime-smart-offset
 
 #let test-datetime-smart-offset(offset, expected) = e.get(e-get => {

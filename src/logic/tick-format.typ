@@ -345,7 +345,7 @@
 
 
 
-#import "@preview/elembic:1.1.0" as e
+#import "@preview/elembic:1.1.1" as e
 
 #let datetime-smart-first = e.element.declare(
   "datetime-smart-first",

@@ -1,4 +1,4 @@
-#import "@preview/elembic:1.1.0" as e
+#import "@preview/elembic:1.1.1" as e
 
 
 /// A title for a diagram. Titles can be placed at the top (default),
