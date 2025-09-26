@@ -6,7 +6,7 @@
 #import "../bounds.typ": *
 #import "../assertations.typ"
 #import "../model/label.typ": xlabel, ylabel, label as lq-label
-#import "../process-styles.typ": update-stroke, merge-strokes
+#import "../process-styles.typ": update-stroke, merge-strokes, process-margin
 #import "@preview/elembic:1.1.1" as e
 
 #import "tick.typ": tick as lq-tick, tick-label as lq-tick-label
@@ -412,14 +412,15 @@
 ///
 #let _axis-compute-limits(
   axis, 
-  lower-margin: 0%, upper-margin: 0%,
+  margin: 0%,
   default-lim: (0, 1),
   is-independant: auto
 ) = {
+
+
   if is-independant == auto {
     is-independant = axis.plots.len() > 0
   }
-  let axis-type = match(axis.kind, "x", "x", "y", "y")
   let (x0, x1) = (none, none)
   let (tight0, tight1) = (true, true)
   
@@ -429,7 +430,7 @@
   
   if auto in axis.lim {
     if is-independant {
-      let plot-limits = axis.plots.map(plot => plot.at(axis-type + "limits")())
+      let plot-limits = axis.plots.map(plot => plot.at(axis.kind + "limits")())
         .filter(x => x != none)
       if plot-limits.len() == 0 {
         (x0, x1) = (0, 1)
@@ -469,11 +470,18 @@
   let k1 = (axis.scale.transform)(x1)
   let D = k1 - k0
 
+  margin = process-margin(margin)
+  // Apply margins
+  margin = if axis.kind == "x" { 
+    (lower: margin.left, upper: margin.right)
+  } else {
+    (lower: margin.bottom, upper: margin.top)
+  }
   if not tight0 {
-    x0 = (axis.scale.inverse)(k0 - D * lower-margin/100%)
+    x0 = (axis.scale.inverse)(k0 - D * margin.lower/100%)
   }
   if not tight1 {
-    x1 = (axis.scale.inverse)(k1 + D * upper-margin/100%)
+    x1 = (axis.scale.inverse)(k1 + D * margin.upper/100%)
   }
 
   return (x0, x1)

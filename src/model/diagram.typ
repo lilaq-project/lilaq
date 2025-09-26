@@ -2,7 +2,7 @@
 #import "../assertations.typ"
 #import "../utility.typ": if-auto
 #import "../bounds.typ": update-bounds, place-with-bounds
-#import "../process-styles.typ": update-stroke, process-margin, process-grid-arg, twod-ify-alignment
+#import "../process-styles.typ": update-stroke, process-grid-arg, twod-ify-alignment
 #import "../logic/process-coordinates.typ": transform-point
 
 
@@ -156,7 +156,6 @@
   kind: "x",
   label,
   plots,
-  margin,
   it
 ) = {
   if axis == none { axis = (hidden: true) }
@@ -165,31 +164,37 @@
     axis = lq-axis(kind: kind, label: label, scale: scale, lim: lim, ..axis, ..plots)
   }
 
-  let margin = if kind == "x" {
-    (lower-margin: margin.left, upper-margin: margin.right)
-  } else {
-    (lower-margin: margin.bottom, upper-margin: margin.top)
-  }
-
-  axis.lim = _axis-compute-limits(axis, is-independant: true, ..margin)
+  // axis.original-lim = axis.lim
+  // axis.lim = _axis-compute-limits(axis, is-independant: true, margin: it.margin)
 
   
-  let normalized-trafo = create-trafo(axis.scale.transform, ..axis.lim)
-  axis.normalized-transform = normalized-trafo
+  // let normalized-trafo = create-trafo(axis.scale.transform, ..axis.lim)
+  // axis.normalized-transform = normalized-trafo
   
   axis
 }
 
 
-#let fill-in-transforms(axes, width, height) = {
-  let xaxis = axes.at(0)
-  let yaxis = axes.at(1)
-  axes.map(axis => {
-    let normalized-trafo = if axis.plots.len() > 0 { // is independent axis
-      create-trafo(axis.scale.transform, ..axis.lim)
+// Computes axis limits and transforms. 
+#let fill-in-transforms(axes, width, height, margin: 0%) = {
+  
+  let update-axis(axis, xaxis: none, yaxis: none) = {
+    let normalized-trafo
+    
+    if axis.plots.len() > 0 or xaxis == none { // is independent axis
+      axis.lim = _axis-compute-limits(
+        axis, is-independant: true, margin: margin
+      )
+      normalized-trafo = create-trafo(axis.scale.transform, ..axis.lim)
+      // need to store this for principle axis 
+      // so other axes can take it as model:
+      axis.normalized-transform = normalized-trafo 
     } else { // is dependent axis
       let model-axis = if axis.kind == "x" { xaxis } else { yaxis }
-      a => (model-axis.normalized-transform)((axis.functions.inv)(a))
+      axis.lim = _axis-compute-limits(
+        axis, default-lim: model-axis.lim, margin: margin
+      )
+      normalized-trafo = a => (model-axis.normalized-transform)((axis.functions.inv)(a))
     }
 
     axis.transform = if axis.kind == "x" {
@@ -198,7 +203,11 @@
       y => (1 - normalized-trafo(y)) * height
     }
     axis
-  })
+  }
+
+  let (xaxis, yaxis) = axes.slice(0, 2).map(update-axis)
+
+  (xaxis, yaxis) + axes.slice(2).map(update-axis.with(xaxis: xaxis, yaxis: yaxis))
 }
 
 #let generate-grid(axis-info, xaxis, yaxis, grid: auto) = {
@@ -344,7 +353,7 @@
   auto-height: true, auto-width: true,
   available-size: (0pt, 0pt)
 ) = {
-  axes = fill-in-transforms(axes, width, height)
+  axes = fill-in-transforms(axes, width, height, margin: it.margin)
   let (xaxis, yaxis) = axes.slice(0, 2)
 
   let get-settable-field(element, object, field) = {
@@ -454,34 +463,27 @@
   }
 
 
-  let margin = process-margin(it.margin)
 
   let xaxis = create-principle-axis(
     kind: "x",
     it.xaxis, it.xlim, it.xscale,
-    it.xlabel, xplots, margin, it
+    it.xlabel, xplots, it
   )
   let yaxis = create-principle-axis(
     kind: "y",
     it.yaxis, it.ylim, it.yscale,
-    it.ylabel, yplots, margin, it
+    it.ylabel, yplots, it
   )
 
 
   // Compute limits for additional axes
-  for i in range(axes.len()) {
-    let axis = axes.at(i)
-    let axes-margin = if axis.kind == "x" { 
-      (lower-margin: margin.left, upper-margin: margin.right)
-    } else {
-      (lower-margin: margin.bottom, upper-margin: margin.top)
-    }
-
-    let model-axis = if axis.kind == "x" { xaxis } else { yaxis }
-    axes.at(i).lim = _axis-compute-limits(
-      axis, default-lim: model-axis.lim, ..axes-margin
-    )
-  }
+  // for i in range(axes.len()) {
+  //   let axis = axes.at(i)
+  //   let model-axis = if axis.kind == "x" { xaxis } else { yaxis }
+  //   axes.at(i).lim = _axis-compute-limits(
+  //     axis, default-lim: model-axis.lim, margin: it.margin
+  //   )
+  // }
 
   // Tell additional axes how to transform their coordinates
 
@@ -528,12 +530,14 @@
       // In this step, we expect the size not too change very substantially,
       // so we fix the ticking now and re-use it again in the final layout step. 
       (it.width, it.height, tickings) = attempt-layout(width, height)
+      axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin)
+      // TODO: when margins are variable, need to redo ticking because axis limits might have changed in the previous line
 
     } else {
+      axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin)
       tickings = axes.map(axis => _axis-generate-ticks(axis, length: if axis.kind == "x" { it.width } else { it.height }))
     }
 
-    axes = fill-in-transforms(axes, it.width, it.height)
 
     let (xaxis, yaxis) = axes.slice(0, 2)
 
