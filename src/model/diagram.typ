@@ -2,7 +2,7 @@
 #import "../assertations.typ"
 #import "../utility.typ": if-auto
 #import "../bounds.typ": update-bounds, place-with-bounds
-#import "../process-styles.typ": update-stroke, process-grid-arg, twod-ify-alignment
+#import "../process-styles.typ": update-stroke, process-grid-arg, twod-ify-alignment, process-margin 
 #import "../logic/process-coordinates.typ": transform-point
 
 
@@ -163,13 +163,6 @@
   if type(axis) == dictionary {
     axis = lq-axis(kind: kind, label: label, scale: scale, lim: lim, ..axis, ..plots)
   }
-
-  // axis.original-lim = axis.lim
-  // axis.lim = _axis-compute-limits(axis, is-independant: true, margin: it.margin)
-
-  
-  // let normalized-trafo = create-trafo(axis.scale.transform, ..axis.lim)
-  // axis.normalized-transform = normalized-trafo
   
   axis
 }
@@ -177,6 +170,34 @@
 
 // Computes axis limits and transforms. 
 #let fill-in-transforms(axes, width, height, margin: 0%) = {
+
+  
+  if type(margin) == dictionary and "aspect" in margin {
+    let (xaxis, yaxis) = axes.slice(0, 2)
+
+    let raw-xlim = _axis-compute-limits(xaxis, margin: margin, is-independant: true)
+    let raw-ylim = _axis-compute-limits(yaxis, margin: margin, is-independant: true)
+    let ratio = width / calc.abs(raw-xlim.at(1) - raw-xlim.at(0)) / (height / calc.abs(raw-ylim.at(1) - raw-ylim.at(0))) * margin.aspect
+
+    if ratio > 1 {
+      margin = process-margin(margin)
+      let auto-count = xaxis.lim.filter(x => x == auto).len()
+      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(margin.aspect) + " with fixed x limits.")
+      let r = (ratio - 1) * 100% / auto-count
+      axes.at(0).lim = _axis-compute-limits(
+        xaxis, margin: margin + (left: r, right: r), 
+        is-independant: true, 
+      )
+    } else if ratio < 1 {
+      let auto-count = xaxis.lim.filter(x => x == auto).len()
+      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(margin.aspect) + " with fixed y limits.")
+      let r = (1 / ratio - 1) * 100% / auto-count
+      axes.at(1).lim = _axis-compute-limits(
+        yaxis, margin: margin + (top: r, bottom: r), 
+        is-independant: true, 
+      )
+    }
+  }
   
   let update-axis(axis, xaxis: none, yaxis: none) = {
     let normalized-trafo
