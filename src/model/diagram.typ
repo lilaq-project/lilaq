@@ -171,35 +171,35 @@
 // Computes axis limits and transforms. 
 #let fill-in-transforms(axes, width, height, margin: 0%) = {
 
-  
+
+  let princ-margin = process-margin(margin)
+
   if type(margin) == dictionary and "aspect" in margin {
     let (xaxis, yaxis) = axes.slice(0, 2)
 
-    let raw-xlim = _axis-compute-limits(xaxis, margin: margin, is-independant: true)
-    let raw-ylim = _axis-compute-limits(yaxis, margin: margin, is-independant: true)
-    let ratio = width / calc.abs(raw-xlim.at(1) - raw-xlim.at(0)) / (height / calc.abs(raw-ylim.at(1) - raw-ylim.at(0))) * margin.aspect
+    let xlim = _axis-compute-limits(xaxis, margin: princ-margin, is-independant: true)
+    let ylim = _axis-compute-limits(yaxis, margin: princ-margin, is-independant: true)
+
+    let b = width / calc.abs(xlim.at(1) - xlim.at(0))
+    let a = height / calc.abs(ylim.at(1) - ylim.at(0))
+    let ratio = b / a * princ-margin.aspect
 
     if ratio > 1 {
-      margin = process-margin(margin)
       let auto-count = xaxis.lim.filter(x => x == auto).len()
       assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(margin.aspect) + " with fixed x limits.")
-      let r = (ratio - 1) * 100% / auto-count
-      axes.at(0).lim = _axis-compute-limits(
-        xaxis, margin: margin + (left: r, right: r), 
-        is-independant: true, 
-      )
+      let r = (100% + princ-margin.left + princ-margin.right) * (ratio  - 1)
+      princ-margin.left += r / auto-count
+      princ-margin.right += r / auto-count
     } else if ratio < 1 {
       let auto-count = xaxis.lim.filter(x => x == auto).len()
       assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(margin.aspect) + " with fixed y limits.")
-      let r = (1 / ratio - 1) * 100% / auto-count
-      axes.at(1).lim = _axis-compute-limits(
-        yaxis, margin: margin + (top: r, bottom: r), 
-        is-independant: true, 
-      )
+      let r = (1 / ratio - 1) * (100% + princ-margin.top + princ-margin.bottom)
+      princ-margin.top += r / auto-count
+      princ-margin.bottom += r / auto-count
     }
   }
   
-  let update-axis(axis, xaxis: none, yaxis: none) = {
+  let update-axis(axis, xaxis: none, yaxis: none, margin: margin) = {
     let normalized-trafo
     
     if axis.plots.len() > 0 or xaxis == none { // is independent axis
@@ -226,7 +226,7 @@
     axis
   }
 
-  let (xaxis, yaxis) = axes.slice(0, 2).map(update-axis)
+  let (xaxis, yaxis) = axes.slice(0, 2).map(update-axis.with(margin: princ-margin))
 
   (xaxis, yaxis) + axes.slice(2).map(update-axis.with(xaxis: xaxis, yaxis: yaxis))
 }
