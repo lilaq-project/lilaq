@@ -185,13 +185,13 @@
     let ratio = b / a * princ-margin.aspect
 
     if ratio > 1 {
-      let auto-count = xaxis.lim.filter(x => x == auto).len()
+      let auto-count = xaxis.lim.filter(l => l == auto).len()
       assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(margin.aspect) + " with fixed x limits.")
       let r = (100% + princ-margin.left + princ-margin.right) * (ratio  - 1)
       princ-margin.left += r / auto-count
       princ-margin.right += r / auto-count
     } else if ratio < 1 {
-      let auto-count = xaxis.lim.filter(x => x == auto).len()
+      let auto-count = yaxis.lim.filter(l => l == auto).len()
       assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(margin.aspect) + " with fixed y limits.")
       let r = (1 / ratio - 1) * (100% + princ-margin.top + princ-margin.bottom)
       princ-margin.top += r / auto-count
