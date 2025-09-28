@@ -182,7 +182,7 @@
 
     let b = width / calc.abs(xlim.at(1) - xlim.at(0))
     let a = height / calc.abs(ylim.at(1) - ylim.at(0))
-    let ratio = b / a * aspect
+    let ratio = b / a / aspect
 
     if ratio > 1 {
       let auto-count = xaxis.lim.filter(l => l == auto).len()
