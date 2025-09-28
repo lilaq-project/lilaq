@@ -125,7 +125,18 @@
   /// 
   /// -> ratio | dictionary
   margin: 6%,
-  
+
+  /// Fixes the aspect ratio of data coordinates. 
+  /// For example, if you are plotting a graph, fixing the aspect ratio ensures
+  /// that a unit distance on the x-axis is visually equal to a unit distance 
+  /// on the y-axis. This is particularly useful for visualizing data where the
+  /// relative proportions are important, such as in scatter plots or maps.
+  /// 
+  /// A specified aspect ratio is realized by increasing the margins of the
+  /// diagram on the sides. 
+  /// -> none | float
+  aspect: none,
+
   /// Style cycle to use for this diagram. Check out the 
   /// #link("tutorials/cycles")[cycles tutorial] for more information. 
   /// The elements of a cycle array should either be 
