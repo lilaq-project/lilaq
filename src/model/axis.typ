@@ -378,24 +378,28 @@
         (data-limits.x0, data-limits.x1) = (0, 1)
       }
     } else {
-      let detightify(x) = {
-        if type(x) == fraction { (x / 1fr, true) }
-        else { (x, false) }
-      }
-      for (x0, x1) in plot-limits {
-        let (x0, tight) = detightify(x0)
-        
-        if lim.at(0) == auto and x0 != none and (data-limits.x0 == auto or x0 < data-limits.x0) {
-          data-limits.x0 = x0
-          data-limits.tight-x0 = tight
+
+      let retrieve-limit(index, comp) = plot-limits.fold(
+        (auto, true),
+        ((prev-lim, tight), plot-limit) => {
+          let new-lim = plot-limit.at(index)
+          let new-tight = type(new-lim) == fraction
+          if new-tight { new-lim = new-lim / 1fr }
+
+          if new-lim != none and (prev-lim == auto or comp(prev-lim, new-lim)) {
+            return (new-lim, new-tight)
+          }
+          (prev-lim, tight)
         }
-        
-        let (x1, tight) = detightify(x1)
-        if lim.at(1) == auto and x1 != none and (data-limits.x1 == auto or x1 > data-limits.x1) {
-          data-limits.x1 = x1
-          data-limits.tight-x1 = tight
-        }
+      )
+
+      if data-limits.x0 == auto {
+        (data-limits.x0, data-limits.tight-x0) = retrieve-limit(0, (x, new) => new < x)
       }
+      if data-limits.x1 == auto {
+        (data-limits.x1, data-limits.tight-x1) = retrieve-limit(1, (x, new) => new > x)
+      }
+
     }
   }
 
