@@ -151,7 +151,7 @@
 
 
 
-#let create-principle-axis(
+#let create-main-axis(
   axis, lim, scale,
   kind: "x",
   label,
@@ -169,33 +169,33 @@
 
 
 // Computes axis limits and transforms. 
-#let fill-in-transforms(axes, width, height, margin: 0%) = {
+#let fill-in-transforms(axes, width, height, margin: 0%, aspect: none) = {
 
 
-  let princ-margin = process-margin(margin)
+  let main-margin = process-margin(margin)
 
-  if type(margin) == dictionary and "aspect" in margin {
+  if aspect != none {
     let (xaxis, yaxis) = axes.slice(0, 2)
 
-    let xlim = _axis-compute-limits(xaxis, margin: princ-margin, is-independant: true)
-    let ylim = _axis-compute-limits(yaxis, margin: princ-margin, is-independant: true)
+    let xlim = _axis-compute-limits(xaxis, margin: main-margin, is-independant: true)
+    let ylim = _axis-compute-limits(yaxis, margin: main-margin, is-independant: true)
 
     let b = width / calc.abs(xlim.at(1) - xlim.at(0))
     let a = height / calc.abs(ylim.at(1) - ylim.at(0))
-    let ratio = b / a * princ-margin.aspect
+    let ratio = b / a * aspect
 
     if ratio > 1 {
       let auto-count = xaxis.lim.filter(l => l == auto).len()
-      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(margin.aspect) + " with fixed x limits.")
-      let r = (100% + princ-margin.left + princ-margin.right) * (ratio  - 1)
-      princ-margin.left += r / auto-count
-      princ-margin.right += r / auto-count
+      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(aspect) + " with fixed x limits.")
+      let r = (100% + main-margin.left + main-margin.right) * (ratio  - 1)
+      main-margin.left += r / auto-count
+      main-margin.right += r / auto-count
     } else if ratio < 1 {
       let auto-count = yaxis.lim.filter(l => l == auto).len()
-      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(margin.aspect) + " with fixed y limits.")
-      let r = (1 / ratio - 1) * (100% + princ-margin.top + princ-margin.bottom)
-      princ-margin.top += r / auto-count
-      princ-margin.bottom += r / auto-count
+      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(aspect) + " with fixed y limits.")
+      let r = (1 / ratio - 1) * (100% + main-margin.top + main-margin.bottom)
+      main-margin.top += r / auto-count
+      main-margin.bottom += r / auto-count
     }
   }
   
@@ -207,7 +207,7 @@
         axis, is-independant: true, margin: margin
       )
       normalized-trafo = create-trafo(axis.scale.transform, ..axis.lim)
-      // need to store this for principle axis 
+      // need to store this for main axis 
       // so other axes can take it as model:
       axis.normalized-transform = normalized-trafo 
     } else { // is dependent axis
@@ -226,7 +226,7 @@
     axis
   }
 
-  let (xaxis, yaxis) = axes.slice(0, 2).map(update-axis.with(margin: princ-margin))
+  let (xaxis, yaxis) = axes.slice(0, 2).map(update-axis.with(margin: main-margin))
 
   (xaxis, yaxis) + axes.slice(2).map(update-axis.with(xaxis: xaxis, yaxis: yaxis))
 }
@@ -374,7 +374,7 @@
   auto-height: true, auto-width: true,
   available-size: (0pt, 0pt)
 ) = {
-  axes = fill-in-transforms(axes, width, height, margin: it.margin)
+  axes = fill-in-transforms(axes, width, height, margin: it.margin, aspect: it.aspect)
   let (xaxis, yaxis) = axes.slice(0, 2)
 
   let get-settable-field(element, object, field) = {
@@ -485,12 +485,12 @@
 
 
 
-  let xaxis = create-principle-axis(
+  let xaxis = create-main-axis(
     kind: "x",
     it.xaxis, it.xlim, it.xscale,
     it.xlabel, xplots, it
   )
-  let yaxis = create-principle-axis(
+  let yaxis = create-main-axis(
     kind: "y",
     it.yaxis, it.ylim, it.yscale,
     it.ylabel, yplots, it
@@ -551,11 +551,11 @@
       // In this step, we expect the size not too change very substantially,
       // so we fix the ticking now and re-use it again in the final layout step. 
       (it.width, it.height, tickings) = attempt-layout(width, height)
-      axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin)
+      axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin, aspect: it.aspect)
       // TODO: when margins are variable, need to redo ticking because axis limits might have changed in the previous line
 
     } else {
-      axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin)
+      axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin, aspect: it.aspect)
       tickings = axes.map(axis => _axis-generate-ticks(axis, length: if axis.kind == "x" { it.width } else { it.height }))
     }
 
@@ -688,6 +688,7 @@
 
   fields: (
     e.field("children", e.types.any, required: true),
+    e.field("aspect", e.types.option(float), default: none),
     e.field("width", e.types.union(length, relative), default: 6cm),
     e.field("height", e.types.union(length, relative), default: 4cm),
     e.field("title", e.types.union(none, str, content, lq-title), default: none),
