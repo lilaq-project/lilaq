@@ -30,7 +30,7 @@
     }
   }
   if "default" in args { return get-output(args.default) }
-  panic("The provided value matches none of the given types. Found " + str(value-type))
+  panic("The provided value matches none of the given types. Found " + value-type)
 }
 
 #let match(value, ..args) = {

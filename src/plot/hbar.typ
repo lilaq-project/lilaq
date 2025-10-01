@@ -170,7 +170,7 @@
   
   let ylim = match-type(
     width,
-    int: simple-lims,
+    integer: simple-lims,
     float: simple-lims,
     array: () => (
       calc.min(..y.zip(width).map(((y, w)) => y + offset-coeff * w)),

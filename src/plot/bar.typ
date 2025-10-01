@@ -19,7 +19,7 @@
     
   let get-bar-range = match-type(
     plot.width,
-    int: () => i => (
+    integer: () => i => (
         plot.width * offset-coeff, plot.width * (1 + offset-coeff),
       ),
     float: () => i => (
@@ -282,7 +282,7 @@
   
   let xlim = match-type(
     width,
-    int: simple-lims,
+    integer: simple-lims,
     float: simple-lims,
     array: () => (
       calc.min(..x.zip(width).map(((x, w)) => x + offset-coeff * w)),
