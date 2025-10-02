@@ -195,7 +195,7 @@
   ///   ```
   /// ]
   /// -> ratio | int | float | array
-  width: 0.8,
+  width: 80%,
 
   /// An offset to apply to all $x$ coordinates. This is equivalent to replacing
   /// the array passed to @bar.x with `x.map(x => x + offset)`. Using an offset
