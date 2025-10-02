@@ -65,9 +65,14 @@
   /// -> top | center | bottom
   align: center,
 
-  /// Width of the bars in data coordinates. The width can be set either to a
-  /// constant for all bars or per-bar by passing an array with 
-  /// the same length as the coordinate arrays. 
+  /// Width of the bars. This can be a 
+  /// - `ratio` (e.g., `80%`) specifying the width relative to the minimum
+  ///   distance between two adjacent bars, (if there is only one bar, the
+  ///   width is set to the given ratio of 1 data unit), 
+  /// - or a `float` or `int` specifying the width directly in data
+  ///   coordinates. In this case, the width can be set either to a constant
+  ///   for all bars or per-bar by passing an array with the same length as 
+  ///   the coordinate arrays.
   /// #details[
   ///   Example for a bar plot with varying bar widths.
   ///   ```example
@@ -81,7 +86,7 @@
   ///   )
   ///   ```
   /// ]
-  /// -> int | float | array
+  /// -> ratio | int | float | array
   width: 0.8,
 
   /// An offset to apply to all $y$ coordinates. This is equivalent to replacing
@@ -139,7 +144,16 @@
 
   assertations.assert-matching-data-dimensions(
     x, y, width: width, base: base, fn-name: "hbar"
-  )
+  ) 
+  
+  if type(width) == ratio {
+    if y.len() >= 2 {
+      width = width / 100% * calc.min(..y.windows(2).map(((a, b)) => calc.abs(b - a)))
+    } else {
+      width = width / 100%
+    }
+  }
+ 
   
   if offset != 0 {
     if type(offset) == array {
