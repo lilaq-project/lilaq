@@ -10,21 +10,21 @@
 #show lq.selector(lq.tick-label): none
 
 #lq.diagram(
-  aspect: 1,
+  aspect-ratio: 1,
   lq.ellipse(0, 0, width: 1, height: 1),
 )
 
 #pagebreak()
 
 #lq.diagram(
-  aspect: 2,
+  aspect-ratio: 2,
   lq.rect(0, 0, width: 1, height: 1),
 )
 
 #pagebreak()
 
 #lq.diagram(
-  aspect: .5,
+  aspect-ratio: .5,
   margin: 0%,
   lq.rect(0, 0, width: 1, height: 1),
 )
@@ -33,7 +33,7 @@
 
 
 #lq.diagram(
-  aspect: 1,
+  aspect-ratio: 1,
   margin: (rest: 0%),
   lq.plot((1, 10, 100), (1, 10, 100)),
   xscale: "log",
@@ -48,7 +48,7 @@
 #lq.diagram(
   width: 5cm,
   height: 8cm,
-  aspect: 1,
+  aspect-ratio: 1,
   margin: (top: 0%, bottom: 0%, left: 20%, right: 20%),
   xlim: (auto, 1),
   lq.ellipse(0, 0, width: 1, height: 1),
@@ -60,7 +60,7 @@
 #lq.diagram(
   width: 5cm,
   height: 3cm,
-  aspect: 1,
+  aspect-ratio: 1,
   margin: (top: 0%, bottom: 0%, left: 0%, right: 0%),
   ylim: (0, 1),
   lq.ellipse(0, 0, width: 1, height: 1),
@@ -75,7 +75,7 @@
 #lq.diagram(
   width: 100%,
   height: 100%,
-  aspect: 1,
+  aspect-ratio: 1,
   margin: (top: 0%, bottom: 0%, left: 0%, right: 0%),
   xlim: (auto, 1.2),
   lq.ellipse(0, 0, width: 1, height: 1),
@@ -84,7 +84,7 @@
 #set page(width: auto, height: auto)
 
 #lq.diagram(
-  aspect: 1, 
+  aspect-ratio: 1, 
   margin: 20%,
   lq.rect(0, 0, width: 1, height: 1),
 )
@@ -92,7 +92,7 @@
 #pagebreak()
 
 #lq.diagram(
-  aspect: 1,
+  aspect-ratio: 1,
   margin: (rest: 0%, left: 50%, top: 50%),
   lq.rect(0, 0, width: 1, height: 1),
   height: 5cm, width: 3cm,

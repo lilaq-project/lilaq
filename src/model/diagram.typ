@@ -135,7 +135,7 @@
   /// A specified aspect ratio is realized by increasing the margins of the
   /// diagram on the sides. 
   /// -> none | float
-  aspect: none,
+  aspect-ratio: none,
 
   /// Style cycle to use for this diagram. Check out the 
   /// #link("tutorials/cycles")[cycles tutorial] for more information. 
@@ -180,12 +180,12 @@
 
 
 // Computes axis limits and transforms. 
-#let fill-in-transforms(axes, width, height, margin: 0%, aspect: none) = {
+#let fill-in-transforms(axes, width, height, margin: 0%, aspect-ratio: none) = {
 
 
   let main-margin = process-margin(margin)
 
-  if aspect != none {
+  if aspect-ratio != none {
     let (xaxis, yaxis) = axes.slice(0, 2)
 
     let xlim = _axis-compute-limits(xaxis, margin: main-margin, is-independant: true)
@@ -193,17 +193,17 @@
 
     let b = width / calc.abs(xlim.at(1) - xlim.at(0))
     let a = height / calc.abs(ylim.at(1) - ylim.at(0))
-    let ratio = b / a / aspect
+    let ratio = b / a / aspect-ratio
 
     if ratio > 1 {
       let auto-count = xaxis.lim.filter(l => l == auto).len()
-      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(aspect) + " with fixed x limits.")
+      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(aspect-ratio) + " with fixed x limits.")
       let r = (100% + main-margin.left + main-margin.right) * (ratio  - 1)
       main-margin.left += r / auto-count
       main-margin.right += r / auto-count
     } else if ratio < 1 {
       let auto-count = yaxis.lim.filter(l => l == auto).len()
-      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(aspect) + " with fixed y limits.")
+      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(aspect-ratio) + " with fixed y limits.")
       let r = (1 / ratio - 1) * (100% + main-margin.top + main-margin.bottom)
       main-margin.top += r / auto-count
       main-margin.bottom += r / auto-count
@@ -385,7 +385,7 @@
   auto-height: true, auto-width: true,
   available-size: (0pt, 0pt)
 ) = {
-  axes = fill-in-transforms(axes, width, height, margin: it.margin, aspect: it.aspect)
+  axes = fill-in-transforms(axes, width, height, margin: it.margin, aspect-ratio: it.aspect-ratio)
   let (xaxis, yaxis) = axes.slice(0, 2)
 
   let get-settable-field(element, object, field) = {
@@ -562,11 +562,11 @@
       // In this step, we expect the size not too change very substantially,
       // so we fix the ticking now and re-use it again in the final layout step. 
       (it.width, it.height, tickings) = attempt-layout(width, height)
-      axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin, aspect: it.aspect)
+      axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin, aspect-ratio: it.aspect-ratio)
       // TODO: when margins are variable, need to redo ticking because axis limits might have changed in the previous line
 
     } else {
-      axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin, aspect: it.aspect)
+      axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin, aspect-ratio: it.aspect-ratio)
       tickings = axes.map(axis => _axis-generate-ticks(axis, length: if axis.kind == "x" { it.width } else { it.height }))
     }
 
@@ -699,7 +699,7 @@
 
   fields: (
     e.field("children", e.types.any, required: true),
-    e.field("aspect", e.types.option(float), default: none),
+    e.field("aspect-ratio", e.types.option(float), default: none),
     e.field("width", e.types.union(length, relative), default: 6cm),
     e.field("height", e.types.union(length, relative), default: 4cm),
     e.field("title", e.types.union(none, str, content, lq-title), default: none),
