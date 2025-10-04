@@ -179,13 +179,23 @@
 }
 
 
+
+
+#let do-adjust-dimensions-for-aspect-ratio(it) = {
+  it.width == auto or it.height == auto
+}
+#let do-adjust-margins-for-aspect-ratio(it) = {
+  not do-adjust-dimensions-for-aspect-ratio(it)
+}
+
+
 // Computes axis limits and transforms. 
-#let fill-in-transforms(axes, width, height, margin: 0%, aspect-ratio: none) = {
+#let fill-in-transforms(axes, width, height, it: none) = {
+  assert(it != none, message: "Internal error: Missing diagram options when filling in axis transforms.")
 
+  let main-margin = process-margin(it.margin)
 
-  let main-margin = process-margin(margin)
-
-  if aspect-ratio != none {
+  if it.aspect-ratio != none and do-adjust-margins-for-aspect-ratio(it) {
     let (xaxis, yaxis) = axes.slice(0, 2)
 
     let xlim = _axis-compute-limits(xaxis, margin: main-margin, is-independant: true)
@@ -193,24 +203,24 @@
 
     let b = width / calc.abs(xlim.at(1) - xlim.at(0))
     let a = height / calc.abs(ylim.at(1) - ylim.at(0))
-    let ratio = b / a / aspect-ratio
+    let ratio = b / a / it.aspect-ratio
 
     if ratio > 1 {
       let auto-count = xaxis.lim.filter(l => l == auto).len()
-      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(aspect-ratio) + " with fixed x limits.")
+      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(it.aspect-ratio) + " with fixed x limits.")
       let r = (100% + main-margin.left + main-margin.right) * (ratio  - 1)
       main-margin.left += r / auto-count
       main-margin.right += r / auto-count
     } else if ratio < 1 {
       let auto-count = yaxis.lim.filter(l => l == auto).len()
-      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(aspect-ratio) + " with fixed y limits.")
+      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(it.aspect-ratio) + " with fixed y limits.")
       let r = (1 / ratio - 1) * (100% + main-margin.top + main-margin.bottom)
       main-margin.top += r / auto-count
       main-margin.bottom += r / auto-count
     }
   }
   
-  let update-axis(axis, xaxis: none, yaxis: none, margin: margin) = {
+  let update-axis(axis, xaxis: none, yaxis: none, margin: it.margin) = {
     let normalized-trafo
     
     if axis.plots.len() > 0 or xaxis == none { // is independent axis
@@ -376,31 +386,51 @@
   )
 }
 
-#let resolve-proportional-lengths(
+#let resolve-dimensions-aspect-ratio(
   xaxis, yaxis, 
-  // width and height as lengths, when one dimension is a fration, used for computing the other dimension, respectively. 
-  width, height,
-  // width and height as originally passed to diagram, these can also be of type dictionary or relative. 
-  width-arg: auto,
-  height-arg: auto,
+  // diagram object with fields `width` and `height`, and `aspect-ratio`. 
+  // When one of these dimensions is `auto`, `aspect-ratio` is used for computing the other dimension, respectively. 
+  it: none,
+  // Width and height as lengths. If not `auto`, these are used instead of 
+  // `diagram.width` and `diagram.height` for computing the other dimension. This is necessary when `diagram.width` or `diagram.height` are relative lengths because in this case, the automatic dimension could not be resolved.
+  width: auto, height: auto,
 ) = {
-  if width-arg == auto { width-arg = width }
-  if height-arg == auto { height-arg = height }
+  assert(it != none, message: "Internal error: Missing diagram options when resolving proportional lengths.")
+  if width == auto { width = it.width }
+  if height == auto { height = it.height }
 
-  let tx = (xaxis.normalized-transform)
-  let ty = (yaxis.normalized-transform)
+  if it.width != auto and it.height != auto {
+    return (width, height)
+  }
 
-  if type(height-arg) == dictionary {
+
+  // x/yaxis.normalized-transform do not exist yet (and can only be computed 
+  // later when the dimensions are resolved), so we need to create them here
+  // temporarily.
+  // Note that in the case where dimensions need to be resolved, the 
+  // margins/limits are already fixed because the aspect ratio 
+  // is only realized through dimension adjustment and not margin adjustment. 
+  // This is why the following step is allowed. 
+  let create-normalized-trafos(axis) = (
+    create-trafo(
+      axis.scale.transform, 
+      .._axis-compute-limits(axis, is-independant: true, margin: it.margin)
+    )
+  )
+  
+  let (tx, ty) = (xaxis, yaxis).map(create-normalized-trafos)
+  
+
+  if it.height == auto {
     assert(
-      type(width-arg) != dictionary, 
+      it.width != auto, 
       message: "Only the width or the height of a diagram can be specified in terms of the other through an aspect ratio but not both at the same time."
     )
 
-    height = height-arg.aspect * width * (tx(1) - tx(2)) / (ty(1) - ty(2))
-  } else if type(width-arg) == dictionary {
-    width = width-arg.aspect * height * (ty(1) - ty(2)) / (tx(1) - tx(2))
+    height = it.aspect-ratio * width * (tx(1) - tx(2)) / (ty(1) - ty(2))
+  } else if it.width == auto {
+    width = it.aspect-ratio * height * (ty(1) - ty(2)) / (tx(1) - tx(2))
   }
-  
   (width, height)
 }
 
@@ -412,13 +442,13 @@
   auto-height: true, auto-width: true,
   available-size: (0pt, 0pt)
 ) = {
-  (width, height) = resolve-proportional-lengths(
+  (width, height) = resolve-dimensions-aspect-ratio(
     ..axes.slice(0, 2), 
-    width, height, 
-    width-arg: it.width, height-arg: it.height
+    width: width, height: height, 
+    it: it,
   )
 
-  axes = fill-in-transforms(axes, width, height, margin: it.margin, aspect-ratio: it.aspect-ratio)
+  axes = fill-in-transforms(axes, width, height, it: it)
   let (xaxis, yaxis) = axes.slice(0, 2)
 
   let get-settable-field(element, object, field) = {
@@ -475,9 +505,6 @@
   if not debug { return none }
   place(dx: bounds.left, dy: bounds.top, rect(width: bounds.right - bounds.left, height: bounds.bottom - bounds.top, fill: clr))
 }
-
-
-
 
 
 
@@ -550,9 +577,6 @@
   //   )
   // }
 
-  // Tell additional axes how to transform their coordinates
-
-
   
   
   
@@ -580,7 +604,7 @@
 
       let exact-or-guess(length, container-length) = {
         if type(length) == std.length { length }
-        else if type(length) == dictionary { length }
+        else if length == auto { length }
         else { 0.9 * container-length * length.ratio + length.length.to-absolute() }
       }
 
@@ -595,16 +619,22 @@
       // let us re-evaluate the ticking because maybe our initial guess was really bad. 
       // In this step, we expect the size not too change very substantially,
       // so we fix the ticking now and re-use it again in the final layout step. 
-      (it.width, it.height, tickings) = attempt-layout(width, height)
-      axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin, aspect-ratio: it.aspect-ratio)
+      (width, height, tickings) = attempt-layout(width, height)
+
+      axes = fill-in-transforms(axes, width, height, it: it)
+      (it.width, it.height) = (width, height)
+
       if it.aspect-ratio != none {
         // need to redo ticking because limits will have changed
         tickings = axes.map(axis => _axis-generate-ticks(axis, length: if axis.kind == "x" { it.width } else { it.height }))
       }
 
     } else {
-      (it.width, it.height) = resolve-proportional-lengths(xaxis, yaxis, it.width, it.height)
-      axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin, aspect-ratio: it.aspect-ratio)
+      // Resolving needs to be done before filling in transforms because
+      // the aspect ratio may change the dimensions.
+      let (width, height) = resolve-dimensions-aspect-ratio(..axes.slice(0,2), it: it)
+      axes = fill-in-transforms(axes, width, height, it: it)
+      (it.width, it.height) = (width, height)
 
       tickings = axes.map(axis => _axis-generate-ticks(axis, length: if axis.kind == "x" { it.width } else { it.height }))
     }
@@ -739,8 +769,8 @@
   fields: (
     e.field("children", e.types.any, required: true),
     e.field("aspect-ratio", e.types.option(float), default: none),
-    e.field("width", e.types.union(length, relative, dictionary), default: 6cm),
-    e.field("height", e.types.union(length, relative, dictionary), default: 4cm),
+    e.field("width", e.types.union(length, relative, auto), default: 6cm),
+    e.field("height", e.types.union(length, relative, auto), default: 4cm),
     e.field("title", e.types.union(none, str, content, lq-title), default: none),
     e.field("legend", e.types.option(e.types.union(dictionary, lq-legend)), default: (:)),
     e.field("xlim", e.types.wrap(e.types.union(auto, array), fold: none), default: auto),
