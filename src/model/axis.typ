@@ -6,7 +6,7 @@
 #import "../bounds.typ": *
 #import "../assertations.typ"
 #import "../model/label.typ": xlabel, ylabel, label as lq-label
-#import "../process-styles.typ": update-stroke, merge-strokes
+#import "../process-styles.typ": update-stroke, merge-strokes, process-margin
 #import "@preview/elembic:1.1.1" as e
 
 #import "tick.typ": tick as lq-tick, tick-label as lq-tick-label
@@ -325,12 +325,22 @@
   if locate-subticks == auto {
     locate-subticks = if-none(scale.locate-subticks, none)
   }
-  let is-independant = plots.len() > 0
-  if functions == auto { functions = (x => x, x => x) }
-  else {
-    assert(type(functions) == array and functions.map(type) == (function, function), message: "The parameter `functions` for `axis()` expects an array of two functions, a forward and an inverse function.")
-    assert(plots.len() == 0, message: "An `axis` can either be created with `functions` or with `..plots` but not both. ")
-    assert(lim == auto, message:  "A dependent `axis` with `functions` is not allowed to have manual axis limits. ")
+  let is-independant = functions == auto
+  if functions == auto { 
+    functions = (x => x, x => x) 
+  } else {
+    assert(
+      type(functions) == array and functions.map(type) == (function, function), 
+      message: "The parameter `functions` for `axis()` expects an array of two functions, a forward and an inverse function."
+    )
+    assert(
+      plots.len() == 0, 
+      message: "An `axis` can either be created with `functions` or with `..plots` but not both. "
+    )
+    assert(
+      lim == auto, 
+      message:  "A dependent `axis` with `functions` is not allowed to have manual axis limits. "
+    )
   }
 
   if type(lim) == array {
@@ -342,11 +352,55 @@
         lim
       }
     )
-    
   } else if lim == auto { 
     lim = (auto, auto)
   } else {
     assert(false, message: "Unsupported limit specification")
+  }
+
+  let data-limits = (
+    // Limits computed from all plots associated with this axis
+    x0: lim.at(0), x1: lim.at(1), 
+    // Whether these limits are tight or whether they allow margins to be added
+    tight-x0: true, tight-x1: true 
+  )
+
+  if is-independant and auto in lim {
+
+    let plot-limits = plots
+      .map(plot => plot.at(kind + "limits")())
+      .filter(x => x != none)
+
+    if plot-limits.len() == 0 {
+      if scale.identity != 0 {
+        (data-limits.x0, data-limits.x1) = (scale.identity,) * 2
+      } else {
+        (data-limits.x0, data-limits.x1) = (0, 1)
+      }
+    } else {
+
+      let retrieve-limit(index, comp) = plot-limits.fold(
+        (auto, true),
+        ((prev-lim, tight), plot-limit) => {
+          let new-lim = plot-limit.at(index)
+          let new-tight = type(new-lim) == fraction
+          if new-tight { new-lim = new-lim / 1fr }
+
+          if new-lim != none and (prev-lim == auto or comp(prev-lim, new-lim)) {
+            return (new-lim, new-tight)
+          }
+          (prev-lim, tight)
+        }
+      )
+
+      if data-limits.x0 == auto {
+        (data-limits.x0, data-limits.tight-x0) = retrieve-limit(0, (x, new) => new < x)
+      }
+      if data-limits.x1 == auto {
+        (data-limits.x1, data-limits.tight-x1) = retrieve-limit(1, (x, new) => new > x)
+      }
+
+    }
   }
 
   if mirror == auto {
@@ -359,11 +413,14 @@
       assert(key in ("ticks", "tick-labels"), message: "When passing a dictionary to `axis.mirror`, only the keys \"ticks\" and \"tick-labels\" are valid, got \"" + key + "\"")
     }
   }
+
+
   
   (
     type: "axis",
     scale: scale,
     lim: lim,
+    data-limits: data-limits,
     functions: (forward: functions.at(0), inv: functions.at(1)),
     label: label,
     stroke: stroke,
@@ -412,48 +469,19 @@
 ///
 #let _axis-compute-limits(
   axis, 
-  lower-margin: 0%, upper-margin: 0%,
+  margin: 0%,
   default-lim: (0, 1),
   is-independant: auto
 ) = {
+
   if is-independant == auto {
     is-independant = axis.plots.len() > 0
   }
-  let axis-type = match(axis.kind, "x", "x", "y", "y")
-  let (x0, x1) = (none, none)
-  let (tight0, tight1) = (true, true)
   
-
-  if axis.lim.at(0) != auto { x0 = axis.lim.at(0); tight0 = true }
-  if axis.lim.at(1) != auto { x1 = axis.lim.at(1); tight1 = true }
+  let (x0, x1, tight-x0, tight-x1) = axis.data-limits
   
-  if auto in axis.lim {
-    if is-independant {
-      let plot-limits = axis.plots.map(plot => plot.at(axis-type + "limits")())
-        .filter(x => x != none)
-      if plot-limits.len() == 0 {
-        (x0, x1) = (0, 1)
-        if axis.scale.identity != 0 {
-          (x0, x1) = (axis.scale.identity,) * 2
-        }
-      } else {
-        for (plot-x0, plot-x1) in plot-limits {
-          let tight-bound = (false, false)
-          if type(plot-x0) == fraction { plot-x0 /= 1fr; tight-bound.at(0) = true }
-          if axis.lim.at(0) == auto and plot-x0 != none and (x0 == none or plot-x0 < x0) {
-            x0 = plot-x0
-            tight0 = tight-bound.at(0)
-          }
-          if type(plot-x1) == fraction { plot-x1 /= 1fr; tight-bound.at(1) = true }
-          if axis.lim.at(1) == auto and plot-x0 != none and (x1 == none or plot-x1 > x1) {
-            x1 = plot-x1
-            tight1 = tight-bound.at(1)
-          }
-        }
-      }
-    } else {
-      (x0, x1) = default-lim.map(axis.functions.forward)
-    }
+  if not is-independant and auto in axis.lim {
+    (x0, x1) = default-lim.map(axis.functions.forward)
   }
   if x0 == x1 {
     x0 = (axis.scale.inverse)((axis.scale.transform)(x0) - 1)
@@ -469,11 +497,18 @@
   let k1 = (axis.scale.transform)(x1)
   let D = k1 - k0
 
-  if not tight0 {
-    x0 = (axis.scale.inverse)(k0 - D * lower-margin/100%)
+  margin = process-margin(margin)
+  // Apply margins
+  margin = if axis.kind == "x" { 
+    (lower: margin.left, upper: margin.right)
+  } else {
+    (lower: margin.bottom, upper: margin.top)
   }
-  if not tight1 {
-    x1 = (axis.scale.inverse)(k1 + D * upper-margin/100%)
+  if not tight-x0 {
+    x0 = (axis.scale.inverse)(k0 - D * margin.lower/100%)
+  }
+  if not tight-x1 {
+    x1 = (axis.scale.inverse)(k1 + D * margin.upper/100%)
   }
 
   return (x0, x1)
