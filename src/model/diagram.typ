@@ -563,7 +563,10 @@
       // so we fix the ticking now and re-use it again in the final layout step. 
       (it.width, it.height, tickings) = attempt-layout(width, height)
       axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin, aspect-ratio: it.aspect-ratio)
-      // TODO: when margins are variable, need to redo ticking because axis limits might have changed in the previous line
+      if it.aspect-ratio != none {
+        // need to redo ticking because limits will have changed
+        tickings = axes.map(axis => _axis-generate-ticks(axis, length: if axis.kind == "x" { it.width } else { it.height }))
+      }
 
     } else {
       axes = fill-in-transforms(axes, it.width, it.height, margin: it.margin, aspect-ratio: it.aspect-ratio)

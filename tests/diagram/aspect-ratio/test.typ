@@ -97,3 +97,20 @@
   lq.rect(0, 0, width: 1, height: 1),
   height: 5cm, width: 3cm,
 )
+
+
+
+#set page(width: 3.9cm, height: 3.15cm)
+// Special case where the dimensions are relative and a 
+// redoing the ticking is required to avoid overflowing ticks. 
+
+#show text: hide // reduce output size
+
+#lq.diagram(
+  width: 100%,
+  height: 100%,
+  aspect-ratio: 1,
+  title: lorem(6),
+  margin: 0%,
+  lq.ellipse(0, 0, width: 1, height: 1),
+)
