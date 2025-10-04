@@ -33,7 +33,9 @@
   /// - A `ratio` or `relative` where the ratio part is relative to the width 
   ///   of the parent that the diagram is placed in. This is not allowed if the
   ///   parent has an unbounded width, e.g., a page with `width: auto`.  
-  /// -> length | relative
+  /// - Or `auto` in which case the width is computed automatically based on 
+  ///   @diagram.aspect-ratio. 
+  /// -> length | relative | auto
   width: 6cm,
   
   /// The height of the diagram. This can be
@@ -42,7 +44,9 @@
   /// - A `ratio` or `relative` where the ratio part is relative to the height 
   ///   of the parent that the diagram is placed in. This is not allowed if the
   ///   parent has an unbounded height, e.g., a page with `height: auto`.  
-  /// -> length | relative
+  /// - Or `auto` in which case the height is computed automatically based on 
+  ///   @diagram.aspect-ratio. 
+  /// -> length | relative | auto
   height: 4cm,
 
   /// The title for the diagram. Use a @title object for more options. 
@@ -127,13 +131,18 @@
   margin: 6%,
 
   /// Fixes the aspect ratio of data coordinates. 
-  /// For example, if you are plotting a graph, fixing the aspect ratio ensures
+  /// For example, when plotting a graph, fixing the aspect ratio ensures
   /// that a unit distance on the x-axis is visually equal to a unit distance 
   /// on the y-axis. This is particularly useful for visualizing data where the
-  /// relative proportions are important, such as in scatter plots or maps.
+  /// relative proportions are important, such as in scatter plots or heatmaps.
   /// 
-  /// A specified aspect ratio is realized by increasing the margins of the
-  /// diagram on the sides. 
+  /// There are two ways how an aspect ratio can be realized:
+  /// 1. By adjusting the dimensions of the diagram area, i.e., the width or 
+  ///    height. Select this method by setting one of @diagram.width and 
+  ///    @diagram.height to `auto`.
+  /// 2. By adjusting the margins of the diagram. Select this method by leaving
+  ///    both @diagram.width and @diagram.height at fixed (relative) lengths.
+  ///
   /// -> none | float
   aspect-ratio: none,
 
@@ -403,6 +412,10 @@
     return (width, height)
   }
 
+  assert(
+    it.aspect-ratio != none,
+    message: "An aspect ratio must be specified when one of the dimensions of a diagram is set to `auto`."
+  )
 
   // x/yaxis.normalized-transform do not exist yet (and can only be computed 
   // later when the dimensions are resolved), so we need to create them here
