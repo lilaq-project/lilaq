@@ -225,3 +225,44 @@
     (2, 3, 4, 5, 6),
   ),
 )
+
+#pagebreak()
+
+
+// Datetime support:
+// - Duration width and variable duration width
+// - Duration offset
+#lq.diagram(
+  lq.bar(
+    (
+      datetime(year: 2000, month: 1, day: 1),
+      datetime(year: 2000, month: 1, day: 2),
+      datetime(year: 2000, month: 1, day: 3),
+      datetime(year: 2000, month: 1, day: 4),
+    ),
+    (2, 3, 4, 5),
+    width: duration(hours: 12)
+  ),
+  lq.bar(
+    (
+      datetime(year: 2000, month: 1, day: 1),
+      datetime(year: 2000, month: 1, day: 2),
+      datetime(year: 2000, month: 1, day: 3),
+      datetime(year: 2000, month: 1, day: 4),
+    ),
+    (1, 2, 3, 4),
+    width: (
+      duration(hours: 24),
+      duration(hours: 12),
+      duration(hours: 24),
+      duration(hours: 6),
+    ),
+    offset: (
+      duration(hours: -24),
+      duration(hours: 6),
+      duration(hours: 6),
+      duration(hours: 6),
+    ),
+    fill: (blue, red, green, orange)
+  ),
+)

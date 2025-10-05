@@ -177,10 +177,14 @@
   /// - `ratio` (e.g., `80%`) specifying the width relative to the minimum
   ///   distance between two adjacent bars (if there is only one bar, the
   ///   width is set to the given ratio of 1 data unit), 
-  /// - or a `float` or `int` specifying the width directly in data
+  /// - a `float` or `int` specifying the width directly in data
   ///   coordinates. In this case, the width can be set either to a constant
   ///   for all bars or per-bar by passing an array with the same length as 
-  ///   the coordinate arrays.
+  ///   the coordinate arrays,
+  /// - or a `duration` specifying the width in terms of time units when the 
+  ///   coordinates @bar.x are of type `datetime`. Again, this can be a constant
+  ///   or an array.
+  /// 
   /// #details[
   ///   Example for a bar plot with varying bar widths.
   ///   ```example
@@ -194,14 +198,18 @@
   ///   )
   ///   ```
   /// ]
-  /// -> ratio | int | float | array
+  /// -> ratio | int | float | duration | array
   width: 80%,
 
   /// An offset to apply to all $x$ coordinates. This is equivalent to replacing
   /// the array passed to @bar.x with `x.map(x => x + offset)`. Using an offset
   /// can be useful to avoid overlaps when plotting multiple bar plots into one
-  /// diagram. 
-  /// -> int | float | array
+  /// diagram. When @bar.x is of type `datetime`, the offset can also be given
+  /// as a `duration`.
+  /// 
+  /// The offset can also be configured per-bar by passing an array with the 
+  /// same length as the coordinate arrays.
+  /// -> int | float | duration | array
   offset: 0,
 
 
@@ -255,28 +263,32 @@
   }
 
   assertations.assert-matching-data-dimensions(
-    x, y, width: width, base: base, fill: fill, fn-name: "bar"
+    x, y, width: width, base: base, offset: offset, fill: fill, 
+    fn-name: "bar"
   )
-  
-  
+
+
   if type(width) == ratio {
     if x.len() >= 2 {
       width = width / 100% * calc.min(..x.windows(2).map(((a, b)) => calc.abs(b - a)))
     } else {
       width = width / 100%
     }
+  } else if type(width) == duration {
+    width = width.seconds()
+  } else if type(width) == array and type(width.at(0, default: 0)) == duration {
+    width = width.map(duration.seconds)
   }
- 
+  
 
   if offset != 0 {
-    if type(offset) == array {
-      assertations.assert-matching-data-dimensions(
-        x, y, offset: offset, fn-name: "bar"
-      )
-      x = x.zip(offset).map(array.sum)
-    } else {
-      x = x.map(x => x + offset)
+    if type(offset) != array {
+      offset = (offset,) * x.len()
     }
+    if type(offset.at(0, default: 0)) == duration {
+      offset = offset.map(duration.seconds)
+    }
+    x = x.zip(offset).map(array.sum)
   }
   
   if type(base) != array {
