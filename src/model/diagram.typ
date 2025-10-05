@@ -171,95 +171,6 @@
 
 
 
-#let create-main-axis(
-  axis, lim, scale,
-  kind: "x",
-  label,
-  plots,
-  it
-) = {
-  if axis == none { axis = (hidden: true) }
-
-  if type(axis) == dictionary {
-    axis = lq-axis(kind: kind, label: label, scale: scale, lim: lim, ..axis, ..plots)
-  }
-  
-  axis
-}
-
-
-
-
-#let do-adjust-dimensions-for-aspect-ratio(it) = {
-  it.width == auto or it.height == auto
-}
-#let do-adjust-margins-for-aspect-ratio(it) = {
-  not do-adjust-dimensions-for-aspect-ratio(it)
-}
-
-
-// Computes axis limits and transforms. 
-#let fill-in-transforms(axes, width, height, it: none) = {
-  assert(it != none, message: "Internal error: Missing diagram options when filling in axis transforms.")
-
-  let main-margin = process-margin(it.margin)
-
-  if it.aspect-ratio != none and do-adjust-margins-for-aspect-ratio(it) {
-    let (xaxis, yaxis) = axes.slice(0, 2)
-
-    let xlim = _axis-compute-limits(xaxis, margin: main-margin, is-independant: true)
-    let ylim = _axis-compute-limits(yaxis, margin: main-margin, is-independant: true)
-
-    let b = width / calc.abs(xlim.at(1) - xlim.at(0))
-    let a = height / calc.abs(ylim.at(1) - ylim.at(0))
-    let ratio = b / a / it.aspect-ratio
-
-    if ratio > 1 {
-      let auto-count = xaxis.lim.filter(l => l == auto).len()
-      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(it.aspect-ratio) + " with fixed x limits.")
-      let r = (100% + main-margin.left + main-margin.right) * (ratio  - 1)
-      main-margin.left += r / auto-count
-      main-margin.right += r / auto-count
-    } else if ratio < 1 {
-      let auto-count = yaxis.lim.filter(l => l == auto).len()
-      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(it.aspect-ratio) + " with fixed y limits.")
-      let r = (1 / ratio - 1) * (100% + main-margin.top + main-margin.bottom)
-      main-margin.top += r / auto-count
-      main-margin.bottom += r / auto-count
-    }
-  }
-  
-  let update-axis(axis, xaxis: none, yaxis: none, margin: it.margin) = {
-    let normalized-trafo
-    
-    if axis.plots.len() > 0 or xaxis == none { // is independent axis
-      axis.lim = _axis-compute-limits(
-        axis, is-independant: true, margin: margin
-      )
-      normalized-trafo = create-trafo(axis.scale.transform, ..axis.lim)
-      // need to store this for main axis 
-      // so other axes can take it as model:
-      axis.normalized-transform = normalized-trafo 
-    } else { // is dependent axis
-      let model-axis = if axis.kind == "x" { xaxis } else { yaxis }
-      axis.lim = _axis-compute-limits(
-        axis, default-lim: model-axis.lim, margin: margin
-      )
-      normalized-trafo = a => (model-axis.normalized-transform)((axis.functions.inv)(a))
-    }
-
-    axis.transform = if axis.kind == "x" {
-      x => normalized-trafo(x) * width
-    } else {
-      y => (1 - normalized-trafo(y)) * height
-    }
-    axis
-  }
-
-  let (xaxis, yaxis) = axes.slice(0, 2).map(update-axis.with(margin: main-margin))
-
-  (xaxis, yaxis) + axes.slice(2).map(update-axis.with(xaxis: xaxis, yaxis: yaxis))
-}
 
 #let generate-grid(axis-info, xaxis, yaxis, grid: auto) = {
   grid = process-grid-arg(grid)
@@ -395,6 +306,99 @@
   )
 }
 
+
+#let create-main-axis(
+  axis, lim, scale,
+  kind: "x",
+  label,
+  plots,
+  it
+) = {
+  if axis == none { axis = (hidden: true) }
+
+  if type(axis) == dictionary {
+    axis = lq-axis(kind: kind, label: label, scale: scale, lim: lim, ..axis, ..plots)
+  }
+  
+  axis
+}
+
+
+
+
+#let do-adjust-dimensions-for-aspect-ratio(diagram) = {
+  diagram.width == auto or diagram.height == auto
+}
+
+#let do-adjust-margins-for-aspect-ratio(diagram) = {
+  not do-adjust-dimensions-for-aspect-ratio(diagram)
+}
+
+
+// Computes axis limits and transforms. 
+#let fill-in-transforms(axes, width, height, it: none) = {
+  assert(it != none, message: "Internal error: Missing diagram options when filling in axis transforms.")
+
+  let main-margin = process-margin(it.margin)
+
+  if it.aspect-ratio != none and do-adjust-margins-for-aspect-ratio(it) {
+    let (xaxis, yaxis) = axes.slice(0, 2)
+
+    let xlim = _axis-compute-limits(xaxis, margin: main-margin, is-independant: true)
+    let ylim = _axis-compute-limits(yaxis, margin: main-margin, is-independant: true)
+
+    let b = width / calc.abs(xlim.at(1) - xlim.at(0))
+    let a = height / calc.abs(ylim.at(1) - ylim.at(0))
+    let ratio = b / a / it.aspect-ratio
+
+    if ratio > 1 {
+      let auto-count = xaxis.lim.filter(l => l == auto).len()
+      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(it.aspect-ratio) + " with fixed x limits.")
+      let r = (100% + main-margin.left + main-margin.right) * (ratio  - 1)
+      main-margin.left += r / auto-count
+      main-margin.right += r / auto-count
+    } else if ratio < 1 {
+      let auto-count = yaxis.lim.filter(l => l == auto).len()
+      assert(auto-count > 0, message: "Cannot realize an aspect ratio of " + str(it.aspect-ratio) + " with fixed y limits.")
+      let r = (1 / ratio - 1) * (100% + main-margin.top + main-margin.bottom)
+      main-margin.top += r / auto-count
+      main-margin.bottom += r / auto-count
+    }
+  }
+  
+  let update-axis(axis, xaxis: none, yaxis: none, margin: it.margin) = {
+    let normalized-trafo
+    
+    if axis.plots.len() > 0 or xaxis == none { // is independent axis
+      axis.lim = _axis-compute-limits(
+        axis, is-independant: true, margin: margin
+      )
+      normalized-trafo = create-trafo(axis.scale.transform, ..axis.lim)
+      // need to store this for main axis 
+      // so other axes can take it as model:
+      axis.normalized-transform = normalized-trafo 
+    } else { // is dependent axis
+      let model-axis = if axis.kind == "x" { xaxis } else { yaxis }
+      axis.lim = _axis-compute-limits(
+        axis, default-lim: model-axis.lim, margin: margin
+      )
+      normalized-trafo = a => (model-axis.normalized-transform)((axis.functions.inv)(a))
+    }
+
+    axis.transform = if axis.kind == "x" {
+      x => normalized-trafo(x) * width
+    } else {
+      y => (1 - normalized-trafo(y)) * height
+    }
+    axis
+  }
+
+  let (xaxis, yaxis) = axes.slice(0, 2).map(update-axis.with(margin: main-margin))
+
+  (xaxis, yaxis) + axes.slice(2).map(update-axis.with(xaxis: xaxis, yaxis: yaxis))
+}
+
+
 #let resolve-dimensions-aspect-ratio(
   xaxis, yaxis, 
   // diagram object with fields `width` and `height`, and `aspect-ratio`. 
@@ -480,7 +484,8 @@
 
   for (axis, ticking) in axes.zip(tickings) {
     let (_, axis-bounds) = draw-axis(
-      axis, ticking, e-get: e-get, orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform
+      axis, ticking, e-get: e-get, 
+      orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform
     )
     bounds = axis-bounds.fold(bounds, update-bounds)
   }
@@ -527,14 +532,6 @@
   set line(stroke: .7pt)
 
 
-  // show: e.show_(
-  //   lq-label.with(kind: "y"), 
-  //   it => {
-  //     set rotate(-90deg)
-  //     it
-  //   }
-  // )
-  
 
   // Elements can be plot objects or plots on an axis: (axis-id: int, plot: dict). 
   let plots = () 
@@ -579,16 +576,6 @@
     it.yaxis, it.ylim, it.yscale,
     it.ylabel, yplots, it
   )
-
-
-  // Compute limits for additional axes
-  // for i in range(axes.len()) {
-  //   let axis = axes.at(i)
-  //   let model-axis = if axis.kind == "x" { xaxis } else { yaxis }
-  //   axes.at(i).lim = _axis-compute-limits(
-  //     axis, default-lim: model-axis.lim, margin: it.margin
-  //   )
-  // }
 
   
   
@@ -692,7 +679,7 @@
       for (axis, ticking) in axes.zip(tickings) {
         let (axis-content, axis-bounds) = draw-axis(
           axis, ticking, e-get: e-get, 
-          orthogonal-axis-transform: (if axis.kind == "x" { yaxis} else {xaxis}).transform
+          orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform
         )
         artists.push((content: axis-content, z: 20))
         
