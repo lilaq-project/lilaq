@@ -7,6 +7,8 @@
 #import "../style/styling.typ": mark, prepare-mark, prepare-path
 #import "../model/errorbar.typ": errorbar
 #import "../logic/time.typ"
+#import "../model/legend.typ": render-and-legend-wrap
+
 
 #let get-errorbar-stroke(base-stroke) = {
   if base-stroke == auto { return stroke() }
@@ -173,16 +175,19 @@
       m = filter(m)
     }
     
-    points.zip(p, m).map((((x, y), p, m)) => {
-      let (p0, p1) = (transform(x - m, y), transform(x + p, y))
+    points
+      .zip(p, m)
+      .map((((x, y), p, m)) => {
+        let (p0, p1) = (transform(x - m, y), transform(x + p, y))
 
-      place(
-        dx: p0.at(0),
-        dy: p0.at(1),
-        box(width: p1.at(0) - p0.at(0), errorbar(kind: "x"))
-      )
-      
-    }).join()
+        place(
+          dx: p0.at(0),
+          dy: p0.at(1),
+          box(width: p1.at(0) - p0.at(0), errorbar(kind: "x"))
+        )
+        
+      })
+      .join()
   }
   
   if plot.yerr != none {
@@ -194,17 +199,20 @@
       m = filter(m)
     }
 
-    points.zip(p, m).map((((x, y), p, m)) => {
-      let (p0, p1) = (transform(x, y - m), transform(x, y + p))
-      let (y0, y1) = (p0.at(1), p1.at(1)).sorted()
+    points
+      .zip(p, m)
+      .map((((x, y), p, m)) => {
+        let (p0, p1) = (transform(x, y - m), transform(x, y + p))
+        let (y0, y1) = (p0.at(1), p1.at(1)).sorted()
 
-      place(
-        dx: p1.at(0),
-        dy: y0,
-        box(height: y1 - y0, errorbar(kind: "y"))
-      )
-      
-    }).join()
+        place(
+          dx: p1.at(0),
+          dy: y0,
+          box(height: y1 - y0, errorbar(kind: "y"))
+        )
+        
+      })
+      .join()
   }
   
 
@@ -217,8 +225,11 @@
   )
   
   let marker = mark()
-  let transformed-points = points.map(p => transform(..p))
-  transformed-points.map(((x, y)) => place(dx: x, dy: y, marker)).join()
+  
+  points
+    .map(p => transform(..p))
+    .map(((x, y)) => place(dx: x, dy: y, marker))
+    .join()
 
 }
 
@@ -483,7 +494,7 @@
       step: step,
       smooth: smooth
     ),
-    plot: render-plot,
+    plot: render-and-legend-wrap.with(render: render-plot, func: plot),
     xlimits: () => plot-lim(x, err: xerr),
     ylimits: () => plot-lim(y, err: yerr),
     datetime: datetime-axes,

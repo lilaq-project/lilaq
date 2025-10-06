@@ -217,7 +217,10 @@
       stroke: stroke,
       fill: fill
     ),
-    plot: render-bar.with(orientation: "horizontal"),
+    plot: render-and-legend-wrap.with(
+      render: render-bar.with(orientation: "horizontal"), 
+      func: hbar
+    ),
     xlimits: () => bar-lim(x, base),
     ylimits: () => ylim,
     datetime: datetime-axes,

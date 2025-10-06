@@ -1,5 +1,7 @@
 #import "../logic/process-coordinates.typ": convert-vertex
 #import "../logic/limits.typ": compute-primitive-limits
+#import "../model/legend.typ": legend-image
+
 #import "@preview/tiptoe:0.3.1"
 
 
@@ -93,7 +95,13 @@
   (
     plot: (plot, transform) => { 
       if "make-legend" in plot {
-        return std.line(length: 100%, stroke: stroke)
+        return {
+          set std.line(stroke: stroke)
+          legend-image(
+            std.line(length: 100%),
+            kind: line
+          )
+        }
       }
 
       let (start, end) = vertices.map(convert-vertex.with(transform: transform))

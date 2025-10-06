@@ -2,6 +2,8 @@
 #import "../logic/limits.typ": compute-primitive-limits
 #import "../logic/process-coordinates.typ": convert-bezier-curve, transform-point
 #import "../math.typ": vec
+#import "../model/legend.typ": legend-image
+
 #import "@preview/tiptoe:0.3.1"
 
 
@@ -160,11 +162,14 @@
   (
     vertices: vertices,
     plot: (plot, transform) => { 
-      if "make-legend" in plot {
-        return std.rect(
-          width: 100%, height: 100%, 
-          fill: fill, stroke: stroke
-        )
+      if "make-legend" in plot {        
+        return {
+          set rect(fill: fill, stroke: stroke)
+          legend-image(
+            rect(width: 100%, height: 100%),
+            kind: path
+          )
+        }
       }
 
       let new-vertices = vertices.map(v => {
