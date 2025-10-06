@@ -2,7 +2,7 @@
 #import "model/grid.typ": grid
 #import "model/label.typ": label
 #import "model/title.typ": title
-#import "model/legend.typ": legend
+#import "model/legend.typ": legend, legend-image
 #import "model/tick.typ": tick, tick-label
 #import "model/spine.typ": spine
 #import "model/diagram.typ": diagram
@@ -14,6 +14,7 @@
 #let set-title = e.set_.with(title)
 #let set-label = e.set_.with(label)
 #let set-legend = e.set_.with(legend)
+#let set-legend-image = e.set_.with(legend-image)
 #let set-tick = e.set_.with(tick)
 #let set-tick-label = e.set_.with(tick-label)
 #let set-spine = e.set_.with(spine)
