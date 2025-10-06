@@ -2,6 +2,7 @@
 #import "../math.typ": minmax
 #import "../assertations.typ"
 #import "../logic/time.typ"
+#import "../model/legend.typ": render-and-legend-wrap
 
 
 
@@ -10,7 +11,10 @@
   let max = plot.max
 
   if "make-legend" in plot {
-    return line(length: 100%, stroke: plot.style.stroke)
+    return {
+      set line(stroke: plot.style.stroke)
+      line(length: 100%)
+    }
   }
 
   if min == auto { min = 0% }
@@ -102,7 +106,7 @@
     style: (
       stroke: stroke,
     ),
-    plot: render-hlines,
+    plot: render-and-legend-wrap.with(render: render-hlines, func: hlines),
     xlimits: () => xlimits,
     ylimits: () => minmax(y),
     datetime: datetime-axes,

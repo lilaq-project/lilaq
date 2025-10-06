@@ -6,6 +6,8 @@
 #import "../math.typ": minmax
 #import "../utility.typ": if-auto
 #import "../style/styling.typ": mark, prepare-mark, prepare-line
+#import "../model/legend.typ": render-and-legend-wrap
+
 
 #let render-stem(plot, transform) = {
   let marker = plot.style.mark
@@ -160,7 +162,7 @@
       stroke: merge-strokes(stroke, color),
       base-stroke: base-stroke
     ),
-    plot: render-stem,
+    plot: render-and-legend-wrap.with(render: render-stem, func: stem),
     xlimits: () => minmax(x),
     ylimits: () => bar-lim(y, (base,)),
     datetime: datetime-axes,

@@ -117,6 +117,40 @@
 )
 
 
+
+#let legend-icon = e.element.declare(
+  "legend-icon",
+  prefix: "lilaq",
+
+  display: it => box(width: it.width, height: it.height, it.body),
+
+  labelable: false,
+
+  fields: (
+    e.field("body", content, required: true),
+    e.field("width", relative, default: 2em),
+    e.field("height", relative, default: 0.7em),
+    e.field("kind", e.types.option(function), default: none),
+    e.field("label", content, default: none),
+  )
+)
+
+// Helper function that can be used within plot functions
+#let render-and-legend-wrap(
+  plot, 
+  transform,
+  render: none,
+  func: none
+) = {
+  let content = render(plot, transform)
+  if "make-legend" in plot {
+    content = legend-icon(content, kind: func)
+  }
+  content
+}
+
+
+
 #let _place-legend-with-bounds(
 
   /// -> none | dictionary | legend

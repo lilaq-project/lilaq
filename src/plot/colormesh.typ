@@ -1,6 +1,8 @@
 #import "../assertations.typ"
 #import "../math.typ": sign, mesh
 #import "../logic/sample-colors.typ": sample-colors
+#import "../model/legend.typ": render-and-legend-wrap
+
 
 #let are-dimensions-all-equal(data) = {
   if data.len() <= 1 { return true }
@@ -17,7 +19,10 @@
 
 #let render-colormesh(plot, transform) = {
   if "make-legend" in plot {
-    return box(width: 100%, height: 100%, fill: plot.color.at(0))
+    return {
+      set rect(fill: plot.color.at(0))
+      rect(width: 100%, height: 100%)
+    }
   }
 
   let get-extents(a) = {
@@ -243,7 +248,7 @@
     z: z,
     label: label,
     color: color,
-    plot: render-colormesh,
+    plot: render-and-legend-wrap.with(render: render-colormesh, func: colormesh),
     interpolation: interpolation,
     xlimits: () => (
       1fr * (x.at(0) - 0.5 * (x.at(1) - x.at(0))), 

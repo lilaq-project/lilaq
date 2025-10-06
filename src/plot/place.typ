@@ -97,7 +97,7 @@
     y: y,
     align: align,
     body: body,
-    plot: (plot, transform) => { 
+    plot: (plot, transform) => {
       let (px, py) = transform-point(x, y, transform)
       std.place(
         dx: px, dy: py,
