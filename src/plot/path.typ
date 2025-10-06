@@ -2,7 +2,7 @@
 #import "../logic/limits.typ": compute-primitive-limits
 #import "../logic/process-coordinates.typ": convert-bezier-curve, transform-point
 #import "../math.typ": vec
-#import "../model/legend.typ": legend-image
+#import "../model/legend.typ": legend-icon
 
 #import "@preview/tiptoe:0.3.1"
 
@@ -165,7 +165,7 @@
       if "make-legend" in plot {        
         return {
           set rect(fill: fill, stroke: stroke)
-          legend-image(
+          legend-icon(
             rect(width: 100%, height: 100%),
             kind: path
           )

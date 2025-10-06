@@ -118,8 +118,8 @@
 
 
 
-#let legend-image = e.element.declare(
-  "legend-image",
+#let legend-icon = e.element.declare(
+  "legend-icon",
   prefix: "lilaq",
 
   display: it => box(width: it.width, height: it.height, it.body),
@@ -144,7 +144,7 @@
 ) = {
   let content = render(plot, transform)
   if "make-legend" in plot {
-    content = legend-image(content, kind: func)
+    content = legend-icon(content, kind: func)
   }
   content
 }

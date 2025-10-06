@@ -1,6 +1,6 @@
 #import "../logic/process-coordinates.typ": convert-vertex
 #import "../logic/limits.typ": compute-primitive-limits
-#import "../model/legend.typ": legend-image
+#import "../model/legend.typ": legend-icon
 
 #import "@preview/tiptoe:0.3.1"
 
@@ -97,7 +97,7 @@
       if "make-legend" in plot {
         return {
           set std.line(stroke: stroke)
-          legend-image(
+          legend-icon(
             std.line(length: 100%),
             kind: line
           )

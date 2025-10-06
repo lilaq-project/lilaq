@@ -2,7 +2,7 @@
 #import "../logic/limits.typ": compute-primitive-limits
 #import "../logic/process-coordinates.typ": all-data-coordinates, convert-rect
 #import "../process-styles.typ": twod-ify-alignment
-#import "../model/legend.typ": legend-image
+#import "../model/legend.typ": legend-icon
 
 
 
@@ -93,7 +93,7 @@
       if "make-legend" in plot {
         return {
           set std.ellipse(fill: fill, stroke: stroke)
-          legend-image(
+          legend-icon(
             std.ellipse(width: 100%, height: 100%),
             kind: ellipse
           )

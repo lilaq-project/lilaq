@@ -2,7 +2,7 @@
 #import "../logic/limits.typ": compute-primitive-limits
 #import "../logic/process-coordinates.typ": all-data-coordinates, convert-rect
 #import "../process-styles.typ": twod-ify-alignment
-#import "../model/legend.typ": legend-image
+#import "../model/legend.typ": legend-icon
 
 
 
@@ -98,7 +98,7 @@
       if "make-legend" in plot {        
         return {
           set std.rect(fill: fill, stroke: stroke, radius: radius)
-          legend-image(
+          legend-icon(
             std.rect(width: 100%, height: 100%),
             kind: rect
           )

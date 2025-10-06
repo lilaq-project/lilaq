@@ -1,6 +1,5 @@
 #set page(width: auto, height: auto, margin: 2pt)
 #import "/src/lilaq.typ" as lq
-#import "../../../../src/model/legend.typ": legend-image, e
 
 #show: lq.set-diagram(
   xaxis: none, yaxis: none, grid: none,
@@ -9,40 +8,40 @@
 )
 #show: lq.set-legend(fill: none, stroke: none, radius: 0pt, inset: 0pt)
 
-#show: e.set_(legend-image, width: 1.5em, height: .3em)
+#show: lq.set-legend-icon(width: 1.5em, height: .3em)
 
-#show: e.show_(legend-image.with(kind: lq.plot), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.plot), it => {
   show lq.mark: set lq.mark(inset: 12pt, fill: silver, stroke: blue)
   show curve: set curve(stroke: blue)
   it
 })
 
-#show: e.show_(legend-image.with(kind: lq.scatter), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.scatter), it => {
   show lq.mark: set lq.mark(inset: 7pt, fill: silver, align: lq.marks.at("d"))
   it
 })
 
-#show: e.show_(legend-image.with(kind: lq.bar), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.bar), it => {
   show rect: set rect(fill: blue)
   it
 })
 
-#show: e.show_(legend-image.with(kind: lq.stem), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.stem), it => {
   show lq.mark: set lq.mark(align: lq.marks.a5, stroke: green)
   it
 })
 
-#show: e.show_(legend-image.with(kind: lq.hbar), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.hbar), it => {
   show rect: set rect(fill: blue)
   it
 })
 
-#show: e.show_(legend-image.with(kind: lq.hstem), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.hstem), it => {
   show lq.mark: set lq.mark(align: lq.marks.a5, stroke: green)
   it
 })
 
-#show: e.show_(legend-image.with(kind: lq.fill-between), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.fill-between), it => {
   show polygon: set polygon(fill: purple)
   it
 })
@@ -101,17 +100,17 @@
 
 #pagebreak()
 
-#show: e.show_(legend-image.with(kind: lq.colormesh), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.colormesh), it => {
   show rect: set rect(fill: blue)
   it
 })
 
-#show: e.show_(legend-image.with(kind: lq.contour), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.contour), it => {
   show line: set line(stroke: red)
   it
 })
 
-#show: e.show_(legend-image.with(kind: lq.quiver), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.quiver), it => {
   line(length: 100%)
 })
 
@@ -141,22 +140,22 @@
 
 // Shapes
 
-#show: e.show_(legend-image.with(kind: lq.rect), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.rect), it => {
   show rect: set rect(fill: blue)
   it
 })
 
-#show: e.show_(legend-image.with(kind: lq.ellipse), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.ellipse), it => {
   show ellipse: set ellipse(fill: blue)
   it
 })
 
-#show: e.show_(legend-image.with(kind: lq.line), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.line), it => {
   show line: set line(stroke: blue)
   it
 })
 
-#show: e.show_(legend-image.with(kind: lq.path), it => {
+#show: lq.show_(lq.legend-icon.with(kind: lq.path), it => {
   polygon(
     (0%, .7em),
     (50%, 0em),

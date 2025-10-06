@@ -5,7 +5,7 @@
 #import "model/tick.typ": tick, tick-label
 #import "model/spine.typ": spine
 #import "model/title.typ": title
-#import "model/legend.typ": legend, legend-image
+#import "model/legend.typ": legend, legend-icon
 #import "model/grid.typ": grid
 #import "model/errorbar.typ": errorbar
 #import "model/label.typ": label, xlabel, ylabel
@@ -42,7 +42,7 @@
 #import "place-anchor.typ": place-anchor
 
 
-#import "typing.typ": set-grid, set-label, set-title, set-legend, set-tick, set-tick-label, set-spine, set-diagram, set-errorbar, set-legend-image, selector, fields, show_, cond-set
+#import "typing.typ": set-grid, set-label, set-title, set-legend, set-tick, set-tick-label, set-spine, set-diagram, set-errorbar, set-legend-icon, selector, fields, show_, cond-set
 
 #import "logic/scale.typ"
 #import "logic/tick-locate.typ" as tick-locate: linear as locate-ticks-linear, log as locate-ticks-log, symlog as locate-ticks-symlog, manual as locate-ticks-manual, subticks-linear as locate-subticks-linear, subticks-log as locate-subticks-log, subticks-symlog as locate-subticks-symlog, datetime as locate-ticks-datetime
