@@ -250,11 +250,7 @@
       else if tick == -1 { label = "−" }
     }
 
-    if type(suffix) == function {
-      suffix(label)
-    } else {
-      $label suffix$
-    }
+    $label suffix$
   }
 
 
