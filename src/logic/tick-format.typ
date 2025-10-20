@@ -67,27 +67,13 @@
 }
 
 
-#let default-generate-tick-label(
-  value, 
-  exponent: 0, 
-  digits: auto, 
-  simple: false
-) = {
-  if simple {
-    if exponent == 0 { return $#value$ }
-    return $#value dot 10^#exponent$
-  }
-  if exponent == 0 { exponent = none }
-  return num(value, e: exponent, digits: digits)
-}
-
 
 /// Formats linear ticks, see @tick-locate.linear. This is the most common tick
 /// formatter. 
 #let linear(
 
   /// The ticks to format.
-  /// -> array. 
+  /// -> array
   ticks,
 
   /// The exponent to apply to the ticks. 
@@ -186,11 +172,138 @@
 }
 
 
+
+
+/// Formats linear ticks (see @tick-locate.linear) with automatic fractions 
+/// when the tick distance is a fraction of 1. 
+/// 
+/// ```example
+/// >>> #show: lq.set-diagram(height: 20pt, yaxis: none)
+/// #lq.diagram(
+///   xlim: (-0.5, 1),
+///   xaxis: (
+///     tick-distance: 1 / 4,
+///     format-ticks: lq.tick-format.fraction
+///   )
+/// )
+/// ```
+/// 
+/// A suffix like $\pi$ can be inserted for $\pi$-based scales, see also 
+/// @tick-locate.linear.unit. 
+/// ```example
+/// >>> #show: lq.set-diagram(height: 20pt, yaxis: none)
+/// #lq.diagram(
+///   xlim: (-calc.pi / 2, calc.pi),
+///   xaxis: (
+///     tick-distance: 1 / 4,
+///     locate-ticks: lq.tick-locate.linear.with(unit: calc.pi),
+///     format-ticks: lq.tick-format.fraction.with(suffix: $pi$)
+///   )
+/// )
+/// ```
+#let fraction(
+
+  /// The ticks to format.
+  /// -> array
+  ticks,
+
+  /// Whether to simplify fractions, like $2/4$ to $1/2$. 
+  /// -> bool
+  simplify: true,
+
+  /// Whether to simplify integers − like $4/2$ to $2$ − and show no fraction. 
+  /// -> bool
+  simplify-integers: true,
+
+  /// A suffix to display with each tick label, except with 0. 
+  /// -> content
+  suffix: none,
+
+  /// Whether to place the suffix in the numerator or outside the fraction. 
+  /// -> "outside" | "numerator"
+  suffix-position: "outside",
+
+  /// Whether to omit $1$ and $-1$ in combination with a suffix, e.g., $-\pi$
+  /// instead of $-1\pi$. 
+  /// -> bool
+  omit-unity: true,
+
+  /// Additional information from the tick locator. 
+  /// -> dictionary
+  tick-info: (:), 
+  
+  /// Arguments that are ignored by this formatter. 
+  /// -> any
+  ..args
+
+) = {
+  
+  let unit = tick-info.at("unit", default: 1)
+  ticks = ticks.map(x => x / unit)
+
+  
+  let apply-suffix((tick, label)) = {
+    tick = calc.round(tick, digits: 3)
+
+    if omit-unity {
+      if tick == 1 { label = none }
+      else if tick == -1 { label = "−" }
+    }
+
+    $label suffix$
+  }
+
+  assert(
+    "tick-distance" in tick-info,
+    message: "The ticks for the fractional tick formatter need to be located by the linear tick locator"
+  )
+  let fraction = int(calc.round(unit / tick-info.tick-distance))
+
+  let labels = ticks.map(tick => {
+    if tick == 0 { return $0$ }
+
+    if simplify-integers and calc.abs(calc.round(tick) - tick) < 1e-9 {
+      let m = num(calc.round(tick))
+      if suffix != none { m = apply-suffix((tick, m)) }
+      return m
+    }
+
+    let denominator = fraction
+    let numerator = int(calc.round(tick * denominator))
+    let sign = if numerator < 0 { $-$ }
+    if simplify {
+      let gcd = calc.gcd(numerator, denominator)
+      numerator /= gcd
+      denominator /= gcd
+    }
+
+    let label = num(calc.abs(numerator))
+    
+    if suffix != none and calc.abs(numerator) == 1 and suffix-position == "numerator" {
+      label = none
+    }
+
+
+    if suffix-position == "numerator" {
+      $sign (label suffix)/denominator$
+    } else {
+      $sign label/denominator suffix$
+    }
+  })
+
+  (
+    labels: labels
+  )
+}
+
+
+
+
 /// Formats logarithmic ticks, see @tick-locate.log. 
 #let log(
 
   /// The ticks to format.
-  /// -> array. 
+  /// -> array 
   ticks,
 
   /// The base of the logarithm. 
@@ -257,7 +370,7 @@
 #let symlog(
 
   /// The ticks to format.
-  /// -> array. 
+  /// -> array 
   ticks,
 
   /// The base of the logarithm. 
@@ -560,7 +673,7 @@
 #let datetime(
   
   /// The ticks to format.
-  /// -> array. 
+  /// -> array 
   ticks,
   
   /// How to format the ticks. This can be a format string to be used with 
