@@ -289,7 +289,7 @@
   } else {
     _estimate-significant-digits((0, tick-distance))
   }
-  tick-distance = calc.round(tick-distance, digits: significant-digits + 2)
+  tick-distance = calc.round(tick-distance, digits: significant-digits + 8)
   
   tick-distance = float(tick-distance) // important, calc.quo is a bit inconsistent
 

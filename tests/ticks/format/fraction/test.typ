@@ -27,14 +27,14 @@
   ).labels.join("")
 }
 
-// #pagebreak()
+#pagebreak()
 
-// #{
-//   let a = lq.tick-locate.linear(0, 1, tick-distance: 1/3)
-//   lq.tick-format.fraction(
-//     a.ticks, tick-info: a
-//   ).labels.join("")
-// }
+#{
+  let a = lq.tick-locate.linear(0, 1, tick-distance: 1/3)
+  lq.tick-format.fraction(
+    a.ticks, tick-info: a
+  ).labels.join("")
+}
 
 #pagebreak()
 
