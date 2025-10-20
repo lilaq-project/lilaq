@@ -253,7 +253,10 @@
     $label suffix$
   }
 
-
+  assert(
+    "tick-distance" in tick-info,
+    message: "The ticks for the fractional tick formatter need to be located by the linear tick locator"
+  )
   let fraction = int(calc.round(unit / tick-info.tick-distance))
 
   let labels = ticks.map(tick => {
