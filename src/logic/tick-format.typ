@@ -219,8 +219,8 @@
   /// -> content
   suffix: none,
 
-  /// Whether to place the suffix in the denominator or outside the fraction. 
-  /// -> "outside" | "denominator"
+  /// Whether to place the suffix in the numerator or outside the fraction. 
+  /// -> "outside" | "numerator"
   suffix-position: "outside",
 
   /// Whether to omit $1$ and $-1$ in combination with a suffix, e.g., $-\pi$
