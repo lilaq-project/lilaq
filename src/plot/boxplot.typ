@@ -3,6 +3,7 @@
 #import "../algorithm/boxplot.typ": *
 #import "../style/styling.typ": mark, prepare-mark
 #import "../logic/time.typ"
+#import "../model/legend.typ": render-and-legend-wrap
 
 
 #let render-boxplot(plot, transform) = {
@@ -333,7 +334,7 @@
       outlier-fill: outlier-fill,
       outlier-stroke: outlier-stroke,
     ),
-    plot: render-boxplot,
+    plot: render-and-legend-wrap.with(render: render-boxplot, func: boxplot),
     xlimits: () => (xmin, xmax),
     ylimits: () => (ymin, ymax),
     datetime: datetime-axes,
