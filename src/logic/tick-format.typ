@@ -88,6 +88,11 @@
   /// -> int
   auto-exponent-threshold: 3,
 
+  // Whether to pad ticks with zeros to align the decimal point, e.g., 
+  // (`0`, `0.5`, `1`) become (`0.0`, `0.5`, `1.0`). 
+  // -> bool
+  pad: true,
+
   /// A suffix to display with each tick label. 
   /// -> content
   suffix: none,
@@ -141,14 +146,16 @@
   } else {
     significant-digits += preapplied-exponent
   }
+
+  if pad {
+    ticks = ticks.map(calc.round.with(digits: significant-digits))
+  } else {
+    significant-digits = auto
+  }
+
+
   
-  let labels = ticks
-   .map(calc.round.with(digits: significant-digits))
-   .map(num.with(
-     e: inline-exponent,
-     digits: significant-digits
-   )
-  )
+  let labels = ticks.map(num.with(e: inline-exponent, digits: significant-digits))
 
 
   if suffix != none {
