@@ -147,9 +147,8 @@
     significant-digits += preapplied-exponent
   }
 
-  if pad {
-    ticks = ticks.map(calc.round.with(digits: significant-digits))
-  } else {
+  ticks = ticks.map(calc.round.with(digits: significant-digits))
+  if not pad {
     significant-digits = auto
   }
 
