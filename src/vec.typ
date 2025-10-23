@@ -64,3 +64,37 @@
 #assert.eq(subtract((1,2,3), (4,5,6)), (-3,-3,-3))
 #assert.eq(multiply((1,2,3), 2), (2,4,6))
 #assert.eq(inner((1,2,3), (4,5,6)), 32)
+
+
+/// Applies random offsets to a vector of values. 
+#let jitter(
+
+  /// The vector to transform. 
+  /// -> array
+  a, 
+
+  /// The seed value. 
+  /// -> int
+  seed: 0,
+
+  /// The amount of jittering to apply. If @vec.jitter.distribution is
+  /// `"uniform"`, this measures the bounds for the random offsets; if it is 
+  /// set to `normal`, it specifies the standard deviation. 
+  /// -> float
+  amount: 0.1, 
+
+  /// Which kind of distribution to use. 
+  /// -> "uniform" | "normal"
+  distribution: "uniform"
+
+) = {
+  import "@preview/suiji:0.4.0"
+
+  let rng = suiji.gen-rng(seed)
+
+  if distribution == "uniform" {
+    add(a, suiji.uniform(rng, low: -amount, high: amount, size: a.len()).at(1))
+  } else if distribution == "normal" {
+    add(a, suiji.normal(rng, scale: amount, size: a.len()).at(1))
+  }
+}
