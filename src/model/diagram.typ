@@ -292,7 +292,7 @@
         (plot.plot)(plot, legend-trafo)
       }
       legend-entries.push((
-        box(width: 2em, height: .7em, handle),
+        handle,
         plot.label
       ))
     }

@@ -6,6 +6,7 @@
 #import "../math.typ": minmax
 #import "../style/styling.typ": mark, prepare-mark, _auto, style
 #import "../utility.typ": if-auto, match-type, if-none
+#import "../model/legend.typ": render-and-legend-wrap
 
 
 
@@ -49,20 +50,13 @@
 
   for (i, p) in points.enumerate() {
     let p = transform(..p)
-    
     let size = get-mark-size(i)
-    let mark-color = get-mark-color(i)
-    let mark-fill-color = mark-color.transparentize(100% - get-alpha(i))
+    let mark-color = get-mark-color(i).transparentize(100% - get-alpha(i))
     
-    let options = (:)
-    if mark-fill-color != _auto {
-      options.fill = mark-fill-color
-    }
-    if size != auto { 
-      options.inset = size
-    }
+    set mark(inset: size) if size != auto
+    set mark(fill: mark-color) if mark-color != _auto
 
-    place(dx: p.at(0), dy: p.at(1), mark(..options))
+    place(dx: p.at(0), dy: p.at(1), mark())
   }
 }
 
@@ -174,6 +168,9 @@
     x = time.to-seconds(..x)
     datetime-axes.x = true
   }
+  if type(y) == function {
+    y = x.map(y)
+  }
   if type(y.at(0, default: 0)) == datetime {
     y = time.to-seconds(..y)
     datetime-axes.y = true
@@ -213,7 +210,7 @@
       stroke: stroke,
       map: map,
     ),
-    plot: render-scatter,
+    plot: render-and-legend-wrap.with(render: render-scatter, func: scatter),
     xlimits: () => minmax(x),
     ylimits: () => minmax(y),
     datetime: datetime-axes,

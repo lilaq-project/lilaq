@@ -4,6 +4,7 @@
 #import "../math.typ": vec, mesh
 #import "../utility.typ": if-auto, match, match-type
 #import "../style/styling.typ": style
+#import "../model/legend.typ": render-and-legend-wrap
 
 #import "@preview/tiptoe:0.3.1"
 
@@ -239,11 +240,13 @@
   }
 
   if scale == auto {
-    let lengths = directions.join().map(a => calc.sqrt(a.map(b => b*b).sum()))
-    lengths = lengths.filter(x => not float.is-nan(x))
+    let lengths = directions
+      .join()
+      .map(dir => calc.norm(..dir))
+      .filter(x => not float.is-nan(x))
     
     let n = lengths.len()
-    let average = lengths.sum() / n
+    let average = calc.max(1e-9, lengths.sum() / n)
     let compensation = calc.max(4., calc.pow(n, .6) * .6)
     
     scale = 1 / (0.54 * average * compensation)
@@ -294,7 +297,7 @@
       arrow: arrow,
       get-arrow-stroke: get-arrow-stroke
     ),
-    plot: render-quiver,
+    plot: render-and-legend-wrap.with(render: render-quiver, func: quiver),
     xlimits: () => (x.at(0), x.at(-1)),
     ylimits: () => (y.at(0), y.at(-1)),
     legend: true,
