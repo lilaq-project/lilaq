@@ -147,3 +147,24 @@
     excess: "mask",
   )
 )
+
+// #pagebreak()
+
+// #let img = image(
+//   bytes(range(16).map(x => x * 16)),
+//   format: (
+//     encoding: "luma8",
+//     width: 4,
+//     height: 4,
+//   ),
+//   width: 2cm,
+// )
+// #lq.diagram(
+//   // xaxis: (inverted: true),
+//   // yaxis: (inverted: true),
+//   lq.colormesh(
+//     range(5),
+//     range(5),
+//     img
+//   )
+// )
