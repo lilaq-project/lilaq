@@ -107,18 +107,27 @@
         align: twod-ify-alignment(align)
       )
 
-      place(dx: x1, dy: y1, 
-        std.rect(
-          width: width, 
-          height: height, 
+
+      let rect = std.rect.with(
           fill: fill, 
           stroke: stroke,
           radius: radius, 
           inset: inset, 
           outset: outset,
           body
-        )
       )
+
+      let content = rect(width: width, height: height)
+
+      if (type(height) == length and height < 0pt) or (type(height) == ratio and height < 100%) {
+        y1 += height
+        content = rect(width: width, height: -height)
+        if type(fill) == gradient {
+          content = scale(y: -100%, content)
+        }
+      }
+      
+      place(dx: x1, dy: y1, content)
     },
     xlimits: compute-primitive-limits.with((x, if all-data-coordinates((x, width)) { x + width } else { x })),
     ylimits: compute-primitive-limits.with((y, if all-data-coordinates((y, height)) { y + height } else { y })),
