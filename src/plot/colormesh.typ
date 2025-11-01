@@ -1,18 +1,23 @@
 #import "../assertations.typ"
-#import "../math.typ": sign, mesh
+#import "../math.typ": sign, mesh, linspace
 #import "../logic/sample-colors.typ": sample-colors
 #import "../process-styles.typ": twod-ify-alignment
 
-#let are-dimensions-all-equal(data) = {
-  if data.len() <= 1 { return true }
-  let x0 = data.first()
-  return data.slice(1).all(x => calc.abs(1 - x/x0) < 1e-8)
+
+
+#let is-equidistant(values, epsilon: 1e-8) = {
+  if values.len() <= 1 { return true }
+  let distances = values.windows(2).map(((a, b)) => a - b)
+  let first = distances.first()
+  distances
+    .slice(1)
+    .all(x => calc.abs(1 - x / first) < epsilon)
 }
 
-#assert(are-dimensions-all-equal((1, 1, 1)))
-#assert(not are-dimensions-all-equal((1, 1, 2)))
-#assert(not are-dimensions-all-equal((1, 1, 1.0001)))
-#assert(are-dimensions-all-equal((1, 1, 1.000000001)))
+#assert(is-equidistant(range(7)))
+#assert(is-equidistant(linspace(0.000000001, 0.000000002)))
+#assert(not is-equidistant((1, 2, 4)))
+#assert(not is-equidistant((0, 1, 2.000001)))
 
 
 
@@ -22,16 +27,11 @@
   }
 
   if type(plot.z) == content {
-    let x0 = plot.x.first()
-    let x1 = plot.x.last()
-    let y0 = plot.x.first()
-    let y1 = plot.x.last()
-
-    let (xx0, yy0) = transform(x0, y0)
-    let (xx1, yy1) = transform(x1, y1)
+    let (x0, y0) = transform(plot.x.first(), plot.y.first())
+    let (x1, y1) = transform(plot.x.last(), plot.y.last())
     let image = scale(
-      x: xx1 - xx0, 
-      y: yy1 - yy0, 
+      x: x1 - x0, 
+      y: y1 - y0, 
       plot.z,
       origin: left + top
     )
@@ -39,54 +39,31 @@
 
     return place(
       top + left,
-      dx: xx0, dy: yy0,
+      dx: x0, dy: y0,
       image
     )
   }
 
-  let get-extents(a) = {
-    a.zip(a.slice(1)).map(((a, a1)) => a1 - a)
-  }
 
-  let get-size(i, a) = {
-    if i < a.len() - 1 { 
-      let diff = a.at(i + 1) - a.at(i)
-      if i > 0 {
-        (a.at(i) - a.at(i - 1), diff)
-      } else {
-        (diff, diff)
-      }
-    }
-    else { 
-      let diff = a.at(-1) - a.at(-2)
-      (diff, diff)
-    }
-  }
-
-  let widths = get-extents(plot.x)
-  let heights = get-extents(plot.y)
-
-  if are-dimensions-all-equal(widths) and are-dimensions-all-equal(heights) and false {
+  if is-equidistant(plot.x) and is-equidistant(plot.y) {
 
     let img = image(
       bytes(plot.color.map(c => rgb(c).components().map(x => int(x / 100% * 255))).join()),
       format: (
         encoding: "rgba8",
-        width: plot.x.len(),
-        height: plot.y.len(),
+        width: plot.cols,
+        height: plot.rows,
       ),
       scaling: plot.interpolation,
       fit: "stretch",
     )
 
     
-    let (x0, xn) = (plot.x.at(0), plot.x.at(-1))
-    let (y0, yn) = (plot.y.at(0), plot.y.at(-1))
+    let (x0, .., xn) = plot.x
+    let (y0, .., yn) = plot.y
 
-    let w = widths.at(0)
-    let h = heights.at(0)
     let (x1, y1) = transform(x0, y0)
-    let (x2, y2) = transform(xn + w, yn + h)
+    let (x2, y2) = transform(xn, yn)
     
     img = scale(
       origin: top + left,
@@ -102,22 +79,18 @@
     )
 
   } else {
-    // assert(
-    //   plot.interpolation == "pixelated", 
-    //   message: "For non-evenly-spaced color meshes, currently only the interpolation option \"pixelated\" is supported. "
-    // )
+    assert(
+      plot.interpolation == "pixelated", 
+      message: "For non-evenly-spaced color meshes, currently only the interpolation option \"pixelated\" is supported. "
+    )
 
-    for i in range(plot.x.len() - 1) {
-      for j in range(plot.y.len() - 1) {
-        let x = plot.x.at(i)
-        let y = plot.y.at(j)
+    for i in range(plot.cols) {
+      for j in range(plot.rows) {
         
-        let (w1, w2) = get-size(i, plot.x)
-        let (h1, h2) = get-size(j, plot.y)
-        let (x1, y1) = transform(x, y)
-
+        let (x1, y1) = transform(plot.x.at(i), plot.y.at(j))
         let (x2, y2) = transform(plot.x.at(i+1), plot.y.at(j+1))
-        let fill = plot.color.at(i + j * (plot.x.len() - 1))
+
+        let fill = plot.color.at(i + j * plot.cols)
         let width = x2 - x1
         let height = y2 - y1
         place(
@@ -239,41 +212,50 @@
   let cinfo
   let color
 
-  let offset-to-middle(data) = {
-    import "../vec.typ"
-    let diffs = data.windows(2).map(((a, b)) => (b - a)/2)
-    diffs.push(diffs.at(-1, default: 1))
-    vec.subtract(data, diffs)
-  }
-
-  align = twod-ify-alignment(align)
-  if align.x == center {
-    x = offset-to-middle(x)
-  }
-  if align.y == horizon {
-    y = offset-to-middle(y)
-  }
-  x.push(x.at(-1) + (x.at(-1) - x.at(-2)))
-  y.push(y.at(-1) + (y.at(-1) - y.at(-2)))
 
   if type(z) == content {
     // z.fields().width
   } else {
 
+    let offset-to-middle(data) = {
+      let p = data.windows(2).map(((a, b)) => (a + b)/2)
+      let first = data.at(0) - (p.at(0) - data.at(0))
+      let last = data.last() + (data.last() - p.last())
+      (first,) + p + (last,)
+    }
+    align = twod-ify-alignment(align)
+    if x.len() == z.at(0).len() {
+      if align.x == center {
+        x = offset-to-middle(x)
+      } else if align.x == left {
+        x.push(x.at(-1) * 2 - x.at(-2))
+      } else if align.x == right {
+        x = (x.at(0) * 2 - x.at(1),) + x
+      }
+    }
+    if y.len() == z.len() {
+      if align.y == horizon {
+        y = offset-to-middle(y)
+      } else if align.y == bottom {
+        y.push(y.at(-1) * 2 - y.at(-2))
+      } else if align.y == top {
+        y = (y.at(0) * 2 - y.at(1),) + y
+      }
+    }
 
     assert(
       type(z) == content or (type(z) == array and type(z.first()) == array), 
       message: "`colormesh`: `z` expects a 2D array or an image"
     )
 
-    // assert.eq(
-    //   y.len(), z.len(), 
-    //   message: "`colormesh`: The number of `y` coordinates and the number of rows in `z` must match. Found " + str(y.len()) + " != " + str(z.len())
-    // )
-    // assert.eq(
-    //   x.len(), z.first().len(), 
-    //   message: "`colormesh`: The number of `x` coordinates and the row length in `z` must match. Found " + str(x.len()) + " != " + str(z.first().len())
-    // )
+    assert.eq(
+      y.len() - 1, z.len(), 
+      message: "`colormesh`: The number of `y` coordinates and the number of rows in `z` must match. Found " + str(y.len()) + " != " + str(z.len())
+    )
+    assert.eq(
+      x.len() - 1, z.first().len(), 
+      message: "`colormesh`: The number of `x` coordinates and the row length in `z` must match. Found " + str(x.len()) + " != " + str(z.first().len())
+    )
 
 
     color = z.flatten()
@@ -296,19 +278,15 @@
     x: x,
     y: y,
     z: z,
+    cols: x.len() - 1, 
+    rows: y.len() - 1, 
     label: label,
     color: color,
     align: align,
     plot: render-colormesh,
     interpolation: interpolation,
-    xlimits: () => (
-      1fr * x.at(0), 
-      1fr * (x.at(-1) /*+ (x.at(-1) - x.at(-2))*/)
-    ),
-    ylimits: () => (
-      1fr * y.at(0), 
-      1fr * (y.at(-1) /*+ (y.at(-1) - y.at(-2))*/)
-    ),
+    xlimits: () => (1fr * x.at(0), 1fr * x.at(-1)),
+    ylimits: () => (1fr * y.at(0), 1fr * y.at(-1)),
     legend: true,
     z-index: z-index
   )
