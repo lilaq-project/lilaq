@@ -102,15 +102,15 @@
       .sum()
   }
 
-  let rng = suiji.gen-rng(seed)
+  let rng = suiji.gen-rng-f(seed)
 
   if distribution == "uniform" {
     add(
       values, 
-      suiji.uniform(rng, low: -amount, high: amount, size: values.len()).at(1)
+      suiji.uniform-f(rng, low: -amount, high: amount, size: values.len()).at(1)
     )
   } else if distribution == "normal" {
-    add(values, suiji.normal(rng, scale: amount, size: values.len()).at(1))
+    add(values, suiji.normal-f(rng, scale: amount, size: values.len()).at(1))
   } else {
     assert(
       false, 
@@ -130,7 +130,7 @@
   (0, 1, 2)
 )
 
-#let k = jitter(range(100001), seed: auto)
+#let k = jitter(range(101), seed: auto)
 #k.len()
 
 #jitter((1,2,3))
