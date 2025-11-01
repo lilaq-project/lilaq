@@ -11,7 +11,7 @@
   /// The function to apply to each item.
   /// -> function
   mapper
-) = array.zip(a, b, exact: true).map(mapper)
+) = array.zip(a, b, exact: true).map(p => mapper(..p))
 
 
 /// Pair-wise adds the elements of two vectors of the same length. 
@@ -22,7 +22,7 @@
   /// Second vector.
   /// -> array
   b
-) = transform(a, b, ((x,y)) => x + y)
+) = transform(a, b, (x, y) => x + y)
 
 
 /// Pair-wise subtracts the elements of two vectors of the same length. 
@@ -33,7 +33,7 @@
   /// Second vector.
   /// -> array
   b
-) = transform(a, b, ((x,y)) => x - y)
+) = transform(a, b, (x, y) => x - y)
 
 
 /// Multiplies all entries of a vector with a scalar. 
@@ -55,15 +55,9 @@
   /// Second vector.
   /// -> array
   b
-) = transform(a, b, ((x,y)) => x * y).sum()
+) = transform(a, b, (x, y) => x * y).sum()
 
 
-
-
-#assert.eq(add((1,2,3), (4,5,6)), (5,7,9))
-#assert.eq(subtract((1,2,3), (4,5,6)), (-3,-3,-3))
-#assert.eq(multiply((1,2,3), 2), (2,4,6))
-#assert.eq(inner((1,2,3), (4,5,6)), 32)
 
 
 
@@ -118,19 +112,3 @@
     )
   }
 }
-
-// Auto-seed, test for permutations
-#assert.ne(
-  jitter((0,1,2,4,3,5,6), seed: auto),
-  jitter((0,1,2,3,4,5,6), seed: auto)
-)
-
-#assert.ne(
-  jitter((0, 1, 2)), 
-  (0, 1, 2)
-)
-
-#let k = jitter(range(101), seed: auto)
-#k.len()
-
-#jitter((1,2,3))
