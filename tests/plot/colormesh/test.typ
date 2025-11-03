@@ -37,8 +37,8 @@
 
 }
 
-#pagebreak()
 
+#pagebreak()
 
 // Constrained values and non-evenly spaced coordinates
 
@@ -47,7 +47,7 @@
   ylim: (-3.5, 6.5),
   lq.colormesh(
     (-4, -2, -1, 0, 1, 2, 5), 
-    (-3, -2, -1, 0, 1, 2, 5), 
+    (-4, -2, -1, 0, 1, 2, 5), 
     (x, y) => x * y, 
     min: -5, max: 5,
   )
@@ -148,23 +148,80 @@
   )
 )
 
-// #pagebreak()
+#pagebreak()
 
-// #let img = image(
-//   bytes(range(16).map(x => x * 16)),
-//   format: (
-//     encoding: "luma8",
-//     width: 4,
-//     height: 4,
-//   ),
-//   width: 2cm,
-// )
-// #lq.diagram(
-//   // xaxis: (inverted: true),
-//   // yaxis: (inverted: true),
-//   lq.colormesh(
-//     range(5),
-//     range(5),
-//     img
-//   )
-// )
+
+#lq.diagram(
+  xscale: "symlog",
+
+  lq.colormesh(
+    lq.arange(-4, 4) + (4.01,), 
+    lq.arange(-4, 4) + (4.01,), 
+    (x, y) => x * y, 
+  )
+)
+
+
+#pagebreak()
+
+// Alignment
+#[
+  #show: lq.set-diagram(xlim: (-1, 2), ylim: (-1, 2))
+  #grid(
+    ..(
+      center + horizon,
+      left, 
+      bottom, 
+      right + top
+    ).map(align => 
+      lq.diagram(
+        lq.colormesh(
+          (0, 1),
+          (0, 1),
+          (x, y) => x + y,
+          align: align
+        )
+      )
+    )
+  )
+]
+
+#pagebreak()
+
+
+// External image
+
+#let img = image(
+  bytes(range(9).map(x => x * 30)),
+  format: (
+    encoding: "luma8",
+    width: 3,
+    height: 3,
+  ),
+  scaling: "pixelated",
+)
+#let mesh = lq.colormesh(
+  (0, 20), (0, 20), img,
+  map: (black, white),
+  min: 0, max: .1 
+)
+
+#lq.diagram(mesh)#lq.colorbar(mesh)
+
+#pagebreak()
+
+// Inverted axes with external image
+#grid(
+  ..(
+    (false, false),
+    (true, false),
+    (false, true),
+    (true, true),
+  ).map(((x, y)) => lq.diagram(
+    xaxis: (inverted: x),
+    yaxis: (inverted: y),
+    mesh
+  ))
+)
+
+
