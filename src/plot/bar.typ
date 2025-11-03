@@ -7,6 +7,7 @@
 #import "../logic/process-coordinates.typ": filter-nan-points, stepify
 #import "../math.typ": vec, minmax
 #import "../style/styling.typ": prepare-path
+#import "../model/legend.typ": render-and-legend-wrap
 
 
 #let render-bar(
@@ -38,19 +39,9 @@
   )
 
 
-  let colored-rect = {
-    if type(plot.style.fill) == array {
-      (i, width: 0pt, height: 0pt) => rect(
-        width: width, height: height, fill: plot.style.fill.at(i)
-      )
-    } else {
-      (i, width: 0pt, height: 0pt) => rect(width: width, height: height)
-    }
-  }
-
-
   if "make-legend" in plot {
-    colored-rect(0, width: 100%, height: 100%)
+    set rect(fill: plot.style.fill.at(0)) if type(plot.style.fill) == array
+    rect(width: 100%, height: 100%)
   } else {
 
     if orientation == "vertical" {
@@ -65,7 +56,9 @@
         let (xx1, y0) = transform(x + x1, plot.base.at(i, default: plot.base.first()))
         let (xx2, yy) = transform(x + x2, y)
 
-        place(dx: xx1, dy: yy, colored-rect(i, width: xx2 - xx1, height: y0 - yy))
+        set rect(fill: plot.style.fill.at(i)) if type(plot.style.fill) == array
+
+        place(dx: xx1, dy: yy, rect(width: xx2 - xx1, height: y0 - yy))
       }
 
     } else if orientation == "horizontal" {
@@ -79,8 +72,10 @@
         
         let (x0, yy1) = transform(plot.base.at(i, default: plot.base.first()), y + y1)
         let (xx, yy2) = transform(x, y + y2)
+
+        set rect(fill: plot.style.fill.at(i)) if type(plot.style.fill) == array
         
-        place(dx: x0, dy: yy2, colored-rect(i, width: xx - x0, height: yy1 - yy2))
+        place(dx: x0, dy: yy2, rect(width: xx - x0, height: yy1 - yy2))
       }
 
     }
@@ -329,7 +324,7 @@
       stroke: stroke,
       fill: fill
     ),
-    plot: render-bar,
+    plot: render-and-legend-wrap.with(render: render-bar, func: bar),
     xlimits: () => xlim,
     ylimits: () => bar-lim(y, base),
     datetime: datetime-axes,

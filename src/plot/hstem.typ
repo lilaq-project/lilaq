@@ -6,7 +6,7 @@
 #import "../math.typ": minmax
 #import "../utility.typ": if-auto
 #import "../style/styling.typ": mark, prepare-mark, prepare-line
-
+#import "../model/legend.typ": render-and-legend-wrap
 
 
 #let render-hstem(plot, transform) = {
@@ -145,7 +145,7 @@
       stroke: merge-strokes(stroke, color),
       base-stroke: base-stroke
     ),
-    plot: render-hstem,
+    plot: render-and-legend-wrap.with(render: render-hstem, func: hstem),
     xlimits: () => bar-lim(x, (base,)),
     ylimits: () => minmax(y),
     datetime: datetime-axes,

@@ -2,10 +2,15 @@
 #import "../algorithm/contour.typ": close-path-at-boundaries, compute-polygon-orientation
 #import "../logic/sample-colors.typ": sample-colors
 #import "../math.typ": minmax, mesh
+#import "../model/legend.typ": render-and-legend-wrap
+
 
 #let render-contour(plot, transform) = {
   if "make-legend" in plot {
-    return std.line(length: 100%, stroke: plot.line-colors.first())
+    return {
+      set line(stroke: plot.line-colors.first())
+      line(length: 100%)
+    }
   }
 
     
@@ -213,7 +218,7 @@
     fill: fill,
     stroke: stroke,
     label: label,
-    plot: render-contour,
+    plot: render-and-legend-wrap.with(render: render-contour, func: contour),
     xlimits: () => (x.at(0)*1fr, x.at(-1)*1fr),
     ylimits: () => (y.at(0)*1fr, y.at(-1)*1fr),
     legend: true,

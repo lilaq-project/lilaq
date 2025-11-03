@@ -2,6 +2,8 @@
 #import "../logic/limits.typ": compute-primitive-limits
 #import "../logic/process-coordinates.typ": all-data-coordinates, convert-rect
 #import "../process-styles.typ": twod-ify-alignment
+#import "../model/legend.typ": legend-icon
+
 
 
 /// Plots a rectangle or square with origin `(x, y)`. The origin coordinates as well
@@ -93,11 +95,14 @@
     x: x, 
     y: y,
     plot: (plot, transform) => { 
-      if "make-legend" in plot {
-        return std.rect(
-          width: 100%, height: 100%, 
-          fill: fill, stroke: stroke, radius: radius
-        )
+      if "make-legend" in plot {        
+        return {
+          set std.rect(fill: fill, stroke: stroke, radius: radius)
+          legend-icon(
+            std.rect(width: 100%, height: 100%),
+            kind: rect
+          )
+        }
       }
 
       let (x1, width, y1, height) = convert-rect(

@@ -3,9 +3,10 @@
 #import "../algorithm/boxplot.typ": *
 #import "../style/styling.typ": mark, prepare-mark
 #import "../logic/time.typ"
+#import "../model/legend.typ": render-and-legend-wrap
 
 
-#let render-boxplot(plot, transform) = {
+#let render-hboxplot(plot, transform) = {
 
   if "make-legend" in plot {
     return std.line(length: 100%, stroke: plot.style.stroke)
@@ -275,7 +276,7 @@
       outlier-fill: outlier-fill,
       outlier-stroke: outlier-stroke,
     ),
-    plot: render-boxplot,
+    plot: render-and-legend-wrap.with(render: render-hboxplot, func: hboxplot),
     xlimits: () => (xmin, xmax),
     ylimits: () => (ymin, ymax),
     datetime: datetime-axes,

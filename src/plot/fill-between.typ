@@ -4,6 +4,7 @@
 #import "../logic/time.typ"
 #import "../math.typ": minmax
 #import "../style/styling.typ": prepare-path
+#import "../model/legend.typ": render-and-legend-wrap
 
 
 #let render-fill-between(plot, transform) = {
@@ -127,7 +128,10 @@
       stroke: stroke,
       step: step,
     ),
-    plot: render-fill-between,
+    plot: render-and-legend-wrap.with(
+      render: render-fill-between,
+      func: fill-between
+    ),
     xlimits: () => minmax(x),
     ylimits: () => minmax(y1 + y2 + if y2 == none {(0,)}),
     datetime: datetime-axes,

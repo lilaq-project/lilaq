@@ -2,6 +2,8 @@
 #import "../logic/limits.typ": compute-primitive-limits
 #import "../logic/process-coordinates.typ": all-data-coordinates, convert-rect
 #import "../process-styles.typ": twod-ify-alignment
+#import "../model/legend.typ": legend-icon
+
 
 
 /// Plots an ellipse or circle with origin `(x, y)`. The origin coordinates as well
@@ -89,10 +91,13 @@
     y: y,
     plot: (plot, transform) => { 
       if "make-legend" in plot {
-        return std.ellipse(
-          width: 100%, height: 100%, 
-          fill: fill, stroke: stroke
-        )
+        return {
+          set std.ellipse(fill: fill, stroke: stroke)
+          legend-icon(
+            std.ellipse(width: 100%, height: 100%),
+            kind: ellipse
+          )
+        }
       }
 
       let (x1, width, y1, height) = convert-rect(
