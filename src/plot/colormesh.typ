@@ -258,7 +258,7 @@
   ///   ```
   /// ]
   /// 
-  /// This parameter does not apply when the coordinate arrays are one larger than the $z$ mesh so that they are treated as bounds, see @colormesh.z. 
+  /// This parameter does not apply when the coordinate arrays are one larger than the $z$ mesh so that they are treated as edges, see @colormesh.z. 
   align: center + horizon,
 
   /// Whether to apply smoothing or leave the color mesh pixelated. This is 
