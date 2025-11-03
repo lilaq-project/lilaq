@@ -620,6 +620,11 @@
       // In this step, we expect the size not too change very substantially,
       // so we fix the ticking now and re-use it again in the final layout step. 
       (width, height, tickings) = attempt-layout(width, height)
+      if it.pad != auto {
+        // Sneaky dimension change for diagram grids to avoid diverging layout. 
+        width -= it.pad.right + it.pad.left
+        height -= it.pad.bottom + it.pad.top
+      }
 
       axes = fill-in-transforms(axes, width, height, it: it)
       (it.width, it.height) = (width, height)
@@ -711,17 +716,22 @@
     })
 
 
+
     bounds.bottom -= it.height
     bounds.right -= it.width
     bounds.left *= -1
     bounds.top *= -1
 
-    box(
+    let result = box(
       inset: bounds, 
       diagram, 
       stroke: if debug { 0.1pt } else { none },
       baseline: bounds.bottom
     )
+    if it.pad != auto {
+      result = pad(result, ..it.pad)
+    }
+    result + [#metadata((x: it._grid-pos.at(0), y: it._grid-pos.at(1)) + bounds)<__lilaq_diagram__>]
   })
 }
 
@@ -767,6 +777,8 @@
   }, 
 
   fields: (
+    e.field("_grid-pos", e.types.wrap(array, fold: none), default: (0, 0)),
+    e.field("pad", e.types.any, default: auto),
     e.field("children", e.types.any, required: true),
     e.field("aspect-ratio", e.types.option(float), default: none),
     e.field("width", e.types.union(length, relative, auto), default: 6cm),

@@ -1,0 +1,107 @@
+#let matrix(
+  columns: 1,
+  rows: auto,
+  ..children
+) = {
+
+}
+
+
+#import "../lilaq.typ" as lq
+#import "@local/elembic:1.1.0" as e
+
+
+#let diagram-grid(it) = {
+  if it.children.len() == 0 { return it }
+  
+  
+  let table = context {
+    
+    let table-end = query(selector(<__lilaq_matrix__>)
+      .after(here()))
+      .first()
+      .location()
+    
+    let diagram-meta = query(
+      selector(<__lilaq_diagram__>).after(here()).before(table-end)
+    ).map(metadata => metadata.value)
+
+
+    if diagram-meta.len() == 0 { // first layout pass
+      return {
+        show grid.cell: it => {
+          show: lq.set-diagram(_grid-pos: (it.x, it.y))
+          it
+        }    
+        it
+      }
+    }
+
+
+    let cols = calc.max(..diagram-meta.map(d => d.x)) + 1
+    let rows = calc.max(..diagram-meta.map(d => d.y)) + 1
+
+    let left = range(cols)
+      .map(col => {
+        calc.max(..diagram-meta.filter(d => d.x == col).map(d => d.left))
+      })
+    let right = range(cols)
+      .map(col => {
+        calc.max(..diagram-meta.filter(d => d.x == col).map(d => d.right))
+      })
+    let top = range(rows)
+      .map(row => {
+        calc.max(..diagram-meta.filter(d => d.y == row).map(d => d.top))
+      })
+    let bottom = range(rows)
+      .map(row => {
+        calc.max(..diagram-meta.filter(d => d.y == row).map(d => d.bottom))
+      })
+      
+    show grid.cell: it => {
+      let data = diagram-meta.find(d => d.x == it.x and d.y == it.y)
+      if data == none { // cell may not contain a diagram
+        return it
+      }
+
+      let pad = (
+        left: left.at(it.x) - data.left, 
+        right: right.at(it.x) - data.right, 
+        top: top.at(it.y) - data.top, 
+        bottom: bottom.at(it.y) - data.bottom, 
+      )
+      show: lq.set-diagram(_grid-pos: (it.x, it.y), pad: pad)
+      it
+    }
+    it
+  }
+  table + [#metadata(none)<__lilaq_matrix__>]
+}
+
+
+#show: lq.set-diagram(width: 100%, height: 100%)
+#show grid: diagram-grid
+
+#grid(
+  columns: (1fr, 1fr),
+  rows: 1fr,
+  column-gutter: 1em,
+  row-gutter: 1em,
+  stroke: red,
+  lq.diagram(ylim: (-100, 10), title: [A ss asdd bb]),
+  lq.diagram(ylim: (1, 5)),
+  lq.diagram(xaxis: (position: top)),
+  lq.diagram(yaxis: (position: right, mirror: (ticks: true, tick-labels: true)), ylim: (-100, 10)),
+  lq.diagram(yaxis: (position: right)),
+  lq.diagram(xaxis: (position: top)),
+  lq.diagram(),
+  lq.diagram(yaxis: (position: right)),
+  lq.diagram(yaxis: (position: right)),
+  lq.diagram(yaxis: (position: right)),
+  lq.diagram(yaxis: (position: right)),
+  lq.diagram(yaxis: (position: right)),
+  lq.diagram(yaxis: (position: right)),
+)
+
+
+as as s a dd asa askd jhaksd jhaksdj   akjd as a
