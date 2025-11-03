@@ -29,13 +29,13 @@
   if type(plot.z) == content {
     let (x0, y0) = transform(plot.x.first(), plot.y.first())
     let (x1, y1) = transform(plot.x.last(), plot.y.last())
+
     let image = scale(
       x: x1 - x0, 
       y: y1 - y0, 
       plot.z,
-      origin: left + top
+      origin: top + left
     )
-    
 
     return place(
       top + left,
@@ -65,17 +65,11 @@
     let (x1, y1) = transform(x0, y0)
     let (x2, y2) = transform(xn, yn)
     
-    img = scale(
-      origin: top + left,
-      x: x2 - x1,
-      y: y2 - y1,
-      img
-    )
     place(
       top + left,
       dx: x1, 
       dy: y1, 
-      img
+      scale(origin: top + left, x: x2 - x1, y: y2 - y1, img)
     )
 
   } else {
@@ -86,9 +80,8 @@
 
     for i in range(plot.cols) {
       for j in range(plot.rows) {
-        
         let (x1, y1) = transform(plot.x.at(i), plot.y.at(j))
-        let (x2, y2) = transform(plot.x.at(i+1), plot.y.at(j+1))
+        let (x2, y2) = transform(plot.x.at(i + 1), plot.y.at(j + 1))
 
         let fill = plot.color.at(i + j * plot.cols)
         let width = x2 - x1
@@ -121,7 +114,6 @@
 /// image is drawn instead of individual rectangles. This reduces the file size
 /// and improves rendering in most cases. When either array is not evenly
 /// spaced, the entire color mesh is drawn with individual rectangles. 
-/// 
 #let colormesh(
   
   /// A one-dimensional array of $x$ coordinates. 
@@ -132,16 +124,76 @@
   /// -> array
   y, 
 
-  /// Specifies the $z$ coordinates (height) for all combinations of $x$ and $y$ 
-  /// coordinates. This can either be a 
-  /// - two-dimensional $m×n$-array where $m$ is the length of @colormesh.y 
-  ///   and $n$ is the length of @colormesh.x (for each $y$ value, a row of $x$
-  ///   values), 
-  /// - or a function that takes an `x` and a `y` value and returns a 
-  ///   corresponding `z` coordinate. 
-  /// Also see the function @mesh that can be used to create such meshes. 
+  /// Specifies the $z$ coordinates (height) for all combinations of $x$ and $y$
+  /// coordinates. This can be one of the following:
+  /// - A two-dimensional array with $z$ coordinates consisting of one row per 
+  ///   $y$ coordinate (row-major order). 
   /// 
-  /// For masking, you can use `float.nan` values to hide individual cells of the color mesh. 
+  ///   If the array has dimensions `y.len() × x.len()`, the $x$ and $y$ coordinates are 
+  ///   mapped one-to-one to the $z$ values and the alignment if the mesh rectangles is controlled through 
+  ///   @colormesh.align. 
+  /// 
+  ///   #details[
+  ///     ```example
+  ///     #lq.diagram(
+  ///       width: 3cm, height: 3cm,
+  ///       lq.colormesh(
+  ///         (1, 2, 3),
+  ///         (1, 2, 3),
+  ///         ((1, 2, 3), (2, 3, 4), (5, 5, 5))
+  ///       )
+  ///     )
+  ///     ```
+  ///   ]
+  /// 
+  ///   If the array has dimensions `(y.len()-1) × (x.len()-1)`, the $x$ and $y$ coordinates
+  ///   are treated as edges for the mesh rectangles and @colormesh.align is ignored. 
+  /// 
+  ///   #details[
+  ///     ```example
+  ///     #lq.diagram(
+  ///       width: 3cm, height: 3cm,
+  ///       yaxis: (tick-distance: 1),
+  ///       lq.colormesh(
+  ///         (1, 2, 3),
+  ///         (1, 2, 3),
+  ///         ((1, 2), (2, 3))
+  ///       )
+  ///     )
+  ///     ```
+  ///   ]
+  ///   Also see the function @mesh that can be used to generate rectangular meshes. 
+  /// 
+  /// - A function that takes an `x` and a `y` value and returns a 
+  ///   corresponding `z` coordinate. 
+  /// - Some content, e.g., an image created with a third-party tool. In this 
+  ///   case, @colormesh.min, @colormesh.max, and @colormesh.map need to be set manually to match the data if a colorbar shall be created. Both @colormesh.x and @colormesh.y are allowed to just contain the first and last coordinate, respectively. 
+  ///   #details[
+  ///     ```example
+  ///     >>> #let img = image(
+  ///     >>>   bytes(range(16).map(x => x * 16)),
+  ///     >>>   format: (
+  ///     >>>     encoding: "luma8",
+  ///     >>>     width: 4,
+  ///     >>>     height: 4,
+  ///     >>>   ),
+  ///     >>>   scaling: "pixelated",
+  ///     >>> )
+  ///     #let mesh = lq.colormesh(
+  ///       (0, 20), (0, 20), 
+  ///       >>> img,
+  ///       <<<image("image.png"),
+  ///       map: (black, white),
+  ///       min: 2, max: 7
+  ///     )
+  ///     
+  ///     #lq.diagram(mesh)
+  ///     #lq.colorbar(mesh)
+  ///     ```
+  ///   ]
+  /// 
+  /// 
+  /// For the purpose of masking, you can use `float.nan` values to hide individual cells of the color mesh. 
   /// -> array | function
   z,
   
@@ -180,6 +232,33 @@
   /// -> lq.scale | str | function
   norm: "linear",
 
+  /// How to align mesh rectangles at the given $x$ and $y$ coordinates. 
+  /// 
+  /// #details[
+  ///   ```example
+  ///   #show: lq.set-diagram(width: 3cm, height: 3cm)
+  ///   
+  ///   #lq.diagram(
+  ///     lq.colormesh(
+  ///       align: center + horizon,
+  ///       (0, 1, 2),
+  ///       (0, 1, 2),
+  ///       ((1, 2, 3), (2, 3, 4), (5, 5, 5))
+  ///     )
+  ///   )
+  ///   
+  ///   #lq.diagram(
+  ///     lq.colormesh(
+  ///       align: left + bottom,
+  ///       (0, 1, 2),
+  ///       (0, 1, 2),
+  ///       ((1, 2, 3), (2, 3, 4), (5, 5, 5))
+  ///     )
+  ///   )
+  ///   ```
+  /// ]
+  /// 
+  /// This parameter does not apply when the coordinate arrays are one larger than the $z$ mesh so that they are treated as bounds, see @colormesh.z. 
   align: center + horizon,
 
   /// Whether to apply smoothing or leave the color mesh pixelated. This is 
@@ -214,7 +293,7 @@
 
 
   if type(z) == content {
-    // z.fields().width
+    color = (0,)
   } else {
 
     let offset-to-middle(data) = {
@@ -260,17 +339,18 @@
 
     color = z.flatten()
 
-    if type(color.at(0, default: 0)) in (int, float) {
-      (color, cinfo) = sample-colors(
-        color, 
-        map, 
-        norm, 
-        ignore-nan: true, 
-        min: min, 
-        max: max,
-        excess: excess
-      )
-    }
+  }
+
+  if type(color.at(0, default: 0)) in (int, float) {
+    (color, cinfo) = sample-colors(
+      color, 
+      map, 
+      norm, 
+      ignore-nan: true, 
+      min: min, 
+      max: max,
+      excess: excess
+    )
   }
   
   (
