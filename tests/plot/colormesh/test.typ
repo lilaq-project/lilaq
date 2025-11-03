@@ -160,3 +160,68 @@
     (x, y) => x * y, 
   )
 )
+
+
+#pagebreak()
+
+// Alignment
+#[
+  #show: lq.set-diagram(xlim: (-1, 2), ylim: (-1, 2))
+  #grid(
+    ..(
+      center + horizon,
+      left, 
+      bottom, 
+      right + top
+    ).map(align => 
+      lq.diagram(
+        lq.colormesh(
+          (0, 1),
+          (0, 1),
+          (x, y) => x + y,
+          align: align
+        )
+      )
+    )
+  )
+]
+
+#pagebreak()
+
+
+// External image
+
+#let img = image(
+  bytes(range(9).map(x => x * 30)),
+  format: (
+    encoding: "luma8",
+    width: 3,
+    height: 3,
+  ),
+  scaling: "pixelated",
+)
+#let mesh = lq.colormesh(
+  (0, 20), (0, 20), img,
+  map: (black, white),
+  min: 0, max: .1 
+)
+
+#lq.diagram(mesh)#lq.colorbar(mesh)
+
+#pagebreak()
+
+// Inverted axes with external image
+#grid(
+  ..(
+    (false, false),
+    (true, false),
+    (false, true),
+    (true, true),
+  ).map(((x, y)) => lq.diagram(
+    xaxis: (inverted: x),
+    yaxis: (inverted: y),
+    mesh
+  ))
+)
+
+
