@@ -3,42 +3,42 @@
 #import "../template.typ": *
 
 
-// #show: minimal
+#show: minimal
 
 
-// #lq.diagram(
-//   lq.colormesh(
-//     lq.linspace(-4, 4, num: 11), 
-//     lq.linspace(-4, 4, num: 10), 
-//     (x, y) => x * y, 
-//   )
-// )
+#lq.diagram(
+  lq.colormesh(
+    lq.linspace(-4, 4, num: 11), 
+    lq.linspace(-4, 4, num: 10), 
+    (x, y) => x * y, 
+  )
+)
 
 
-
-// #pagebreak()
-
-
-// // Norm, map, and holes
-// #{
-//   let x = lq.linspace(-4, 4, num: 10)
-//   let z = lq.mesh(x, x, (x, y) => x*y)
-//   z.at(2).at(2) = float.nan
-
-//   set page(fill: none)
-//   lq.diagram(
-//     lq.colormesh(
-//       x, x,
-//       z, 
-//       norm: lq.scale.symlog(base: 10, threshold: 3),
-//       map: color.map.magma
-//     )
-//   )
-
-// }
 
 #pagebreak()
 
+
+// Norm, map, and holes
+#{
+  let x = lq.linspace(-4, 4, num: 10)
+  let z = lq.mesh(x, x, (x, y) => x*y)
+  z.at(2).at(2) = float.nan
+
+  set page(fill: none)
+  lq.diagram(
+    lq.colormesh(
+      x, x,
+      z, 
+      norm: lq.scale.symlog(base: 10, threshold: 3),
+      map: color.map.magma
+    )
+  )
+
+}
+
+
+#pagebreak()
 
 // Constrained values and non-evenly spaced coordinates
 
@@ -47,7 +47,7 @@
   ylim: (-3.5, 6.5),
   lq.colormesh(
     (-4, -2, -1, 0, 1, 2, 5), 
-    (-1, 0, 1, 2, 5), 
+    (-4, -2, -1, 0, 1, 2, 5), 
     (x, y) => x * y, 
     min: -5, max: 5,
   )
@@ -148,34 +148,15 @@
   )
 )
 
-// #pagebreak()
+#pagebreak()
 
-// #let img = image(
-//   bytes(range(16).map(x => x * 16)),
-//   format: (
-//     encoding: "luma8",
-//     width: 4,
-//     height: 4,
-//   ),
-//   scaling: "pixelated",
-//   width: 2cm,
-// )
-// #lq.diagram(
-//   // xaxis: (inverted: true),
-//   // yaxis: (inverted: true),
-//   lq.colormesh(
-//     range(5),
-//     range(5),
-//     img
-//   )
-// )
-// #lq.diagram(
-//   // xaxis: (inverted: true),
-//   // yaxis: (inverted: true),
-//   lq.colormesh(
-//     range(5),
-//     range(5),
-//     // align: right,
-//     (x, y) => (x+y)
-//   )
-// )
+
+#lq.diagram(
+  xscale: "symlog",
+
+  lq.colormesh(
+    lq.arange(-4, 4) + (4.01,), 
+    lq.arange(-4, 4) + (4.01,), 
+    (x, y) => x * y, 
+  )
+)
