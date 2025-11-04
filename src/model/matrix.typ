@@ -170,21 +170,46 @@
 #show: lq.set-diagram(width: 100%, height: 100%)
 
 #grid(
-  columns: 2,
+  columns: 3,
   rows: 4cm,
-  stroke: red,
-  column-gutter: 1em, 
+  // stroke: red,
+  column-gutter: 1.5em, 
   row-gutter: 1em, 
   grid.cell(
-    lq.diagram(yaxis: (position: right)),
-    colspan: 2
+    lq.diagram(
+      yaxis: (position: left),
+      lq.yaxis(position: right, label: [Distance]),
+      ylabel: [Intensity],
+    ),
+    colspan: 3
   ),
-  lq.diagram(title: [A]),
+  lq.diagram(
+    title: [A], 
+    lq.plot(lq.linspace(0, 3), x => x*x)
+  ),
   grid.cell(
-    lq.diagram(),
-    rowspan: 3
+    lq.diagram(
+      ylabel: [offset], ylim: (0, 9), 
+      let mesh = lq.contour(
+        lq.linspace(0, 1),
+        lq.linspace(0, 9),
+        (x, y) => 2*x*y
+      ),
+      mesh
+    ),
+    rowspan: 2
   ),
-  // lq.diagram(title: [B]),
+  grid.cell(
+    lq.colorbar(mesh, width: 11.1pt),
+    rowspan: 2
+  ),
+  lq.diagram(
+    title: [B],
+    lq.plot(lq.linspace(0.1, 9), x => 2*calc.sin(x)/calc.pow(x, 1))
+  ),
   // [],
   // lq.diagram(title: [C], xlabel: [x]),
 )
+#lq.colorbar(mesh, thickness: 1cm),
+
+#line(length: 2cm)
