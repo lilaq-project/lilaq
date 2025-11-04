@@ -622,8 +622,12 @@
       (width, height, tickings) = attempt-layout(width, height)
       if it.pad != auto {
         // Sneaky dimension change for diagram grids to avoid diverging layout. 
-        width -= it.pad.right + it.pad.left
-        height -= it.pad.bottom + it.pad.top
+        if type(it.width) == relative {
+          width -= it.pad.right + it.pad.left
+        }
+        if type(it.height) == relative {
+          height -= it.pad.bottom + it.pad.top
+        }
       }
 
       axes = fill-in-transforms(axes, width, height, it: it)
