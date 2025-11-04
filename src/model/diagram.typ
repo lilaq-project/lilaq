@@ -731,7 +731,7 @@
     if it.pad != auto {
       result = pad(result, ..it.pad)
     }
-    result + [#metadata((x: it._grid-pos.at(0), y: it._grid-pos.at(1), xn: it._grid-pos.at(2), yn: it._grid-pos.at(3)) + bounds)<__lilaq_diagram__>]
+    result + [#metadata(it._grid-pos + bounds)<__lilaq_diagram__>]
   })
 }
 
@@ -777,7 +777,7 @@
   }, 
 
   fields: (
-    e.field("_grid-pos", e.types.wrap(array, fold: none), default: (0, 0, 0, 0)),
+    e.field("_grid-pos", e.types.wrap(dictionary, fold: none), default: (:)),
     e.field("pad", e.types.any, default: auto),
     e.field("children", e.types.any, required: true),
     e.field("aspect-ratio", e.types.option(float), default: none),

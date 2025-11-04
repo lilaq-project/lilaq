@@ -30,7 +30,8 @@
     ).map(metadata => metadata.value)
 
 
-    if diagram-meta.len() == 0 { // first layout pass
+    // first layout pass
+    if diagram-meta.len() == 0 { 
       return {
         show grid.cell: it => {
           if e.eid(it.body) != e.eid(lq.diagram) {
@@ -39,13 +40,20 @@
           
 
           show: lq.set-diagram(
-            _grid-pos: (it.x, it.y, it.x + it.colspan - 1, it.y + it.rowspan - 1)
+            _grid-pos: (
+              x: it.x, 
+              y: it.y, 
+              xn: it.x + it.colspan - 1, 
+              yn: it.y + it.rowspan - 1
+            )
           )
           it
         }    
         it
       }
     }
+
+    // Second layout pass
 
 
     // let cols = calc.max(..diagram-meta.map(d => calc.max(d.x, d.xn))) + 1
@@ -73,7 +81,7 @@
       if e.eid(it.body) != e.eid(lq.diagram) {
         return it
       }
-      
+
       let data = diagram-meta.find(d => d.x == it.x and d.y == it.y)
       if data == none { // cell may not contain a diagram
         return it
@@ -86,7 +94,12 @@
         bottom: bottom.at(it.y + it.rowspan - 1) - data.bottom, 
       )
       show: lq.set-diagram(
-        _grid-pos: (it.x, it.y, it.x + it.colspan - 1, it.y + it.rowspan - 1),
+        _grid-pos: (
+          x: it.x, 
+          y: it.y, 
+          xn: it.x + it.colspan - 1, 
+          yn: it.y + it.rowspan - 1
+        ),
         pad: pad
       )
       it
@@ -100,56 +113,56 @@
 #show: lq.set-diagram(width: 100%)
 #show grid: diagram-grid
 
-// #grid(
-//   columns: (1fr, 1fr),
-//   // rows: 1fr,
-//   column-gutter: 1em,
-//   row-gutter: 1em,
-//   stroke: red,
-//   lq.diagram(ylim: (-100, 10), title: [A ss asdd bb]),
-//   lq.diagram(ylim: (1, 5)),
-//   lq.diagram(xaxis: (position: top)),
-//   lq.diagram(yaxis: (position: right, mirror: (ticks: true, tick-labels: true)), ylim: (-100, 10)),
-//   lq.diagram(yaxis: (position: right)),
-//   lq.diagram(xaxis: (position: top)),
-//   lq.diagram(),
-//   lq.diagram(yaxis: (position: right)),
-//   lq.diagram(yaxis: (position: right)),
-//   lq.diagram(yaxis: (position: right)),
-//   lq.diagram(yaxis: (position: right)),
-//   lq.diagram(yaxis: (position: right)),
-//   lq.diagram(yaxis: (position: right)),
-// )
+#grid(
+  columns: (1fr, 1fr),
+  // rows: 1fr,
+  column-gutter: 1em,
+  row-gutter: 1em,
+  stroke: red,
+  lq.diagram(ylim: (-100, 10), title: [A ss asdd bb]),
+  lq.diagram(ylim: (1, 5)),
+  lq.diagram(xaxis: (position: top)),
+  lq.diagram(yaxis: (position: right, mirror: (ticks: true, tick-labels: true)), ylim: (-100, 10)),
+  lq.diagram(yaxis: (position: right)),
+  lq.diagram(xaxis: (position: top)),
+  lq.diagram(),
+  lq.diagram(yaxis: (position: right)),
+  lq.diagram(yaxis: (position: right)),
+  lq.diagram(yaxis: (position: right)),
+  lq.diagram(yaxis: (position: right)),
+  lq.diagram(yaxis: (position: right)),
+  lq.diagram(yaxis: (position: right)),
+)
 
 // #show: lq.set-diagram(height: 4cm)
 // #show lq.selector(lq.legend): none
 
-// #grid(
-//   columns:1,
-//   // column-gutter: 1em,
-//   // row-gutter: 1em,
-//   stroke: red,
-//   lq.diagram(
-//     legend: (position: left, dx: 100%),
-//     // legend: none,
-//     lq.plot((1, 2), (3, 4), label: [A])
+#grid(
+  columns:1,
+  // column-gutter: 1em,
+  // row-gutter: 1em,
+  stroke: red,
+  lq.diagram(
+    legend: (position: left, dx: 100%),
+    // legend: none,
+    lq.plot((1, 2), (3, 4), label: [A])
     
-//   ),
-//   lq.diagram(ylim: (1, 5), yaxis: (position: right)),
-// )
+  ),
+  lq.diagram(ylim: (1, 5), yaxis: (position: right)),
+)
 
 
-// == Effect of non-adapting axis (a bearable compromise)
-// #grid(
-//   columns: (1fr, ),
-//   lq.diagram(
-//     legend: (position: left, dx: 100%+16em),
-//     lq.plot((1, 1.8), (3, 4), label: [A])
-//   ),
-//   lq.diagram(
-//     lq.plot((1, 1.8), (3, 4))
-//   )
-// )
+== Effect of non-adapting axis (a bearable compromise)
+#grid(
+  columns: (1fr, ),
+  lq.diagram(
+    legend: (position: left, dx: 100%+16em),
+    lq.plot((1, 1.8), (3, 4), label: [A])
+  ),
+  lq.diagram(
+    lq.plot((1, 1.8), (3, 4))
+  )
+)
 
 
 #pagebreak()
