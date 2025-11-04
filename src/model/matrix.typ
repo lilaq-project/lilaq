@@ -48,9 +48,9 @@
     }
 
 
-    // let cols = calc.max(..diagram-meta.map(d => d.x)) + 1
+    // let cols = calc.max(..diagram-meta.map(d => calc.max(d.x, d.xn))) + 1
     let cols = it.columns.len()
-    let rows = calc.max(..diagram-meta.map(d => d.y)) + 1
+    let rows = calc.max(..diagram-meta.map(d => calc.max(d.y, d.yn))) + 1
 
     let left = range(cols)
       .map(col => {
@@ -74,10 +74,6 @@
         return it
       }
       
-      let ppp = (it.x, it.y)
-      if ppp != (0,0) {
-        let ooo = ppp
-      }
       let data = diagram-meta.find(d => d.x == it.x and d.y == it.y)
       if data == none { // cell may not contain a diagram
         return it
@@ -89,7 +85,10 @@
         top: top.at(it.y) - data.top, 
         bottom: bottom.at(it.y + it.rowspan - 1) - data.bottom, 
       )
-      show: lq.set-diagram(_grid-pos: (it.x, it.y, it.x + it.colspan - 1, it.y + it.rowspan - 1), pad: pad)
+      show: lq.set-diagram(
+        _grid-pos: (it.x, it.y, it.x + it.colspan - 1, it.y + it.rowspan - 1),
+        pad: pad
+      )
       it
     }
     it
@@ -172,6 +171,7 @@
     lq.diagram(),
     rowspan: 3
   ),
-  lq.diagram(title: [B]),
-  lq.diagram(title: [C]),
+  // lq.diagram(title: [B]),
+  // [],
+  // lq.diagram(title: [C], xlabel: [x]),
 )
