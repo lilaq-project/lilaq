@@ -13,6 +13,9 @@
 
 #let diagram-grid(it) = {
   if it.children.len() == 0 { return it }
+
+  // protect from other grids such as the legend grid
+  if it.children.all(cell => e.eid(cell.body) != e.eid(lq.diagram)) { return it }
   
   
   let table = context {
@@ -30,6 +33,10 @@
     if diagram-meta.len() == 0 { // first layout pass
       return {
         show grid.cell: it => {
+          if e.eid(it.body) != e.eid(lq.diagram) {
+            return it
+          }
+
           show: lq.set-diagram(_grid-pos: (it.x, it.y))
           it
         }    
@@ -59,6 +66,14 @@
       })
       
     show grid.cell: it => {
+      if e.eid(it.body) != e.eid(lq.diagram) {
+        return it
+      }
+      
+      let ppp = (it.x, it.y)
+      if ppp != (0,0) {
+        let ooo = ppp
+      }
       let data = diagram-meta.find(d => d.x == it.x and d.y == it.y)
       if data == none { // cell may not contain a diagram
         return it
@@ -79,12 +94,12 @@
 }
 
 
-#show: lq.set-diagram(width: 100%, height: 100%)
+#show: lq.set-diagram(width: 100%)
 #show grid: diagram-grid
 
 #grid(
   columns: (1fr, 1fr),
-  rows: 1fr,
+  // rows: 1fr,
   column-gutter: 1em,
   row-gutter: 1em,
   stroke: red,
@@ -103,5 +118,32 @@
   lq.diagram(yaxis: (position: right)),
 )
 
+// #show: lq.set-diagram(height: 4cm)
+// #show lq.selector(lq.legend): none
 
-as as s a dd asa askd jhaksd jhaksdj   akjd as a
+#grid(
+  columns:1,
+  // column-gutter: 1em,
+  // row-gutter: 1em,
+  stroke: red,
+  lq.diagram(
+    legend: (position: left, dx: 100%),
+    // legend: none,
+    lq.plot((1, 2), (3, 4), label: [A])
+    
+  ),
+  lq.diagram(ylim: (1, 5), yaxis: (position: right)),
+)
+
+
+== Effect of non-adapting axis (a bearable compromise)
+#grid(
+  columns: (1fr, ),
+  lq.diagram(
+    legend: (position: left, dx: 100%+16em),
+    lq.plot((1, 1.8), (3, 4), label: [A])
+  ),
+  lq.diagram(
+    lq.plot((1, 1.8), (3, 4))
+  )
+)
