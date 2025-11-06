@@ -534,10 +534,11 @@
   let (exp, offset) = (axis.exponent, axis.offset)
 
   let em = measure(line(length: 1em, angle: 0deg)).width
+  let abs-length = length.to-absolute()
   axis.tick-args.num-ticks-suggestion = match(
     axis.kind,
-    "x", length / (3.3 * em),
-    "y", length / (2 * em)
+    "x", abs-length / (3.3 * em),
+    "y", abs-length / (2 * em)
   )
   let (x0, x1) = axis.lim
   

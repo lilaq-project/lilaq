@@ -11,7 +11,7 @@
 
 
 #let update-bounds(former, bounds, width: 0cm, height: 0cm) = (
-  left: calc.min(former.left, get-length(bounds.left, width).to-absolute()), 
+  left: calc.min(former.left, get-length(bounds.left, width).to-absolute()),
   top: calc.min(former.top, get-length(bounds.top, height).to-absolute()),
   right: calc.max(former.right, get-length(bounds.right, width).to-absolute()),
   bottom: calc.max(former.bottom, get-length(bounds.bottom, height).to-absolute()),

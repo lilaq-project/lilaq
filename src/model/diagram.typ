@@ -642,8 +642,8 @@
 
     let (xaxis, yaxis) = axes.slice(0, 2)
 
-    let bounds = (left: 0pt, right: it.width, top: 0pt, bottom: it.height)
-    let update-bounds = update-bounds.with(width: it.width, height: it.height)
+    let bounds = (left: 0pt, right: it.width.to-absolute(), top: 0pt, bottom: it.height.to-absolute())
+    let update-bounds = update-bounds.with(width: it.width.to-absolute(), height: it.height.to-absolute())
     
     let diagram = box(
       width: it.width, height: it.height, 
