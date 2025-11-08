@@ -186,7 +186,7 @@
   ///   or an array.
   /// 
   /// #details[
-  ///   Example for a bar plot with varying bar widths.
+  ///   A bar plot with varying bar widths.
   ///   ```example
   ///   #lq.diagram(
   ///     lq.bar(
