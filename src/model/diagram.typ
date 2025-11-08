@@ -2,7 +2,7 @@
 #import "../assertations.typ"
 #import "../utility.typ": if-auto
 #import "../bounds.typ": update-bounds, place-with-bounds
-#import "../process-styles.typ": update-stroke, process-grid-arg, twod-ify-alignment, process-margin 
+#import "../process-styles.typ": update-stroke, process-grid-arg, twod-ify-alignment, process-margin , resolve-em-length
 #import "../logic/process-coordinates.typ": transform-point
 
 
@@ -739,6 +739,9 @@
   prefix: "lilaq",
 
   display: it => {
+    it.width = resolve-em-length(it.width)
+    it.height = resolve-em-length(it.height)
+
     if type(it.width) == relative or type(it.height) == relative {
       box(layout(size => {
         if type(it.width) == relative {

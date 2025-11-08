@@ -156,3 +156,13 @@
   }
 }
 
+
+#let resolve-em-length(length) = {
+  if type(length) == std.length {
+    length.to-absolute()
+  } else if type(length) == relative {
+    length.ratio + length.length.to-absolute()
+  } else {
+    length
+  }
+}
