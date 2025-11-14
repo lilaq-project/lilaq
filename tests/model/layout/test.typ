@@ -7,6 +7,11 @@
 #show lq.selector(lq.label): mask
 #show lq.selector(lq.title): mask
 
+#show: lq.set-legend(
+  stroke: 1pt + black,
+  radius: 0pt
+)
+
 
 #show: lq.set-tick(inset: 0pt, outset: 0pt)
 #show: lq.set-diagram(
