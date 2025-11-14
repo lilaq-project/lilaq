@@ -187,23 +187,12 @@
     align,
     top, 0,
     center, -0.5, 
+    horizon, -0.5, 
     bottom, -1
   )
 
-  let simple-lims() = vec.add(
-    minmax(y), 
-    (offset-coeff*width, (1 + offset-coeff) * width)
-  )
-  
-  let ylim = match-type(
-    width,
-    integer: simple-lims,
-    float: simple-lims,
-    array: () => (
-      calc.min(..y.zip(width).map(((y, w)) => y + offset-coeff * w)),
-      calc.max(..y.zip(width).map(((y, w)) => y + (1 + offset-coeff) * w)),
-    )
-  )
+  let ylim = compute-across-limits(y, width, align, offset-coeff)
+
 
   (
     x: x,

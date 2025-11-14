@@ -21,7 +21,7 @@
     plot.x = (.75,)
     plot.y = (.5,)
     plot.base = .25
-  }
+  } else if plot.y.len() == 0 { return }
   
   let (x0, y1) = transform(plot.base, ymin)
   let (x0, y2) = transform(plot.base, ymax)

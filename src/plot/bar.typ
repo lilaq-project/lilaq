@@ -90,6 +90,30 @@
 
 
 
+#let compute-across-limits(x, width, align, offset-coeff) = {
+  let simple-lims() = {
+    let lims = minmax(x)
+    if lims == (none, none) { return lims }
+    (
+      lims.at(0) + offset-coeff * width,
+      lims.at(1) + (1 + offset-coeff) * width
+    )
+  }
+  
+  match-type(
+    width,
+    integer: simple-lims,
+    float: simple-lims,
+    array: () => minmax(
+      vec.add(x, vec.multiply(width, offset-coeff)) +
+      vec.add(x, vec.multiply(width, offset-coeff + 1))
+    )
+  )
+
+}
+
+
+
 /// Creates a bar plot from the given bar positions and heights.  
 /// 
 /// ```example
@@ -302,20 +326,8 @@
     right, -1
   )
 
-  let simple-lims() = vec.add(
-    minmax(x), 
-    (offset-coeff*width, (1 + offset-coeff) * width)
-  )
-  
-  let xlim = match-type(
-    width,
-    integer: simple-lims,
-    float: simple-lims,
-    array: () => (
-      calc.min(..x.zip(width).map(((x, w)) => x + offset-coeff * w)),
-      calc.max(..x.zip(width).map(((x, w)) => x + (1 + offset-coeff) * w)),
-    )
-  )
+  let xlim = compute-across-limits(x, width, align, offset-coeff)
+
 
   (
     x: x,

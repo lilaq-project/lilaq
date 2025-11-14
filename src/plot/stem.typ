@@ -20,7 +20,7 @@
     plot.x = (.5,)
     plot.y = (.8,)
     plot.base = 0
-  }
+  } else if plot.x.len() == 0 { return }
   
   let (x1, y0) = transform(xmin, plot.base)
   let (x2, y0) = transform(xmax, plot.base)

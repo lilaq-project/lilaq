@@ -11,6 +11,7 @@
 }
 
 #let bar-lim(x, base) = {
+  if x.len() == 0 { return (none, none) }
   let lim = minmax(x + base)
   let (base-min, base-max) = minmax(base)
   if lim.at(0) == base-min { lim.at(0) *= 1fr }
