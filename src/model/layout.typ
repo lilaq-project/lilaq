@@ -19,12 +19,12 @@
 //     e.field("_pad", e.types.any, default: auto),
 //     e.field("stroke", e.types.option(stroke), default: none),
 //   )
-)
+// )
 
 #let layout-impl(it) = {
   if it.children.len() == 0 { return it }
 
-  // protect from other grids such as the legend grid
+  // protect other grids such as the legend grid
   if it.children.all(cell => e.eid(cell.body) != e.eid(diagram)) { return it }
   
   
@@ -137,7 +137,34 @@
   table + [#metadata(none)<__lilaq_matrix__>]
 }
 
-#let layout(it) = {
+
+
+/// Applies a special `show` rule to the content that aligns diagrams as cells
+/// of a Typst [`grid`](https://typst.app/docs/reference/layout/grid/). 
+/// Example:
+/// ```typ
+/// #show: lq.layout
+/// 
+/// #grid(
+///   columns: 2,
+///   lq.diagram(..),
+///   lq.diagram(..),
+///   ..
+/// )
+/// ```
+/// 
+/// The alignment strategy guarantees that the horizontal/vertical axis spines
+/// of diagrams in cells of a row/column line up nicely, independent of ticks, 
+/// axis labels, titles, legends etc. When a diagram is placed in a cell that
+/// spans multiple rows or columns, the diagrams are aligned accordingly to 
+/// match the correct row or column. 
+#let layout(
+
+  /// The body to transform
+  /// -> content
+  body
+
+) = {
   show grid: layout-impl
-  it
+  body
 }
