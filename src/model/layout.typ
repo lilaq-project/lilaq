@@ -21,7 +21,7 @@
 //   )
 )
 
-#let layout(it) = {
+#let layout-impl(it) = {
   if it.children.len() == 0 { return it }
 
   // protect from other grids such as the legend grid
@@ -137,3 +137,7 @@
   table + [#metadata(none)<__lilaq_matrix__>]
 }
 
+#let layout(it) = {
+  show grid: layout-impl
+  it
+}

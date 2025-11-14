@@ -15,7 +15,7 @@
   yaxis: (tick-args: (density: 50%)),
 )
 
-#show grid: lq.layout
+#show: lq.layout
 #set grid(stroke: gray)
 
 
