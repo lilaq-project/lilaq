@@ -57,13 +57,13 @@
   ///     lq.hbar(
   ///       (2.5,) * 5, (1,2,3,4,5), 
   ///       width: 0.2, fill: rgb("#AAEEAA99"),
-  ///       align: center, label: "center"
+  ///       align: horizon, label: "horizon"
   ///     ),
   ///   )
   ///   ```
   /// ]
-  /// -> top | center | bottom
-  align: center,
+  /// -> top | horizon | bottom
+  align: horizon,
 
   /// Width of the bars. This can be a 
   /// - `ratio` (e.g., `80%`) specifying the width relative to the minimum
