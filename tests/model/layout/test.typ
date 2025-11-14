@@ -56,8 +56,25 @@
   rows: (1fr, 1.5fr),
   column-gutter: 1em,
   row-gutter: 1em,
+  lq.diagram(title: [A]),
   lq.diagram(),
-  lq.diagram(),
+  lq.diagram(xaxis: (position: top, mirror: true)),
+  lq.diagram(
+    yaxis: (position: right, mirror: true), 
+    xlabel: [x]
+  )
+)
+
+#pagebreak()
+
+
+// Legend (nested grid)
+
+#grid(
+  columns: (1fr),
+  rows: (1fr, 1.5fr),
+  column-gutter: 1em,
+  row-gutter: 1em,
   lq.diagram(),
   lq.diagram(
     legend: (position: left, dx: 100%),
@@ -66,10 +83,15 @@
 )
 
 
+
+
+
 #pagebreak()
 
-#set page(height: auto, width: 10cm)
+
 // Row- and colspans
+
+#set page(height: auto, width: 10cm)
 #grid(
   columns: 3,
   rows: (4cm, 3cm),
