@@ -15,6 +15,8 @@
 #import "style/cycle.typ"
 #import "style/color.typ"
 
+#import "model/layout.typ": layout
+
 #import "plot/plot.typ": plot
 #import "plot/bar.typ": bar
 #import "plot/hbar.typ": hbar

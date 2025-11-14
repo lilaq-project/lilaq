@@ -87,10 +87,6 @@
   }
 
   
-  show: set-diagram(
-    grid: none,
-    margin: 0%,
-  )
 
   let preset-args = (:)
   if orientation == "vertical" {
@@ -116,6 +112,8 @@
   
 
   diagram(
+    grid: none,
+    margin: 0%,
     ..preset-args,
     ..args,
     grad
