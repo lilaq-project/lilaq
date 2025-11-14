@@ -66,6 +66,10 @@
   )
 }
 
+#let minus-sign-with-zero = {
+  show "1": none
+  zero.num("-1")
+}
 
 
 /// Formats linear ticks, see @tick-locate.linear. This is the most common tick
@@ -159,11 +163,11 @@
 
   if suffix != none {
     labels = ticks.zip(labels).map(((tick, label)) => {
-      if tick == 0 { return $0$ }
+      if tick == 0 { return zero.num("0") }
       tick = calc.round(tick, digits: 3)
 
       if tick == 1 { label = none }
-      else if tick == -1 { label = "−"}
+      else if tick == -1 { label = minus-sign-with-zero }
 
       label + suffix
     })
@@ -253,7 +257,7 @@
 
     if omit-unity {
       if tick == 1 { label = none }
-      else if tick == -1 { label = "−" }
+      else if tick == -1 { label = minus-sign-with-zero }
     }
 
     $label suffix$
@@ -266,7 +270,7 @@
   let fraction = int(calc.round(unit / tick-info.tick-distance))
 
   let labels = ticks.map(tick => {
-    if tick == 0 { return $0$ }
+    if tick == 0 { return zero.num("0") }
 
     if simplify-integers and calc.abs(calc.round(tick) - tick) < 1e-9 {
       let m = num(calc.round(tick))
@@ -276,7 +280,7 @@
 
     let denominator = fraction
     let numerator = int(calc.round(tick * denominator))
-    let sign = if numerator < 0 { $-$ }
+    let sign = if numerator < 0 { minus-sign-with-zero }
     if simplify {
       let gcd = calc.gcd(numerator, denominator)
       numerator /= gcd
