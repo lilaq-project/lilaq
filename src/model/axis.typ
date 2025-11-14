@@ -401,6 +401,12 @@
       }
 
     }
+    if data-limits.x0 == auto {
+      data-limits.x0 = scale.identity
+    }
+    if data-limits.x1 == auto {
+      data-limits.x1 = if scale.identity == 0 { 1 } else { scale.identity }
+    }
   }
 
   if mirror == auto {
