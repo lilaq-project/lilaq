@@ -627,13 +627,30 @@
 }
 
 
+#let to-bounds(
+  orthogonal,
+  start, 
+  end,
+  pos: bottom
+) = {
+  if pos == bottom {
+    (left: start, right: end, bottom: 100% + orthogonal, top: 100%)
+  } else if pos == top {
+    (left: start, right: end, bottom: 0pt, top: -orthogonal)
+  } else if pos == left {
+    (left: -orthogonal, right: 0pt, bottom: end, top: start)
+  } else if pos == right {
+    (left: 100%, right: 100% + orthogonal, bottom: end, top: start)
+  }
+}
 
 // Draws an axis and its mirror (if any)
 #let draw-axis(
   axis,
   tick-info,
   orthogonal-axis-transform: none,
-  e-get: none
+  e-get: none,
+  bounds: "relaxed"
 ) = {
   if axis.hidden { return (none, ()) }
 
@@ -694,14 +711,20 @@
       }
     })
 
-    let content = ticks.zip(labels).map(
-      ((tick, label)) => {
-        let loc = (axis.transform)(tick)
-        if (axis.filter)(tick, calc.min(loc, max-value - loc)) { 
-          make-tick(label, loc)
-        }
-      }
-    ).join()
+    let o = ticks.zip(labels).map(
+      ((tick, label)) => (tick: tick, label: label, offset: (axis.transform)(tick))
+    ).filter(tick => (axis.filter)(tick.tick, calc.min(tick.offset, max-value - tick.offset)))
+
+    let content = o.map(tick => make-tick(tick.label, tick.offset)).join()
+
+    // let content = ticks.zip(labels).map(
+    //   ((tick, label)) => {
+    //     let loc = (axis.transform)(tick)
+    //     if (axis.filter)(tick, calc.min(loc, max-value - loc)) { 
+    //       make-tick(label, loc)
+    //     }
+    //   }
+    // ).join()
 
   
     for tick in extra-ticks {
@@ -719,9 +742,12 @@
         )
       }
       let label = e.fields(tick).at("label", default: none)
-      if label != none { labels.push(label) }
+      // if label != none { labels.push(label) }
 
       let loc = (axis.transform)(e.fields(tick).value)
+      if label != none {
+        o.push((tick: e.fields(tick).value, offset: loc, label: label))
+      }
       let offset = if kind == "x" { (dx: loc) } else { (dy: loc) }
       content += place(..offset, {
         show: e.set_(lq-tick, align: position.inv(), kind: axis.kind)
@@ -735,27 +761,42 @@
 
     let max-padding = outset
     let max-width = 0pt
+    let tick-bounds = (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
 
 
     if display-tick-labels {
       let dimension = if axis.kind == "x" { "height" } else { "width" }
+      let other-dimension = if axis.kind == "y" { "height" } else { "width" }
 
 
       let label-sizes = labels.map(measure)
+      let label-sizes = o.map(tick => {
+        let size = measure(tick.label)
+        let dim = size.at(other-dimension)
+        size + (lower: tick.offset - dim/2, upper: tick.offset + dim/2)
+      })
 
       let label-space = calc.max(0pt, ..label-sizes.map(s => s.at(dimension)))
+      let start-space = 0pt
+      let end-space = 0pt
+
+      if bounds == "strict" {
+        start-space = calc.min(0pt, ..label-sizes.map(s => s.lower))
+        end-space = calc.max(0pt, ..label-sizes.map(s => s.upper))
+      }
 
 
       max-padding += label-space
       if label-space > 0pt {
         max-padding += pad
       }
+      tick-bounds = to-bounds(max-padding, start-space, end-space, pos: position)
     }
 
     // Erase size information from parent (data area). 
     content = place(box(width: float.inf * 1pt, height: float.inf * 1pt, content))
     
-    return (content, max-padding.to-absolute())
+    return (content, max-padding.to-absolute(), tick-bounds)
   }
   
 
@@ -782,14 +823,16 @@
     }
 
     if display-ticks {
-      let (tick-content, tick-space) = place-ticks(
+      let (tick-content, tick-space, bb) = place-ticks(
         ticks, tick-labels, position, display-tick-labels, kind: kind, extra-ticks: axis.extra-ticks
       )
+      bounds.push(bb)
       content += tick-content
-      let (subtick-content, subtick-space) = place-ticks(
+      let (subtick-content, subtick-space, bb) = place-ticks(
         subticks, subtick-labels, position, display-tick-labels, 
         sub: true, kind: kind
       )
+      // bounds.push(bb)
       space = calc.max(tick-space, subtick-space)
       content += subtick-content
 
@@ -916,7 +959,19 @@
         main-bounds.left = 100% - inset
       }
     }
-    bounds.push(main-bounds)
+    // bounds.push(main-bounds)
+    let draw-bounds(b) = {
+      place(
+        dx: b.left, dy: b.top - 100%,
+        rect(width: b.right - b.left, height: b.bottom - b.top, fill: blue.transparentize(60%))
+      )
+    }
+    // content += draw-bounds(main-bounds)
+    let bb = to-bounds(space, 0pt, 100%, pos: position)
+    bounds.push(bb)
+    for b in bounds {
+      // content += draw-bounds(b)
+    }
     return (content, bounds)
   }
 
