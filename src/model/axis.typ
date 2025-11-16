@@ -752,8 +752,8 @@
       }
     }
 
-    // Prevent ticks from line-wrapping by boxing them in enough space.
-    content = place(box(width: calc.inf*1pt, height: calc.inf*1pt, content))
+    // Erase size information from parent (data area). 
+    content = place(box(width: float.inf*1pt, height: float.inf*1pt, content))
     
     return (content, max-padding.to-absolute())
   }
