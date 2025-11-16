@@ -49,7 +49,7 @@
 
   fields: (
     e.field("body", content, required: true),
-    e.field("position", e.types.wrap(alignment, fold: none), default: top),
+    e.field("position", e.types.union(left, right, top, bottom), default: top),
     e.field("dx", length, default: 0pt),
     e.field("dy", length, default: 0pt),
     e.field("pad", length, default: 0.5em),

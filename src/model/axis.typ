@@ -873,7 +873,6 @@
         box(height: 100%, width: float.inf * 1pt, label)
       }
       let size = measure(body)
-      let p = (axis.kind, size)
 
       let (label-content, _) = place-with-bounds(
         body, alignment: position, dx: dx, dy: dy, pad: pad
