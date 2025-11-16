@@ -49,7 +49,7 @@
 
   fields: (
     e.field("body", content, required: true),
-    e.field("position", alignment, default: top),
+    e.field("position", e.types.union(left, right, top, bottom), default: top),
     e.field("dx", length, default: 0pt),
     e.field("dy", length, default: 0pt),
     e.field("pad", length, default: 0.5em),
@@ -82,9 +82,9 @@
   let pad = get-settable-field(lq-title, title, "pad")
 
   let wrapper = if position in (top, bottom) {
-    box.with(width: width)
+    box.with(width: width, height: float.inf * 1pt)
   } else if position in (left, right) {
-    box.with(height: height)
+    box.with(height: height, width: float.inf * 1pt)
   }
 
   

@@ -539,11 +539,10 @@
   let subtick-labels
   let (exp, offset) = (axis.exponent, axis.offset)
 
-  let em = measure(line(length: 1em, angle: 0deg)).width
   axis.tick-args.num-ticks-suggestion = match(
     axis.kind,
-    "x", length / (3.3 * em),
-    "y", length / (2 * em)
+    "x", length / (3.3em.to-absolute()),
+    "y", length / (2em.to-absolute())
   )
   let (x0, x1) = axis.lim
   
@@ -737,21 +736,15 @@
     let max-padding = outset
     let max-width = 0pt
 
-    let size = measure(lq-tick-label[asd])
 
     if display-tick-labels {
       let dimension = if axis.kind == "x" { "height" } else { "width" }
 
-      let label-space
-      (label-space, max-width) = labels
-        .map(label => {
-          let measured = measure(label)
-          (measured.at(dimension), measured.width)
-        })
-        .fold(
-          (0pt, 0pt),
-          ((max-dim, max-w), (next-dim, next-w)) => (calc.max(max-dim, next-dim), calc.max(max-w, next-w)),
-        )
+
+      let label-sizes = labels.map(measure)
+
+      let label-space = calc.max(0pt, ..label-sizes.map(s => s.at(dimension)))
+
 
       max-padding += label-space
       if label-space > 0pt {
@@ -759,12 +752,8 @@
       }
     }
 
-    // Prevent ticks from line-wrapping by boxing them in enough space.
-    if kind == "x" {
-      content = place(box(width: max-width, content))
-    } else {
-      content = place(box(width: max-padding, content))
-    }
+    // Erase size information from parent (data area). 
+    content = place(box(width: float.inf * 1pt, height: float.inf * 1pt, content))
     
     return (content, max-padding.to-absolute())
   }
@@ -862,11 +851,6 @@
         label = constructor(label)
       }
 
-      let wrap-label = if position in (top, bottom) {
-        box.with(width: 100%)
-      } else if position in (left, right) {
-        box.with(height: 100%)
-      }
       
       let get-settable-field(element, object, field) = {
         e.fields(object).at(field, default: e-get(element).at(field))
@@ -883,7 +867,11 @@
       }
 
 
-      let body = wrap-label(label)
+      let body = if position in (top, bottom) {
+        box(width: 100%, height: float.inf*1pt, label)
+      } else if position in (left, right) {
+        box(height: 100%, width: float.inf * 1pt, label)
+      }
       let size = measure(body)
 
       let (label-content, _) = place-with-bounds(
