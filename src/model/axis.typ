@@ -753,7 +753,7 @@
     }
 
     // Erase size information from parent (data area). 
-    content = place(box(width: float.inf*1pt, height: float.inf*1pt, content))
+    content = place(box(width: float.inf * 1pt, height: float.inf * 1pt, content))
     
     return (content, max-padding.to-absolute())
   }
@@ -870,7 +870,7 @@
       let body = if position in (top, bottom) {
         box(width: 100%, height: float.inf*1pt, label)
       } else if position in (left, right) {
-        box(height: 100%, width: float.inf*1pt, label)
+        box(height: 100%, width: float.inf * 1pt, label)
       }
       let size = measure(body)
       let p = (axis.kind, size)

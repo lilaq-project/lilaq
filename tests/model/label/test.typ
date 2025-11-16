@@ -56,7 +56,6 @@
 
 #pagebreak()
 
-// Labels with a size that is changed by a transformational show rule
 
 #[
 
@@ -70,3 +69,4 @@
   )
 
 ]
+
