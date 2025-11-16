@@ -52,3 +52,21 @@
   )
 
 ]
+
+
+#pagebreak()
+
+// Labels with a size that is changed by a transformational show rule
+
+#[
+
+  #show: lq.set-label(pad: 0pt)
+
+  #lq.diagram(
+    width: 3pt,
+    xaxis: (ticks: none),
+    yaxis: (ticks: none),
+    ylabel: box(height: 30pt, fill: black, width: 1em),
+  )
+
+]
