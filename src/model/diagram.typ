@@ -457,7 +457,7 @@
   width, height, 
   it: (:), axes: (), plots: (), e-get: none, 
   auto-height: true, auto-width: true,
-  available-size: (0pt, 0pt)
+  available-size: (width: 0pt, height: 0pt)
 ) = {
   (width, height) = resolve-dimensions-aspect-ratio(
     ..axes.slice(0, 2), 
@@ -485,7 +485,8 @@
   for (axis, ticking) in axes.zip(tickings) {
     let (_, axis-bounds) = draw-axis(
       axis, ticking, e-get: e-get, 
-      orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform
+      orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform,
+      bounds: it.bounds
     )
     bounds = axis-bounds.fold(bounds, update-bounds)
   }
@@ -508,8 +509,15 @@
     bounds = update-bounds(bounds, legend.bounds)
   }
 
+  if it.bounds == "data-area" {
+    
+  }
+
   if auto-width {
-    width = available-size.width - bounds.right + bounds.left + width
+    // if it.bounds == "data-area" { width = available-size.width }
+    // else {
+    // }
+      width = available-size.width - bounds.right + bounds.left + width
   }
   if auto-height {
     height = available-size.height - bounds.bottom + bounds.top + height
@@ -594,6 +602,14 @@
     let it = it
     let tickings = ()
 
+
+    if it.bounds == "data-area" and type(it.width) == relative {
+      it.width = it.size.width
+    }
+    if it.bounds == "data-area" and type(it.height) == relative {
+      it.height = it.size.height
+    }
+    
     // Diagram may have relative/ratio width or height
     if type(it.width) == relative or type(it.height) == relative {
       let attempt-layout = attempt-layout.with(
@@ -688,7 +704,8 @@
       for (axis, ticking) in axes.zip(tickings) {
         let (axis-content, axis-bounds) = draw-axis(
           axis, ticking, e-get: e-get, 
-          orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform
+          orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform,
+          bounds: it.bounds
         )
         artists.push((content: axis-content, z: 20))
         
@@ -725,6 +742,10 @@
     bounds.right -= it.width
     bounds.left *= -1
     bounds.top *= -1
+
+    if it.bounds == "data-area" {
+      bounds = (top: 0pt, bottom: 0pt, left: 0pt, right: 0pt)
+    }
 
     let result = box(
       inset: bounds, 
@@ -804,6 +825,7 @@
     e.field("margin", e.types.union(ratio, dictionary), default: 6%),
     e.field("cycle", e.types.wrap(e.types.array(e.types.union(function, color, dictionary)), fold: none), default: petroff10),
     e.field("fill", e.types.option(e.types.paint), default: none),
+    e.field("bounds", e.types.union("strict", "relaxed", "data-area"), default: "relaxed"),
   ),
 
   parse-args: (default-parser, fields: none, typecheck: none) => (args, include-required: false) => {
