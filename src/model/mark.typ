@@ -101,7 +101,7 @@
     })
   )
   if angle != 0deg {
-    poly = rotate(angle, origin: left + top, poly)
+    poly = rotate(angle, origin: left + top, poly, reflow: false)
   }
   poly
 }
