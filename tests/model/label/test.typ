@@ -13,7 +13,7 @@
     width: 2cm,
     height: 2cm,
     xlabel: $x$,
-    ylabel: $y$
+    ylabel: $y$,
   )
 
 ]
@@ -30,7 +30,25 @@
     width: 2cm,
     height: 2cm,
     xlabel: $x$,
-    ylabel: $y$
+    ylabel: $y$,
+  )
+
+]
+
+#pagebreak()
+
+// Labels with a size that is changed by a transformational show rule
+
+#[
+
+  #show lq.selector(lq.label): rotate.with(90deg, reflow: true)
+  #show: lq.set-label(pad: 0pt)
+
+  #lq.diagram(
+    height: 3pt,
+    xaxis: (ticks: none),
+    yaxis: (ticks: none),
+    xlabel: box(width: 30pt, fill: black, height: 1em),
   )
 
 ]
