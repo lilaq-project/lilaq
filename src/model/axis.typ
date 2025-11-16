@@ -851,11 +851,6 @@
         label = constructor(label)
       }
 
-      let wrap-label = if position in (top, bottom) {
-        box.with(width: 100%)
-      } else if position in (left, right) {
-        box.with(height: 100%)
-      }
       
       let get-settable-field(element, object, field) = {
         e.fields(object).at(field, default: e-get(element).at(field))
@@ -872,8 +867,13 @@
       }
 
 
-      let body = wrap-label(label)
+      let body = if position in (top, bottom) {
+        box(width: 100%, height: float.inf*1pt, label)
+      } else if position in (left, right) {
+        box(height: 100%, width: float.inf*1pt, label)
+      }
       let size = measure(body)
+      let p = (axis.kind, size)
 
       let (label-content, _) = place-with-bounds(
         body, alignment: position, dx: dx, dy: dy, pad: pad
