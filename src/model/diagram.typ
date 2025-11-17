@@ -344,8 +344,8 @@
   if it.aspect-ratio != none and do-adjust-margins-for-aspect-ratio(it) {
     let (xaxis, yaxis) = axes.slice(0, 2)
 
-    let xlim = _axis-compute-limits(xaxis, margin: main-margin, is-independant: true)
-    let ylim = _axis-compute-limits(yaxis, margin: main-margin, is-independant: true)
+    let xlim = _axis-compute-limits(xaxis, margin: main-margin, is-independent: true)
+    let ylim = _axis-compute-limits(yaxis, margin: main-margin, is-independent: true)
 
     let b = width / calc.abs(xlim.at(1) - xlim.at(0))
     let a = height / calc.abs(ylim.at(1) - ylim.at(0))
@@ -371,7 +371,7 @@
     
     if axis.plots.len() > 0 or xaxis == none { // is independent axis
       axis.lim = _axis-compute-limits(
-        axis, is-independant: true, margin: margin
+        axis, is-independent: true, margin: margin
       )
       normalized-trafo = create-trafo(axis.scale.transform, ..axis.lim)
       // need to store this for main axis 
@@ -431,7 +431,7 @@
   let create-normalized-trafos(axis) = (
     create-trafo(
       axis.scale.transform, 
-      .._axis-compute-limits(axis, is-independant: true, margin: it.margin)
+      .._axis-compute-limits(axis, is-independent: true, margin: it.margin)
     )
   )
   
