@@ -628,19 +628,20 @@
 
 
 #let to-bounds(
-  orthogonal,
+  outwards,
   start, 
   end,
+  inwards: 0pt,
   pos: bottom
 ) = {
   if pos == bottom {
-    (left: start, right: end, bottom: 100% + orthogonal, top: 100%)
+    (left: start, right: end, bottom: 100% + outwards, top: 100% - inwards)
   } else if pos == top {
-    (left: start, right: end, bottom: 0pt, top: -orthogonal)
+    (left: start, right: end, bottom: inwards, top: -outwards)
   } else if pos == left {
-    (left: -orthogonal, right: 0pt, bottom: end, top: start)
+    (left: -outwards, right: inwards, bottom: end, top: start)
   } else if pos == right {
-    (left: 100%, right: 100% + orthogonal, bottom: end, top: start)
+    (left: 100% - inwards, right: 100% + outwards, bottom: end, top: start)
   }
 }
 
@@ -648,18 +649,34 @@
 
 
 
-// Places a set of ticks together with labels
+// Places a set of ticks together with tick labels. 
+// In addition, if `bounds-mode` is set to `"strict"`, the bounds of the tick 
+// labels are computed and returned as a bounds rectangle. 
+// If `sub: false`, any `axis.extra-ticks` are drawn as well. 
+// -> (result: content, bounds: array)
 #let place-ticks(
+  /// The axis object
   axis,
+  /// Ticks to place, an array of data coordinates
+  /// -> array
   ticks, 
+
+  /// The tick labels to draw
+  /// -> none | array
   labels, 
-  // Where to place the ticks on the diagram
+  /// Where to place the ticks on the diagram. This can differ from @axis.
+  /// position when drawing mirrows. 
+  /// -> top | bottom | left | right
   position, 
-  // Whether to show tick labels
+  /// Whether to draw tick labels. 
   display-tick-labels, 
+  /// Whether to draw subticks or normal ones. 
   sub: false,
-  bounds: "relaxed",
+  /// See @diagram.bounds
+  bounds-mode: "relaxed",
+
   e-get: none
+
 ) = {
   if labels == none { labels = (none,) * ticks.len() }
   
@@ -708,15 +725,6 @@
   ).filter(tick => (axis.filter)(tick.tick, calc.min(tick.offset, max-value - tick.offset)))
 
   let content = o.map(tick => make-tick(tick.label, tick.offset)).join()
-
-  // let content = ticks.zip(labels).map(
-  //   ((tick, label)) => {
-  //     let loc = (axis.transform)(tick)
-  //     if (axis.filter)(tick, calc.min(loc, max-value - loc)) { 
-  //       make-tick(label, loc)
-  //     }
-  //   }
-  // ).join()
 
   for tick in axis.extra-ticks {
     if sub { break }
@@ -772,7 +780,7 @@
     let start-space = 0pt
     let end-space = 0pt
 
-    if bounds == "strict" {
+    if bounds-mode == "strict" {
       start-space = calc.min(0pt, ..label-sizes.map(s => s.lower))
       end-space = calc.max(0pt, ..label-sizes.map(s => s.upper))
     }
@@ -792,6 +800,63 @@
 }
 
 
+// Places axis attachments like exponent and offset (if present)
+// -> (result: content | none, bounds: dictionary | none)
+#let place-attachments(
+  /// The axis object.
+  axis, 
+  // The evaluated exponent value returned from the tick formatter.
+  // -> int
+  exp, 
+  // The evaluated offset value returned from the tick formatter.
+  // -> auto | int | float | content
+  offset, 
+  /// Where the axis is placed on the diagram. This can differ from @axis.
+  /// position when drawing mirrows. 
+  /// -> top | bottom | left | right
+  position, 
+) = {
+
+
+  let attachment = none
+  if type(offset) in (int, float) and offset != 0 {
+    attachment += zero.num(positive-sign: true, offset)
+  } else if offset not in (0, auto) {
+    attachment += offset
+  }
+  if type(exp) == int and exp != 0 {
+    attachment += {
+      show "X": none
+      zero.num("Xe" + str(exp))
+    }
+  }
+
+  if attachment == none {
+    return (none, none)
+  }
+  let args
+  if axis.kind == "x" {
+    args = (
+      dx: .5em, dy: 0pt,
+      alignment: bottom + right, 
+      content-alignment: horizon + left
+    )
+    if position == top {
+      args.dy -= 100%
+    }
+  } else if axis.kind == "y" {
+    args = (
+      dx: 0pt, dy: -.5em,
+      alignment: top + left, 
+      content-alignment: center + bottom
+    )
+    if position == right {
+      args.dx += 100%
+    }
+  }
+
+  place-with-bounds(attachment, ..args)
+}
 
 // Draws an axis and its mirror (if any)
 #let draw-axis(
@@ -799,7 +864,7 @@
   tick-info,
   orthogonal-axis-transform: none,
   e-get: none,
-  bounds: "relaxed"
+  bounds-mode: "relaxed"
 ) = {
   if axis.hidden { return (none, ()) }
 
@@ -831,64 +896,25 @@
 
     if display-ticks {
       let (tick-content, tick-space, tick-bounds) = place-ticks(
-        axis, ticks, tick-labels, position, display-tick-labels, e-get: e-get, bounds: bounds
+        axis, ticks, tick-labels, position, display-tick-labels, e-get: e-get, bounds-mode: bounds-mode
       )
       bounds.push(tick-bounds)
       content += tick-content
       let (subtick-content, subtick-space, tick-bounds) = place-ticks(
         axis, subticks, subtick-labels, position, display-tick-labels, 
-        sub: true, e-get: e-get, bounds: bounds
+        sub: true, e-get: e-get, bounds-mode: bounds-mode
       )
       bounds.push(tick-bounds)
       space = calc.max(tick-space, subtick-space)
       content += subtick-content
-
     }
 
 
     if display-tick-labels {
-
-      let attachment = none
-      if type(offset) in (int, float) and offset != 0 {
-        attachment += zero.num(positive-sign: true, offset)
-      } else if offset not in (0, auto) {
-        attachment += offset
-      }
-      if type(exp) == int and exp != 0 {
-        attachment += {
-          show "X": none
-          zero.num("Xe" + str(exp))
-        }
-      }
-
-      if attachment != none {
-        let args
-        if axis.kind == "x" {
-          args = (
-            dx: .5em, dy: 0pt,
-            alignment: bottom + right, 
-            content-alignment: horizon + left
-          )
-          if position == top {
-            args.dy -= 100%
-          }
-        } else if axis.kind == "y" {
-          args = (
-            dx: 0pt, dy: -.5em,
-            alignment: top + left, 
-            content-alignment: center + bottom
-          )
-          if position == right {
-            args.dx += 100%
-          }
-        }
-
-        let (attachment-content, attachment-bounds) = place-with-bounds(
-          attachment,
-          ..args
-        )
-        content += attachment-content
-        bounds.push(attachment-bounds)
+      let (c, b) = place-attachments(axis, exp, offset, position)
+      if c != none {
+        content += c
+        bounds.push(b)
       }
     }
     
@@ -975,8 +1001,7 @@
       )
     }
     // content += draw-bounds(main-bounds)
-    let bb = to-bounds(space, 0pt, 100%, pos: position)
-    bounds.push(bb)
+    bounds.push(to-bounds(space, 0pt, 100%, pos: position, inwards: inset))
     for b in bounds {
       // content += draw-bounds(b)
     }

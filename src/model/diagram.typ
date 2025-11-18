@@ -486,7 +486,7 @@
     let (_, axis-bounds) = draw-axis(
       axis, ticking, e-get: e-get, 
       orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform,
-      bounds: it.bounds
+      bounds-mode: it.bounds
     )
     bounds = axis-bounds.fold(bounds, update-bounds)
   }
@@ -705,7 +705,7 @@
         let (axis-content, axis-bounds) = draw-axis(
           axis, ticking, e-get: e-get, 
           orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform,
-          bounds: it.bounds
+          bounds-mode: it.bounds
         )
         artists.push((content: axis-content, z: 20))
         
