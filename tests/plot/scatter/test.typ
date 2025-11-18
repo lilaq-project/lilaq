@@ -89,11 +89,11 @@
   scatter((1,), (1,)),
   // The cycle color is overridden through the scatter interface
   scatter((2,), (1,), color: green),
-  // Same but the mark.stroke from the cycle is not overriden
+  // Same but the mark.stroke from the cycle is not overridden
   scatter((3,), (1,), color: green),
   // Color-coded scatter
   scatter((0,), (0,), color: (4,)),
-  // Color-coded scatter and explit `stroke: none`
+  // Color-coded scatter and explicit `stroke: none`
   scatter(
     (1,), (0,), color: (4,), 
     stroke: none

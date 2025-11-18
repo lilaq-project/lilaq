@@ -325,7 +325,7 @@
   if locate-subticks == auto {
     locate-subticks = if-none(scale.locate-subticks, none)
   }
-  let is-independant = functions == auto
+  let is-independent = functions == auto
   if functions == auto { 
     functions = (x => x, x => x) 
   } else {
@@ -365,7 +365,7 @@
     tight-x0: true, tight-x1: true 
   )
 
-  if is-independant and auto in lim {
+  if is-independent and auto in lim {
 
     let plot-limits = plots
       .map(plot => plot.at(kind + "limits")())
@@ -477,16 +477,16 @@
   axis, 
   margin: 0%,
   default-lim: (0, 1),
-  is-independant: auto
+  is-independent: auto
 ) = {
 
-  if is-independant == auto {
-    is-independant = axis.plots.len() > 0
+  if is-independent == auto {
+    is-independent = axis.plots.len() > 0
   }
   
   let (x0, x1, tight-x0, tight-x1) = axis.data-limits
   
-  if not is-independant and auto in axis.lim {
+  if not is-independent and auto in axis.lim {
     (x0, x1) = default-lim.map(axis.functions.forward)
   }
   if x0 == x1 {

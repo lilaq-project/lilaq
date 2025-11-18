@@ -13,7 +13,7 @@
   /// The vector $b$ of the system of linear equations.
   /// -> array
   b,
-  /// The dimension $n$ of the system of linear eqautions.
+  /// The dimension $n$ of the system of linear equations.
   /// -> int
   n,
 ) = {
