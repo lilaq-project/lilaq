@@ -972,39 +972,38 @@
       inset: 0pt, outset: 0pt
     )
     
-    let main-bounds = create-bounds()
     let inset = e-get(lq-tick).inset
-    if axis.kind == "x" {
-      main-bounds.right = 100%
-      if position == top {
-        main-bounds.top = -space
-        main-bounds.bottom = inset
-      } else if position == bottom {
-        main-bounds.bottom = 100% + space
-        main-bounds.top = 100% - inset
-      }
-    } else {
-      main-bounds.bottom = 100%
-      if position == left {
-        main-bounds.left = -space
-        main-bounds.right = inset
-      } else if position == right {
-        main-bounds.right = 100% + space
-        main-bounds.left = 100% - inset
-      }
-    }
-    // bounds.push(main-bounds)
-    let draw-bounds(b) = {
-      place(
-        dx: b.left, dy: b.top - 100%,
-        rect(width: b.right - b.left, height: b.bottom - b.top, fill: blue.transparentize(60%))
-      )
-    }
-    // content += draw-bounds(main-bounds)
     bounds.push(to-bounds(space, 0pt, 100%, pos: position, inwards: inset))
-    for b in bounds {
-      // content += draw-bounds(b)
-    }
+
+    // let main-bounds = create-bounds()
+    // if axis.kind == "x" {
+    //   main-bounds.right = 100%
+    //   if position == top {
+    //     main-bounds.top = -space
+    //     main-bounds.bottom = inset
+    //   } else if position == bottom {
+    //     main-bounds.bottom = 100% + space
+    //     main-bounds.top = 100% - inset
+    //   }
+    // } else {
+    //   main-bounds.bottom = 100%
+    //   if position == left {
+    //     main-bounds.left = -space
+    //     main-bounds.right = inset
+    //   } else if position == right {
+    //     main-bounds.right = 100% + space
+    //     main-bounds.left = 100% - inset
+    //   }
+    // }
+    // bounds.push(main-bounds)
+    
+    // let draw-bounds(b) = {
+    //   place(
+    //     dx: b.left, dy: b.top - 100%,
+    //     rect(width: b.right - b.left, height: b.bottom - b.top, fill: blue.transparentize(60%))
+    //   )
+    // }
+    // for b in bounds { content += draw-bounds(b) }
     return (content, bounds)
   }
 
