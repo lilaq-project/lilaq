@@ -23,11 +23,11 @@
     axis.transform = y => length * (1 - normalized-y-trafo(y))
   }
   axis.lim = (x0, x1)
-  let tick-info = locate-ticks-linear(x0, x1, num-ticks-suggestion: 6)
+  let tick-info = tick-locate.linear(x0, x1, num-ticks-suggestion: 6)
   let ticks = tick-info.ticks
-  let minor-ticks = locate-subticks-linear(x0, x1, ..tick-info)
+  let minor-ticks = tick-locate.subticks-linear(x0, x1, ..tick-info)
   
-  let (tick-labels, exp, offset) = format-ticks-linear(tick-info, exponent: exponent, offset: offset)
+  let (tick-labels, exp, offset) = tick-format.linear(tick-info, exponent: exponent, offset: offset)
 
 
 

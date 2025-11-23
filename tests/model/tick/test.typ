@@ -80,11 +80,11 @@
   xlim: (-1, 1.1),
   ylim: (1, 3.2),
   xaxis: (
-    format-subticks: lq.format-ticks-linear,
+    format-subticks: lq.tick-format.linear,
     subticks: 1,
   ),
   yaxis: (
-    format-subticks: lq.format-ticks-linear,
+    format-subticks: lq.tick-format.linear,
     subticks: 1
   ),
 )

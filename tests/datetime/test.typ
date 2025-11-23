@@ -296,7 +296,7 @@
 #lq.diagram(
   // title: [Minutes manual formatting],
   xaxis: (
-    format-ticks: lq.format-ticks-datetime.with(
+    format-ticks: lq.tick-format.datetime.with(
       format: (datetime, period: none) => {
         datetime.display("[minute]:[second]")
       },
@@ -340,7 +340,7 @@
 #lq.diagram(
   // title: [Weekdays],
   xaxis: (
-    format-ticks: lq.format-ticks-datetime.with(format: "[weekday repr:short]"),
+    format-ticks: lq.tick-format.datetime.with(format: "[weekday repr:short]"),
   ),
   lq.plot(
     (
