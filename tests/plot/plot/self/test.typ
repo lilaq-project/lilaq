@@ -189,6 +189,12 @@
   lq.plot(x, y, smooth: true),
 )
 
+#assert.eq(
+  catch(() => lq.plot((), (), smooth: true, step: end)),
+  "panicked with: \"`step` and `smooth` are mututally exclusive\""
+)
+
+
 #pagebreak()
 
 // Plot-Fn

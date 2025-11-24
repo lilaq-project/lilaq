@@ -96,6 +96,7 @@
 
 
   let line = merge-strokes(plot.style.stroke, plot.style.color)
+  
   if line != none {
     show: prepare-path.with(
       stroke: line,
@@ -103,31 +104,32 @@
     )
 
     let (step, smooth) = (plot.style.step, plot.style.smooth)
-    if step != none and smooth {
-      panic("`step` and `smooth` are mututally exclusive")
-    }
 
     for run in runs {
       if run.len() == 0 { continue }
 
-      if step != none { run = stepify(run, step: step )}
       run = run.map(p => transform(..p))
-      if run.len() > 2 and smooth {
-        let x = run.map(((x, _)) => x)
-        let y = run.map(((_, y)) => y)
 
-        let points = bezier-splines(x, y)
-
-        place(curve(curve.move(points.at(0)), ..points
-          .slice(1)
-          .chunks(3)
-          .map(p => curve.cubic(..p))))
+      if step != none { 
+        run = stepify(run, step: step)
+      }
+      
+      let segments = if run.len() > 2 and smooth {
+        let points = bezier-splines(..array.zip(..run))
+        (
+          curve.move(points.first()),
+          ..points
+            .slice(1)
+            .chunks(3)
+            .map(p => curve.cubic(..p))
+        )
       } else {
-        place(curve(
+        (
           curve.move(run.first()),
           ..run.slice(1).map(curve.line)
-        ))
+        )
       }
+      place(curve(..segments))
     }
   }
 
@@ -348,7 +350,8 @@
   /// -> none | start | end | center
   step: none,
 
-  /// Interpolates the data set using Bézier splines instead of connecting the points with straight lines.
+  /// Interpolates the data set using Bézier splines instead of connecting the
+  /// points with straight lines.
   ///
   /// Note: If two or fewer points are given, linear interpolation is used.
   ///
@@ -460,6 +463,10 @@
   assertations.assert-matching-data-dimensions(x, y, fn-name: "plot")
   
   assert(step in (none, start, end, center))
+
+  if step != none and smooth {
+    panic("`step` and `smooth` are mututally exclusive")
+  }
 
   if xerr != none { xerr = process-errors(xerr, x.len(), kind: "x") }
   if yerr != none { yerr = process-errors(yerr, x.len(), kind: "y") }

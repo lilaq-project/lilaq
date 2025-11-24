@@ -8,13 +8,13 @@
 #lq.diagram(
   lq.fill-between(
     range(4),
-    (1, 2, 3, 4)
+    (1, 2, 3, 4),
   ),
   lq.fill-between(
     range(4),
     (0.9, 1.8, -1.2, 0.5),
     y2: (0, 1, 2.1, 4),
-  )
+  ),
 )
 
 
@@ -29,19 +29,25 @@
 // Cycling test
 #lq.diagram(
   cycle: (
-    it => { set lq.style(fill: blue); it },
-    it => { set lq.style(fill: red); it },
-    it => { 
-      set lq.style(fill: purple, stroke: green) 
+    it => {
+      set lq.style(fill: blue)
+      it
+    },
+    it => {
+      set lq.style(fill: red)
+      it
+    },
+    it => {
+      set lq.style(fill: purple, stroke: green)
       it
     },
   ),
-  fill-between((1, 2, 3), (6,)*3),
-  fill-between((1, 2, 3), (5,)*3),
-  fill-between((1, 2, 3), (4,)*3, stroke: auto),
-  fill-between((1, 2, 3), (3,)*3, fill: green),
-  fill-between((1, 2, 3), (2,)*3, stroke: orange),
-  fill-between((1, 2, 3), (1,)*3, fill: blue, stroke: aqua),
+  fill-between((1, 2, 3), (6,) * 3),
+  fill-between((1, 2, 3), (5,) * 3),
+  fill-between((1, 2, 3), (4,) * 3, stroke: auto),
+  fill-between((1, 2, 3), (3,) * 3, fill: green),
+  fill-between((1, 2, 3), (2,) * 3, stroke: orange),
+  fill-between((1, 2, 3), (1,) * 3, fill: blue, stroke: aqua),
 )
 
 
@@ -52,16 +58,19 @@
 // Step
 #lq.diagram(
   lq.fill-between(
-    (1, 2, 3), (2.1, 2.4, 2.1),
-    step: start
+    (1, 2, 3),
+    (2.1, 2.4, 2.1),
+    step: start,
   ),
   lq.fill-between(
-    (1, 2, 3), (1.1, 1.4, 1.1),
-    step: center
+    (1, 2, 3),
+    (1.1, 1.4, 1.1),
+    step: center,
   ),
   lq.fill-between(
-    (1, 2, 3), (.1, .4, .1),
-    step: end
+    (1, 2, 3),
+    (.1, .4, .1),
+    step: end,
   ),
 )
 
@@ -85,12 +94,12 @@
 #lq.diagram(
   lq.fill-between(
     range(8),
-    (1,2,3,float.nan, 6, 4, float.nan, 3)
-  )
+    (1, 2, 3, float.nan, 6, 4, float.nan, 3),
+  ),
 )
 
-
 #pagebreak()
+
 
 // Inverted axes
 #lq.diagram(
@@ -99,12 +108,67 @@
   lq.fill-between(
     range(4),
     (1, 2, 3, 4),
-    stroke: black
+    stroke: black,
   ),
   lq.fill-between(
     range(4),
     (0.9, 1.8, -1.2, 0.5),
     y2: (0, 1, 2.1, 4),
-    stroke: black
-  )
+    stroke: black,
+  ),
+)
+
+#pagebreak()
+
+
+// Smoothed 
+#lq.diagram(
+  lq.fill-between(
+    range(4),
+    (1, 3, 2, 4),
+    stroke: black,
+    smooth: true,
+  ),
+  lq.fill-between(
+    (0, 1, 2, 2.1, 2.2, 2.5, 3),
+    (0.9, 1.8, -1.2, float.nan, -1, -.2, 0.5),
+    y2: (0, 1, 2.1, float.nan, 2.3, 2.4, 4),
+    fill: orange.transparentize(50%),
+    stroke: black,
+    smooth: true,
+  ),
+  lq.fill-between(
+    (1,),
+    (2,),
+  ),
+)
+
+#assert.eq(
+  catch(() => lq.fill-between((), (), smooth: true, step: end)),
+  "panicked with: \"`step` and `smooth` are mututally exclusive\""
+)
+
+#pagebreak()
+
+
+// Step with y2 and consistency with plot.step
+#lq.diagram(
+  lq.fill-between(
+    (0, 1, 2, 3),
+    (2, 3, 7, 4),
+    y2: (1, 0, 2, 0),
+    step: start,
+  ),
+  lq.plot(
+    (0, 1, 2, 3),
+    (2, 3, 7, 4),
+    step: start,
+    mark: none,
+  ),
+  lq.plot(
+    (0, 1, 2, 3),
+    (1, 0, 2, 0),
+    step: start,
+    mark: none,
+  ),
 )
