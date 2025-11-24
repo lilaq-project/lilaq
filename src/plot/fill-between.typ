@@ -15,24 +15,31 @@
   show: prepare-path.with(
     fill: plot.style.fill,
     stroke: plot.style.stroke,
-    element: polygon
+    element: curve
   )
   
   if "make-legend" in plot {
-    polygon((0%, 0%), (0%, 100%), (100%, 100%), (100%, 0%))
+    curve(curve.move((0%, 0%)), curve.line((0%, 100%)), curve.line((100%, 100%)), curve.line((100%, 0%)), curve.close())
   } else {
     for run in runs {
       let there = run.map(x => x.slice(0,2))
       let back = run.map(x => (x.at(0), x.at(2)))
+
+      
       if plot.style.step != none {
         there = stepify(there, step: plot.style.step)
         back = stepify(back, step: plot.style.step)
       }
       
 
-      place(polygon(
-        ..((there + back.rev()).map(p => transform(..p))))
-      )
+
+      let points = (there + back.rev()).map(p => transform(..p))
+      place(curve(
+        curve.move(points.at(0)),
+        ..points.slice(1).map(curve.line),
+        curve.close()
+      ))
+      
     }
   }
 }
