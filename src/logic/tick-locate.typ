@@ -321,7 +321,7 @@
     unit: unit,
     
     // We provide additional args to ease the work of the formatter (in case it is
-    // format-ticks-linear), because right now we have a lot of information. 
+    // tick-format.linear), because right now we have a lot of information. 
 
     exponent: exponent, // Ideal base-10 exponent to maybe factorize from the ticks. 
     offset: axis-offset, // Ideal offset to maybe subtract from the ticks. 
@@ -389,7 +389,7 @@
   let log-distance = log(x1) - log(x0)
   if log-distance < linear-threshold { 
      let tick-info = linear(x0, x1, ..args) 
-     tick-info.linear = true // notify format-ticks-log that this is actually a "linear" ticking
+     tick-info.linear = true // notify tick-format.log that this is actually a "linear" ticking
      return tick-info
   }
   
