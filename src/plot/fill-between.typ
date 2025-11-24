@@ -1,4 +1,5 @@
 #import "../assertations.typ"
+#import "../algorithm/bezier-interpolation.typ": bezier-splines
 #import "../process-styles.typ": merge-strokes, merge-fills
 #import "../logic/process-coordinates.typ": filter-nan-points, stepify
 #import "../logic/time.typ"
@@ -22,24 +23,47 @@
     curve(curve.move((0%, 0%)), curve.line((0%, 100%)), curve.line((100%, 100%)), curve.line((100%, 0%)), curve.close())
   } else {
     for run in runs {
-      let there = run.map(x => x.slice(0,2))
-      let back = run.map(x => (x.at(0), x.at(2)))
-
+      if run.len() == 0 { continue }
       
-      if plot.style.step != none {
-        there = stepify(there, step: plot.style.step)
-        back = stepify(back, step: plot.style.step)
+      let run-y1 = run.map(((x, y1, y2)) => transform(x, y1))
+      let run-y2 = run.map(((x, y1, y2)) => transform(x, y2))
+
+      let (step, smooth) = (plot.style.step, plot.style.smooth)
+      if step != none and smooth {
+        panic("`step` and `smooth` are mututally exclusive")
       }
-      
+    
+      if plot.style.step != none {
+        run-y1 = stepify(run-y1, step: plot.style.step)
+        run-y2 = stepify(run-y2, step: plot.style.step)
+      }
 
-
-      let points = (there + back.rev()).map(p => transform(..p))
-      place(curve(
-        curve.move(points.at(0)),
-        ..points.slice(1).map(curve.line),
-        curve.close()
-      ))
-      
+      let segments = if run.len() > 2 and smooth {
+        run-y1 = bezier-splines(..array.zip(..run-y1))
+        run-y2 = bezier-splines(..array.zip(..run-y2)).rev()
+        (
+          curve.move(run-y1.first()),
+          ..run-y1
+            .slice(1)
+            .chunks(3)
+            .map(p => curve.cubic(..p)),
+          curve.line(run-y2.first()),
+          ..run-y2
+            .slice(1)
+            .chunks(3)
+            .map(p => curve.cubic(..p)),
+        )
+      } else {
+        let cycle = (run-y1 + run-y2.rev())
+        (
+          curve.move(cycle.first()),
+          ..cycle.slice(1).map(curve.line),
+        )
+      }
+    
+      place(
+        curve(..segments, curve.close(mode: "straight"))
+      )
     }
   }
 }
@@ -97,6 +121,12 @@
   /// -> none | start | end | center
   step: none,
   
+  /// Interpolates the data set using Bézier splines instead of connecting the
+  /// points with straight lines. Also see @plot.smooth. 
+  ///
+  /// -> bool
+  smooth: false,
+
   /// The legend label for this plot. See @plot.label. 
   /// -> content
   label: none,
@@ -133,6 +163,7 @@
       fill: fill,
       stroke: stroke,
       step: step,
+      smooth: smooth,
     ),
     plot: render-fill-between,
     xlimits: () => minmax(x),
