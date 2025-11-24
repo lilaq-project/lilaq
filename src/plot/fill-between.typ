@@ -29,9 +29,6 @@
       let run-y2 = run.map(((x, y1, y2)) => transform(x, y2))
 
       let (step, smooth) = (plot.style.step, plot.style.smooth)
-      if step != none and smooth {
-        panic("`step` and `smooth` are mututally exclusive")
-      }
     
       if plot.style.step != none {
         run-y1 = stepify(run-y1, step: plot.style.step)
@@ -153,7 +150,11 @@
   assertations.assert-matching-data-dimensions(x, x, y1: y1, y2: y2, fn-name: "fill-between")
   assert(step in (none, start, end, center))
 
-  
+
+  if step != none and smooth {
+    panic("`step` and `smooth` are mututally exclusive")
+  }
+
   (
     x: x,
     y1: y1,
