@@ -195,13 +195,13 @@
   stroke: auto,
 
   /// Places an arrow tip on the axis spine. This expects a mark as specified by
-  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
   /// If not `auto`, this is forwarded to @spine.tip. 
   /// -> auto | none | tiptoe.mark
   tip: auto,
 
   /// Places an arrow tail on the axis spine. This expects a mark as specified by 
-  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
   /// If not `auto`, this is forwarded to @spine.toe. 
   /// -> auto | none | tiptoe.mark
   toe: auto,

@@ -152,12 +152,12 @@
   pivot: end,  
 
   /// Determines the arrow tip to use. This expects a mark as specified by
-  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
   /// -> none | tiptoe.mark
   tip: tiptoe.stealth.with(length: 400%),
   
   /// Determines the arrow tail to use. This expects a mark as specified by 
-  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
   /// -> none | tiptoe.mark
   toe: none,
 

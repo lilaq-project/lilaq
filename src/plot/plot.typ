@@ -305,7 +305,7 @@
   
   /// The mark to use to mark data points. This may either be a mark (such as 
   /// `lq.mark.x`) or a registered mark string, see @mark. 
-  /// -> auto | none | lq.mark | string
+  /// -> auto | none | lq.mark | str
   mark: auto, 
   
   /// Size of the marks. For variable-size mark plots, use the plot type @scatter. 
@@ -375,7 +375,7 @@
   /// - `none`: All marks are plotted.
   /// - `int`: Every $n$-th mark is plotted.
   /// - `array`: All marks with the given indices are plotted.
-  /// - `dict`: A dictionary with the keys `n`, `start` (start index), and 
+  /// - `dictionary`: A dictionary with the keys `n`, `start` (start index), and 
   ///   `end` (end index, negative indices count from the end) can be used 
   ///   to specify a range of marks to plot.
   /// 
@@ -390,7 +390,7 @@
   ///   )
   ///   ```
   /// ]
-  /// -> none | int | array | dict
+  /// -> none | int | array | dictionary
   every: none,
   
   /// The legend label for this plot. If not given, the plot will not appear in the 

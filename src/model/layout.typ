@@ -141,7 +141,7 @@
 
 /// Applies special show rules that align diagrams as cells
 /// of a Typst [`grid`](https://typst.app/docs/reference/layout/grid/). 
-/// Refer to the #link("tutorials/subplots")[subplot tutorial] for more details. 
+/// Refer to the #link("tutorials/plot-grids")[subplot tutorial] for more details. 
 /// 
 /// Example:
 /// ```example
