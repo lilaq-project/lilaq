@@ -137,7 +137,7 @@
     }
 
     let curve = std.curve
-    if plot.style.tip != none or plot.style.toe != none {
+    if (plot.style.tip != none or plot.style.toe != none) and not "make-legend" in plot {
       curve = tiptoe.curve.with(
         tip: plot.style.tip,
         toe: plot.style.toe,
