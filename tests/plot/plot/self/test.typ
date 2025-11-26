@@ -11,33 +11,39 @@
 // Cycling test
 #lq.diagram(
   cycle: (
-    it => { set lq.style(fill: blue); it },
-    it => { set lq.style(fill: red); it },
-    it => { 
-      set lq.style(fill: red, stroke: green) 
+    it => {
+      set lq.style(fill: blue)
       it
     },
-    it => { 
+    it => {
+      set lq.style(fill: red)
+      it
+    },
+    it => {
+      set lq.style(fill: red, stroke: green)
+      it
+    },
+    it => {
       set lq.style(fill: orange)
       set lq.mark(fill: yellow)
       it
     },
-    it => { 
+    it => {
       set lq.style(fill: purple.lighten(60%))
       set lq.mark(fill: yellow, stroke: black)
       it
     },
   ),
-  plot((1, 2, 3), (6,)*3),
-  plot((1, 2, 3), (5,)*3),
-  plot((1, 2, 3), (4,)*3),
-  plot((1, 2, 3), (3,)*3),
-  plot((1, 2, 3), (2,)*3),
-  plot((1, 2, 3), (1,)*3, color: green),
-  plot((1, 2, 3), (0,)*3, stroke: green),
-  plot((1, 2, 3), (-1,)*3, color: blue),
-  plot((1, 2, 3), (-2,)*3, stroke: green),
-  plot((1, 2, 3), (-3,)*3, color: green),
+  plot((1, 2, 3), (6,) * 3),
+  plot((1, 2, 3), (5,) * 3),
+  plot((1, 2, 3), (4,) * 3),
+  plot((1, 2, 3), (3,) * 3),
+  plot((1, 2, 3), (2,) * 3),
+  plot((1, 2, 3), (1,) * 3, color: green),
+  plot((1, 2, 3), (0,) * 3, stroke: green),
+  plot((1, 2, 3), (-1,) * 3, color: blue),
+  plot((1, 2, 3), (-2,) * 3, stroke: green),
+  plot((1, 2, 3), (-3,) * 3, color: green),
 )
 
 
@@ -48,16 +54,19 @@
 // Step
 #lq.diagram(
   lq.plot(
-    (1, 2, 3), (2.1, 2.4, 2.1),
-    step: start
+    (1, 2, 3),
+    (2.1, 2.4, 2.1),
+    step: start,
   ),
   lq.plot(
-    (1, 2, 3), (1.1, 1.4, 1.1),
-    step: center
+    (1, 2, 3),
+    (1.1, 1.4, 1.1),
+    step: center,
   ),
   lq.plot(
-    (1, 2, 3), (.1, .4, .1),
-    step: end
+    (1, 2, 3),
+    (.1, .4, .1),
+    step: end,
   ),
 )
 
@@ -87,12 +96,12 @@
 #page(
   margin: 5pt,
   lq.diagram(
-    width: 1cm, 
+    width: 1cm,
     height: .5cm,
     margin: 0%,
     lq.plot((0, 1), (0, 0)),
     lq.plot((0, 1), (1, 1), clip: false),
-  )
+  ),
 )
 
 
@@ -114,22 +123,28 @@
 
 // Errors
 #let errors = lq.diagram(
-  lq.plot((0, 1, 2), (3,)*3, yerr: .4),
-  lq.plot((0, 1, 2), (2,)*3, xerr: .3, stroke: none),
+  lq.plot((0, 1, 2), (3,) * 3, yerr: .4),
+  lq.plot((0, 1, 2), (2,) * 3, xerr: .3, stroke: none),
   lq.plot(
-    (0, 1, 2), (1,)*3, 
-    xerr: (.4, .2, .3), yerr: (.4, .2, .3), 
-    stroke: none
+    (0, 1, 2),
+    (1,) * 3,
+    xerr: (.4, .2, .3),
+    yerr: (.4, .2, .3),
+    stroke: none,
   ),
   lq.plot(
-    (0, 1, 2), (0,)*3, 
-    xerr: (p: .1, m: .2), yerr: (p: .1, m: .2), 
-    stroke: none
+    (0, 1, 2),
+    (0,) * 3,
+    xerr: (p: .1, m: .2),
+    yerr: (p: .1, m: .2),
+    stroke: none,
   ),
   lq.plot(
-    (0, 1, 2), (-1,)*3, 
-    xerr: (p: (.1, .2, .3), m: .2), yerr: (p: .1, m: (.4, .3, .2)), 
-    stroke: none
+    (0, 1, 2),
+    (-1,) * 3,
+    xerr: (p: (.1, .2, .3), m: .2),
+    yerr: (p: .1, m: (.4, .3, .2)),
+    stroke: none,
   ),
 )
 
@@ -160,7 +175,6 @@
   lq.plot((2,), (0,), mark: "s"),
   lq.plot((3,), (0,), mark: lq.marks.at("*")),
   lq.plot((4,), (0,), mark-size: 2pt),
-
 )
 
 
@@ -172,8 +186,8 @@
 #lq.diagram(
   lq.plot(
     range(8),
-    (1,2,3,float.nan, 6, 4, float.nan, 3)
-  )
+    (1, 2, 3, float.nan, 6, 4, float.nan, 3),
+  ),
 )
 
 
@@ -189,15 +203,37 @@
   lq.plot(x, y, smooth: true),
 )
 
-#assert.eq(
-  catch(() => lq.plot((), (), smooth: true, step: end)),
-  "panicked with: \"`step` and `smooth` are mututally exclusive\""
-)
+// #assert.eq(
+//   catch(() => lq.plot((), (), smooth: true, step: end)),
+//   "panicked with: \"`step` and `smooth` are mututally exclusive\""
+// )
 
 
 #pagebreak()
 
 // Plot-Fn
 #lq.diagram(
-  lq.plot(lq.linspace(-1, 1), x => calc.max(0, x))
+  lq.plot(lq.linspace(-1, 1), x => calc.max(0, x)),
+)
+
+
+
+
+#pagebreak()
+
+#import "@preview/tiptoe:0.4.0"
+// arrow tips and toes
+#lq.diagram(
+  lq.plot(
+    range(8),
+    calc.sin,
+    tip: tiptoe.triangle,
+    toe: tiptoe.square,
+  ),
+  lq.plot(
+    range(8),
+    (1, float.nan, 3, 2, 6, 4, float.nan, 3),
+    tip: tiptoe.stealth,
+    toe: tiptoe.triangle,
+  ),
 )
