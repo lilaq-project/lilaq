@@ -226,9 +226,8 @@
 #lq.diagram(
   lq.plot(
     range(8),
-    calc.sin,
+    (0, 0.84, 0.90, 0.14, float.nan, -0.95, -0.27, 0.656),
     tip: tiptoe.triangle,
-    toe: tiptoe.square,
   ),
   lq.plot(
     range(8),
