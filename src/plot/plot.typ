@@ -7,6 +7,7 @@
 #import "../style/styling.typ": mark, prepare-mark, prepare-path
 #import "../model/errorbar.typ": errorbar
 #import "../logic/time.typ"
+#import "@preview/tiptoe:0.4.0"
 
 #let get-errorbar-stroke(base-stroke) = {
   if base-stroke == auto { return stroke() }
@@ -102,11 +103,15 @@
       stroke: line,
       element: curve
     )
+    
+
 
     let (step, smooth) = (plot.style.step, plot.style.smooth)
 
+    let segments = ()
+
     for run in runs {
-      if run.len() == 0 { continue }
+      if run.len() <= 1 { continue }
 
       run = run.map(p => transform(..p))
 
@@ -114,7 +119,7 @@
         run = stepify(run, step: step)
       }
       
-      let segments = if run.len() > 2 and smooth {
+      segments += if run.len() > 2 and smooth {
         let points = bezier-splines(..array.zip(..run))
         (
           curve.move(points.first()),
@@ -129,8 +134,16 @@
           ..run.slice(1).map(curve.line)
         )
       }
-      place(curve(..segments))
     }
+
+    let curve = std.curve
+    if (plot.style.tip != none or plot.style.toe != none) and not "make-legend" in plot {
+      curve = tiptoe.curve.with(
+        tip: plot.style.tip,
+        toe: plot.style.toe,
+      )
+    }
+    place(curve(..segments))
   }
 
 
@@ -392,6 +405,16 @@
   /// ]
   /// -> none | int | array | dictionary
   every: none,
+
+  /// Places an arrow tip on the plot line. This expects a mark as specified by
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
+  /// -> none | tiptoe.mark
+  tip: none,
+
+  /// Places an arrow tail on the plot line. This expects a mark as specified by 
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
+  /// -> none | tiptoe.mark
+  toe: none,
   
   /// The legend label for this plot. If not given, the plot will not appear in the 
   /// legend. 
@@ -488,7 +511,9 @@
       stroke: stroke,
       color: color,
       step: step,
-      smooth: smooth
+      smooth: smooth,
+      tip: tip,
+      toe: toe,
     ),
     plot: render-plot,
     xlimits: () => plot-lim(x, err: xerr),
