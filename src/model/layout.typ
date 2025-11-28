@@ -28,15 +28,15 @@
   if it.children.all(cell => e.eid(cell.body) != e.eid(diagram)) { return it }
   
   
-  let table = context {
+  let grid = context {
     
-    let table-end = query(selector(<__lilaq_matrix__>)
+    let grid-end = query(selector(<__lilaq_layout__>)
       .after(here()))
       .first()
       .location()
     
     let diagram-meta = query(
-      selector(<__lilaq_diagram__>).after(here()).before(table-end)
+      selector(<__lilaq_diagram__>).after(here()).before(grid-end)
     ).map(metadata => metadata.value)
 
 
@@ -134,13 +134,13 @@
     }
     it
   }
-  table + [#metadata(none)<__lilaq_matrix__>]
+  grid + [#metadata(none)<__lilaq_layout__>]
 }
 
 
 
 /// Applies special show rules that align diagrams as cells
-/// of a Typst [`grid`](https://typst.app/docs/reference/layout/grid/). 
+/// of a Typst grid. 
 /// Refer to the #link("tutorials/plot-grids")[subplot tutorial] for more details. 
 /// 
 /// Example:
@@ -178,7 +178,7 @@
 /// match the correct row or column. 
 #let layout(
 
-  /// The body to transform
+  /// The body to transform.
   /// -> content
   body
 
