@@ -161,6 +161,20 @@
   /// -> none | color | gradient | tiling 
   fill: none,
 
+  /// How to compute the bounding box of a diagram. 
+  /// - `"strict"`: The bounds are computed as the precise bounding box of the 
+  ///   diagram. The exact behavior for text bounds also depends on the setting 
+  ///   of #link("https://typst.app/docs/reference/text/text/#parameters-top-edge)[`text.top-edge`]
+  ///   and #link(https://typst.app/docs/reference/text/text/#parameters-bottom-edge)[`text.bottom-edge`]. 
+  /// - `"relaxed"`: Tick labels of a horizontal axis are allowed to spill out
+  ///   at the right and left of a diagram and tick labels of a vertical axis 
+  ///   may spill out at the top and bottom. Like this, the spines can line up
+  ///   with the main text body, even when the first and last tick sit on the 
+  ///   far edges of an axis. Most times, this can give a cleaner look. 
+  ///- `"data-area"`: The bounds are simply the data area. 
+  /// -> "relaxed", "strict", "data-area"
+  bounds: "relaxed",
+
   /// Plot objects like @plot, @bar, @scatter, @contour etc. and additional 
   /// @axis objects. 
   /// -> any
@@ -457,7 +471,7 @@
   width, height, 
   it: (:), axes: (), plots: (), e-get: none, 
   auto-height: true, auto-width: true,
-  available-size: (0pt, 0pt)
+  available-size: (width: 0pt, height: 0pt)
 ) = {
   (width, height) = resolve-dimensions-aspect-ratio(
     ..axes.slice(0, 2), 
@@ -485,7 +499,8 @@
   for (axis, ticking) in axes.zip(tickings) {
     let (_, axis-bounds) = draw-axis(
       axis, ticking, e-get: e-get, 
-      orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform
+      orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform,
+      bounds-mode: it.bounds
     )
     bounds = axis-bounds.fold(bounds, update-bounds)
   }
@@ -507,6 +522,7 @@
   if legend != none {
     bounds = update-bounds(bounds, legend.bounds)
   }
+
 
   if auto-width {
     width = available-size.width - bounds.right + bounds.left + width
@@ -594,6 +610,15 @@
     let it = it
     let tickings = ()
 
+
+    // In this case, we do not need and want complex layout computation.
+    if it.bounds == "data-area" and type(it.width) == relative {
+      it.width = it.size.width
+    }
+    if it.bounds == "data-area" and type(it.height) == relative {
+      it.height = it.size.height
+    }
+    
     // Diagram may have relative/ratio width or height
     if type(it.width) == relative or type(it.height) == relative {
       let attempt-layout = attempt-layout.with(
@@ -688,7 +713,8 @@
       for (axis, ticking) in axes.zip(tickings) {
         let (axis-content, axis-bounds) = draw-axis(
           axis, ticking, e-get: e-get, 
-          orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform
+          orthogonal-axis-transform: (if axis.kind == "x" { yaxis } else { xaxis }).transform,
+          bounds-mode: it.bounds
         )
         artists.push((content: axis-content, z: 20))
         
@@ -725,6 +751,10 @@
     bounds.right -= it.width
     bounds.left *= -1
     bounds.top *= -1
+
+    if it.bounds == "data-area" {
+      bounds = (top: 0pt, bottom: 0pt, left: 0pt, right: 0pt)
+    }
 
     let result = box(
       inset: bounds, 
@@ -804,6 +834,7 @@
     e.field("margin", e.types.union(ratio, dictionary), default: 6%),
     e.field("cycle", e.types.wrap(e.types.array(e.types.union(function, color, dictionary)), fold: none), default: petroff10),
     e.field("fill", e.types.option(e.types.paint), default: none),
+    e.field("bounds", e.types.union("strict", "relaxed", "data-area"), default: "relaxed"),
   ),
 
   parse-args: (default-parser, fields: none, typecheck: none) => (args, include-required: false) => {
