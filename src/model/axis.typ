@@ -693,17 +693,18 @@
   if labels == none { labels = (none,) * ticks.len() }
   
   let align = position.inv()
-  let pad = e-get(lq-tick).pad
-  let factor = if sub { 1 - (e-get(lq-tick).shorten-sub / 100%) } else { 1 }
-  let outset = e-get(lq-tick).outset * factor
-  let inset = e-get(lq-tick).inset * factor
-  let shorten-sub = e-get(lq-tick).shorten-sub
+  let tick-state = e-get(lq-tick)
+  let pad = tick-state.pad
+  let factor = if sub { 1 - (tick-state.shorten-sub / 100%) } else { 1 }
+  let outset = tick-state.outset * factor
+  let inset = tick-state.inset * factor
+  let shorten-sub = tick-state.shorten-sub
   let length = inset + outset
   let angle = if align in (top, bottom) { 90deg } else { 0deg }
 
   let tick-stroke = if-none(
     merge-strokes(
-      e-get(lq-tick).stroke, 
+      tick-state.stroke, 
       axis.stroke, (cap: "butt"), 
       e-get(spine).stroke
     ), 
@@ -723,15 +724,11 @@
     make-tick = (label, loc) => place(dy: -outset, dx: loc, {tline + place(dy: -length - pad, bottom + center, label)})
   }
 
-  let max-value = (axis.transform)(axis.lim.at(if axis.kind == "x" { 1 } else { 0 }))
   
   let lq-tick-label = lq-tick-label.with(sub: sub, kind: axis.kind)
+  labels = labels.map(label => if display-tick-labels { lq-tick-label(label) })
 
-  labels = labels.map(label => {
-    if display-tick-labels {
-      lq-tick-label(label)
-    }
-  })
+  let max-coordinate = (axis.transform)(axis.lim.at(if axis.kind == "x" { 1 } else { 0 }))
 
   let tick-collection = ticks.zip(labels)
     .map(
@@ -741,7 +738,7 @@
     )
     .filter(
       tick => (axis.filter)(
-        tick.value, calc.min(tick.coordinate, max-value - tick.coordinate)
+        tick.value, calc.min(tick.coordinate, max-coordinate - tick.coordinate)
       )
     )
 
@@ -768,7 +765,9 @@
 
     let coordinate = (axis.transform)(e.fields(tick).value)
     if label != none {
-      tick-collection.push((value: e.fields(tick).value, coordinate: coordinate, label: label))
+      tick-collection.push(
+        (value: e.fields(tick).value, coordinate: coordinate, label: label)
+      )
     }
     let offset = if axis.kind == "x" { (dx: coordinate) } else { (dy: coordinate) }
     content += place(..offset, {
@@ -778,7 +777,8 @@
       }
       tick
     })
-  } // end extra-ticks
+  }
+
 
   // Do not return unnecessary bounds 
   if tick-collection.len() == 0 {
@@ -818,7 +818,8 @@
     tick-bounds = _to-bounds(cross-extent, start-space, end-space, pos: position, inwards: inset)
   }
 
-  // Erase size information from parent (data area). 
+  // Erase size information from parent (data area). If the data-area is 
+  // smaller than the axis, axis elements could otherwise be cropped. 
   content = place(
     box(width: float.inf * 1pt, height: float.inf * 1pt, content)
   )
@@ -943,10 +944,10 @@
 
 
     if display-tick-labels {
-      let (c, b) = place-attachments(axis, exp, offset, position)
-      if c != none {
-        content += c
-        bounds.push(b)
+      let (att-content, att-bounds) = place-attachments(axis, exp, offset, position)
+      if att-content != none {
+        content += att-content
+        bounds.push(att-bounds)
       }
     }
     
@@ -987,7 +988,6 @@
       )
       
       content += label-content
-
       bounds.push(label-bounds)
     }
 
