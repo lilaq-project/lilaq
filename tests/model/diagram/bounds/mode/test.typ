@@ -21,5 +21,3 @@
 #pagebreak()
 
 #lq.diagram(bounds: "data-area")
-
-
