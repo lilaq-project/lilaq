@@ -1,14 +1,12 @@
 #import "/src/lilaq.typ" as lq
+#import "/tests/test-presets.typ"
 
 #set page(margin: 5pt)
 
 
 // Make reference images smaller by obscuring text
-#let mask = it => box(fill: gray, hide(it))
-
-#show lq.selector(lq.tick-label): mask
-#show lq.selector(lq.label): mask
-#show lq.selector(lq.title): mask
+#show: test-presets.obfuscate
+#show: test-presets.minimal
 
 #show: lq.set-legend(
   stroke: 1pt + black,
@@ -16,9 +14,7 @@
 )
 
 
-#show: lq.set-tick(inset: 0pt, outset: 0pt)
 #show: lq.set-diagram(
-  grid: none,
   xaxis: (tick-args: (density: 50%)),
   yaxis: (tick-args: (density: 50%)),
 )
