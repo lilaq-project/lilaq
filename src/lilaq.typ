@@ -28,6 +28,8 @@
 #import "plot/contour.typ": contour
 #import "plot/boxplot.typ": boxplot
 #import "plot/hboxplot.typ": hboxplot
+#import "plot/violinplot.typ": violinplot
+#import "plot/hviolinplot.typ": hviolinplot
 #import "plot/quiver.typ": quiver
 #import "plot/hlines.typ": hlines
 #import "plot/vlines.typ": vlines
