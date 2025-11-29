@@ -523,15 +523,9 @@
     bounds = update-bounds(bounds, legend.bounds)
   }
 
-  if it.bounds == "data-area" {
-    
-  }
 
   if auto-width {
-    // if it.bounds == "data-area" { width = available-size.width }
-    // else {
-    // }
-      width = available-size.width - bounds.right + bounds.left + width
+    width = available-size.width - bounds.right + bounds.left + width
   }
   if auto-height {
     height = available-size.height - bounds.bottom + bounds.top + height

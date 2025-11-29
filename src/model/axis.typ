@@ -720,11 +720,21 @@
     }
   })
 
-  let o = ticks.zip(labels).map(
-    ((tick, label)) => (tick: tick, label: label, offset: (axis.transform)(tick))
-  ).filter(tick => (axis.filter)(tick.tick, calc.min(tick.offset, max-value - tick.offset)))
+  let tick-collection = ticks.zip(labels)
+    .map(
+      ((tick, label)) => (
+        value: tick, label: label, coordinate: (axis.transform)(tick)
+      )
+    )
+    .filter(
+      tick => (axis.filter)(
+        tick.value, calc.min(tick.coordinate, max-value - tick.coordinate)
+      )
+    )
 
-  let content = o.map(tick => make-tick(tick.label, tick.offset)).join()
+  let content = tick-collection
+    .map(tick => make-tick(tick.label, tick.coordinate))
+    .join()
 
   for tick in axis.extra-ticks {
     if sub { break }
@@ -742,11 +752,10 @@
       )
     }
     let label = e.fields(tick).at("label", default: none)
-    // if label != none { labels.push(label) }
 
     let loc = (axis.transform)(e.fields(tick).value)
     if label != none {
-      o.push((tick: e.fields(tick).value, offset: loc, label: label))
+      tick-collection.push((tick: e.fields(tick).value, offset: loc, label: label))
     }
     let offset = if axis.kind == "x" { (dx: loc) } else { (dy: loc) }
     content += place(..offset, {
@@ -759,8 +768,7 @@
   } // end extra-ticks
 
 
-  let max-padding = outset
-  let max-width = 0pt
+  let cross-extent = outset
   let tick-bounds = (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
 
 
@@ -769,11 +777,10 @@
     let other-dimension = if axis.kind == "y" { "height" } else { "width" }
 
 
-    let label-sizes = labels.map(measure)
-    let label-sizes = o.map(tick => {
+    let label-sizes = tick-collection.map(tick => {
       let size = measure(tick.label)
       let dim = size.at(other-dimension)
-      size + (lower: tick.offset - dim/2, upper: tick.offset + dim/2)
+      size + (lower: tick.coordinate - dim/2, upper: tick.coordinate + dim/2)
     })
 
     let label-space = calc.max(0pt, ..label-sizes.map(s => s.at(dimension)))
@@ -786,17 +793,19 @@
     }
 
 
-    max-padding += label-space
+    cross-extent += label-space
     if label-space > 0pt {
-      max-padding += pad
+      cross-extent += pad
     }
-    tick-bounds = to-bounds(max-padding, start-space, end-space, pos: position)
+    tick-bounds = to-bounds(cross-extent, start-space, end-space, pos: position)
   }
 
   // Erase size information from parent (data area). 
-  content = place(box(width: float.inf * 1pt, height: float.inf * 1pt, content))
+  content = place(
+    box(width: float.inf * 1pt, height: float.inf * 1pt, content)
+  )
   
-  return (content, max-padding.to-absolute(), tick-bounds)
+  return (content, cross-extent.to-absolute(), tick-bounds)
 }
 
 
@@ -857,6 +866,7 @@
 
   place-with-bounds(attachment, ..args)
 }
+
 
 // Draws an axis and its mirror (if any)
 #let draw-axis(
