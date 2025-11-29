@@ -768,9 +768,14 @@
     })
   } // end extra-ticks
 
+  // Do not return useless bounds 
+  if tick-collection.len() == 0 {
+    return (none, 0pt, none)
+  }
+
 
   let cross-extent = outset
-  let tick-bounds = (left: 0pt, right: 0pt, top: 0pt, bottom: 0pt)
+  let tick-bounds = to-bounds(cross-extent, 0%, 100%, pos: position, inwards: inset)
 
 
   if display-tick-labels {
@@ -909,15 +914,19 @@
       let (tick-content, tick-space, tick-bounds) = place-ticks(
         axis, ticks, tick-labels, position, display-tick-labels, e-get: e-get, bounds-mode: bounds-mode
       )
-      // bounds.push(tick-bounds)
-      content += tick-content
-      let (subtick-content, subtick-space, tick-bounds) = place-ticks(
+      if tick-content != none {
+        bounds.push(tick-bounds)
+        content += tick-content
+      }
+      let (subtick-content, subtick-space, subtick-bounds) = place-ticks(
         axis, subticks, subtick-labels, position, display-tick-labels, 
         sub: true, e-get: e-get, bounds-mode: bounds-mode
       )
-      // bounds.push(tick-bounds)
+      if subtick-content != none {
+        bounds.push(subtick-bounds)
+        content += subtick-content
+      }
       space = calc.max(tick-space, subtick-space)
-      content += subtick-content
     }
 
 
@@ -983,7 +992,7 @@
       inset: 0pt, outset: 0pt
     )
     
-    let inset = e-get(lq-tick).inset
+    // let inset = e-get(lq-tick).inset
     // bounds.push(to-bounds(space, 0pt, 100%, pos: position, inwards: inset))
 
     // let main-bounds = create-bounds()
@@ -1014,12 +1023,12 @@
         rect(width: b.right - b.left, height: b.bottom - b.top, fill: blue.transparentize(60%))
       )
     }
-    for b in bounds { content += draw-bounds(b) }
-    // if axis.kind == "x" {
-    //   content = box(width: 100%, height: float.inf*1pt, content)
-    // } else if axis.kind == "y" {
-    //   content = box(height: 100%, width: float.inf * 1pt, content)
-    // }
+    // for b in bounds { content += draw-bounds(b) }
+    if axis.kind == "x" {
+      content = box(width: 100%, height: float.inf*1pt, content)
+    } else if axis.kind == "y" {
+      content = box(height: 100%, width: float.inf * 1pt, content)
+    }
     return (content, bounds)
   }
 
