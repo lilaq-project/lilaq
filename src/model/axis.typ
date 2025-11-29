@@ -753,11 +753,11 @@
     }
     let label = e.fields(tick).at("label", default: none)
 
-    let loc = (axis.transform)(e.fields(tick).value)
+    let coordinate = (axis.transform)(e.fields(tick).value)
     if label != none {
-      tick-collection.push((tick: e.fields(tick).value, offset: loc, label: label))
+      tick-collection.push((value: e.fields(tick).value, coordinate: coordinate, label: label))
     }
-    let offset = if axis.kind == "x" { (dx: loc) } else { (dy: loc) }
+    let offset = if axis.kind == "x" { (dx: coordinate) } else { (dy: coordinate) }
     content += place(..offset, {
       show: e.set_(lq-tick, align: position.inv(), kind: axis.kind)
       show e.selector(lq-tick-label): it => {
