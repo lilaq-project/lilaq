@@ -1,5 +1,5 @@
 #import "@preview/elembic:1.1.1" as e
-#import "diagram.typ": diagram
+#import "model/diagram.typ": diagram
 
 // #let lbox = e.element.declare(
 //   "lbox",

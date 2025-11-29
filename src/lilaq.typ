@@ -15,7 +15,7 @@
 #import "style/cycle.typ"
 #import "style/color.typ"
 
-#import "model/layout.typ": layout
+#import "layout.typ": layout
 
 #import "plot/plot.typ": plot
 #import "plot/bar.typ": bar
@@ -44,10 +44,20 @@
 #import "place-anchor.typ": place-anchor
 
 
-#import "typing.typ": set-grid, set-label, set-title, set-legend, set-tick, set-tick-label, set-spine, set-diagram, set-errorbar, selector, fields, show_, cond-set
+#import "typing.typ": (
+  cond-set, fields, selector, set-diagram, set-errorbar, set-grid, set-label, set-legend, set-spine, set-tick,
+  set-tick-label, set-title, show_,
+)
 
 #import "logic/scale.typ"
-#import "logic/tick-locate.typ" as tick-locate: linear as locate-ticks-linear, log as locate-ticks-log, symlog as locate-ticks-symlog, manual as locate-ticks-manual, subticks-linear as locate-subticks-linear, subticks-log as locate-subticks-log, subticks-symlog as locate-subticks-symlog, datetime as locate-ticks-datetime
-#import "logic/tick-format.typ" as tick-format: linear as format-ticks-linear, log as format-ticks-log, manual as format-ticks-manual, symlog as format-ticks-symlog, datetime as format-ticks-datetime
+#import "logic/tick-locate.typ" as tick-locate: (
+  datetime as locate-ticks-datetime, linear as locate-ticks-linear, log as locate-ticks-log,
+  manual as locate-ticks-manual, subticks-linear as locate-subticks-linear, subticks-log as locate-subticks-log,
+  subticks-symlog as locate-subticks-symlog, symlog as locate-ticks-symlog,
+)
+#import "logic/tick-format.typ" as tick-format: (
+  datetime as format-ticks-datetime, linear as format-ticks-linear, log as format-ticks-log,
+  manual as format-ticks-manual, symlog as format-ticks-symlog,
+)
 
 #import "theme/theme.typ"
