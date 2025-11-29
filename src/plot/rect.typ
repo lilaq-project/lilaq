@@ -119,14 +119,14 @@
 
       let content = rect(width: width, height: height)
 
-      // if (type(height) == length and height < 0pt) or (type(height) == ratio and height < 100%) {
-      //   y1 += height
-      //   content = rect(width: width, height: -height)
-      //   if type(fill) == gradient {
-      //     content = scale(y: -100%, content)
-      //   }
-      // }
-      // if (type(height) == length and height < 0pt) or (type(height) == ratio and height < 100%)
+      if (type(height) == length and height < 0pt) or (type(height) == ratio and height < 100%) {
+        y1 += height
+        content = rect(width: width, height: -height)
+        if type(fill) == gradient {
+          content = scale(y: -100%, content)
+        }
+      }
+      
       place(dx: x1, dy: y1, content)
     },
     xlimits: compute-primitive-limits.with((x, if all-data-coordinates((x, width)) { x + width } else { x })),
