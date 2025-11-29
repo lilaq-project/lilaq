@@ -627,11 +627,17 @@
 }
 
 
-#let to-bounds(
+/// Conditionally create bounds, with the sorting depending on the axis position
+#let _to-bounds(
+  /// Amount of space extending outwards cross the axis
   outwards,
+  /// Amount of space extending along the axis (towards left/top)
   start, 
+  /// Amount of space extending along the axis (towards right/bottom)
   end,
+  /// Amount of space extending inwards cross the axis
   inwards: 0pt,
+  // The position/alignment of the axis. 
   pos: bottom
 ) = {
   if pos == bottom {
@@ -677,7 +683,7 @@
 
   /// Whether to draw subticks or normal ones. 
   sub: false,
-  
+
   /// See @diagram.bounds
   bounds-mode: "relaxed",
 
@@ -781,7 +787,7 @@
 
 
   let cross-extent = outset
-  let tick-bounds = to-bounds(cross-extent, 0%, 100%, pos: position, inwards: inset)
+  let tick-bounds = _to-bounds(cross-extent, 0%, 100%, pos: position, inwards: inset)
 
 
   if display-tick-labels {
@@ -809,7 +815,7 @@
     if label-space > 0pt {
       cross-extent += pad
     }
-    tick-bounds = to-bounds(cross-extent, start-space, end-space, pos: position, inwards: inset)
+    tick-bounds = _to-bounds(cross-extent, start-space, end-space, pos: position, inwards: inset)
   }
 
   // Erase size information from parent (data area). 
