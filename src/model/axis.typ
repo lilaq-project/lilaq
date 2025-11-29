@@ -684,8 +684,9 @@
   let pad = e-get(lq-tick).pad
   let factor = if sub { 1 - (e-get(lq-tick).shorten-sub / 100%) } else { 1 }
   let outset = e-get(lq-tick).outset * factor
+  let inset = e-get(lq-tick).inset * factor
   let shorten-sub = e-get(lq-tick).shorten-sub
-  let length = e-get(lq-tick).inset * factor + outset
+  let length = inset + outset
   let angle = if align in (top, bottom) { 90deg } else { 0deg }
 
   let tick-stroke = if-none(
@@ -784,8 +785,8 @@
     })
 
     let label-space = calc.max(0pt, ..label-sizes.map(s => s.at(dimension)))
-    let start-space = 0pt
-    let end-space = 0pt
+    let start-space = 0%
+    let end-space = 100%
 
     if bounds-mode == "strict" {
       start-space = calc.min(0pt, ..label-sizes.map(s => s.lower))
@@ -797,7 +798,7 @@
     if label-space > 0pt {
       cross-extent += pad
     }
-    tick-bounds = to-bounds(cross-extent, start-space, end-space, pos: position)
+    tick-bounds = to-bounds(cross-extent, start-space, end-space, pos: position, inwards: inset)
   }
 
   // Erase size information from parent (data area). 
@@ -908,13 +909,13 @@
       let (tick-content, tick-space, tick-bounds) = place-ticks(
         axis, ticks, tick-labels, position, display-tick-labels, e-get: e-get, bounds-mode: bounds-mode
       )
-      bounds.push(tick-bounds)
+      // bounds.push(tick-bounds)
       content += tick-content
       let (subtick-content, subtick-space, tick-bounds) = place-ticks(
         axis, subticks, subtick-labels, position, display-tick-labels, 
         sub: true, e-get: e-get, bounds-mode: bounds-mode
       )
-      bounds.push(tick-bounds)
+      // bounds.push(tick-bounds)
       space = calc.max(tick-space, subtick-space)
       content += subtick-content
     }
@@ -960,18 +961,18 @@
       }
       let size = measure(body)
 
-      let (label-content, j) = place-with-bounds(
+      let (label-content, label-bounds) = place-with-bounds(
         body, alignment: position, dx: dx, dy: dy, pad: pad
       )
       
       content += label-content
 
-      if kind == "x" {
-        space = calc.max(space, size.height + pad)
-      } else {
-        space = calc.max(space, size.width + pad)
-      }
-      bounds.push(j)
+      // if kind == "x" {
+      //   space = calc.max(space, size.height + pad)
+      // } else {
+      //   space = calc.max(space, size.width + pad)
+      // }
+      bounds.push(label-bounds)
     }
 
 
@@ -983,7 +984,7 @@
     )
     
     let inset = e-get(lq-tick).inset
-    bounds.push(to-bounds(space, 0pt, 100%, pos: position, inwards: inset))
+    // bounds.push(to-bounds(space, 0pt, 100%, pos: position, inwards: inset))
 
     // let main-bounds = create-bounds()
     // if axis.kind == "x" {
@@ -1007,13 +1008,18 @@
     // }
     // bounds.push(main-bounds)
     
-    // let draw-bounds(b) = {
-    //   place(
-    //     dx: b.left, dy: b.top - 100%,
-    //     rect(width: b.right - b.left, height: b.bottom - b.top, fill: blue.transparentize(60%))
-    //   )
+    let draw-bounds(b) = {
+      place(
+        dx: b.left, dy: b.top - 100%,
+        rect(width: b.right - b.left, height: b.bottom - b.top, fill: blue.transparentize(60%))
+      )
+    }
+    for b in bounds { content += draw-bounds(b) }
+    // if axis.kind == "x" {
+    //   content = box(width: 100%, height: float.inf*1pt, content)
+    // } else if axis.kind == "y" {
+    //   content = box(height: 100%, width: float.inf * 1pt, content)
     // }
-    // for b in bounds { content += draw-bounds(b) }
     return (content, bounds)
   }
 
