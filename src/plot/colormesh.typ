@@ -31,6 +31,7 @@
     let (x1, y1) = transform(plot.x.last(), plot.y.last())
 
     let image = scale(
+      reflow: false,
       x: x1 - x0, 
       y: y1 - y0, 
       plot.z,
@@ -69,7 +70,7 @@
       top + left,
       dx: x1, 
       dy: y1, 
-      scale(origin: top + left, x: x2 - x1, y: y2 - y1, img)
+      scale(reflow: false, origin: top + left, x: x2 - x1, y: y2 - y1, img)
     )
 
   } else {
