@@ -655,8 +655,10 @@
 // If `sub: false`, any `axis.extra-ticks` are drawn as well. 
 // -> (result: content, bounds: array)
 #let place-ticks(
+
   /// The axis object
   axis,
+
   /// Ticks to place, an array of data coordinates
   /// -> array
   ticks, 
@@ -664,14 +666,18 @@
   /// The tick labels to draw
   /// -> none | array
   labels, 
+
   /// Where to place the ticks on the diagram. This can differ from @axis.
   /// position when drawing mirrows. 
   /// -> top | bottom | left | right
   position, 
+
   /// Whether to draw tick labels. 
   display-tick-labels, 
+
   /// Whether to draw subticks or normal ones. 
   sub: false,
+  
   /// See @diagram.bounds
   bounds-mode: "relaxed",
 
@@ -768,7 +774,7 @@
     })
   } // end extra-ticks
 
-  // Do not return useless bounds 
+  // Do not return unnecessary bounds 
   if tick-collection.len() == 0 {
     return (none, 0pt, none)
   }
@@ -976,11 +982,6 @@
       
       content += label-content
 
-      // if kind == "x" {
-      //   space = calc.max(space, size.height + pad)
-      // } else {
-      //   space = calc.max(space, size.width + pad)
-      // }
       bounds.push(label-bounds)
     }
 
@@ -992,43 +993,14 @@
       inset: 0pt, outset: 0pt
     )
     
-    // let inset = e-get(lq-tick).inset
-    // bounds.push(to-bounds(space, 0pt, 100%, pos: position, inwards: inset))
-
-    // let main-bounds = create-bounds()
-    // if axis.kind == "x" {
-    //   main-bounds.right = 100%
-    //   if position == top {
-    //     main-bounds.top = -space
-    //     main-bounds.bottom = inset
-    //   } else if position == bottom {
-    //     main-bounds.bottom = 100% + space
-    //     main-bounds.top = 100% - inset
-    //   }
-    // } else {
-    //   main-bounds.bottom = 100%
-    //   if position == left {
-    //     main-bounds.left = -space
-    //     main-bounds.right = inset
-    //   } else if position == right {
-    //     main-bounds.right = 100% + space
-    //     main-bounds.left = 100% - inset
-    //   }
-    // }
-    // bounds.push(main-bounds)
     
-    let draw-bounds(b) = {
-      place(
-        dx: b.left, dy: b.top - 100%,
-        rect(width: b.right - b.left, height: b.bottom - b.top, fill: blue.transparentize(60%))
-      )
-    }
+    // let draw-bounds(b) = {
+    //   place(
+    //     dx: b.left, dy: b.top - 100%,
+    //     rect(width: b.right - b.left, height: b.bottom - b.top, fill: blue.transparentize(60%))
+    //   )
+    // }
     // for b in bounds { content += draw-bounds(b) }
-    if axis.kind == "x" {
-      content = box(width: 100%, height: float.inf*1pt, content)
-    } else if axis.kind == "y" {
-      content = box(height: 100%, width: float.inf * 1pt, content)
-    }
     return (content, bounds)
   }
 

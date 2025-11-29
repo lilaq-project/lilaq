@@ -611,6 +611,7 @@
     let tickings = ()
 
 
+    // In this case, we do not need and want complex layout computation.
     if it.bounds == "data-area" and type(it.width) == relative {
       it.width = it.size.width
     }
