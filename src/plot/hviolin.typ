@@ -194,13 +194,13 @@
   
   for dataset in data {
     assert(type(dataset) == array, message: "Each violin plot dataset must be an array")
-    all-values += dataset
     
     let kde-result = komet.kde(
       dataset,
       bandwidth: bandwidth,
       num-points: num-points
     )
+    all-values += kde-result.x
     
     let mean-value = dataset.fold(0.0, (acc, val) => acc + float(val)) / dataset.len()
     
