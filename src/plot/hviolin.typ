@@ -1,7 +1,7 @@
 #import "../assertations.typ"
 #import "../style/styling.typ": mark, prepare-mark
 #import "../logic/time.typ"
-
+#import "../math.typ": minmax
 
 #let render-hviolin(plot, transform) = {
   
@@ -70,7 +70,7 @@
     
     // Draw mean marker if requested
     if style.mean != none and "mean" in data {
-      let (mean-x, _) = transform(data.mean, y)
+      let (mean-x, _) = transform(data.boxplot-statistics.mean, y)
       let (_, mean-y) = transform(0, y)
       
       show: prepare-mark.with(
@@ -146,7 +146,7 @@
   
   /// How to stroke the mean mark. 
   /// -> stroke
-  mean-stroke: none,
+  mean-stroke: black,
   
   /// The legend label for this plot. See @plot.label. 
   /// -> content
@@ -188,12 +188,16 @@
   
   // Compute KDE for each dataset
   // TODO: This needs to be updated to use the new komet version with KDE
-  import "@preview/komet:0.1.0"
+  import "@local/komet:0.2.0"
   let processed-data = ()
   let all-values = ()
   
   for dataset in data {
     assert(type(dataset) == array, message: "Each violin plot dataset must be an array")
+
+    let boxplot-statistics = komet.boxplot(
+      dataset
+    )
     
     let kde-result = komet.kde(
       dataset,
@@ -202,11 +206,9 @@
     )
     all-values += kde-result.x
     
-    let mean-value = dataset.fold(0.0, (acc, val) => acc + float(val)) / dataset.len()
-    
     processed-data.push((
       kde: kde-result,
-      mean: mean-value,
+      boxplot-statistics: boxplot-statistics,
     ))
   }
 

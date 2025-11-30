@@ -70,7 +70,7 @@
     
     // Draw mean marker if requested
     if style.mean != none and "mean" in data {
-      let (_, mean-y) = transform(x, data.mean)
+      let (_, mean-y) = transform(x, data.boxplot-statistics.mean)
       let (mean-x, _) = transform(x, 0)
       
       show: prepare-mark.with(
@@ -159,7 +159,7 @@
   
   /// How to stroke the mean mark. 
   /// -> stroke
-  mean-stroke: none,
+  mean-stroke: black,
   
   /// The legend label for this plot. See @plot.label. 
   /// -> content
@@ -201,12 +201,16 @@
   
   // Compute KDE for each dataset
   // TODO: This needs to be updated to use the new komet version with KDE
-  import "@preview/komet:0.1.0"
+  import "@local/komet:0.2.0"
   let processed-data = ()
   let all-values = ()
   
   for dataset in data {
     assert(type(dataset) == array, message: "Each violin plot dataset must be an array")
+
+    let boxplot-statistics = komet.boxplot(
+      dataset
+    )
     
     let kde-result = komet.kde(
       dataset,
@@ -215,11 +219,9 @@
     )
     all-values += kde-result.x
     
-    let mean-value = dataset.sum() / dataset.len()
-    
     processed-data.push((
       kde: kde-result,
-      mean: mean-value,
+      boxplot-statistics: boxplot-statistics,
     ))
   }
 
