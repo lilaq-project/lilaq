@@ -1,82 +1,66 @@
 #import "../assertations.typ"
 #import "../style/styling.typ": mark, prepare-mark
 #import "../logic/time.typ"
+#import "../style/styling.typ": prepare-path
 
 
 #let render-violin(plot, transform) = {
-  
+  let prepare-path = prepare-path.with(
+    fill: plot.style.fill,
+    stroke: plot.style.stroke,
+    element: curve,
+  )
+
   if "make-legend" in plot {
-    return std.line(length: 100%, stroke: plot.style.stroke)
+    return {
+      show: prepare-path
+      curve(
+        curve.line((0%, 100%)),
+        curve.line((100%, 100%)),
+        curve.line((100%, 0%)),
+        curve.close(),
+      )
+    }
   }
+  show: prepare-path
 
   let style = plot.style
+
 
   for (i, data) in plot.data.enumerate() {
     let x = plot.x.at(i)
     let width = plot.width.at(i)
-    
-    // Get the KDE result for this dataset
-    let kde-result = data.kde
-    
+
+    let (x: pos, y: density) = data.kde
+
     // Normalize the KDE values to fit within the width
-    let max-density = calc.max(..kde-result.y)
+    let max-density = calc.max(..density)
     if max-density > 0 {
-      let normalized-y = kde-result.y.map(y => y / max-density * width / 2)
-      
-      // Draw the violin shape (mirrored density curve)
-      let left-points = ()
-      let right-points = ()
-      
-      for (j, y-val) in kde-result.x.enumerate() {
-        let density = normalized-y.at(j)
-        let (xl, yl) = transform(x - density, y-val)
-        let (xr, yr) = transform(x + density, y-val)
-        left-points.push((xl, yl))
-        right-points.push((xr, yr))
-      }
-      
-      // Create closed path for the violin
-      if left-points.len() > 0 {
-        // Combine left and right points to form a closed shape
-        right-points = right-points.rev()
-        let all-points = left-points + right-points
-        
-        // Draw filled violin
-        if style.fill != none {
-          let path-cmds = (std.curve.move(all-points.at(0)),)
-          for pt in all-points.slice(1) {
-            path-cmds.push(std.curve.line(pt))
-          }
-          path-cmds.push(std.curve.close())
-          place(std.curve(..path-cmds, fill: style.fill, stroke: none))
-        }
-        
-        // Draw outline
-        if style.stroke != none {
-          let left-path = (std.curve.move(left-points.at(0)),)
-          for pt in left-points.slice(1) {
-            left-path.push(std.curve.line(pt))
-          }
-          place(std.curve(..left-path, stroke: style.stroke))
-          
-          let right-path = (std.curve.move(right-points.at(0)),)
-          for pt in right-points.slice(1) {
-            right-path.push(std.curve.line(pt))
-          }
-          place(std.curve(..right-path, stroke: style.stroke))
-        }
-      }
+      density = density.map(y => y / max-density * width / 2)
+
+      let left-points = pos
+        .zip(density)
+        .map(((pos, d)) => transform(x - d, pos))
+      let right-points = pos
+        .zip(density)
+        .map(((pos, d)) => transform(x + d, pos))
+      let points = left-points + right-points.rev()
+
+      place(curve(
+        curve.move(points.first()),
+        ..points.slice(1).map(curve.line),
+        curve.close(),
+      ))
     }
-    
+
     // Draw mean marker if requested
     if style.mean != none and "mean" in data {
-      let (_, mean-y) = transform(x, data.boxplot-statistics.mean)
-      let (mean-x, _) = transform(x, 0)
-      
+      let (mean-x, mean-y) = transform(x, data.mean)
+
       show: prepare-mark.with(
         func: style.mean,
         size: style.mark-size,
-        fill: style.mean-fill
+        fill: style.mean-fill,
       )
       set mark(stroke: style.mean-stroke)
       place(dx: mean-x, dy: mean-y, mark())
