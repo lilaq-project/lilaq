@@ -6,7 +6,7 @@
 #lq.diagram(
   height: 6cm,
   width: 8cm,
-  lq.violinplot(
+  lq.violin(
     (1, 2, 3, 4, 5, 6, 7, 8, 9, 3, 4, 5),
     range(2, 12),
     (5, 6, 7, 8, 9, 10, 11, 12),
@@ -19,7 +19,7 @@
 #lq.diagram(
   height: 6cm,
   width: 8cm,
-  lq.violinplot(
+  lq.violin(
     (1, 2, 3, 4, 5, 6, 7, 8, 9, 3, 4, 5),
     range(2, 12),
     (5, 6, 7, 8, 9, 10, 11, 12),
@@ -35,7 +35,7 @@
 #lq.diagram(
   height: 6cm,
   width: 8cm,
-  lq.hviolinplot(
+  lq.hviolin(
     (1, 2, 3, 4, 5, 6, 7, 8, 9, 3, 4, 5),
     range(2, 12),
     (5, 6, 7, 8, 9, 10, 11, 12),
