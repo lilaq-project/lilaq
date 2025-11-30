@@ -126,7 +126,7 @@
   /// The width of the violin plots in $x$ data coordinates. This can be a constant width
   /// applied to all plots or an array of widths matching the number of data sets. 
   /// -> int | float | array
-  width: 0.8,
+  width: 0.5,
 
   /// How to fill the violins. 
   /// -> none | color | gradient | tiling
