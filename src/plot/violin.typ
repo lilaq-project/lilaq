@@ -2,6 +2,7 @@
 #import "../style/styling.typ": mark, prepare-mark
 #import "../logic/time.typ"
 #import "../style/styling.typ": prepare-path
+#import "../math.typ": minmax
 
 
 #let render-violin(plot, transform) = {
@@ -66,6 +67,40 @@
       place(dx: mean-x, dy: mean-y, mark())
     }
   }
+}
+
+
+#let process-data(
+  data, 
+  bandwidth,
+  num-points,
+  trim: true
+) = {
+  import "@local/komet:0.2.0"
+
+  data.map(dataset => {
+    assert(type(dataset) == array, message: "Each violin plot dataset must be an array")
+
+    let boxplot-statistics = komet.boxplot(
+      dataset
+    )
+    
+    let args = (bandwidth: bandwidth, num-points: num-points)
+    if trim {
+      args.min = boxplot-statistics.min
+      args.max = boxplot-statistics.max
+    }
+    let kde = komet.kde(
+      dataset,
+      ..args
+    )
+    
+    (
+      kde: kde,
+      boxplot-statistics: boxplot-statistics,
+      limits: (kde.x.first(), kde.x.last())
+    )
+  })
 }
 
 /// Computes and visualizes one or more violin plots from datasets. 
@@ -144,6 +179,10 @@
   /// How to stroke the mean mark. 
   /// -> stroke
   mean-stroke: black,
+
+  /// Whether to trim the density to the datasets minimum and maximum value. If set to false, the range is automatically enhanced, depending on the bandwidth. 
+  /// -> bool
+  trim: true,
   
   /// The legend label for this plot. See @plot.label. 
   /// -> content
@@ -183,34 +222,13 @@
     message: "The number of widths does not match the number of data arrays"
   )
   
-  // Compute KDE for each dataset
-  // TODO: This needs to be updated to use the new komet version with KDE
-  import "@local/komet:0.2.0"
-  let processed-data = ()
+  let processed-data = process-data(data, bandwidth, num-points, trim: trim)
   let all-values = ()
   
-  for dataset in data {
-    assert(type(dataset) == array, message: "Each violin plot dataset must be an array")
 
-    let boxplot-statistics = komet.boxplot(
-      dataset
-    )
-    
-    let kde-result = komet.kde(
-      dataset,
-      bandwidth: bandwidth,
-      num-points: num-points
-    )
-    all-values += kde-result.x
-    
-    processed-data.push((
-      kde: kde-result,
-      boxplot-statistics: boxplot-statistics,
-    ))
-  }
-
-  let ymax = calc.max(..all-values)
-  let ymin = calc.min(..all-values)
+  let (ymin, ymax) = minmax(
+    processed-data.map(info => info.limits).join()
+  )
   let xmin = x.at(0) - width.at(0)
   let xmax = x.at(-1) + width.at(-1)
 

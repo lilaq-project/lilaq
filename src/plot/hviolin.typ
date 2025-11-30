@@ -2,6 +2,7 @@
 #import "../style/styling.typ": mark, prepare-mark
 #import "../logic/time.typ"
 #import "../math.typ": minmax
+#import "violin.typ": process-data
 
 #let render-hviolin(plot, transform) = {
   
@@ -148,6 +149,10 @@
   /// -> stroke
   mean-stroke: black,
   
+  /// Whether to trim the density to the datasets minimum and maximum value. If set to false, the range is automatically enhanced, depending on the bandwidth. 
+  /// -> bool
+  trim: true,
+
   /// The legend label for this plot. See @plot.label. 
   /// -> content
   label: none,
@@ -186,34 +191,13 @@
     message: "The number of widths does not match the number of data arrays"
   )
   
-  // Compute KDE for each dataset
-  // TODO: This needs to be updated to use the new komet version with KDE
-  import "@local/komet:0.2.0"
-  let processed-data = ()
+  let processed-data = process-data(data, bandwidth, num-points, trim: trim)
   let all-values = ()
   
-  for dataset in data {
-    assert(type(dataset) == array, message: "Each violin plot dataset must be an array")
 
-    let boxplot-statistics = komet.boxplot(
-      dataset
-    )
-    
-    let kde-result = komet.kde(
-      dataset,
-      bandwidth: bandwidth,
-      num-points: num-points
-    )
-    all-values += kde-result.x
-    
-    processed-data.push((
-      kde: kde-result,
-      boxplot-statistics: boxplot-statistics,
-    ))
-  }
-
-  let xmax = calc.max(..all-values)
-  let xmin = calc.min(..all-values)
+  let (xmin, xmax) = minmax(
+    processed-data.map(info => info.limits).join()
+  )
   let ymin = y.at(0) - width.at(0)
   let ymax = y.at(-1) + width.at(-1)
 
