@@ -61,13 +61,13 @@
 
 
     if style.median != none {
-      let (median-x, median-y) = transform(x, statistics.median)
-
       show: prepare-mark.with(
         func: style.median,
         size: style.mark-size,
         fill: white,
       )
+
+      let (median-x, median-y) = transform(x, statistics.median)
       place(dx: median-x, dy: median-y, mark())
     }
     if style.mean != none {
@@ -268,6 +268,7 @@
     ylimits: () => (ymin, ymax),
     datetime: datetime-axes,
     legend: true,
+    ignores-cycle: false,
     clip: clip,
     z-index: z-index
   )

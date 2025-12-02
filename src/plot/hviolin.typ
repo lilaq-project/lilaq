@@ -217,6 +217,7 @@
     ylimits: () => (ymin, ymax),
     datetime: datetime-axes,
     legend: true,
+    ignores-cycle: false,
     clip: clip,
     z-index: z-index
   )
