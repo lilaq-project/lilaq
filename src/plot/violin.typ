@@ -1,5 +1,6 @@
 #import "../assertations.typ"
 #import "../style/styling.typ": mark, prepare-mark
+#import "../utility.typ"
 #import "../logic/time.typ"
 #import "../style/styling.typ": prepare-path
 #import "../math.typ": minmax
@@ -62,15 +63,35 @@
 
 
     let statistics = data.boxplot-statistics
+    let boxplot-width = plot.style.boxplot-width
 
-    if plot.style.side == "low" {
-      x -= .05
-    } else if plot.style.side == "high" {
-      x += .05
-    }
-    let (x1, q1) = transform(x + width * 0.1, statistics.q1)
-    let (x2, q3) = transform(x - width * 0.1, statistics.q3)
+    // Pre-transform width, i.e., in data coordinates
+    let pre-width = utility.match-type(
+      boxplot-width,
+      length: () => 0,
+      ratio: () => width * boxplot-width / 100%,
+      default: () => boxplot-width,
+    )
+    // Post-transform width, i.e., in pt
+    let post-width = utility.match-type(
+      boxplot-width,
+      length: () => boxplot-width,
+      default: 0pt,
+    )
+
+    let shift = utility.match(
+      plot.style.side,
+      "low", -1,
+      "both", 0,
+      "high", 1
+    )
+    x += shift * pre-width / 2
+    let (x1, q1) = transform(x + pre-width / 2, statistics.q1)
+    let (x2, q3) = transform(x - pre-width / 2, statistics.q3)
     let (middle, median) = transform(x, statistics.median)
+    x1 += (shift - 1) * post-width / 2
+    x2 += (shift + 1) * post-width / 2
+    middle += shift * post-width/2
     let (_, whisker-low) = transform(x, statistics.whisker-low)
     let (_, whisker-high) = transform(x, statistics.whisker-high)
 
@@ -92,21 +113,29 @@
       curve.close(),
     ))
 
-    let place-mark(mark-func, y) = {
-      if mark-func != none {
+    let mark-value(style, y) = {
+      if style == none { return }
+      let (_, y) = transform(x, y)
+      if type(style) in (color, length) {
+        set curve(stroke: style)
+        set curve(stroke: (cap: "square"))
+        place(curve(
+          curve.move((x1, y)),
+          curve.line((x2, y)),
+        ))
+      } else {
         show: prepare-mark.with(
-          func: mark-func,
-          size: style.mark-size,
+          func: style,
+          size: plot.style.mark-size,
           fill: white,
         )
 
-        let (x, y) = transform(x, y)
-        place(dx: x, dy: y, mark())
+        place(dx: middle, dy: y, mark())
       }
     }
 
-    place-mark(style.median, statistics.median)
-    place-mark(style.mean, statistics.mean)
+    mark-value(style.median, statistics.median)
+    mark-value(style.mean, statistics.mean)
   }
 }
 
@@ -115,7 +144,8 @@
   data, 
   bandwidth,
   num-points,
-  trim: true
+  trim: true,
+  whisker-pos: 1.5
 ) = {
   import "@preview/komet:0.2.0"
 
@@ -125,7 +155,7 @@
     assert(type(dataset) == array, message: "Each violin plot dataset must be an array")
 
     let boxplot-statistics = komet.boxplot(
-      dataset
+      dataset, whisker-pos: whisker-pos
     )
     
     let args = (bandwidth: bandwidth, num-points: num-points)
@@ -229,6 +259,10 @@
   /// -> stroke
   mean-stroke: black,
 
+  boxplot-width: 0.1,
+  whisker-pos: 1.5,
+
+
   /// Whether to trim the density to the datasets minimum and maximum value. If set to false, the range is automatically enhanced, depending on the bandwidth. 
   /// -> bool
   trim: true,
@@ -271,7 +305,7 @@
     message: "The number of widths does not match the number of data arrays"
   )
   
-  let processed-data = process-data(data, bandwidth, num-points, trim: trim)
+  let processed-data = process-data(data, bandwidth, num-points, trim: trim, whisker-pos: whisker-pos)
 
   let (ymin, ymax) = minmax(
     processed-data.map(info => info.limits).flatten()
@@ -297,6 +331,7 @@
       mean-stroke: mean-stroke,
       side: side,
 
+      boxplot-width: boxplot-width,
       whisker: auto
     ),
     plot: render-violin,
