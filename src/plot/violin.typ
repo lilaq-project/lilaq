@@ -34,7 +34,6 @@
 
     let (x: pos, y: density) = data.kde
 
-    // Normalize the KDE values to fit within the width
     let max-density = calc.max(..density)
     if max-density > 0 {
       density = density.map(y => y / max-density * width / 2)
@@ -58,6 +57,30 @@
 
 
     let statistics = data.boxplot-statistics
+
+    let (x1, q1) = transform(x + width * 0.1, statistics.q1)
+    let (x2, q3) = transform(x - width * 0.1, statistics.q3)
+    let (middle, median) = transform(x, statistics.median)
+    let (_, whisker-low) = transform(x, statistics.whisker-low)
+    let (_, whisker-high) = transform(x, statistics.whisker-high)
+
+      
+    show: prepare-path.with(
+      fill: auto,
+      stroke: plot.style.whisker,
+      element: curve,
+    )
+    place(curve(
+      curve.move((middle, q1)),
+      curve.line((middle, whisker-low)),
+      curve.move((middle, q3)),
+      curve.line((middle, whisker-high)),
+      curve.move((x1, q1)),
+      curve.line((x2, q1)),
+      curve.line((x2, q3)),
+      curve.line((x1, q3)),
+      curve.close(),
+    ))
 
     let place-mark(mark-func, y) = {
       if mark-func != none {
@@ -86,7 +109,9 @@
 ) = {
   import "@preview/komet:0.2.0"
 
-  data.map(dataset => {
+  data
+    .filter(dataset => dataset.len() > 0)
+    .map(dataset => {
     assert(type(dataset) == array, message: "Each violin plot dataset must be an array")
 
     let boxplot-statistics = komet.boxplot(
@@ -157,7 +182,7 @@
 
   /// How to fill the violins. 
   /// -> auto | none | color | gradient | tiling | ratio
-  fill: 50%,
+  fill: 30%,
 
 
   /// How to stroke the violin outline. 
@@ -236,10 +261,13 @@
   let processed-data = process-data(data, bandwidth, num-points, trim: trim)
 
   let (ymin, ymax) = minmax(
-    processed-data.map(info => info.limits).join()
+    processed-data.map(info => info.limits).flatten()
   )
-  let xmin = x.at(0) - width.at(0)
-  let xmax = x.at(-1) + width.at(-1)
+  let (xmin, xmax) = (x.at(0) - width.at(0), x.at(-1) + width.at(-1))
+
+  if processed-data.len() == 0 {
+    (xmin, xmax) = (none, none)
+  }
 
   (
     x: x,
@@ -255,7 +283,7 @@
       mean-fill: mean-fill,
       mean-stroke: mean-stroke,
 
-      whisker: 1pt
+      whisker: auto
     ),
     plot: render-violin,
     xlimits: () => (xmin, xmax),

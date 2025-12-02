@@ -54,7 +54,7 @@
   let fill = fill
 
   if type(fill) == ratio {
-    fill = style.fill.lighten(fill)
+    fill = style.fill.lighten(100% - fill)
   } else {
     fill = merge-fills(fill, style.fill)
   }
