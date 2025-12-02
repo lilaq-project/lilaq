@@ -91,7 +91,7 @@
   num-points,
   trim: true
 ) = {
-  import "@local/komet:0.2.0"
+  import "@preview/komet:0.2.0"
 
   data.map(dataset => {
     assert(type(dataset) == array, message: "Each violin plot dataset must be an array")
