@@ -54,14 +54,29 @@
       ))
     }
 
-    // Draw mean marker if requested
-    if style.mean != none and "mean" in data {
-      let (mean-x, mean-y) = transform(x, data.mean)
+
+
+
+    let statistics = data.boxplot-statistics
+
+
+    if style.median != none {
+      let (median-x, median-y) = transform(x, statistics.median)
+
+      show: prepare-mark.with(
+        func: style.median,
+        size: style.mark-size,
+        fill: white,
+      )
+      place(dx: median-x, dy: median-y, mark())
+    }
+    if style.mean != none {
+      let (mean-x, mean-y) = transform(x, statistics.mean)
 
       show: prepare-mark.with(
         func: style.mean,
         size: style.mark-size,
-        fill: style.mean-fill,
+        fill: white,
       )
       set mark(stroke: style.mean-stroke)
       place(dx: mean-x, dy: mean-y, mark())
@@ -148,12 +163,12 @@
   width: 0.5,
 
   /// How to fill the violins. 
-  /// -> none | color | gradient | tiling
-  fill: rgb(100, 150, 200, 50%),
+  /// -> auto | none | color | gradient | tiling
+  fill: auto,
 
   /// How to stroke the violin outline. 
   /// -> none | length | color | stroke | gradient | tiling | dictionary
-  stroke: 1pt + black,
+  stroke: none,
 
   /// Bandwidth for kernel density estimation. If `auto`, uses Scott's rule.
   /// -> auto | int | float
@@ -167,6 +182,8 @@
   /// visualized with a mark (see @plot.mark).
   /// -> none | lq.mark | str
   mean: none,
+  
+  median: "o",
 
   /// The size of the mark used to visualize the mean. 
   /// -> length
@@ -223,8 +240,6 @@
   )
   
   let processed-data = process-data(data, bandwidth, num-points, trim: trim)
-  let all-values = ()
-  
 
   let (ymin, ymax) = minmax(
     processed-data.map(info => info.limits).join()
@@ -241,9 +256,12 @@
       fill: fill,
       stroke: stroke,
       mean: mean,
+      median: median,
       mark-size: mean-size,
       mean-fill: mean-fill,
       mean-stroke: mean-stroke,
+
+      whisker: 1pt
     ),
     plot: render-violin,
     xlimits: () => (xmin, xmax),

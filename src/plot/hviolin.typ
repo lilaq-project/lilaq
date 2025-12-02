@@ -192,8 +192,6 @@
   )
   
   let processed-data = process-data(data, bandwidth, num-points, trim: trim)
-  let all-values = ()
-  
 
   let (xmin, xmax) = minmax(
     processed-data.map(info => info.limits).join()
