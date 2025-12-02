@@ -31,20 +31,27 @@
   for (i, data) in plot.data.enumerate() {
     let x = plot.x.at(i)
     let width = plot.width.at(i)
-
     let (x: pos, y: density) = data.kde
+    pos = (pos.first(),) + pos + (pos.last(),)
+    density = (0,) + density + (0,)
 
     let max-density = calc.max(..density)
     if max-density > 0 {
       density = density.map(y => y / max-density * width / 2)
 
-      let left-points = pos
-        .zip(density)
-        .map(((pos, d)) => transform(x - d, pos))
-      let right-points = pos
-        .zip(density)
-        .map(((pos, d)) => transform(x + d, pos))
-      let points = left-points + right-points.rev()
+      let points = ()
+
+      if plot.style.side in ("low", "both") {
+        points += pos
+          .zip(density)
+          .map(((pos, d)) => transform(x - d, pos))
+      }
+      if plot.style.side in ("high", "both") {
+        points += pos
+          .zip(density)
+          .map(((pos, d)) => transform(x + d, pos))
+          .rev()
+      }
 
       place(curve(
         curve.move(points.first()),
@@ -53,11 +60,14 @@
       ))
     }
 
-  
-
 
     let statistics = data.boxplot-statistics
 
+    if plot.style.side == "low" {
+      x -= .05
+    } else if plot.style.side == "high" {
+      x += .05
+    }
     let (x1, q1) = transform(x + width * 0.1, statistics.q1)
     let (x2, q3) = transform(x - width * 0.1, statistics.q3)
     let (middle, median) = transform(x, statistics.median)
@@ -204,6 +214,9 @@
   
   median: "o",
 
+
+  side: "both",
+
   /// The size of the mark used to visualize the mean. 
   /// -> length
   mean-size: 5pt,
@@ -263,7 +276,7 @@
   let (ymin, ymax) = minmax(
     processed-data.map(info => info.limits).flatten()
   )
-  let (xmin, xmax) = (x.at(0) - width.at(0), x.at(-1) + width.at(-1))
+  let (xmin, xmax) = (x.at(0) - width.at(0)/2, x.at(-1) + width.at(-1)/2)
 
   if processed-data.len() == 0 {
     (xmin, xmax) = (none, none)
@@ -282,6 +295,7 @@
       mark-size: mean-size,
       mean-fill: mean-fill,
       mean-stroke: mean-stroke,
+      side: side,
 
       whisker: auto
     ),
