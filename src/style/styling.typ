@@ -51,8 +51,20 @@
 
 
 #let prepare-path(body, stroke: auto, fill: none, element: curve) = context {
+  let fill = fill
+
+  if type(fill) == ratio {
+    fill = style.fill.lighten(fill)
+  } else {
+    fill = merge-fills(fill, style.fill)
+  }
   
-  set element(stroke: merge-strokes(style.stroke, style.fill), fill: merge-fills(fill, style.fill))
+
+  
+  set element(
+    stroke: merge-strokes(style.stroke, style.fill), 
+    fill: fill
+  )
   set element(stroke: stroke) if stroke != auto
   body
 }

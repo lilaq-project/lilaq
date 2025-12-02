@@ -54,33 +54,26 @@
       ))
     }
 
-
+  
 
 
     let statistics = data.boxplot-statistics
 
+    let place-mark(mark-func, y) = {
+      if mark-func != none {
+        show: prepare-mark.with(
+          func: mark-func,
+          size: style.mark-size,
+          fill: white,
+        )
 
-    if style.median != none {
-      show: prepare-mark.with(
-        func: style.median,
-        size: style.mark-size,
-        fill: white,
-      )
-
-      let (median-x, median-y) = transform(x, statistics.median)
-      place(dx: median-x, dy: median-y, mark())
+        let (x, y) = transform(x, y)
+        place(dx: x, dy: y, mark())
+      }
     }
-    if style.mean != none {
-      let (mean-x, mean-y) = transform(x, statistics.mean)
 
-      show: prepare-mark.with(
-        func: style.mean,
-        size: style.mark-size,
-        fill: white,
-      )
-      set mark(stroke: style.mean-stroke)
-      place(dx: mean-x, dy: mean-y, mark())
-    }
+    place-mark(style.median, statistics.median)
+    place-mark(style.mean, statistics.mean)
   }
 }
 
@@ -163,12 +156,13 @@
   width: 0.5,
 
   /// How to fill the violins. 
-  /// -> auto | none | color | gradient | tiling
-  fill: auto,
+  /// -> auto | none | color | gradient | tiling | ratio
+  fill: 50%,
+
 
   /// How to stroke the violin outline. 
   /// -> none | length | color | stroke | gradient | tiling | dictionary
-  stroke: none,
+  stroke: auto,
 
   /// Bandwidth for kernel density estimation. If `auto`, uses Scott's rule.
   /// -> auto | int | float
