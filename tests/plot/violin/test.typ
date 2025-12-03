@@ -106,7 +106,7 @@
 
 // Median line
 #lq.diagram(
-  lq.violin(data.at(1), median: white),
+  lq.violin(data.at(1), median: white + .7pt),
   lq.violin(data.at(1), x: 2, median: "s"),
 )
 

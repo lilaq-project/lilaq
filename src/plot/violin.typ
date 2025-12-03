@@ -121,12 +121,12 @@
     let mark-value(style, y) = {
       if style == none { return }
       let (_, y) = transform(x, y)
-      if type(style) in (color, length) {
+      if type(style) in (color, length, stroke, dictionary) {
         set curve(stroke: style)
-        set curve(stroke: (cap: "square"))
         place(curve(
           curve.move((x1, y)),
           curve.line((x2, y)),
+          stroke: (cap: "square")
         ))
       } else {
         show: prepare-mark.with(
