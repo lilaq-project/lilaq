@@ -218,11 +218,9 @@
   /// -> auto | int | float | array
   x: auto,
 
-  /// The width of the violin plots in $x$ data coordinates. This can be a 
-  /// constant width applied to all plots or an array of widths matching the 
-  /// number of data sets. 
-  /// -> int | float | array
-  width: 0.5,
+  /// Width of the violins. See @bar.width. 
+  /// -> ratio | int | float | duration | array
+  width: 50%,
 
   /// Bandwidth for kernel density estimation. If `auto`, uses Scott's rule.
   /// -> auto | int | float
@@ -282,7 +280,7 @@
   /// How to fill the boxplot. 
   /// -> auto | none | color | gradient | tiling | ratio
   boxplot-fill: auto,
-  
+
   /// How to stroke the boxplot. 
   /// -> none | length | color | stroke | gradient | tiling | dictionary
   boxplot-stroke: auto,
@@ -329,7 +327,24 @@
     message: "The number of x coordinates does not match the number of data arrays"
   )
   
-  if type(width) in (int, float) { width = (width,) * num-violins }
+  
+
+  
+  if type(width) == ratio {
+    if x.len() >= 2 {
+      width = width / 100% * calc.min(..x.windows(2).map(((a, b)) => calc.abs(b - a)))
+    } else {
+      width = width / 100%
+    }
+  } else if type(width) == duration {
+    width = width.seconds()
+  } else if type(width) == array and type(width.at(0, default: 0)) == duration {
+    width = width.map(duration.seconds)
+  } 
+  if type(width) != array { 
+    width = (width,) * num-violins
+  }
+  
   assert(
     width.len() == num-violins, 
     message: "The number of widths does not match the number of data arrays"
@@ -365,7 +380,6 @@
       boxplot-width: boxplot-width,
       boxplot-fill: boxplot-fill,
       boxplot-stroke: boxplot-stroke,
-      whisker: auto
     ),
     plot: render-violin,
     xlimits: () => (xmin, xmax),
