@@ -185,112 +185,145 @@
     })
 }
 
-/// Computes and visualizes one or more violin plots from datasets.
+/// Computes and visualizes one or more violin plots from a series of datasets.
 ///
 /// A violin plot is similar to a boxplot but uses kernel density estimation
-/// to show the distribution of the data. The width of the violin at each
-/// y-value represents the density of data points at that value.
-///
+/// to visualize the distribution of the data. The width of the violin represents the density of data points at
+/// the $y$-coordinate. 
+/// 
 /// ```example
 /// #lq.diagram(
 ///   lq.violin(
-///     (1, 2, 3, 4, 5, 6, 7, 8, 9),
-///     range(1, 20),
-///     (1, 28, 25, 30),
+///     (0, 2, 3, 4, 5, 6, 7, 8, 3, 4, 4, 2, 12),
+///     (1, 3, 4, 5, 5, 5, 5, 6, 7, 12),
+///     (0, 3, 4, 5, 6, 7, 8, 9),
 ///   )
 /// )
 /// ```
-///
-/// You can customize the appearance:
-/// ```example
-/// #lq.diagram(
-///   lq.violin(
-///     (1, 3, 10, 15, 8, 6, 4),
-///     fill: blue.lighten(60%),
-///     stroke: blue.darken(30%),
-///     mean: "x"
-///   ),
-/// )
-/// ```
 #let violin(
+
   /// One or more data sets to generate violin plots from. Each dataset should
   /// be an array of numerical values.
   /// -> array
   ..data,
-  /// The $x$ coordinate(s) to draw the violin plots at. If set to `auto`,
-  /// plots will be created at integer positions starting with 1.
+
+  /// The $x$ coordinate(s) to draw the violin plots at. If set to `auto`, 
+  /// plots will be created at integer positions starting with 1. 
   /// -> auto | int | float | array
   x: auto,
-  /// Width of the violins. See @bar.width.
+
+  /// Width of the violins. See @bar.width. 
   /// -> ratio | int | float | duration | array
   width: 50%,
-  /// Bandwidth for kernel density estimation. If `auto`, uses Scott's rule.
+
+  /// Bandwidth for kernel density estimation. The bandwidth can drastically 
+  /// influence the appearance and its selection needs good care. If set to 
+  /// `auto`, Scott's rule is used (D.W. Scott, "Multivariate Density 
+  /// Estimation: Theory, Practice, and Visualization", 1992).
+  /// ```example
+  /// #let data = (2, 1.5, 1.4, 1, .4, .6, .5, -.5)
+  /// 
+  /// #lq.diagram(
+  ///   lq.violin(data, bandwidth: auto),
+  ///   lq.violin(data, x: 2, bandwidth: .2),
+  ///   lq.scatter((1.5,) * data.len(), data)
+  /// )
+  /// ```
   /// -> auto | int | float
   bandwidth: auto,
-  /// How to fill the violins. If a `ratio` is given, the automatic color from
-  /// style cycle is lightened (for values less than 100%) or darkened (for
-  /// values greater than 100%). A value of `0%` produces white and a value of
-  /// `200%` produces black.
+
+  /// How to fill the violins. If a `ratio` is given, the automatic color from 
+  /// style cycle is lightened (for values less than 100%) or darkened (for 
+  /// values greater than 100%). A value of `0%` produces white and a value of 
+  /// `200%` produces black. 
   /// -> auto | none | color | gradient | tiling | ratio
   fill: 30%,
-  /// How to stroke the violin outline.
+
+  /// How to stroke the violin outline. 
   /// -> none | length | color | stroke | gradient | tiling | dictionary
   stroke: auto,
+
   /// Number of points (i.e., the resolution) for the kernel density estimation.
   /// -> int
   num-points: 80,
-  /// Whether and how to display the median value. It can be visualized with a
-  /// mark (see @plot.mark) or a horizontal line
+
+  /// Whether and how to display the median value. It can be visualized with a 
+  /// mark (see @plot.mark) or a horizontal line. 
+  /// ```example
+  /// #let data = (2, 1.5, 1.4, .9, .8, 1, .4, .6, .5, -.5)
+  /// 
+  /// #lq.diagram(
+  ///   lq.violin(data, bandwidth: auto),
+  ///   lq.violin(data, x: 2, bandwidth: .2),
+  ///   lq.scatter((1.5,) * data.len(), data)
+  /// )
+  /// ```
   /// -> none | lq.mark | str | color | stroke | length
   median: "o",
-  /// Which side to plot the KDE at.
+  
+  /// Which side to plot the KDE at. 
   /// ```example
+  /// 
   /// ```
   /// -> "both" | "low" | "high"
   side: "both",
+
   mean: none,
-  /// The size of the mark used to visualize the mean.
+
+  /// The size of the mark used to visualize the mean. 
   /// -> length
   mean-size: 5pt,
-  /// How to fill the mean mark.
+  
+  /// How to fill the mean mark. 
   /// -> none | auto | color
   mean-fill: black,
-  /// How to stroke the mean mark.
+  
+  /// How to stroke the mean mark. 
   /// -> stroke
   mean-stroke: black,
-  /// Whether to display a boxplot inside KDE.
+
+  /// Whether to display a boxplot inside KDE. 
   /// -> bool
   boxplot: true,
+
   /// The width of the boxplot inside the violin plot. This can be
   /// - an `int` or `float` to specify the width in data coordinates,
   /// - a `ratio` to give the width relative to @violin.width,
-  /// - or an absolute and fixed `length`.
+  /// - or an absolute and fixed `length`. 
   /// -> int | float | ratio | length
   boxplot-width: 20%,
-  /// How to fill the boxplot.
+
+  /// How to fill the boxplot. 
   /// -> auto | none | color | gradient | tiling | ratio
   boxplot-fill: auto,
-  /// How to stroke the boxplot.
+
+  /// How to stroke the boxplot. 
   /// -> none | length | color | stroke | gradient | tiling | dictionary
   boxplot-stroke: auto,
-  /// The position of the whiskers. See @boxplot.whisker-pos.
+
+  /// The position of the whiskers. See @boxplot.whisker-pos. 
   /// -> int | float
   whisker-pos: 1.5,
-  /// Whether to trim the density to the datasets minimum and maximum value.
-  /// If set to `false`, the range is automatically enhanced, depending on the
-  /// bandwidth.
+
+  /// Whether to trim the density to the datasets minimum and maximum value. 
+  /// If set to `false`, the range is automatically enhanced, depending on the 
+  /// bandwidth. 
   /// -> bool
   trim: true,
-  /// The legend label for this plot. See @plot.label.
+  
+  /// The legend label for this plot. See @plot.label. 
   /// -> content
   label: none,
-  /// Whether to clip the plot to the data area. See @plot.clip.
+  
+  /// Whether to clip the plot to the data area. See @plot.clip. 
   /// -> bool
   clip: true,
+  
   /// Determines the $z$ position of this plot in the order of rendered diagram
-  /// objects. See @plot.z-index.
+  /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 2,
+  
 ) = {
   assertations.assert-no-named(data)
   data = data.pos()
