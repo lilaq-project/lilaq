@@ -239,7 +239,7 @@
 
   /// Number of points (i.e., the resolution) for the kernel density estimation.
   /// -> int
-  num-points: 50,
+  num-points: 80,
 
   /// Whether and how to display the median value. It can be visualized with a 
   /// mark (see @plot.mark) or a horizontal line
