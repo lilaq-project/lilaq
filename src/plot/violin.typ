@@ -4,6 +4,7 @@
 #import "../logic/time.typ"
 #import "../style/styling.typ": prepare-path
 #import "../math.typ": minmax
+#import "../process-styles.typ": process-plot-item-width
 
 
 #let render-violin(plot, transform) = {
@@ -328,22 +329,8 @@
   )
   
   
-
   
-  if type(width) == ratio {
-    if x.len() >= 2 {
-      width = width / 100% * calc.min(..x.windows(2).map(((a, b)) => calc.abs(b - a)))
-    } else {
-      width = width / 100%
-    }
-  } else if type(width) == duration {
-    width = width.seconds()
-  } else if type(width) == array and type(width.at(0, default: 0)) == duration {
-    width = width.map(duration.seconds)
-  } 
-  if type(width) != array { 
-    width = (width,) * num-violins
-  }
+  width = process-plot-item-width(width, x)
   
   assert(
     width.len() == num-violins, 
