@@ -97,21 +97,24 @@
 
       
     show: prepare-path.with(
-      fill: auto,
-      stroke: plot.style.whisker,
+      fill: style.boxplot-fill,
+      stroke: style.boxplot-stroke,
       element: curve,
     )
-    place(curve(
-      curve.move((middle, q1)),
-      curve.line((middle, whisker-low)),
-      curve.move((middle, q3)),
-      curve.line((middle, whisker-high)),
-      curve.move((x1, q1)),
-      curve.line((x2, q1)),
-      curve.line((x2, q3)),
-      curve.line((x1, q3)),
-      curve.close(),
-    ))
+
+    if style.boxplot {
+      place(curve(
+        curve.move((middle, q1)),
+        curve.line((middle, whisker-low)),
+        curve.move((middle, q3)),
+        curve.line((middle, whisker-high)),
+        curve.move((x1, q1)),
+        curve.line((x2, q1)),
+        curve.line((x2, q3)),
+        curve.line((x1, q3)),
+        curve.close(),
+      ))
+    }
 
     let mark-value(style, y) = {
       if style == none { return }
@@ -205,47 +208,53 @@
 /// ```
 #let violin(
 
-  /// One or more data sets to generate violin plots from. Each dataset should be
-  /// an array of numerical values.
+  /// One or more data sets to generate violin plots from. Each dataset should
+  /// be an array of numerical values.
   /// -> array
   ..data,
 
-  /// The $x$ coordinate(s) to draw the violin plots at. If set to `auto`, plots will 
-  /// be created at integer positions starting with 1. 
+  /// The $x$ coordinate(s) to draw the violin plots at. If set to `auto`, 
+  /// plots will be created at integer positions starting with 1. 
   /// -> auto | int | float | array
   x: auto,
 
-  /// The width of the violin plots in $x$ data coordinates. This can be a constant width
-  /// applied to all plots or an array of widths matching the number of data sets. 
+  /// The width of the violin plots in $x$ data coordinates. This can be a 
+  /// constant width applied to all plots or an array of widths matching the 
+  /// number of data sets. 
   /// -> int | float | array
   width: 0.5,
-
-  /// How to fill the violins. 
-  /// -> auto | none | color | gradient | tiling | ratio
-  fill: 30%,
-
-
-  /// How to stroke the violin outline. 
-  /// -> none | length | color | stroke | gradient | tiling | dictionary
-  stroke: auto,
 
   /// Bandwidth for kernel density estimation. If `auto`, uses Scott's rule.
   /// -> auto | int | float
   bandwidth: auto,
 
-  /// Number of points to evaluate the density at.
+  /// How to fill the violins. If a `ratio` is given, the automatic color from 
+  /// style cycle is lightened (for values less than 100%) or darkened (for 
+  /// values greater than 100%). A value of `0%` produces white and a value of 
+  /// `200%` produces black. 
+  /// -> auto | none | color | gradient | tiling | ratio
+  fill: 30%,
+
+  /// How to stroke the violin outline. 
+  /// -> none | length | color | stroke | gradient | tiling | dictionary
+  stroke: auto,
+
+  /// Number of points (i.e., the resolution) for the kernel density estimation.
   /// -> int
-  num-points: 100,
+  num-points: 50,
 
-  /// Whether and how to display the mean value. The mean can be 
-  /// visualized with a mark (see @plot.mark).
-  /// -> none | lq.mark | str
-  mean: none,
-  
+  /// Whether and how to display the median value. It can be visualized with a 
+  /// mark (see @plot.mark) or a horizontal line
+  /// -> none | lq.mark | str | color | stroke | length
   median: "o",
-
-
+  
+  /// Which side to plot the KDE at. 
+  /// ```example
+  /// ```
+  /// -> "both" | "low" | "high"
   side: "both",
+
+  mean: none,
 
   /// The size of the mark used to visualize the mean. 
   /// -> length
@@ -259,11 +268,32 @@
   /// -> stroke
   mean-stroke: black,
 
-  boxplot-width: 0.1,
+  /// Whether to display a boxplot inside KDE. 
+  /// -> bool
+  boxplot: true,
+
+  /// The width of the boxplot inside the violin plot. This can be
+  /// - an `int` or `float` to specify the width in data coordinates,
+  /// - a `ratio` to give the width relative to @violin.width,
+  /// - or an absolute and fixed `length`. 
+  /// -> int | float | ratio | length
+  boxplot-width: 20%,
+
+  /// How to fill the boxplot. 
+  /// -> auto | none | color | gradient | tiling | ratio
+  boxplot-fill: auto,
+  
+  /// How to stroke the boxplot. 
+  /// -> none | length | color | stroke | gradient | tiling | dictionary
+  boxplot-stroke: auto,
+
+  /// The position of the whiskers. See @boxplot.whisker-pos. 
+  /// -> int | float
   whisker-pos: 1.5,
 
-
-  /// Whether to trim the density to the datasets minimum and maximum value. If set to false, the range is automatically enhanced, depending on the bandwidth. 
+  /// Whether to trim the density to the datasets minimum and maximum value. 
+  /// If set to `false`, the range is automatically enhanced, depending on the 
+  /// bandwidth. 
   /// -> bool
   trim: true,
   
@@ -310,7 +340,7 @@
   let (ymin, ymax) = minmax(
     processed-data.map(info => info.limits).flatten()
   )
-  let (xmin, xmax) = (x.at(0) - width.at(0)/2, x.at(-1) + width.at(-1)/2)
+  let (xmin, xmax) = (x.at(0) - width.at(0) / 2, x.at(-1) + width.at(-1) / 2)
 
   if processed-data.len() == 0 {
     (xmin, xmax) = (none, none)
@@ -331,7 +361,10 @@
       mean-stroke: mean-stroke,
       side: side,
 
+      boxplot: boxplot,
       boxplot-width: boxplot-width,
+      boxplot-fill: boxplot-fill,
+      boxplot-stroke: boxplot-stroke,
       whisker: auto
     ),
     plot: render-violin,
