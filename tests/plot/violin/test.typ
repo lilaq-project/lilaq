@@ -37,20 +37,20 @@
 // Datetime x and ratio/duration width
 #lq.diagram(
   lq.violin(
-    ..data.slice(0, 2), 
+    ..data.slice(0, 2),
     x: (
       datetime(year: 2025, month: 2, day: 1),
       datetime(year: 2025, month: 3, day: 1),
     ),
-    width: 80%
+    width: 80%,
   ),
   lq.violin(
-    data.at(2), 
+    data.at(2),
     x: datetime(year: 2025, month: 4, day: 1),
-    width: duration(weeks: 4)
+    width: duration(weeks: 4),
   ),
   lq.violin(
-    ..data.slice(1), 
+    ..data.slice(1),
     x: (
       datetime(year: 2025, month: 5, day: 1),
       datetime(year: 2025, month: 6, day: 1),
@@ -58,7 +58,7 @@
     width: (
       duration(weeks: 2),
       duration(weeks: 1),
-    )
+    ),
   ),
 )
 
@@ -117,7 +117,13 @@
 // Fill and stroke
 #lq.diagram(
   lq.violin(data.at(0), boxplot: false),
-  lq.violin(data.at(1), x: 2, boxplot-fill: white, boxplot-stroke: black, whisker-pos: 2),
+  lq.violin(
+    data.at(1),
+    x: 2,
+    boxplot-fill: white,
+    boxplot-stroke: black,
+    whisker-pos: 2,
+  ),
   lq.violin(data.at(2), x: 3),
 )
 

@@ -44,9 +44,7 @@
       let points = ()
 
       if plot.style.side in ("low", "both") {
-        points += pos
-          .zip(density)
-          .map(((pos, d)) => transform(x - d, pos))
+        points += pos.zip(density).map(((pos, d)) => transform(x - d, pos))
       }
       if plot.style.side in ("high", "both") {
         points += pos
@@ -82,9 +80,12 @@
 
     let shift = utility.match(
       plot.style.side,
-      "low", -1,
-      "both", 0,
-      "high", 1
+      "low",
+      -1,
+      "both",
+      0,
+      "high",
+      1,
     )
     x += shift * pre-width / 2
     let (x1, q1) = transform(x + pre-width / 2, statistics.q1)
@@ -92,11 +93,11 @@
     let (middle, median) = transform(x, statistics.median)
     x1 += (shift - 1) * post-width / 2
     x2 += (shift + 1) * post-width / 2
-    middle += shift * post-width/2
+    middle += shift * post-width / 2
     let (_, whisker-low) = transform(x, statistics.whisker-low)
     let (_, whisker-high) = transform(x, statistics.whisker-high)
 
-      
+
     show: prepare-path.with(
       fill: style.boxplot-fill,
       stroke: style.boxplot-stroke,
@@ -145,47 +146,51 @@
 
 
 #let process-data(
-  data, 
+  data,
   bandwidth,
   num-points,
   trim: true,
-  whisker-pos: 1.5
+  whisker-pos: 1.5,
 ) = {
   import "@preview/komet:0.2.0"
 
   data
     .filter(dataset => dataset.len() > 0)
     .map(dataset => {
-    assert(type(dataset) == array, message: "Each violin plot dataset must be an array")
+      assert(
+        type(dataset) == array,
+        message: "Each violin plot dataset must be an array",
+      )
 
-    let boxplot-statistics = komet.boxplot(
-      dataset, whisker-pos: whisker-pos
-    )
-    
-    let args = (bandwidth: bandwidth, num-points: num-points)
-    if trim {
-      args.min = boxplot-statistics.min
-      args.max = boxplot-statistics.max
-    }
-    let kde = komet.kde(
-      dataset,
-      ..args
-    )
-    
-    (
-      kde: kde,
-      boxplot-statistics: boxplot-statistics,
-      limits: (kde.x.first(), kde.x.last())
-    )
-  })
+      let boxplot-statistics = komet.boxplot(
+        dataset,
+        whisker-pos: whisker-pos,
+      )
+
+      let args = (bandwidth: bandwidth, num-points: num-points)
+      if trim {
+        args.min = boxplot-statistics.min
+        args.max = boxplot-statistics.max
+      }
+      let kde = komet.kde(
+        dataset,
+        ..args,
+      )
+
+      (
+        kde: kde,
+        boxplot-statistics: boxplot-statistics,
+        limits: (kde.x.first(), kde.x.last()),
+      )
+    })
 }
 
-/// Computes and visualizes one or more violin plots from datasets. 
-/// 
-/// A violin plot is similar to a boxplot but uses kernel density estimation 
-/// to show the distribution of the data. The width of the violin at each 
+/// Computes and visualizes one or more violin plots from datasets.
+///
+/// A violin plot is similar to a boxplot but uses kernel density estimation
+/// to show the distribution of the data. The width of the violin at each
 /// y-value represents the density of data points at that value.
-/// 
+///
 /// ```example
 /// #lq.diagram(
 ///   lq.violin(
@@ -195,127 +200,105 @@
 ///   )
 /// )
 /// ```
-/// 
+///
 /// You can customize the appearance:
 /// ```example
 /// #lq.diagram(
 ///   lq.violin(
-///     (1, 3, 10, 15, 8, 6, 4), 
-///     fill: blue.lighten(60%), 
+///     (1, 3, 10, 15, 8, 6, 4),
+///     fill: blue.lighten(60%),
 ///     stroke: blue.darken(30%),
 ///     mean: "x"
 ///   ),
 /// )
 /// ```
 #let violin(
-
   /// One or more data sets to generate violin plots from. Each dataset should
   /// be an array of numerical values.
   /// -> array
   ..data,
-
-  /// The $x$ coordinate(s) to draw the violin plots at. If set to `auto`, 
-  /// plots will be created at integer positions starting with 1. 
+  /// The $x$ coordinate(s) to draw the violin plots at. If set to `auto`,
+  /// plots will be created at integer positions starting with 1.
   /// -> auto | int | float | array
   x: auto,
-
-  /// Width of the violins. See @bar.width. 
+  /// Width of the violins. See @bar.width.
   /// -> ratio | int | float | duration | array
   width: 50%,
-
   /// Bandwidth for kernel density estimation. If `auto`, uses Scott's rule.
   /// -> auto | int | float
   bandwidth: auto,
-
-  /// How to fill the violins. If a `ratio` is given, the automatic color from 
-  /// style cycle is lightened (for values less than 100%) or darkened (for 
-  /// values greater than 100%). A value of `0%` produces white and a value of 
-  /// `200%` produces black. 
+  /// How to fill the violins. If a `ratio` is given, the automatic color from
+  /// style cycle is lightened (for values less than 100%) or darkened (for
+  /// values greater than 100%). A value of `0%` produces white and a value of
+  /// `200%` produces black.
   /// -> auto | none | color | gradient | tiling | ratio
   fill: 30%,
-
-  /// How to stroke the violin outline. 
+  /// How to stroke the violin outline.
   /// -> none | length | color | stroke | gradient | tiling | dictionary
   stroke: auto,
-
   /// Number of points (i.e., the resolution) for the kernel density estimation.
   /// -> int
   num-points: 80,
-
-  /// Whether and how to display the median value. It can be visualized with a 
+  /// Whether and how to display the median value. It can be visualized with a
   /// mark (see @plot.mark) or a horizontal line
   /// -> none | lq.mark | str | color | stroke | length
   median: "o",
-  
-  /// Which side to plot the KDE at. 
+  /// Which side to plot the KDE at.
   /// ```example
   /// ```
   /// -> "both" | "low" | "high"
   side: "both",
-
   mean: none,
-
-  /// The size of the mark used to visualize the mean. 
+  /// The size of the mark used to visualize the mean.
   /// -> length
   mean-size: 5pt,
-  
-  /// How to fill the mean mark. 
+  /// How to fill the mean mark.
   /// -> none | auto | color
   mean-fill: black,
-  
-  /// How to stroke the mean mark. 
+  /// How to stroke the mean mark.
   /// -> stroke
   mean-stroke: black,
-
-  /// Whether to display a boxplot inside KDE. 
+  /// Whether to display a boxplot inside KDE.
   /// -> bool
   boxplot: true,
-
   /// The width of the boxplot inside the violin plot. This can be
   /// - an `int` or `float` to specify the width in data coordinates,
   /// - a `ratio` to give the width relative to @violin.width,
-  /// - or an absolute and fixed `length`. 
+  /// - or an absolute and fixed `length`.
   /// -> int | float | ratio | length
   boxplot-width: 20%,
-
-  /// How to fill the boxplot. 
+  /// How to fill the boxplot.
   /// -> auto | none | color | gradient | tiling | ratio
   boxplot-fill: auto,
-
-  /// How to stroke the boxplot. 
+  /// How to stroke the boxplot.
   /// -> none | length | color | stroke | gradient | tiling | dictionary
   boxplot-stroke: auto,
-
-  /// The position of the whiskers. See @boxplot.whisker-pos. 
+  /// The position of the whiskers. See @boxplot.whisker-pos.
   /// -> int | float
   whisker-pos: 1.5,
-
-  /// Whether to trim the density to the datasets minimum and maximum value. 
-  /// If set to `false`, the range is automatically enhanced, depending on the 
-  /// bandwidth. 
+  /// Whether to trim the density to the datasets minimum and maximum value.
+  /// If set to `false`, the range is automatically enhanced, depending on the
+  /// bandwidth.
   /// -> bool
   trim: true,
-  
-  /// The legend label for this plot. See @plot.label. 
+  /// The legend label for this plot. See @plot.label.
   /// -> content
   label: none,
-  
-  /// Whether to clip the plot to the data area. See @plot.clip. 
+  /// Whether to clip the plot to the data area. See @plot.clip.
   /// -> bool
   clip: true,
-  
   /// Determines the $z$ position of this plot in the order of rendered diagram
-  /// objects. See @plot.z-index.  
+  /// objects. See @plot.z-index.
   /// -> int | float
   z-index: 2,
-  
 ) = {
   assertations.assert-no-named(data)
   data = data.pos()
   let num-violins = data.len()
-  
-  if type(x) in (int, float, datetime) { x = (x,) }
-  else if x == auto { x = range(1, num-violins + 1) }
+
+  if type(x) in (int, float, datetime) { x = (x,) } else if x == auto {
+    x = range(1, num-violins + 1)
+  }
 
   let datetime-axes = (:)
   if type(x.at(0, default: 0)) == datetime {
@@ -323,24 +306,29 @@
     datetime-axes.x = true
   }
 
-  assert(
-    x.len() == num-violins, 
-    message: "The number of x coordinates does not match the number of data arrays"
-  )
-  
-  
-  
+
   width = process-plot-item-width(width, x)
-  
+
   assert(
-    width.len() == num-violins, 
-    message: "The number of widths does not match the number of data arrays"
+    x.len() == num-violins,
+    message: "The number of x coordinates does not match the number of data arrays",
   )
-  
-  let processed-data = process-data(data, bandwidth, num-points, trim: trim, whisker-pos: whisker-pos)
+
+  assert(
+    width.len() == num-violins,
+    message: "The number of widths does not match the number of data arrays",
+  )
+
+  let processed-data = process-data(
+    data,
+    bandwidth,
+    num-points,
+    trim: trim,
+    whisker-pos: whisker-pos,
+  )
 
   let (ymin, ymax) = minmax(
-    processed-data.map(info => info.limits).flatten()
+    processed-data.map(info => info.limits).flatten(),
   )
   let (xmin, xmax) = (x.at(0) - width.at(0) / 2, x.at(-1) + width.at(-1) / 2)
 
@@ -362,7 +350,6 @@
       mean-fill: mean-fill,
       mean-stroke: mean-stroke,
       side: side,
-
       boxplot: boxplot,
       boxplot-width: boxplot-width,
       boxplot-fill: boxplot-fill,
@@ -375,6 +362,6 @@
     legend: true,
     ignores-cycle: false,
     clip: clip,
-    z-index: z-index
+    z-index: z-index,
   )
 }
