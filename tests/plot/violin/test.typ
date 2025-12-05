@@ -143,6 +143,20 @@
 #pagebreak()
 
 
+// Constant boxplot width
+#lq.diagram(
+  height: 3cm,
+  xaxis: (inverted: true),
+  lq.violin(data.at(1), boxplot-width: 20pt),
+  lq.violin(data.at(1), x: 2, side: "low", boxplot-width: 10pt),
+  lq.violin(data.at(1), x: 2, side: "high", boxplot-width: 10pt),
+  lq.violin(data.at(1), x: 3, width: 1, boxplot-width: 20pt),
+  lq.violin(data.at(1), x: 4, width: .5, boxplot-width: .5),
+)
+
+#pagebreak()
+
+
 // Ratio boxplot width
 #lq.diagram(
   height: 3cm,

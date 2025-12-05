@@ -75,21 +75,23 @@
   body
 }
 
-#let resolve-mark(mark) = {
-  if mark == none { 
-    mark = "none" 
+#let resolve-mark(arg) = {
+  if arg == none { 
+    arg = "none" 
   }
 
-  if type(mark) == str { 
-    if mark not in marks {
-      assert(false, message: "Unknown mark \"" + mark + "\"")
+  if type(arg) == str { 
+    if arg not in marks {
+      assert(false, message: "Unknown mark \"" + arg + "\"")
     }
-    marks.at(mark) 
-  } else if type(mark) == function or mark == auto {
-    mark
+    marks.at(arg) 
+  } else if type(arg) == function or arg == auto {
+    arg
+  } else if type(arg) == content {
+    arg
   } else {
-    assert(false, message: "Invalid mark " + repr(mark))
-  }
+    assert(false, message: "Invalid mark " + repr(arg))
+  } 
 }
 
 
@@ -127,7 +129,7 @@
 ) = {
   set style(fill: color) if color != auto
   func = resolve-mark(func)
-  set mark(align: func) if func != auto
+  set mark(align: func) if func != auto and type(func) != content
   set mark(fill: fill) if fill != auto
   set mark(inset: size) if size != auto
   set mark(stroke: stroke) if stroke != auto

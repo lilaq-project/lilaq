@@ -1,5 +1,5 @@
 #import "../assertations.typ"
-#import "../style/styling.typ": mark, prepare-mark
+#import "../style/styling.typ": mark, prepare-mark, resolve-mark
 #import "../utility.typ"
 #import "../logic/time.typ"
 #import "../style/styling.typ": prepare-path
@@ -7,14 +7,38 @@
 #import "../process-styles.typ": process-plot-item-width
 
 
-#let render-violin(plot, transform) = {
+#import "@preview/elembic:1.1.1" as e
+
+// A median mark of a violin plot
+#let violin-median = e.element.declare(
+  "violin-median",
+  prefix: "lilaq",
+  display: it => mark(),
+  fields: ()
+)
+// A mean mark of a violin plot
+#let violin-mean = e.element.declare(
+  "violin-mean",
+  prefix: "lilaq",
+  display: it => mark(),
+  fields: ()
+)
+
+#let render-violin(
+  style, data, x, width, transform, legend: false,
+  horizontal: false
+) = {
+  
+
+  let tt((p, d)) = transform(d, p)
+  
   let prepare-path = prepare-path.with(
-    fill: plot.style.fill,
-    stroke: plot.style.stroke,
+    fill: style.fill,
+    stroke: style.stroke,
     element: curve,
   )
 
-  if "make-legend" in plot {
+  if legend {
     return {
       show: prepare-path
       curve(
@@ -27,42 +51,48 @@
   }
   show: prepare-path
 
-  let style = plot.style
+  let style = style
 
 
-  for (i, data) in plot.data.enumerate() {
-    let x = plot.x.at(i)
-    let width = plot.width.at(i)
-    let (x: pos, y: density) = data.kde
-    pos = (pos.first(),) + pos + (pos.last(),)
+  for (i, data) in data.enumerate() {
+    let center = x.at(i)
+    let width = width.at(i)
+    let (x: positions, y: density) = data.kde
+    positions = (positions.first(),) + positions + (positions.last(),)
     density = (0,) + density + (0,)
 
     let max-density = calc.max(..density)
+
     if max-density > 0 {
       density = density.map(y => y / max-density * width / 2)
 
-      let points = ()
+      let vertices = ()
 
-      if plot.style.side in ("low", "both") {
-        points += pos.zip(density).map(((pos, d)) => transform(x - d, pos))
+      if style.side in ("low", "both") {
+        vertices += positions
+          .zip(density.map(d => center - d))
+          .map(tt)
       }
-      if plot.style.side in ("high", "both") {
-        points += pos
-          .zip(density)
-          .map(((pos, d)) => transform(x + d, pos))
+      if style.side in ("high", "both") {
+        vertices += positions
+          .zip(density.map(d => center + d))
+          .map(tt)
           .rev()
+      }
+      if horizontal {
+        vertices = vertices.map(array.rev)
       }
 
       place(curve(
-        curve.move(points.first()),
-        ..points.slice(1).map(curve.line),
+        curve.move(vertices.first()),
+        ..vertices.slice(1).map(curve.line),
         curve.close(),
       ))
     }
 
 
     let statistics = data.boxplot-statistics
-    let boxplot-width = plot.style.boxplot-width
+    let boxplot-width = style.boxplot-width
 
     // Pre-transform width, i.e., in data coordinates
     let pre-width = utility.match-type(
@@ -79,7 +109,7 @@
     )
 
     let shift = utility.match(
-      plot.style.side,
+      style.side,
       "low",
       -1,
       "both",
@@ -87,15 +117,20 @@
       "high",
       1,
     )
-    x += shift * pre-width / 2
-    let (x1, q1) = transform(x + pre-width / 2, statistics.q1)
-    let (x2, q3) = transform(x - pre-width / 2, statistics.q3)
-    let (middle, median) = transform(x, statistics.median)
-    x1 += (shift - 1) * post-width / 2
-    x2 += (shift + 1) * post-width / 2
-    middle += shift * post-width / 2
-    let (_, whisker-low) = transform(x, statistics.whisker-low)
-    let (_, whisker-high) = transform(x, statistics.whisker-high)
+    
+    center += shift * pre-width / 2
+
+    let (low-pt, q1-pt) = transform(center + pre-width / 2, statistics.q1)
+    let (high-pt, q3-pt) = transform(center - pre-width / 2, statistics.q3)
+    let (center-pt, median-pt) = transform(center, statistics.median)
+    let (_, whisker-low-pt) = transform(center, statistics.whisker-low)
+    let (_, whisker-high-pt) = transform(center, statistics.whisker-high)
+
+    let coeff = if transform(center - 1, 1).at(0) < transform(center + 1, 1).at(0) { 1 } else { -1 }
+    low-pt += coeff * (shift - 1) * post-width / 2
+    high-pt += coeff * (shift + 1) * post-width / 2
+    center-pt += coeff * shift * post-width / 2
+    
 
 
     show: prepare-path.with(
@@ -104,43 +139,44 @@
       element: curve,
     )
 
+    // reverse coordinates for hviolin
+    let hreverse = if horizontal { array.rev } else { a => a }
+
+
     if style.boxplot {
       place(curve(
-        curve.move((middle, q1)),
-        curve.line((middle, whisker-low)),
-        curve.move((middle, q3)),
-        curve.line((middle, whisker-high)),
-        curve.move((x1, q1)),
-        curve.line((x2, q1)),
-        curve.line((x2, q3)),
-        curve.line((x1, q3)),
+        curve.move(hreverse((center-pt, q1-pt))),
+        curve.line(hreverse((center-pt, whisker-low-pt))),
+        curve.move(hreverse((center-pt, q3-pt))),
+        curve.line(hreverse((center-pt, whisker-high-pt))),
+        curve.move(hreverse((low-pt, q1-pt))),
+        curve.line(hreverse((high-pt, q1-pt))),
+        curve.line(hreverse((high-pt, q3-pt))),
+        curve.line(hreverse((low-pt, q3-pt))),
         curve.close(),
       ))
     }
 
-    let mark-value(style, y) = {
+    let mark-value(style, pos, mark-type) = {
       if style == none { return }
-      let (_, y) = transform(x, y)
+
+      let (_, y) = transform(center, pos)
       if type(style) in (color, length, stroke, dictionary) {
         set curve(stroke: style)
         place(curve(
-          curve.move((x1, y)),
-          curve.line((x2, y)),
+          curve.move(hreverse((low-pt, y))),
+          curve.line(hreverse((high-pt, y))),
           stroke: (cap: "square")
         ))
       } else {
-        show: prepare-mark.with(
-          func: style,
-          size: plot.style.mark-size,
-          fill: white,
-        )
-
-        place(dx: middle, dy: y, mark())
+        show: prepare-mark.with(func: style, fill: white)
+        let (x, y) = hreverse((center-pt, y))
+        place(dx: x, dy: y, mark-type())
       }
     }
 
-    mark-value(style.median, statistics.median)
-    mark-value(style.mean, statistics.mean)
+    mark-value(style.median, statistics.median, violin-median)
+    mark-value(style.mean, statistics.mean, violin-mean)
   }
 }
 
@@ -250,12 +286,9 @@
   /// Whether and how to display the median value. It can be visualized with a 
   /// mark (see @plot.mark) or a horizontal line. 
   /// ```example
-  /// #let data = (2, 1.5, 1.4, .9, .8, 1, .4, .6, .5, -.5)
-  /// 
   /// #lq.diagram(
-  ///   lq.violin(data, bandwidth: auto),
-  ///   lq.violin(data, x: 2, bandwidth: .2),
-  ///   lq.scatter((1.5,) * data.len(), data)
+  ///   width: 3cm,
+  ///   lq.violin((0, 2, 3, 4, 7), median: white),
   /// )
   /// ```
   /// -> none | lq.mark | str | color | stroke | length
@@ -263,24 +296,23 @@
   
   /// Which side to plot the KDE at. 
   /// ```example
-  /// 
+  /// #lq.diagram(
+  ///   lq.violin(
+  ///     (0, 2, 3, 4, 7), 
+  ///     (2, 2, 3, 5, 8), 
+  ///     side: "low"
+  ///   ),
+  ///   lq.violin(
+  ///     (1, 3, 8, 4, 2), 
+  ///     (3, 4, 3, 7, 9), 
+  ///     side: "high"
+  ///   ),
+  /// )
   /// ```
   /// -> "both" | "low" | "high"
   side: "both",
 
   mean: none,
-
-  /// The size of the mark used to visualize the mean. 
-  /// -> length
-  mean-size: 5pt,
-  
-  /// How to fill the mean mark. 
-  /// -> none | auto | color
-  mean-fill: black,
-  
-  /// How to stroke the mean mark. 
-  /// -> stroke
-  mean-stroke: black,
 
   /// Whether to display a boxplot inside KDE. 
   /// -> bool
@@ -291,7 +323,7 @@
   /// - a `ratio` to give the width relative to @violin.width,
   /// - or an absolute and fixed `length`. 
   /// -> int | float | ratio | length
-  boxplot-width: 20%,
+  boxplot-width: 15%,
 
   /// How to fill the boxplot. 
   /// -> auto | none | color | gradient | tiling | ratio
@@ -379,16 +411,20 @@
       stroke: stroke,
       mean: mean,
       median: median,
-      mark-size: mean-size,
-      mean-fill: mean-fill,
-      mean-stroke: mean-stroke,
       side: side,
       boxplot: boxplot,
       boxplot-width: boxplot-width,
       boxplot-fill: boxplot-fill,
       boxplot-stroke: boxplot-stroke,
     ),
-    plot: render-violin,
+    plot: (plot, transform) => render-violin(
+      plot.style,
+      plot.data,
+      plot.x,
+      plot.width,
+      (x, y) => transform(x, y),
+      legend: "make-legend" in plot
+    ),
     xlimits: () => (xmin, xmax),
     ylimits: () => (ymin, ymax),
     datetime: datetime-axes,
