@@ -216,6 +216,46 @@
 ]
 
 
+#pagebreak()
+
+
+// Compatibility with set rules (both native and elembic) in cells.
+#[
+
+  #set page(height: auto, width: auto)
+  #show: lq.set-diagram(width: 3cm, height: 3cm)
+  #grid(
+    {
+      set text(1em)
+      show: lq.set-diagram(grid: none)
+      show: lq.set-spine(stroke: blue)
+      lq.diagram(ylim: (1, 10))
+    },
+    {
+      set text(1em)
+      show: lq.set-spine(stroke: red)
+      lq.diagram()
+    },
+  )
+
+]
+
+
+
+#import "/src/layout.typ": is-styled-diagram
+
+#assert(is-styled-diagram(lq.diagram()))
+
+#assert(is-styled-diagram({
+  set text(2em)
+  lq.diagram()
+}))
+
+#assert(is-styled-diagram({
+  set text(2em)
+  show: lq.set-spine(stroke: 1pt)
+  lq.diagram()
+}))
 
 // #pagebreak()
 

@@ -20,12 +20,68 @@
 //     e.field("stroke", e.types.option(stroke), default: none),
 //   )
 // )
+// 
+
+
+#let is-direct-diagram(body) = e.eid(body) == e.eid(diagram)
+
+#let is-std-styled-diagram(body, test: is-direct-diagram) = {
+  if repr(body.func()) == "styled" {
+    return test(body.child)
+  }
+  return false
+}
+
+#let is-elembic-styled-diagram(body, test: is-direct-diagram) = {
+  
+  let sequence = [].func()
+  if body.func() != sequence { return false }
+
+  body = body.children.first(default: none)
+
+  if type(body) != content or body.func() != sequence { return false }
+
+  body = body.children.first(default: none)
+
+  if type(body) != content or body.func() != metadata or "body" not in body.value { return false }
+
+  body = body.value.body.children.slice(1, 3)
+
+  test(sequence(body))
+}
+
+// This will become easier with types: just check whether it is a (natively) styled diagram
+#let is-styled-diagram(body) = {
+  if is-direct-diagram(body) { return true }
+
+  
+  if is-std-styled-diagram(
+    body, 
+    test: body => is-direct-diagram(body) or is-elembic-styled-diagram(body)
+  ) {
+    return true
+  }
+
+  if is-elembic-styled-diagram(
+    body, 
+    test: body => is-direct-diagram(body) or is-std-styled-diagram(body)
+  ) {
+    return true
+  }
+  return false
+}
+
+
+
+
+
 
 #let layout-impl(it) = {
   if it.children.len() == 0 { return it }
 
   // protect other grids such as the legend grid
-  if it.children.all(cell => e.eid(cell.body) != e.eid(diagram)) { return it }
+  // if it.children.all(cell => e.eid(cell.body) != e.eid(diagram)) { return it }
+  if it.children.all(cell => not is-styled-diagram(cell.body)) { return it }
   
   
   let grid = context {
@@ -44,10 +100,6 @@
     if diagram-meta.len() == 0 { 
       return {
         show grid.cell: it => {
-          if e.eid(it.body) != e.eid(diagram) {
-            return it
-          }
-          
 
           show: e.set_(diagram,
             _grid-pos: (
@@ -97,9 +149,6 @@
       })
       
     show grid.cell: it => {
-      if e.eid(it.body) != e.eid(diagram) {
-        return it
-      }
 
       let data = diagram-meta.find(d => d.x == it.x and d.y == it.y)
       if data == none { // cell may not contain a diagram
