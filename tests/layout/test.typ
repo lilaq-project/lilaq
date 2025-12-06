@@ -242,7 +242,7 @@
 
 
 
-#import "../../../src/layout.typ": is-styled-diagram
+#import "/src/layout.typ": is-styled-diagram
 
 #assert(is-styled-diagram(lq.diagram()))
 
