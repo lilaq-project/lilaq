@@ -107,11 +107,11 @@
   y2: none,
 
   /// How to stroke the area. 
-  /// -> none | stroke
+  /// -> auto | none | stroke
   stroke: none,
 
   /// How to fill the area. 
-  /// -> none | color | gradient | tiling
+  /// -> auto | none | color | gradient | tiling
   fill: auto,
   
   /// Step mode for plotting the lines. See @plot.step. 
