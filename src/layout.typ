@@ -73,16 +73,6 @@
 
 
 
-// #assert(is-styled-diagram(lq.diagram()))
-// #assert(is-styled-diagram({
-//   set text(2em)
-//   lq.diagram() 
-// }))
-// #assert(is-styled-diagram({
-//   show: lq.set-spine(stroke: 1pt)
-//   lq.diagram()
-// }))
-
 
 
 
@@ -110,7 +100,7 @@
     if diagram-meta.len() == 0 { 
       return {
         show grid.cell: it => {
-          
+
           show: e.set_(diagram,
             _grid-pos: (
               x: it.x, 

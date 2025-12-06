@@ -219,7 +219,7 @@
 #pagebreak()
 
 
-// Compatibility with set rules (both native and elembic) in cells. 
+// Compatibility with set rules (both native and elembic) in cells.
 #[
 
   #set page(height: auto, width: auto)
@@ -239,6 +239,23 @@
   )
 
 ]
+
+
+
+#import "../../../src/layout.typ": is-styled-diagram
+
+#assert(is-styled-diagram(lq.diagram()))
+
+#assert(is-styled-diagram({
+  set text(2em)
+  lq.diagram()
+}))
+
+#assert(is-styled-diagram({
+  set text(2em)
+  show: lq.set-spine(stroke: 1pt)
+  lq.diagram()
+}))
 
 // #pagebreak()
 
