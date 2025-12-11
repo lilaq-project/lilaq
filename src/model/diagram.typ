@@ -164,15 +164,15 @@
   /// How to compute the bounding box of a diagram. 
   /// - `"strict"`: The bounds are computed as the precise bounding box of the 
   ///   diagram. The exact behavior for text bounds also depends on the setting 
-  ///   of #link("https://typst.app/docs/reference/text/text/#parameters-top-edge)[`text.top-edge`]
-  ///   and #link(https://typst.app/docs/reference/text/text/#parameters-bottom-edge)[`text.bottom-edge`]. 
+  ///   of #link("https://typst.app/docs/reference/text/text/#parameters-top-edge")[`text.top-edge`]
+  ///   and #link("https://typst.app/docs/reference/text/text/#parameters-bottom-edge")[`text.bottom-edge`]. 
   /// - `"relaxed"`: Tick labels of a horizontal axis are allowed to spill out
   ///   at the right and left of a diagram and tick labels of a vertical axis 
   ///   may spill out at the top and bottom. Like this, the spines can line up
   ///   with the main text body, even when the first and last tick sit on the 
   ///   far edges of an axis. Most times, this can give a cleaner look. 
-  ///- `"data-area"`: The bounds are simply the data area. 
-  /// -> "relaxed", "strict", "data-area"
+  /// - `"data-area"`: The bounds are simply the data area. 
+  /// -> "relaxed" | "strict" | "data-area"
   bounds: "relaxed",
 
   /// Plot objects like @plot, @bar, @scatter, @contour etc. and additional 
