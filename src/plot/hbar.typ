@@ -155,18 +155,8 @@
     fn-name: "hbar"
   ) 
 
-  
-  if type(width) == ratio {
-    if y.len() >= 2 {
-      width = width / 100% * calc.min(..y.windows(2).map(((a, b)) => calc.abs(b - a)))
-    } else {
-      width = width / 100%
-    }
-  } else if type(width) == duration {
-    width = width.seconds()
-  } else if type(width) == array and type(width.at(0, default: 0)) == duration {
-    width = width.map(duration.seconds)
-  }
+  width = process-plot-item-width(width, y)
+
  
   
   if offset != 0 {
