@@ -46,7 +46,7 @@
   /// where `min` and `max` can also be `auto`. If a limit is `auto`, it will be 
   /// automatically computed from all plots associated with this axis and @diagram.margin 
   /// will be applied. If the minimum is larger than the maximum, the scale is inverted
-  /// and if `min` and `max` coincide, the range will be automatically enhanced. 
+  /// and if `min` and `max` coincide, the range will be automatically expanded. 
   /// Also see @axis.inverted. 
   /// -> auto | array
   lim: auto,
