@@ -240,21 +240,25 @@
 
 
 
-/// Standard plotting method for 2d data with lines and/or marks and optional  
-/// error bars. Points where the $x$ or $y$ coordinate is `nan` are skipped. 
+/// Standard plotting function for 2d data with lines and/or marks and optional
+/// error bars. Points are given as separate arrays of $x$ and $y$ coordinates.
+/// For convenience, @plot.y also accepts a `function` argument which is then 
+/// automatically evaluated for all given $x$ coordinates. Both methods are
+/// demonstrated below. 
 /// 
 /// ```example
 /// #let x = lq.linspace(0, 10)
+/// #let y = x.map(x => calc.sin(0.1 * x * x))
 /// 
 /// #lq.diagram(
+///   lq.plot(x, y),
 ///   lq.plot(x, x => calc.sin(x + 0.541))
 /// )
 /// ```
-/// The $y$ coordinates can be given either as an array or as a function to be
-/// evaluated for all $x$ coordinates. 
+/// Points where either the $x$ or $y$ coordinate is `float.nan` are skipped. 
 /// 
 /// By default, the line and mark style is determined by the current 
-/// @diagram.cycle. However, they can be configured per plot with the options 
+/// @diagram.cycle. However, both can be configured per plot with the options 
 /// @plot.color, @plot.mark,
 /// and @plot.stroke. 
 /// 
@@ -291,9 +295,9 @@
   ///   data point (e.g., `xerr: (0.5, 1, 1.5)`). 
   /// 
   /// Asymmetric errors can be given as
-  /// - a dictionary with the keys `p` (plus) and `m` (minus) with either a 
+  /// - a dictionary with the keys `p` (plus) and `m` (minus), both with either a 
   ///   constant value or arrays with the same length as @plot.x (e.g., 
-  ///   `xerr: (p: 1, m: 2)`) or
+  ///   `xerr: (p: 1, m: 2)`, `xerr: (p: (1, 2), m: (2, 3)`) or
   /// - an array of dictionaries per data point, each filled with single `p` 
   ///   and `m` values (e.g., `xerr: ((p: 1, m: 2), (p: 2, m: 3))`). 
   /// 
@@ -302,17 +306,16 @@
   xerr: none,
   
   /// Optional errors/uncertainties for $y$ coordinates. See @plot.xerr. 
-  /// 
   /// The look of the error bars can be controlled through @errorbar. 
   /// -> none | array
   yerr: none,
   
   /// Combined color for line and marks. See also the parameters @plot.stroke and 
-  /// @plot.mark-fill which take precedence over `color`, if set. 
+  /// @plot.mark-fill which take precedence over `color`, if they are set. 
   /// -> auto | color
   color: auto,
   
-  /// The line style to use for this plot (takes precedence over @plot.color). 
+  /// The line style to use for this plot. Here, if the color component of the stroke is not `auto`, it overrides @plot.color. 
   /// -> auto | stroke
   stroke: auto, 
   
@@ -325,7 +328,8 @@
   /// -> auto | length
   mark-size: auto,
   
-  /// Color of the marks (takes precedence over @plot.color). 
+  /// How to color the marks. This overrides @plot.color. 
+  /// 
   /// TODO: this parameter should eventually be removed. Instead one
   /// would be able to set mark color and stroke through
   /// ```
@@ -342,7 +346,7 @@
   /// -> auto | color
   mark-color: auto,
   
-  /// Step mode for plotting the lines. 
+  /// Step mode affecting how the lines are drawn. 
   /// - `none`: Consecutive data points are connected with a straight line. 
   /// - `start`: The interval $(x_{i-1}, x_i]$ takes the value of $x_i$. 
   /// - `center`: The value switches half-way between consecutive $x$ positions. 
@@ -424,7 +428,8 @@
   /// Whether to clip the plot to the data area. This is usually a good idea for plots 
   /// with lines but it does also clip part of marks that lie right on an axis. 
   /// #details[
-  ///   Comparison between clipped and non-clipped plot. 
+  /// 
+  ///   Comparison between clipped and non-clipped plots. 
   ///   ```example
   ///   #lq.diagram(
   ///     margin: 0%,
@@ -445,7 +450,7 @@
   
   /// Specifies the $z$ position of this plot in the order of rendered diagram 
   /// objects. This makes it also possible to render plots in front of the axes 
-  /// which have a z-index of `20`. 
+  /// (which have a z-index of `20`). 
   /// #details[
   ///   In this example, the points are listed before the bars in the legend but 
   ///   they are still drawn in front of the bars. 
