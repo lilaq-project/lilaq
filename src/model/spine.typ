@@ -1,5 +1,5 @@
 #import "@preview/elembic:1.1.1" as e
-#import "@preview/tiptoe:0.3.1"
+#import "@preview/tiptoe:0.4.0"
 
 
 /// The spine of a diagram axis (the line drawn along the axis). 
@@ -10,12 +10,12 @@
   stroke: (thickness: 0.5pt, cap: "square"),
 
   /// Places an arrow tip on the axis spine. This expects a mark as specified by
-  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
   /// -> none | tiptoe.mark
   tip: none,
 
   /// Places an arrow tail on the axis spine. This expects a mark as specified by 
-  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
   /// -> none | tiptoe.mark
   toe: none
 

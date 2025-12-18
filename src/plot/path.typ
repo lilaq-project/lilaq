@@ -2,7 +2,7 @@
 #import "../logic/limits.typ": compute-primitive-limits
 #import "../logic/process-coordinates.typ": convert-bezier-curve, transform-point
 #import "../math.typ": vec
-#import "@preview/tiptoe:0.3.1"
+#import "@preview/tiptoe:0.4.0"
 
 
 
@@ -109,12 +109,12 @@
   closed: false,
 
   /// Places an arrow tip on the curve. This expects a mark as specified by
-  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
   /// -> none | tiptoe.mark
   tip: none,
   
   /// Places an arrow tail on the curve. This expects a mark as specified by 
-  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
   /// -> none | tiptoe.mark
   toe: none,
 

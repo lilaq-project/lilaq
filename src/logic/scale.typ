@@ -8,21 +8,21 @@
 #import "../logic/tick-locate.typ"
 
 /// Constructor for the scale type. Scales are used to transform data coordinates 
-/// into scaled coordinates. Commonly, data is displayed with a linear scale, i.e., 
-/// the entire data is just scaled uniformly. However, in order to visualize large 
-/// ranges, it is often desirable to use logarithmic scaling or other scales that 
-/// improve the readability of the data. 
+/// into scaled coordinates. Most times, data is displayed with a linear scale, 
+/// i.e., data points are just scaled uniformly. However, in order to visualize 
+/// large ranges, it is often desirable to use logarithmic scaling or other scales 
+/// that improve the readability of the data. 
 #let scale(
 
   /// Transformation from data coordinates to scaled coordinates.  
   /// Note that the transformation function does not need to worry about 
-  /// absolute scaling and offsets. As an example, the transformation function 
-  /// for the linear scale is just `x => x` and not something like 
+  /// absolute coefficients and offsets. As an example, the transformation 
+  /// function for the linear scale is just `x => x` and not for instance
   /// `x => a * x + b`. The logarithmic scale uses `x => calc.log(x)`. 
   /// -> function
   transform,
 
-  /// A precise inverse of the `transform` in order to enable the conversion of
+  /// A precise inverse of @scale.transform in order to enable the conversion of
   /// scaled coordinates back to data coordinates. 
   /// -> function
   inverse,
@@ -61,8 +61,9 @@
 )
 
 
-/// Creates a new linear scale. This scale can also be accessed through 
-/// the shorthand `"linear"`. 
+/// Creates a new linear scale. 
+/// This scale can also be selected for @axis.scale through the shorthand 
+/// `"linear"`. 
 #let linear() = scale(
   name: "linear",
   x => x,
@@ -72,13 +73,14 @@
 )
 
 
-/// Creates a new logarithmic scale. This scale can also be accessed through 
-/// the shorthand `"log"`. 
+/// Creates a new logarithmic scale. 
+/// This scale can also be selected for @axis.scale through the shorthand 
+/// `"log"`. 
 #let log(
   
-  /// The base of the logarithm. This info is only used to determine
+  /// The base of the logarithm. This information is only used to determine
   /// the base for ticks. 
-  /// -> float
+  /// -> int | float
   base: 10
   
 ) = scale(
@@ -92,22 +94,23 @@
 )
 
 
-/// Creates a new symlog scale with a linear scaling in the region 
-/// `[threshold, threshold]` around 0 and a logarithmic scaling beyond that. 
-/// This scale can also be accessed through the shorthand `"symlog"`. 
+/// Creates a new symmetric log scale with a linear scaling in the region 
+/// `[-threshold, threshold]` around 0 and a logarithmic scaling beyond that. 
+/// This scale can also be selected for @axis.scale through the shorthand 
+/// `"symlog"`. 
 #let symlog(
   
   /// The base of the logarithm. 
-  /// -> float
+  /// -> int | float
   base: 10, 
 
   /// The threshold for the linear region. 
   /// -> float
-  threshold: 1, 
+  threshold: 1.0, 
 
   /// The scaling of the linear region. 
   /// -> float
-  linscale: 1
+  linscale: 1.0
   
 ) = {
   let c = linscale / (1. - 1. / base)
@@ -145,14 +148,16 @@
   let sym = symlog()
   assert((sym.inverse)((sym.transform)(x)) - x < 1e-15)
 }
+
 #check-sym(0)
 #check-sym(1)
 #check-sym(1.5)
 #check-sym(2)
 #check-sym(3)
 
-/// A linear scale with a datetime tick locator. This scale can also be 
-/// accessed through the shorthand "datetime". 
+/// A linear scale with a smart datetime tick locator. 
+/// This scale can also be selected for @axis.scale through the shorthand 
+/// `"datetime"`. 
 #let datetime() = {
   scale(
     name: "datetime",

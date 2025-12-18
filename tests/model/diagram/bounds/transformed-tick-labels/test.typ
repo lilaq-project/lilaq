@@ -1,13 +1,15 @@
 #set page(width: auto, height: auto, margin: 1pt)
 
 #import "/src/lilaq.typ" as lq
+#import "/tests/test-presets.typ"
+
+#show: test-presets.obfuscate
 
 
 // Tick labels with a size that is changed by a transformational show rule
 
 #[
 
-  #show lq.selector(lq.tick-label): it => box(fill: gray, hide(it))
   #show lq.selector(lq.tick-label): rotate.with(90deg, reflow: true)
   #show: lq.set-tick(pad: 1pt)
 
@@ -25,7 +27,6 @@
 
 #[
 
-  #show lq.selector(lq.tick-label): it => box(fill: gray, hide(it))
   #show lq.selector(lq.tick-label): rotate.with(90deg, reflow: true)
   #show: lq.set-tick(pad: 0pt)
 

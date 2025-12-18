@@ -92,9 +92,9 @@
   /// -> int
   auto-exponent-threshold: 3,
 
-  // Whether to pad ticks with zeros to align the decimal point, e.g., 
-  // (`0`, `0.5`, `1`) become (`0.0`, `0.5`, `1.0`). 
-  // -> bool
+  /// Whether to pad ticks with zeros to align the decimal point, e.g., 
+  /// (`0`, `0.5`, `1`) become (`0.0`, `0.5`, `1.0`). 
+  /// -> bool
   pad: true,
 
   /// A suffix to display with each tick label. 
@@ -324,7 +324,13 @@
   /// -> auto | int
   exponent: auto, 
 
+  /// Determines the threshold for automatic exponents to kick in
+  /// for the case that the formatter resolves to linear formatting. 
+  /// -> int
   auto-exponent-threshold: 3,
+
+  /// The number of digits to round the exponent to.
+  /// -> int
   round-exponent-digits: 4, 
   
   /// Which base to display with the ticks. If `auto`, the base is inferred 

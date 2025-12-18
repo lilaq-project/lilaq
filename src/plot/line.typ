@@ -1,6 +1,6 @@
 #import "../logic/process-coordinates.typ": convert-vertex
 #import "../logic/limits.typ": compute-primitive-limits
-#import "@preview/tiptoe:0.3.1"
+#import "@preview/tiptoe:0.4.0"
 
 
 /// Draws a line into the data area. 
@@ -33,7 +33,7 @@
 /// This is supported via the Typst package 
 /// #link("https://typst.app/universe/package/tiptoe")[tiptoe].
 /// ```example
-/// #import "@preview/tiptoe:0.3.1"
+/// #import "@preview/tiptoe:0.4.0"
 /// #let xs = lq.arange(-5, 6)
 /// 
 /// #lq.diagram(
@@ -70,12 +70,12 @@
   label: none,
 
   /// Places an arrow tip on the line. This expects a mark as specified by
-  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
   /// -> none | tiptoe.mark
   tip: none,
   
   /// Places an arrow tail on the line. This expects a mark as specified by 
-  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
   /// -> none | tiptoe.mark
   toe: none,
   

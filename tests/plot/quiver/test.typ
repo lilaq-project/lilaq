@@ -67,7 +67,7 @@
 
 
 
-#import "@preview/tiptoe:0.3.1"
+#import "@preview/tiptoe:0.4.0"
 
 #lq.diagram(
   lq.quiver(
