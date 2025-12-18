@@ -144,7 +144,7 @@
   norm: "linear",
 
   /// The mark to use to mark data points. See @plot.mark. 
-  /// -> auto | lq.mark | string
+  /// -> auto | lq.mark | str
   mark: auto, 
 
   /// Mark stroke. TODO: need to get rid of it

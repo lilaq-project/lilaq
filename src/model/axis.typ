@@ -13,7 +13,7 @@
 #import "spine.typ": spine
 
 #import "@preview/zero:0.5.0"
-#import "@preview/tiptoe:0.3.1"
+#import "@preview/tiptoe:0.4.0"
 
 
 
@@ -195,13 +195,13 @@
   stroke: auto,
 
   /// Places an arrow tip on the axis spine. This expects a mark as specified by
-  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
   /// If not `auto`, this is forwarded to @spine.tip. 
   /// -> auto | none | tiptoe.mark
   tip: auto,
 
   /// Places an arrow tail on the axis spine. This expects a mark as specified by 
-  /// the #link("https://typst.app/universe/package/tiptoe")[tiptoe package]. 
+  /// the #link("https://typst.app/universe/package/tiptoe")[Tiptoe package]. 
   /// If not `auto`, this is forwarded to @spine.toe. 
   /// -> auto | none | tiptoe.mark
   toe: auto,
@@ -627,136 +627,278 @@
 }
 
 
+/// Conditionally create bounds, with the sorting depending on the axis position
+#let _to-bounds(
+  /// Amount of space extending outwards cross the axis
+  outwards,
+  /// Amount of space extending along the axis (towards left/top)
+  start, 
+  /// Amount of space extending along the axis (towards right/bottom)
+  end,
+  /// Amount of space extending inwards cross the axis
+  inwards: 0pt,
+  // The position/alignment of the axis. 
+  pos: bottom
+) = {
+  if pos == bottom {
+    (left: start, right: end, bottom: 100% + outwards, top: 100% - inwards)
+  } else if pos == top {
+    (left: start, right: end, bottom: inwards, top: -outwards)
+  } else if pos == left {
+    (left: -outwards, right: inwards, bottom: end, top: start)
+  } else if pos == right {
+    (left: 100% - inwards, right: 100% + outwards, bottom: end, top: start)
+  }
+}
+
+
+
+
+
+// Places a set of ticks together with tick labels. 
+// In addition, if `bounds-mode` is set to `"strict"`, the bounds of the tick 
+// labels are computed and returned as a bounds rectangle. 
+// If `sub: false`, any `axis.extra-ticks` are drawn as well. 
+// -> (result: content, bounds: array)
+#let place-ticks(
+
+  /// The axis object
+  axis,
+
+  /// Ticks to place, an array of data coordinates
+  /// -> array
+  ticks, 
+
+  /// The tick labels to draw
+  /// -> none | array
+  labels, 
+
+  /// Where to place the ticks on the diagram. This can differ from @axis.
+  /// position when drawing mirrows. 
+  /// -> top | bottom | left | right
+  position, 
+
+  /// Whether to draw tick labels. 
+  display-tick-labels, 
+
+  /// Whether to draw subticks or normal ones. 
+  sub: false,
+
+  /// See @diagram.bounds
+  bounds-mode: "relaxed",
+
+  e-get: none
+
+) = {
+  if labels == none { labels = (none,) * ticks.len() }
+  
+  let align = position.inv()
+  let tick-state = e-get(lq-tick)
+  let pad = tick-state.pad
+  let factor = if sub { 1 - (tick-state.shorten-sub / 100%) } else { 1 }
+  let outset = tick-state.outset * factor
+  let inset = tick-state.inset * factor
+  let shorten-sub = tick-state.shorten-sub
+  let length = inset + outset
+  let angle = if align in (top, bottom) { 90deg } else { 0deg }
+
+  let tick-stroke = if-none(
+    merge-strokes(
+      tick-state.stroke, 
+      axis.stroke, (cap: "butt"), 
+      e-get(spine).stroke
+    ), 
+    0.5pt  // can be none when spine.stroke is none
+  ) 
+
+  let tline = line(length: length, angle: angle, stroke: tick-stroke)
+  let make-tick
+
+  if align == right {
+    make-tick = (label, loc) => place(dx: -outset, dy: loc, {tline + place(dx: -length - pad, right + horizon, label)})
+  } else if align == left {
+    make-tick = (label, loc) => place(dx: -length + outset, dy: loc, {tline + place(dx: length + pad, left + horizon, label)})
+  } else if align == top {
+    make-tick = (label, loc) => place(dy: -length + outset, dx: loc, {tline + place(dy: length + pad, top + center, label)});
+  } else if align == bottom {
+    make-tick = (label, loc) => place(dy: -outset, dx: loc, {tline + place(dy: -length - pad, bottom + center, label)})
+  }
+
+  
+  let lq-tick-label = lq-tick-label.with(sub: sub, kind: axis.kind)
+  labels = labels.map(label => if display-tick-labels { lq-tick-label(label) })
+
+  let max-coordinate = (axis.transform)(axis.lim.at(if axis.kind == "x" { 1 } else { 0 }))
+
+  let tick-collection = ticks.zip(labels)
+    .map(
+      ((tick, label)) => (
+        value: tick, label: label, coordinate: (axis.transform)(tick)
+      )
+    )
+    .filter(
+      tick => (axis.filter)(
+        tick.value, calc.min(tick.coordinate, max-coordinate - tick.coordinate)
+      )
+    )
+
+  let content = tick-collection
+    .map(tick => make-tick(tick.label, tick.coordinate))
+    .join()
+
+  for tick in axis.extra-ticks {
+    if sub { break }
+    let format-ticks = if-none(
+      axis.format-ticks,
+      tick-format.linear
+    )
+
+    if type(tick) in (int, float) {
+      tick = lq-tick(
+        tick, 
+        label: format-ticks((tick,)).labels.first(),
+        align: position.inv(),
+        kind: axis.kind
+      )
+    }
+    let label = e.fields(tick).at("label", default: none)
+
+    let coordinate = (axis.transform)(e.fields(tick).value)
+    if label != none {
+      tick-collection.push(
+        (value: e.fields(tick).value, coordinate: coordinate, label: label)
+      )
+    }
+    let offset = if axis.kind == "x" { (dx: coordinate) } else { (dy: coordinate) }
+    content += place(..offset, {
+      show: e.set_(lq-tick, align: position.inv(), kind: axis.kind)
+      show e.selector(lq-tick-label): it => {
+        if display-tick-labels { it }
+      }
+      tick
+    })
+  }
+
+
+  // Do not return unnecessary bounds 
+  if tick-collection.len() == 0 {
+    return (none, 0pt, none)
+  }
+
+
+  let cross-extent = outset
+  let tick-bounds = _to-bounds(cross-extent, 0%, 100%, pos: position, inwards: inset)
+
+
+  if display-tick-labels {
+    let dimension = if axis.kind == "x" { "height" } else { "width" }
+    let other-dimension = if axis.kind == "y" { "height" } else { "width" }
+
+
+    let label-sizes = tick-collection.map(tick => {
+      let size = measure(tick.label)
+      let dim = size.at(other-dimension)
+      size + (lower: tick.coordinate - dim/2, upper: tick.coordinate + dim/2)
+    })
+
+    let label-space = calc.max(0pt, ..label-sizes.map(s => s.at(dimension)))
+    let start-space = 0%
+    let end-space = 100%
+
+    if bounds-mode == "strict" {
+      start-space = calc.min(0pt, ..label-sizes.map(s => s.lower))
+      end-space = calc.max(0pt, ..label-sizes.map(s => s.upper))
+    }
+
+
+    cross-extent += label-space
+    if label-space > 0pt {
+      cross-extent += pad
+    }
+    tick-bounds = _to-bounds(cross-extent, start-space, end-space, pos: position, inwards: inset)
+  }
+
+  // Erase size information from parent (data area). If the data-area is 
+  // smaller than the axis, axis elements could otherwise be cropped. 
+  content = place(
+    box(width: float.inf * 1pt, height: float.inf * 1pt, content)
+  )
+  
+  return (content, cross-extent.to-absolute(), tick-bounds)
+}
+
+
+// Places axis attachments like exponent and offset (if present)
+// -> (result: content | none, bounds: dictionary | none)
+#let place-attachments(
+  /// The axis object.
+  axis, 
+  // The evaluated exponent value returned from the tick formatter.
+  // -> int
+  exp, 
+  // The evaluated offset value returned from the tick formatter.
+  // -> auto | int | float | content
+  offset, 
+  /// Where the axis is placed on the diagram. This can differ from @axis.
+  /// position when drawing mirrows. 
+  /// -> top | bottom | left | right
+  position, 
+) = {
+
+
+  let attachment = none
+  if type(offset) in (int, float) and offset != 0 {
+    attachment += zero.num(positive-sign: true, offset)
+  } else if offset not in (0, auto) {
+    attachment += offset
+  }
+  if type(exp) == int and exp != 0 {
+    attachment += {
+      show "X": none
+      zero.num("Xe" + str(exp))
+    }
+  }
+
+  if attachment == none {
+    return (none, none)
+  }
+  let args
+  if axis.kind == "x" {
+    args = (
+      dx: .5em, dy: 0pt,
+      alignment: bottom + right, 
+      content-alignment: horizon + left
+    )
+    if position == top {
+      args.dy -= 100%
+    }
+  } else if axis.kind == "y" {
+    args = (
+      dx: 0pt, dy: -.5em,
+      alignment: top + left, 
+      content-alignment: center + bottom
+    )
+    if position == right {
+      args.dx += 100%
+    }
+  }
+
+  place-with-bounds(attachment, ..args)
+}
+
 
 // Draws an axis and its mirror (if any)
 #let draw-axis(
   axis,
   tick-info,
   orthogonal-axis-transform: none,
-  e-get: none
+  e-get: none,
+  bounds-mode: "relaxed"
 ) = {
   if axis.hidden { return (none, ()) }
 
   let (ticks, tick-labels, subticks, subtick-labels, exp, offset) = tick-info
   
-
-  // Places a set of ticks together with labels
-  let place-ticks(
-    ticks, 
-    labels, 
-    // Where to place the ticks on the diagram
-    position, 
-    // Whether to show tick labels
-    display-tick-labels, 
-    sub: false,
-    kind: "x",
-    extra-ticks: ()
-  ) = {
-    if labels == none { labels = (none,) * ticks.len() }
-    
-    let align = position.inv()
-    let pad = e-get(lq-tick).pad
-    let factor = if sub { 1 - (e-get(lq-tick).shorten-sub / 100%) } else { 1 }
-    let outset = e-get(lq-tick).outset * factor
-    let shorten-sub = e-get(lq-tick).shorten-sub
-    let length = e-get(lq-tick).inset * factor + outset
-    let angle = if align in (top, bottom) { 90deg } else { 0deg }
-  
-    let tick-stroke = if-none(
-      merge-strokes(
-        e-get(lq-tick).stroke, 
-        axis.stroke, (cap: "butt"), 
-        e-get(spine).stroke
-      ), 
-      0.5pt  // can be none when spine.stroke is none
-    ) 
-
-    let tline = line(length: length, angle: angle, stroke: tick-stroke)
-    let make-tick
-
-    if align == right {
-      make-tick = (label, loc) => place(dx: -outset, dy: loc, {tline + place(dx: -length - pad, right + horizon, label)})
-    } else if align == left {
-      make-tick = (label, loc) => place(dx: -length + outset, dy: loc, {tline + place(dx: length + pad, left + horizon, label)})
-    } else if align == top {
-      make-tick = (label, loc) => place(dy: -length + outset, dx: loc, {tline + place(dy: length + pad, top + center, label)});
-    } else if align == bottom {
-      make-tick = (label, loc) => place(dy: -outset, dx: loc, {tline + place(dy: -length - pad, bottom + center, label)})
-    }
-
-    let max-value = (axis.transform)(axis.lim.at(if kind == "x" { 1 } else { 0 }))
-    
-    let lq-tick-label = lq-tick-label.with(sub: sub, kind: kind)
-
-    labels = labels.map(label => {
-      if display-tick-labels {
-        lq-tick-label(label)
-      }
-    })
-
-    let content = ticks.zip(labels).map(
-      ((tick, label)) => {
-        let loc = (axis.transform)(tick)
-        if (axis.filter)(tick, calc.min(loc, max-value - loc)) { 
-          make-tick(label, loc)
-        }
-      }
-    ).join()
-
-  
-    for tick in extra-ticks {
-      let format-ticks = if-none(
-        axis.format-ticks,
-        tick-format.linear
-      )
-
-      if type(tick) in (int, float) {
-        tick = lq-tick(
-          tick, 
-          label: format-ticks((tick,)).labels.first(),
-          align: position.inv(),
-          kind: axis.kind
-        )
-      }
-      let label = e.fields(tick).at("label", default: none)
-      if label != none { labels.push(label) }
-
-      let loc = (axis.transform)(e.fields(tick).value)
-      let offset = if kind == "x" { (dx: loc) } else { (dy: loc) }
-      content += place(..offset, {
-        show: e.set_(lq-tick, align: position.inv(), kind: axis.kind)
-        show e.selector(lq-tick-label): it => {
-          if display-tick-labels { it }
-        }
-        tick
-      })
-    } // end extra-ticks
-
-
-    let max-padding = outset
-    let max-width = 0pt
-
-
-    if display-tick-labels {
-      let dimension = if axis.kind == "x" { "height" } else { "width" }
-
-
-      let label-sizes = labels.map(measure)
-
-      let label-space = calc.max(0pt, ..label-sizes.map(s => s.at(dimension)))
-
-
-      max-padding += label-space
-      if label-space > 0pt {
-        max-padding += pad
-      }
-    }
-
-    // Erase size information from parent (data area). 
-    content = place(box(width: float.inf * 1pt, height: float.inf * 1pt, content))
-    
-    return (content, max-padding.to-absolute())
-  }
   
 
   // Draws a single axis (*or* a mirror)
@@ -782,63 +924,30 @@
     }
 
     if display-ticks {
-      let (tick-content, tick-space) = place-ticks(
-        ticks, tick-labels, position, display-tick-labels, kind: kind, extra-ticks: axis.extra-ticks
+      let (tick-content, tick-space, tick-bounds) = place-ticks(
+        axis, ticks, tick-labels, position, display-tick-labels, e-get: e-get, bounds-mode: bounds-mode
       )
-      content += tick-content
-      let (subtick-content, subtick-space) = place-ticks(
-        subticks, subtick-labels, position, display-tick-labels, 
-        sub: true, kind: kind
+      if tick-content != none {
+        bounds.push(tick-bounds)
+        content += tick-content
+      }
+      let (subtick-content, subtick-space, subtick-bounds) = place-ticks(
+        axis, subticks, subtick-labels, position, display-tick-labels, 
+        sub: true, e-get: e-get, bounds-mode: bounds-mode
       )
+      if subtick-content != none {
+        bounds.push(subtick-bounds)
+        content += subtick-content
+      }
       space = calc.max(tick-space, subtick-space)
-      content += subtick-content
-
     }
 
 
     if display-tick-labels {
-
-      let attachment = none
-      if type(offset) in (int, float) and offset != 0 {
-        attachment += zero.num(positive-sign: true, offset)
-      } else if offset not in (0, auto) {
-        attachment += offset
-      }
-      if type(exp) == int and exp != 0 {
-        attachment += {
-          show "X": none
-          zero.num("Xe" + str(exp))
-        }
-      }
-
-      if attachment != none {
-        let args
-        if axis.kind == "x" {
-          args = (
-            dx: .5em, dy: 0pt,
-            alignment: bottom + right, 
-            content-alignment: horizon + left
-          )
-          if position == top {
-            args.dy -= 100%
-          }
-        } else if axis.kind == "y" {
-          args = (
-            dx: 0pt, dy: -.5em,
-            alignment: top + left, 
-            content-alignment: center + bottom
-          )
-          if position == right {
-            args.dx += 100%
-          }
-        }
-
-        let (attachment-content, attachment-bounds) = place-with-bounds(
-          attachment,
-          ..args
-        )
-        content += attachment-content
-        bounds.push(attachment-bounds)
+      let (att-content, att-bounds) = place-attachments(axis, exp, offset, position)
+      if att-content != none {
+        content += att-content
+        bounds.push(att-bounds)
       }
     }
     
@@ -874,17 +983,12 @@
       }
       let size = measure(body)
 
-      let (label-content, _) = place-with-bounds(
+      let (label-content, label-bounds) = place-with-bounds(
         body, alignment: position, dx: dx, dy: dy, pad: pad
       )
       
       content += label-content
-
-      if kind == "x" {
-        space = calc.max(space, size.height + pad)
-      } else {
-        space = calc.max(space, size.width + pad)
-      }
+      bounds.push(label-bounds)
     }
 
 
@@ -895,28 +999,14 @@
       inset: 0pt, outset: 0pt
     )
     
-    let main-bounds = create-bounds()
-    let inset = e-get(lq-tick).inset
-    if axis.kind == "x" {
-      main-bounds.right = 100%
-      if position == top {
-        main-bounds.top = -space
-        main-bounds.bottom = inset
-      } else if position == bottom {
-        main-bounds.bottom = 100% + space
-        main-bounds.top = 100% - inset
-      }
-    } else {
-      main-bounds.bottom = 100%
-      if position == left {
-        main-bounds.left = -space
-        main-bounds.right = inset
-      } else if position == right {
-        main-bounds.right = 100% + space
-        main-bounds.left = 100% - inset
-      }
-    }
-    bounds.push(main-bounds)
+    
+    // let draw-bounds(b) = {
+    //   place(
+    //     dx: b.left, dy: b.top - 100%,
+    //     rect(width: b.right - b.left, height: b.bottom - b.top, fill: blue.transparentize(60%))
+    //   )
+    // }
+    // for b in bounds { content += draw-bounds(b) }
     return (content, bounds)
   }
 
