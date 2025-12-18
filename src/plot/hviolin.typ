@@ -16,6 +16,8 @@
 ///   )
 /// )
 /// ```
+/// 
+/// See @violin for how to customize the boxplot displayed within the violin plot. 
 #let hviolin(
 
   /// One or more data sets to generate violin plots from. Each dataset should
@@ -93,24 +95,10 @@
   /// -> "both" | "low" | "high"
   side: "both",
 
-  /// Whether to display a boxplot inside the KDE.
-  /// -> bool
-  boxplot: true,
-
-  /// The width of the boxplot inside the violin plot. This can be
-  /// - an `int` or `float` to specify the width in data coordinates,
-  /// - a `ratio` to give the width relative to @hviolin.width,
-  /// - or an absolute, fixed `length`.
-  /// -> int | float | ratio | length
-  boxplot-width: 15%,
-
-  /// How to fill the boxplot.
-  /// -> auto | none | color | gradient | tiling | ratio
-  boxplot-fill: auto,
-  
-  /// How to stroke the boxplot.
-  /// -> none | length | color | stroke | gradient | tiling | dictionary
-  boxplot-stroke: auto,
+  /// Arguments to pass to the @violin-boxplot instance that is displayed 
+  /// inside the violin plot. If set to `none`, no boxplot is shown. 
+  /// -> dictionary | none
+  boxplot: (:),
 
   /// The position of the whiskers. See @boxplot.whisker-pos.
   /// -> int | float
@@ -196,9 +184,6 @@
       median: median,
       side: side,
       boxplot: boxplot,
-      boxplot-width: boxplot-width,
-      boxplot-fill: boxplot-fill,
-      boxplot-stroke: boxplot-stroke,
     ),
     plot: (plot, transform) => render-violin(
       plot.style,

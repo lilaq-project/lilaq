@@ -24,6 +24,39 @@
   fields: (),
 )
 
+
+/// A boxplot for a @violin or @hviolin plot. This type provides a 
+/// customization interface for the boxplot displayed in a violin plot. 
+#let violin-boxplot(
+
+  /// The width of the boxplot inside the violin plot. This can be
+  /// - an `int` or `float` to specify the width in data coordinates,
+  /// - a `ratio` to give the width relative to @violin.width,
+  /// - or an absolute, fixed `length`.
+  /// -> int | float | ratio | length
+  width: 15%,
+
+  /// How to fill the boxplot.
+  /// -> auto | none | color | gradient | tiling | ratio
+  fill: auto,
+  
+  /// How to stroke the boxplot.
+  /// -> none | length | color | stroke | gradient | tiling | dictionary
+  stroke: auto,
+
+) = {}
+
+#let violin-boxplot = e.element.declare(
+  "violin-boxplot",
+  prefix: "lilaq",
+  display: it => none,
+  fields: (
+    e.field("fill", e.types.smart(e.types.option(e.types.paint)), default: auto),
+    e.field("stroke", e.types.smart(stroke), default: auto),
+    e.field("width", e.types.union(int, float, ratio, length), default: 15%),
+  ),
+)
+
 #let render-violin(
   style,
   data,
@@ -32,7 +65,7 @@
   transform,
   legend: false,
   horizontal: false,
-) = {
+) = e.get(e-get => {
   let prepare-path = prepare-path.with(
     fill: style.fill,
     stroke: style.stroke,
@@ -93,7 +126,16 @@
 
 
     let statistics = data.boxplot-statistics
-    let boxplot-width = style.boxplot-width
+    let boxplot = e-get(violin-boxplot)
+    if style.boxplot != none {
+      assertations.assert-dict-keys(
+        style.boxplot, 
+        optional: ("stroke", "fill", "width"), 
+        name: "Boxplot"
+      )
+      boxplot += style.boxplot
+    }
+    let boxplot-width = boxplot.width
 
     // Pre-transform width, i.e., in data coordinates
     let pre-width = utility.match-type(
@@ -136,8 +178,8 @@
 
 
     show: prepare-path.with(
-      fill: style.boxplot-fill,
-      stroke: style.boxplot-stroke,
+      fill: boxplot.fill,
+      stroke: boxplot.stroke,
       element: curve,
     )
 
@@ -145,7 +187,8 @@
     let hreverse = if horizontal { array.rev } else { a => a }
 
 
-    if style.boxplot {
+
+    if style.boxplot != none {
       place(curve(
         curve.move(hreverse((center-pt, q1-pt))),
         curve.line(hreverse((center-pt, whisker-low-pt))),
@@ -180,7 +223,7 @@
     mark-value(style.median, statistics.median, violin-median)
     mark-value(style.mean, statistics.mean, violin-mean)
   }
-}
+})
 
 
 #let process-data(
@@ -238,6 +281,28 @@
 ///   )
 /// )
 /// ```
+/// 
+/// The boxplot inside the violin plot is controlled through set rules on
+/// @violin-boxplot. 
+/// ```typ
+/// #show: lq.set-violin-boxplot(
+///   fill: none, 
+///   stroke: white,
+///   width: 50%
+/// )
+/// 
+/// #lq.diagram(
+///   lq.violin(
+///     (0, 2, 3, 4, 5, 6, 7, 8, 3, 4, 4, 2, 12),
+///     (1, 3, 4, 5, 5, 5, 5, 6, 7, 12),
+///     (0, 3, 4, 5, 6, 7, 8, 9),
+///   )
+/// )
+/// ```
+/// If the boxplot needs to be tweaked differently for individual plots within 
+/// a single diagram, the parameter @violin.boxplot can be used to forward 
+/// arguments to @violin-boxplot per plot. Setting `boxplot: none` removes the 
+/// boxplot altogether. 
 #let violin(
 
   /// One or more data sets to generate violin plots from. Each dataset should
@@ -315,24 +380,10 @@
   /// -> "both" | "low" | "high"
   side: "both",
 
-  /// Whether to display a boxplot inside the KDE.
-  /// -> bool
-  boxplot: true,
-
-  /// The width of the boxplot inside the violin plot. This can be
-  /// - an `int` or `float` to specify the width in data coordinates,
-  /// - a `ratio` to give the width relative to @violin.width,
-  /// - or an absolute, fixed `length`.
-  /// -> int | float | ratio | length
-  boxplot-width: 15%,
-
-  /// How to fill the boxplot.
-  /// -> auto | none | color | gradient | tiling | ratio
-  boxplot-fill: auto,
-  
-  /// How to stroke the boxplot.
-  /// -> none | length | color | stroke | gradient | tiling | dictionary
-  boxplot-stroke: auto,
+  /// Arguments to pass to the @violin-boxplot instance that is displayed 
+  /// inside the violin plot. If set to `none`, no boxplot is shown. 
+  /// -> dictionary | none
+  boxplot: (:),
 
   /// The position of the whiskers. See @boxplot.whisker-pos.
   /// -> int | float
@@ -418,9 +469,6 @@
       median: median,
       side: side,
       boxplot: boxplot,
-      boxplot-width: boxplot-width,
-      boxplot-fill: boxplot-fill,
-      boxplot-stroke: boxplot-stroke,
     ),
     plot: (plot, transform) => render-violin(
       plot.style,

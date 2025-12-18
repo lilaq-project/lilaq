@@ -28,7 +28,7 @@
 #import "plot/contour.typ": contour
 #import "plot/boxplot.typ": boxplot
 #import "plot/hboxplot.typ": hboxplot
-#import "plot/violin.typ": violin
+#import "plot/violin.typ": violin, violin-boxplot
 #import "plot/hviolin.typ": hviolin
 #import "plot/quiver.typ": quiver
 #import "plot/hlines.typ": hlines
@@ -46,7 +46,7 @@
 #import "place-anchor.typ": place-anchor
 
 
-#import "typing.typ": set-grid, set-label, set-title, set-legend, set-tick, set-tick-label, set-spine, set-diagram, set-errorbar, selector, fields, show_, cond-set
+#import "typing.typ": set-grid, set-label, set-title, set-legend, set-tick, set-tick-label, set-spine, set-diagram, set-errorbar, selector, fields, show_, cond-set, set-violin-boxplot
 
 #import "logic/scale.typ"
 #import "logic/tick-locate.typ" as tick-locate: linear as locate-ticks-linear, log as locate-ticks-log, symlog as locate-ticks-symlog, manual as locate-ticks-manual, subticks-linear as locate-subticks-linear, subticks-log as locate-subticks-log, subticks-symlog as locate-subticks-symlog, datetime as locate-ticks-datetime

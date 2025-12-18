@@ -116,12 +116,11 @@
 // Boxplot
 // Fill and stroke
 #lq.diagram(
-  lq.hviolin(data.at(0), boxplot: false),
+  lq.hviolin(data.at(0), boxplot: none),
   lq.hviolin(
     data.at(1),
     y: 2,
-    boxplot-fill: white,
-    boxplot-stroke: black,
+    boxplot: (fill: white, stroke: black),
     whisker-pos: 2,
   ),
   lq.hviolin(data.at(2), y: 3),
@@ -133,11 +132,11 @@
 // Constant boxplot width
 #lq.diagram(
   height: 3cm,
-  lq.hviolin(data.at(1), boxplot-width: 20pt),
-  lq.hviolin(data.at(1), y: 2, side: "low", boxplot-width: 10pt),
-  lq.hviolin(data.at(1), y: 2, side: "high", boxplot-width: 10pt),
-  lq.hviolin(data.at(1), y: 3, width: 1, boxplot-width: 20pt),
-  lq.hviolin(data.at(1), y: 4, width: .5, boxplot-width: .5),
+  lq.hviolin(data.at(1), boxplot: (width: 20pt)),
+  lq.hviolin(data.at(1), y: 2, side: "low", boxplot: (width: 10pt)),
+  lq.hviolin(data.at(1), y: 2, side: "high", boxplot: (width: 10pt)),
+  lq.hviolin(data.at(1), y: 3, width: 1, boxplot: (width: 20pt)),
+  lq.hviolin(data.at(1), y: 4, width: .5, boxplot: (width: .5)),
 )
 
 #pagebreak()
@@ -147,11 +146,11 @@
 #lq.diagram(
   height: 3cm,
   yaxis: (inverted: true),
-  lq.hviolin(data.at(1), boxplot-width: 20pt),
-  lq.hviolin(data.at(1), y: 2, side: "low", boxplot-width: 10pt),
-  lq.hviolin(data.at(1), y: 2, side: "high", boxplot-width: 10pt),
-  lq.hviolin(data.at(1), y: 3, width: 1, boxplot-width: 20pt),
-  lq.hviolin(data.at(1), y: 4, width: .5, boxplot-width: .5),
+  lq.hviolin(data.at(1), boxplot: (width: 20pt)),
+  lq.hviolin(data.at(1), y: 2, side: "low", boxplot: (width: 10pt)),
+  lq.hviolin(data.at(1), y: 2, side: "high", boxplot: (width: 10pt)),
+  lq.hviolin(data.at(1), y: 3, width: 1, boxplot: (width: 20pt)),
+  lq.hviolin(data.at(1), y: 4, width: .5, boxplot: (width: .5)),
 )
 
 #pagebreak()
@@ -161,8 +160,25 @@
 #lq.diagram(
   height: 3cm,
   yaxis: (inverted: true),
-  lq.hviolin(data.at(1), boxplot-width: 50%),
-  lq.hviolin(data.at(1), y: 2, side: "low", boxplot-width: 25%),
-  lq.hviolin(data.at(1), y: 2, side: "high", boxplot-width: 25%),
-  lq.hviolin(data.at(1), y: 3, width: 1, boxplot-width: 50%, median: white),
+  lq.hviolin(data.at(1), boxplot: (width: 50%)),
+  lq.hviolin(data.at(1), y: 2, side: "low", boxplot: (width: 25%)),
+  lq.hviolin(data.at(1), y: 2, side: "high", boxplot: (width: 25%)),
+  lq.hviolin(data.at(1), y: 3, width: 1, boxplot: (width: 50%), median: white),
+)
+
+
+#pagebreak()
+
+// Test violin boxplot
+#show: lq.set-violin-boxplot(
+  fill: red, 
+  stroke: .5pt + black,
+  width: 50%
+)
+#lq.diagram(
+  height: 3cm,
+  lq.hviolin(data.at(1)),
+  lq.hviolin(data.at(1), y: 2, side: "low", boxplot: (width: 25%, fill: auto, stroke: auto)),
+  lq.hviolin(data.at(1), y: 2, side: "high", boxplot: (stroke: white)),
+  lq.hviolin(data.at(1), y: 3, width: 1, boxplot: (width: 10%), median: white),
 )
