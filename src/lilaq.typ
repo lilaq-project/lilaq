@@ -45,8 +45,11 @@
 #import "model/colorbar.typ": colorbar
 #import "place-anchor.typ": place-anchor
 
+#import "typing.typ": (
+  cond-set, fields, selector, set-diagram, set-errorbar, set-grid, set-label, set-legend, set-spine, set-tick,
+  set-tick-label, set-title, show_, set-violin-boxplot,
+)
 
-#import "typing.typ": set-grid, set-label, set-title, set-legend, set-tick, set-tick-label, set-spine, set-diagram, set-errorbar, selector, fields, show_, cond-set, set-violin-boxplot
 
 #import "logic/scale.typ"
 #import "logic/tick-locate.typ" as tick-locate: linear as locate-ticks-linear, log as locate-ticks-log, symlog as locate-ticks-symlog, manual as locate-ticks-manual, subticks-linear as locate-subticks-linear, subticks-log as locate-subticks-log, subticks-symlog as locate-subticks-symlog, datetime as locate-ticks-datetime
