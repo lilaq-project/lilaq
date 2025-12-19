@@ -22,13 +22,25 @@
 
 
 
-/// Creates a new diagram. 
+/// Creates a new diagram containing all plots that are passed as arguments. 
+/// A comprehensive list of available plot functions can be found at 
+/// #link("plot-types")[Plot Types]. 
 /// 
-/// -> lq.diagram
+/// All plots need to be wrapped in a diagram in order to be displayed. 
+/// 
+/// ```example
+/// #lq.diagram(
+///   title: [Trigonometric Functions],
+///   xlabel: $x$,
+///   ylabel: $y$,
+///   lq.plot(lq.linspace(0, 10), calc.sin),
+///   lq.plot(lq.linspace(0, 10), x => calc.cos(x) / 2)
+/// )
+/// ```
 #let diagram(
   
-  /// The width of the diagram. This can be
-  /// - A `length`; in this case, it defines just the width of the data area,
+  /// The width of the diagram. This can be one of the following:
+  /// - A `length`, defining just the width of the data area,
   ///   excluding axes, labels, title etc.
   /// - A `ratio` or `relative` where the ratio part is relative to the width 
   ///   of the parent that the diagram is placed in. This is not allowed if the
@@ -38,8 +50,8 @@
   /// -> length | relative | auto
   width: 6cm,
   
-  /// The height of the diagram. This can be
-  /// - A `length`; in this case, it defines just the height of the data area,
+  /// The height of the diagram. This can be one of the following:
+  /// - A `length`, defining just the height of the data area,
   ///   excluding axes, labels, title etc.
   /// - A `ratio` or `relative` where the ratio part is relative to the height 
   ///   of the parent that the diagram is placed in. This is not allowed if the
@@ -106,12 +118,14 @@
   yscale: auto,
 
   /// Configures the $x$-axis through a dictionary of arguments to pass to the 
-  /// constructor of the axis. See @axis for available options. 
+  /// constructor of the axis. See @axis for available options. Setting this to
+  /// `none` hides the axis by effectively setting @axis.hidden to `true`. 
   /// -> none | dictionary
   xaxis: (:),
   
   /// Configures the $y$-axis through a dictionary of arguments to pass to the
-  /// constructor of the axis. See @axis for available options. 
+  /// constructor of the axis. See @axis for available options. Setting this to
+  /// `none` hides the axis by effectively setting @axis.hidden to `true`. 
   /// -> none | dictionary
   yaxis: (:),
 
@@ -130,13 +144,13 @@
   /// -> ratio | dictionary
   margin: 6%,
 
-  /// Fixes the aspect ratio of data coordinates. 
+  /// Fixes the aspect ratio of  data coordinates. 
   /// For example, when plotting a graph, fixing the aspect ratio ensures
   /// that a unit distance on the x-axis is visually equal to a unit distance 
   /// on the y-axis. This is particularly useful for visualizing data where the
   /// relative proportions are important, such as in scatter plots or heatmaps.
   /// 
-  /// There are two ways how an aspect ratio can be realized:
+  /// After setting an aspect ratio there are two ways how it can be realized. 
   /// 1. By adjusting the dimensions of the diagram area, i.e., the width or 
   ///    height. Select this method by setting one of @diagram.width and 
   ///    @diagram.height to `auto`.
@@ -149,10 +163,10 @@
   /// Style cycle to use for this diagram. Check out the 
   /// #link("tutorials/cycles")[cycles tutorial] for more information. 
   /// The elements of a cycle array should either be 
-  /// - all functions as described in the tutorial, or
-  /// - all of type `color` (e.g., one of the maps under `lq.color.map`), or
+  /// - all of type `color` (e.g., one of the maps from `lq.color.map`), or
   /// - all of type `dictionary` with possible keys `color`, `stroke`, and 
-  ///   `mark`. 
+  ///   `mark`, or
+  /// - all of type `function` as described in the tutorial. 
   ///   
   /// -> array
   cycle: petroff10,

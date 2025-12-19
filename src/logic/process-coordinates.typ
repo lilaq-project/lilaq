@@ -13,7 +13,7 @@
   points, 
   
   /// Whether to to split the data into separate runs whenever a coordinate 
-  /// containing a `nan` value is encountered.  
+  /// containing a `float.nan` value is encountered.  
   /// -> bool
   generate-runs: false
   
@@ -45,7 +45,7 @@
 /// -> array
 #let stepify(
 
-  /// Input points of the form `(x, y)` with `nan` values removed. 
+  /// Input points of the form `(x, y)` with `float.nan` values removed. 
   /// -> array
   points, 
 

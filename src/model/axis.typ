@@ -18,14 +18,14 @@
 
 
 /// An axis for a diagram. Visually, an axis consists of a _spine_ along the axis 
-/// direction, a collection of ticks/subticks and an axis label. 
+/// direction, a collection of _ticks_ (and subticks) and an _axis label_. 
 /// 
-/// By default, a @diagram features two axes: an `x` and a `y` axis which can be 
+/// By default, a @diagram features two axes: an x and a y axis which can be 
 /// configured directly through @diagram.xaxis and @diagram.yaxis. However, it is 
 /// also possible to add more axes, please refer to the 
 /// #link("tutorials/axis")[axis tutorial] for more details. 
 /// 
-/// The built-in tick formatters use the Typst package
+/// The built-in _tick formatters_ use the Typst package
 /// #link("https://typst.app/universe/package/zero")[Zero] for displaying
 /// numbers. This makes it possible to define a consistent number format 
 /// throughout the entire document, including tables, in-text quantities,
@@ -46,7 +46,7 @@
   /// where `min` and `max` can also be `auto`. If a limit is `auto`, it will be 
   /// automatically computed from all plots associated with this axis and @diagram.margin 
   /// will be applied. If the minimum is larger than the maximum, the scale is inverted
-  /// and if `min` and `max` coincide, the range will be automatically increased. 
+  /// and if `min` and `max` coincide, the range will be automatically expanded. 
   /// Also see @axis.inverted. 
   /// -> auto | array
   lim: auto,
@@ -72,8 +72,8 @@
   /// - or a combination of the first and third option through a dictionary 
   ///   with the keys `align` and `offset`. 
   /// 
-  /// More on axis placement can be found in the 
-  /// #link("tutorials/axis#placement-and-mirrors")[axis tutorial]. 
+  /// More on axis placement can be found in the tutorial section
+  /// #link("tutorials/axis#placement-and-mirrors")[Axis − Placement and mirrors]. 
   /// -> auto | alignment | float | relative | dictionary
   position: auto, 
 
@@ -83,8 +83,8 @@
   /// is granted through a dictionary with the possible keys `ticks` and 
   /// `tick-labels` to individually activate or deactivate those. 
   /// 
-  /// More on axis mirrors can be found in the 
-  /// #link("tutorials/axis#placement-and-mirrors")[axis tutorial]. 
+  /// More on axis mirrors can be found in the tutorial section
+  /// #link("tutorials/axis#placement-and-mirrors")[Axis − Placement and mirrors]. 
   /// -> auto | bool | dictionary
   mirror: auto,
 
@@ -130,7 +130,7 @@
   /// overly long tick labels. 
   /// 
   /// In combination with logarithmic tick locators, `none` can be used to 
-  /// force writing out all numbers. 
+  /// force writing out all numbers without scientific notation. 
   /// -> auto | none | int | "inline"
   exponent: auto,
 
@@ -139,22 +139,26 @@
   auto-exponent-threshold: 3,
 
   /// The tick locator for the regular ticks. 
-  /// Also see #link("tutorials/ticks#locating-ticks")[locating ticks]. 
+  /// Also see the tutorial section 
+  /// #link("tutorials/ticks#locating-ticks")[Ticks − Locating ticks]. 
   /// -> auto | function
   locate-ticks: auto,
   
   /// The formatter for the (major) ticks. 
-  /// Also see #link("tutorials/ticks#formatting-ticks")[formatting ticks]. 
+  /// Also see the tutorial section 
+  /// #link("tutorials/ticks#formatting-ticks")[Ticks − Formatting ticks]. 
   /// -> auto | function
   format-ticks: auto,
   
   /// The tick locator for the subticks. 
-  /// Also see #link("tutorials/ticks#locating-ticks")[locating ticks]. 
+  /// Also see the tutorial section 
+  /// #link("tutorials/ticks#locating-ticks")[Ticks − Locating ticks]. 
   /// -> auto | function
   locate-subticks: auto,
   
   /// The formatter for the subticks. 
-  /// Also see #link("tutorials/ticks#displaying-subtick-labels")[displaying subticks]. 
+  /// Also see the tutorial section 
+  /// #link("tutorials/ticks#displaying-subtick-labels")[Ticks − Displaying subticks labels]. 
   /// -> auto | none | function
   format-subticks: none,
 
@@ -178,14 +182,22 @@
   /// e.g., the main axis displays the velocity of a particle while the 
   /// secondary axis displays the associated energy. In this case, one would 
   /// pick `functions: (x => m*x*x, y => calc.sqrt(y/m))` with some constant
-  /// `m`. Note that the first function computes the "forward" direction while
-  /// the second function computes the "backward" direction. The user needs to 
+  /// `m`. Note that the first function computes the _forward_ direction while
+  /// the second function computes the _backward_ direction (and is thus the _inverse_ of the forward conversion). The user needs to 
   /// ensure that the two functions are really inverses of each other. 
-  /// By default, this parameter resolves to the identity. 
+  /// By default, this parameter resolves to the identity.
+  /// 
+  /// Learn more in the tutorial section #link("tutorials/axis#dependent-axes")[Axis − Dependent axes].  
   /// -> auto | array
   functions: auto,
 
-  /// If set to `true`, the entire axis is hidden. 
+  /// If set to `true`, the entire axis is hidden, including ticks and labels
+  /// and no space is reserved for it. However, logical parameters like 
+  /// @axis.scale, @axis.lim, @axis.inverted, @axis.ticks, and similar still
+  /// take effect and tick positions are still located and passed to @grid. 
+  /// 
+  /// Setting @diagram.xaxis or @diagram.yaxis to `none` effectively sets this 
+  /// parameter to `true`. 
   /// -> bool
   hidden: false,
 
@@ -208,9 +220,12 @@
 
   filter: (value, distance) => true,
 
-  /// Plot objects to associate with this axis. This only applies when this is 
-  /// a secondary axis. Automatic limits are then computed according to this 
-  /// axis and transformations of the data coordinates linked to the scaling of
+  /// Plot objects to associate with this axis, see the tutorial section 
+  /// #link("tutorials/axis#independent-axes-twin-axes")[Axis − Independent axes]. 
+  /// This parameter is mutually exclusive with @axis.functions (which would make the axis dependent) and @axis.lim. 
+  /// 
+  /// Automatic limits are then computed according to this 
+  /// axis and transformation of the plot data is linked to the scaling of
   /// this axis. 
   /// -> any
   ..plots

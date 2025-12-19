@@ -20,8 +20,8 @@
 ) = if value == 0 { 0 } else if value < 0 { -1 } else { 1 }
 
 
-/// Returns the minimum value of an array, ignoring `NaN` values. Returns `none` 
-/// if the array is empty or contains only `NaN` values. 
+/// Returns the minimum value of an array, ignoring `float.nan` values. Returns `none` 
+/// if the array is empty or contains only `float.nan` values. 
 /// -> none | float
 #let cmin(
   /// Values to compute the minimum of. 
@@ -33,8 +33,8 @@
   return calc.min(..values)
 }
 
-/// Returns the maximum value of an array, ignoring `NaN` values. Returns `none` 
-/// if the array is empty or contains only `NaN` values. 
+/// Returns the maximum value of an array, ignoring `float.nan` values. Returns `none` 
+/// if the array is empty or contains only `float.nan` values. 
 /// -> none | float
 #let cmax(
   /// Values to compute the maximum of. 
@@ -46,8 +46,8 @@
   return calc.max(..values)
 }
 
-/// Returns the minimum and maximum value of an array, ignoring `NaN` values. 
-/// Returns `(none, none)` if the array is empty or contains only `NaN` values. 
+/// Returns the minimum and maximum value of an array, ignoring `float.nan` values. 
+/// Returns `(none, none)` if the array is empty or contains only `float.nan` values. 
 /// -> array 
 #let minmax(
   /// Values to compute the minimum and the maximum of. 

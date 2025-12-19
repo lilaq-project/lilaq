@@ -1,6 +1,8 @@
 
 
-/// A label for a diagram axis. 
+/// A label for a diagram axis. Refer to the tutorial section 
+/// #link("tutorials/axis#axis-labels")[Axis − Axis labels] for customization 
+/// tips. 
 #let label(
   
   /// Content to show in the label. 
@@ -11,6 +13,17 @@
   /// -> "x" | "y"
   kind: "x",
 
+  /// Padding between the axis (and its ticks and labels) and the label. 
+  /// When this is set to `none`, the label is drawn directly on the axis
+  /// (ignoring the ticks).
+  /// -> none | length
+  pad: 0.75em,
+
+  /// Angle at which the label is drawn. If set to `auto`, $x$-labels are drawn 
+  /// at `0deg` and $y$-labels at `-90deg`. 
+  /// -> auto | angle
+  angle: auto,
+
   /// Horizontal offset. 
   /// -> length
   dx: 0pt,
@@ -18,17 +31,6 @@
   /// Vertical offset. 
   /// -> length
   dy: 0pt,
-
-  /// Padding between the axis (and its ticks and labels) and the label. 
-  /// When this is set to `none`, the label is drawn directly on the axis
-  /// (ignoring the ticks).
-  /// -> none | length
-  pad: 0.75em,
-
-  /// Angle at which the label is drawn. The label of a `y` axis is often 
-  /// drawn at `-90deg`. 
-  /// -> angle
-  angle: 0deg
   
 ) = {
   (

@@ -102,7 +102,7 @@
   /// - or a function that takes two arguments `(x, y)` and returns a 
   ///   two-dimensional direction vector. 
   /// 
-  /// Masking is possible through `nan` values. 
+  /// Masking is possible through `float.nan` values. 
   /// -> array | function
   directions,
 
