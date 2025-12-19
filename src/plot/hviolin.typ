@@ -1,11 +1,11 @@
 #import "violin.typ": *
 
 
-/// Computes and visualizes one or more violin plots from a series of datasets. This is the horizontal version of @violin.
+/// Generates a violin plot for each given dataset.
+/// This is the horizontal version of @violin.
 ///
-/// A violin plot is similar to a boxplot but uses kernel density estimation
-/// to visualize the distribution of the data. The width of the violin represents the density of data points at
-/// the $y$-coordinate.
+/// A violin plot is similar to a @boxplot but uses kernel density estimation
+/// to visualize the distribution of the data points. 
 ///
 /// ```example
 /// #lq.diagram(
@@ -17,7 +17,12 @@
 /// )
 /// ```
 /// 
-/// See @violin for how to customize the boxplot displayed within the violin plot. 
+/// See @violin for how to customize the boxplot displayed within the violin
+/// plot. 
+/// 
+/// By default, only the @hviolin.median is highlighted as a special value. In 
+/// addition, @hviolin.mean and @hviolin.extrema allow for further visualization 
+/// options. 
 #let hviolin(
 
   /// One or more data sets to generate violin plots from. Each dataset should
@@ -66,7 +71,7 @@
   /// or length).
   /// ```example
   /// #lq.diagram(
-  ///   width: 3cm,
+  ///   height: 1cm,
   ///   lq.hviolin((0, 2, 3, 4, 7), median: white),
   /// )
   /// ```
@@ -76,6 +81,11 @@
   /// Whether and how to display the mean value, like @hviolin.median. 
   /// -> none | lq.mark | str | color | stroke | length
   mean: none,
+
+  /// Whether to mark the minium and maximum with vertical lines. 
+  /// See @violin.extrema. 
+  /// -> bool
+  extrema: false,
 
   /// Which side to plot the KDE at.
   /// ```example
@@ -182,6 +192,7 @@
       stroke: stroke,
       mean: mean,
       median: median,
+      extrema: extrema,
       side: side,
       boxplot: boxplot,
     ),

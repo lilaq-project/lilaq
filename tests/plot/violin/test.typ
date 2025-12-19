@@ -131,10 +131,21 @@
 
 // Constant boxplot width
 #lq.diagram(
-  height: 3cm,
-  lq.violin(data.at(1), boxplot: (width: 20pt)),
-  lq.violin(data.at(1), x: 2, side: "low", boxplot: (width: 10pt)),
-  lq.violin(data.at(1), x: 2, side: "high", boxplot: (width: 10pt)),
+  lq.violin(data.at(1), boxplot: (width: 20pt), extrema: true),
+  lq.violin(
+    data.at(1),
+    x: 2,
+    side: "low",
+    boxplot: (width: 5pt),
+    extrema: true,
+  ),
+  lq.violin(
+    data.at(1),
+    x: 2,
+    side: "high",
+    boxplot: (width: 5pt),
+    extrema: true,
+  ),
   lq.violin(data.at(1), x: 3, width: 1, boxplot: (width: 20pt)),
   lq.violin(data.at(1), x: 4, width: .5, boxplot: (width: .5)),
 )
@@ -144,11 +155,22 @@
 
 // Constant boxplot width
 #lq.diagram(
-  height: 3cm,
   xaxis: (inverted: true),
-  lq.violin(data.at(1), boxplot: (width: 20pt)),
-  lq.violin(data.at(1), x: 2, side: "low", boxplot: (width: 10pt)),
-  lq.violin(data.at(1), x: 2, side: "high", boxplot: (width: 10pt)),
+  lq.violin(data.at(1), boxplot: (width: 20pt), extrema: true),
+  lq.violin(
+    data.at(1),
+    x: 2,
+    side: "low",
+    boxplot: (width: 5pt),
+    extrema: true,
+  ),
+  lq.violin(
+    data.at(1),
+    x: 2,
+    side: "high",
+    boxplot: (width: 5pt),
+    extrema: true,
+  ),
   lq.violin(data.at(1), x: 3, width: 1, boxplot: (width: 20pt)),
   lq.violin(data.at(1), x: 4, width: .5, boxplot: (width: .5)),
 )
@@ -157,7 +179,6 @@
 
 // Ratio boxplot width
 #lq.diagram(
-  height: 3cm,
   lq.violin(data.at(1), boxplot: (width: 50%)),
   lq.violin(data.at(1), x: 2, side: "low", boxplot: (width: 25%)),
   lq.violin(data.at(1), x: 2, side: "high", boxplot: (width: 25%)),
@@ -167,15 +188,32 @@
 #pagebreak()
 
 // Test violin boxplot
-#show: lq.set-violin-boxplot(
-  fill: red, 
-  stroke: .5pt + black,
-  width: 50%
-)
-#lq.diagram(
-  height: 3cm,
-  lq.violin(data.at(1)),
-  lq.violin(data.at(1), x: 2, side: "low", boxplot: (width: 25%, fill: auto, stroke: auto)),
-  lq.violin(data.at(1), x: 2, side: "high", boxplot: (stroke: white)),
-  lq.violin(data.at(1), x: 3, width: 1, boxplot: (width: 10%), median: white),
-)
+#[
+  #show: lq.set-violin-boxplot(
+    fill: red,
+    stroke: .5pt + black,
+    width: 50%,
+  )
+  #lq.diagram(
+    lq.violin(data.at(1)),
+    lq.violin(data.at(1), x: 2, side: "low", boxplot: (
+      width: 25%,
+      fill: auto,
+      stroke: auto,
+    )),
+    lq.violin(data.at(1), x: 2, side: "high", boxplot: (stroke: white)),
+    lq.violin(data.at(1), x: 3, width: 1, boxplot: (width: 10%), median: white),
+  )
+]
+
+#pagebreak()
+
+
+// Extrema styling
+#[
+  #show: lq.set-violin-extremum(stroke: black, width: 100%)
+  #lq.diagram(
+    width: 1cm,
+    lq.violin(data.at(1), extrema: true),
+  )
+]

@@ -6,8 +6,9 @@
 #import "../math.typ": minmax
 #import "../process-styles.typ": process-plot-item-width
 
-
 #import "@preview/elembic:1.1.1" as e
+
+
 
 // A median mark of a violin plot
 #let violin-median = e.element.declare(
@@ -16,12 +17,36 @@
   display: it => mark(),
   fields: (),
 )
+
 // A mean mark of a violin plot
 #let violin-mean = e.element.declare(
   "violin-mean",
   prefix: "lilaq",
   display: it => mark(),
   fields: (),
+)
+
+// An extremum mark of a violin plot
+#let violin-extremum = e.element.declare(
+  "violin-extremum",
+  prefix: "lilaq",
+  display: it => {
+    set curve(stroke: it.stroke) if it.stroke != auto
+    if it.horizontal {
+      curve(
+        curve.line((0%, it.width)), 
+      )
+    } else {
+      curve(
+        curve.line((it.width, 0%)), 
+      )
+    }
+  },
+  fields: (
+    e.field("width", e.types.union(int, float, ratio, length), default: 50%),
+    e.field("stroke", e.types.smart(e.types.option(stroke)), default: stroke(cap: "square")),
+    e.field("horizontal", bool, default: false),
+  ),
 )
 
 
@@ -135,19 +160,18 @@
       )
       boxplot += style.boxplot
     }
-    let boxplot-width = boxplot.width
 
     // Pre-transform width, i.e., in data coordinates
     let pre-width = utility.match-type(
-      boxplot-width,
+      boxplot.width,
       length: () => 0,
-      ratio: () => width * boxplot-width / 100%,
-      default: () => boxplot-width,
+      ratio: () => width * boxplot.width / 100%,
+      default: () => boxplot.width,
     )
     // Post-transform width, i.e., in pt
     let post-width = utility.match-type(
-      boxplot-width,
-      length: () => boxplot-width,
+      boxplot.width,
+      length: () => boxplot.width,
       default: 0pt,
     )
 
@@ -165,9 +189,7 @@
 
     let (low-pt, q1-pt) = transform(center + pre-width / 2, statistics.q1)
     let (high-pt, q3-pt) = transform(center - pre-width / 2, statistics.q3)
-    let (center-pt, median-pt) = transform(center, statistics.median)
-    let (_, whisker-low-pt) = transform(center, statistics.whisker-low)
-    let (_, whisker-high-pt) = transform(center, statistics.whisker-high)
+    let (center-pt, _) = transform(center, statistics.q1)
 
     let coeff = if (
       transform(center - 1, 1).at(0) < transform(center + 1, 1).at(0)
@@ -189,6 +211,8 @@
 
 
     if style.boxplot != none {
+      let (_, whisker-low-pt) = transform(center, statistics.whisker-low)
+      let (_, whisker-high-pt) = transform(center, statistics.whisker-high)
       place(curve(
         curve.move(hreverse((center-pt, q1-pt))),
         curve.line(hreverse((center-pt, whisker-low-pt))),
@@ -222,6 +246,33 @@
 
     mark-value(style.median, statistics.median, violin-median)
     mark-value(style.mean, statistics.mean, violin-mean)
+    
+    if style.extrema {
+      let (low, min) = transform(center - if style.side != "high" {width / 2}else{0}, statistics.min)
+      let (high, max) = transform(center + if style.side != "low" {width / 2}else{0}, statistics.max)
+
+      let extremum = violin-extremum(horizontal: horizontal)
+      show box: it => {
+        if style.side == "both" {
+          set align(std.center + horizon)
+          it
+        } else if int.bit-xor(int(style.side == "high"), int(low < high)) == 1 {
+          set align(right + bottom)
+          it
+        } else {
+          it
+        }
+      }
+      (low, high) = (low, high).sorted()
+      let (width, height) = hreverse((high - low, 0pt))
+      set box(width: width, height: height)
+
+      let (dx, dy) = hreverse((low, min))
+      place(dx: dx, dy: dy, box(extremum))
+      let (dx, dy) = hreverse((low, max))
+      place(dx: dx, dy: dy, box(extremum))
+    }
+    
   }
 })
 
@@ -266,11 +317,10 @@
     })
 }
 
-/// Computes and visualizes one or more violin plots from a series of datasets.
+/// Generates a violin plot for each given dataset.
 ///
-/// A violin plot is similar to a boxplot but uses kernel density estimation
-/// to visualize the distribution of the data. The width of the violin represents the density of data points at
-/// the $y$-coordinate.
+/// A violin plot is similar to a @boxplot but uses kernel density estimation
+/// to visualize the distribution of the data points. 
 ///
 /// ```example
 /// #lq.diagram(
@@ -282,7 +332,7 @@
 /// )
 /// ```
 /// 
-/// The boxplot inside the violin plot is controlled through set rules on
+/// The boxplot inside the violin plot is controlled through `set` rules on
 /// @violin-boxplot. 
 /// ```typ
 /// #show: lq.set-violin-boxplot(
@@ -303,6 +353,10 @@
 /// a single diagram, the parameter @violin.boxplot can be used to forward 
 /// arguments to @violin-boxplot per plot. Setting `boxplot: none` removes the 
 /// boxplot altogether. 
+/// 
+/// By default, only the @violin.median is highlighted as a special value. In 
+/// addition, @violin.mean and @violin.extrema allow for further visualization 
+/// options. 
 #let violin(
 
   /// One or more data sets to generate violin plots from. Each dataset should
@@ -351,7 +405,7 @@
   /// or length).
   /// ```example
   /// #lq.diagram(
-  ///   width: 3cm,
+  ///   width: 1cm,
   ///   lq.violin((0, 2, 3, 4, 7), median: white),
   /// )
   /// ```
@@ -361,6 +415,21 @@
   /// Whether and how to display the mean value, like @violin.median. 
   /// -> none | lq.mark | str | color | stroke | length
   mean: none,
+
+  /// Whether to mark the minium and maximum with horizontal lines. The width 
+  /// and stroke of the lines can be configured through the type 
+  /// `violin-extremum`:
+  /// ```example
+  /// #show: lq.set-violin-extremum(width: 70%, stroke: black)
+  /// 
+  /// #lq.diagram(
+  ///   width: 1cm,
+  ///   lq.violin((-20, 3, 10, 12, 19, 40), extrema: true)
+  /// )
+  /// ```
+  /// The width is measured in terms of @violin.width. 
+  /// -> bool
+  extrema: false,
 
   /// Which side to plot the KDE at.
   /// ```example
@@ -467,6 +536,7 @@
       stroke: stroke,
       mean: mean,
       median: median,
+      extrema: extrema,
       side: side,
       boxplot: boxplot,
     ),
