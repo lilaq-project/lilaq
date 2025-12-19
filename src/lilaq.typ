@@ -28,6 +28,8 @@
 #import "plot/contour.typ": contour
 #import "plot/boxplot.typ": boxplot
 #import "plot/hboxplot.typ": hboxplot
+#import "plot/violin.typ": violin, violin-boxplot
+#import "plot/hviolin.typ": hviolin
 #import "plot/quiver.typ": quiver
 #import "plot/hlines.typ": hlines
 #import "plot/vlines.typ": vlines
@@ -43,11 +45,11 @@
 #import "model/colorbar.typ": colorbar
 #import "place-anchor.typ": place-anchor
 
-
 #import "typing.typ": (
   cond-set, fields, selector, set-diagram, set-errorbar, set-grid, set-label, set-legend, set-spine, set-tick,
-  set-tick-label, set-title, show_,
+  set-tick-label, set-title, show_, set-violin-boxplot, set-violin-extremum
 )
+
 
 #import "logic/scale.typ"
 #import "logic/tick-locate.typ" as tick-locate: (

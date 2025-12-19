@@ -166,3 +166,34 @@
     length
   }
 }
+
+// Process for example the bar or violin width and normalize it into an array 
+// of data coordinates with the same number of elements as x. 
+#let process-plot-item-width(
+
+  /// The width argument. See @bar.width. 
+  /// -> ratio | int | float | duration | array
+  width, 
+
+  /// The coordinates along the axis where width has meaning. 
+  /// -> array
+  x
+
+) = {
+  if type(width) == ratio {
+    if x.len() >= 2 {
+      width = width / 100% * calc.min(..x.windows(2).map(((a, b)) => calc.abs(b - a)))
+    } else {
+      width = width / 100%
+    }
+  } else if type(width) == duration {
+    width = width.seconds()
+  } else if type(width) == array and type(width.at(0, default: 0)) == duration {
+    width = width.map(duration.seconds)
+  } 
+  if type(width) != array { 
+    width = (width,) * x.len()
+  }
+
+  width
+}

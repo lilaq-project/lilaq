@@ -1,7 +1,7 @@
 #import "../assertations.typ"
 #import "../logic/limits.typ": bar-lim
 #import "../logic/time.typ"
-#import "../process-styles.typ": merge-fills
+#import "../process-styles.typ": merge-fills, process-plot-item-width
 #import "../utility.typ": match-type, match
 
 #import "../logic/process-coordinates.typ": filter-nan-points, stepify
@@ -292,17 +292,8 @@
   )
 
 
-  if type(width) == ratio {
-    if x.len() >= 2 {
-      width = width / 100% * calc.min(..x.windows(2).map(((a, b)) => calc.abs(b - a)))
-    } else {
-      width = width / 100%
-    }
-  } else if type(width) == duration {
-    width = width.seconds()
-  } else if type(width) == array and type(width.at(0, default: 0)) == duration {
-    width = width.map(duration.seconds)
-  }
+  width = process-plot-item-width(width, x)
+
   
 
   if offset != 0 {
