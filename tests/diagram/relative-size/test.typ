@@ -1,5 +1,7 @@
 #import "/src/lilaq.typ" as lq
+#import "/tests/test-presets.typ": obfuscate
 
+#show: obfuscate
 
 #set page(width: 6cm, height: 4cm, margin: 0pt)
 

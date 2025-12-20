@@ -848,7 +848,7 @@
     e.field("margin", e.types.union(ratio, dictionary), default: 6%),
     e.field("cycle", e.types.wrap(e.types.array(e.types.union(function, color, dictionary)), fold: none), default: petroff10),
     e.field("fill", e.types.option(e.types.paint), default: none),
-    e.field("bounds", e.types.union("strict", "relaxed", "data-area"), default: "relaxed"),
+    e.field("bounds", e.types.union("strict", "relaxed", "data-area"), default: "strict"),
   ),
 
   parse-args: (default-parser, fields: none, typecheck: none) => (args, include-required: false) => {
