@@ -127,15 +127,21 @@
 /// ```
 /// 
 /// 
-/// The example below demonstrates how to use custom tick labels by passing 
+/// The example below demonstrates how to use slanted custom tick labels by passing 
 /// an array of `(location, label)` tuples to @axis.ticks. In addition, we show
 /// how to rotate the labels by 45° and align them nicely to the ticks. 
 /// ```example
+/// #show: lq.show_(
+///   lq.tick-label.with(kind: "x"),
+///   it => box(
+///     width: 0pt, 
+///     align(right, rotate(-45deg, reflow: true, it))
+///   ),
+/// )
+/// 
 /// #lq.diagram(
 ///   xaxis: (
 ///     ticks: ("Apples", "Bananas", "Kiwis", "Mangos", "Papayas")
-///       .map(rotate.with(-45deg, reflow: true))
-///       .map(align.with(right))
 ///       .enumerate(),
 ///     subticks: none,
 ///   ),
