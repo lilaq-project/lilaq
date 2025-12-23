@@ -11,6 +11,7 @@
 #show: lq.set-diagram(
   xlim: (0, 3),
   ylim: (0, 3),
+  bounds: "relaxed",
   xaxis: (format-ticks: auto, tick-distance: 1, subticks: none),
   yaxis: (format-ticks: auto, tick-distance: 1, subticks: none),
 )
