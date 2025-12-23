@@ -52,11 +52,25 @@
 #let minmax(
   /// Values to compute the minimum and the maximum of. 
   /// -> array
-  values
+  values,
+  /// Adds optional margins in percent of the range `max - min`. 
+  /// -> ratio
+  margin: 0%
 ) = {
   values = values.filter(x => not float.is-nan(x))
-  if values.len() == 0 { return (none, none) }
-  return (calc.min(..values), calc.max(..values))
+  if values.len() == 0 {
+    return (none, none)
+  }
+  let min = calc.min(..values)
+  let max = calc.max(..values)
+  if margin == 0% {
+    return (min, max)
+  }
+
+  let range = max - min
+  margin = range * margin / 100%
+  
+  (min - margin, max + margin)
 }
 
 
