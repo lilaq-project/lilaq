@@ -180,14 +180,14 @@
   ///   diagram. The exact behavior for text bounds also depends on the setting 
   ///   of #link("https://typst.app/docs/reference/text/text/#parameters-top-edge")[`text.top-edge`]
   ///   and #link("https://typst.app/docs/reference/text/text/#parameters-bottom-edge")[`text.bottom-edge`]. 
-  /// - `"relaxed"`: Tick labels of a horizontal axis are allowed to spill out
+  /// - `"relaxed"`: Tick labels of a horizontal axis are allowed to hang into the page margins
   ///   at the right and left of a diagram and tick labels of a vertical axis 
   ///   may spill out at the top and bottom. Like this, the spines can line up
   ///   with the main text body, even when the first and last tick sit on the 
-  ///   far edges of an axis. Most times, this can give a cleaner look. 
+  ///   far edges of an axis. Sometimes, this can give a cleaner look. 
   /// - `"data-area"`: The bounds are simply the data area. 
   /// -> "relaxed" | "strict" | "data-area"
-  bounds: "relaxed",
+  bounds: "strict",
 
   /// Plot objects like @plot, @bar, @scatter, @contour etc. and additional 
   /// @axis objects. 
@@ -848,7 +848,7 @@
     e.field("margin", e.types.union(ratio, dictionary), default: 6%),
     e.field("cycle", e.types.wrap(e.types.array(e.types.union(function, color, dictionary)), fold: none), default: petroff10),
     e.field("fill", e.types.option(e.types.paint), default: none),
-    e.field("bounds", e.types.union("strict", "relaxed", "data-area"), default: "relaxed"),
+    e.field("bounds", e.types.union("strict", "relaxed", "data-area"), default: "strict"),
   ),
 
   parse-args: (default-parser, fields: none, typecheck: none) => (args, include-required: false) => {
