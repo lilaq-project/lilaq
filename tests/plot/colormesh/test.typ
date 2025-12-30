@@ -206,7 +206,7 @@
   min: 0, max: .1 
 )
 
-#lq.diagram(mesh)#lq.colorbar(mesh)
+#box(lq.diagram(mesh))#box(lq.colorbar(mesh))
 
 #pagebreak()
 

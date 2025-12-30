@@ -186,7 +186,7 @@
   ///   with the main text body, even when the first and last tick sit on the 
   ///   far edges of an axis. Sometimes, this can give a cleaner look. 
   /// - `"data-area"`: The bounds are simply the data area. 
-  /// -> "relaxed" | "strict" | "data-area"
+  /// -> "strict" | "relaxed" | "data-area"
   bounds: "strict",
 
   /// Plot objects like @plot, @bar, @scatter, @contour etc. and additional 
@@ -770,11 +770,10 @@
       bounds = (top: 0pt, bottom: 0pt, left: 0pt, right: 0pt)
     }
 
-    let result = box(
+    let result = block(
       inset: bounds, 
       diagram, 
       stroke: if debug { 0.1pt } else { none },
-      baseline: bounds.bottom
     )
     if it.pad != auto {
       result = pad(result, ..it.pad)
