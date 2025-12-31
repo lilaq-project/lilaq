@@ -98,3 +98,22 @@
   lq.place(0, -1em, align: right + top)[D],
   lq.place(0, 100%, align: right)[EFG],
 )
+
+#pagebreak()
+
+
+// Datetime
+#lq.diagram(
+  xlim: (
+    datetime(year: 0, month: 1, day: 2),
+    datetime(year: 0, month: 1, day: 5),
+  ),
+  ylim: (
+    datetime(year: 0, month: 1, day: 2),
+    datetime(year: 0, month: 1, day: 5),
+  ),
+  lq.place(
+    datetime(year: 0, month: 1, day: 3),
+    datetime(year: 0, month: 1, day: 4),
+  )[o]
+)
