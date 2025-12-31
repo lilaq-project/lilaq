@@ -1,5 +1,6 @@
 #import "../process-styles.typ": twod-ify-alignment
 #import "../logic/process-coordinates.typ": transform-point
+#import "../logic/time.typ"
 
 
 /// Places any type of content in the data area. The coordinates of the origin
@@ -67,11 +68,11 @@
 #let place(
 
   /// The $x$ coordinate of the origin.
-  /// -> float | relative 
+  /// -> float | relative | datetime
   x, 
 
   /// The $y$ coordinate of the origin.
-  /// -> float | relative 
+  /// -> float | relative | datetime
   y,
 
   /// The content to place in the data area. 
@@ -92,12 +93,22 @@
   z-index: 21,
 
 ) = {
+  let datetime-axes = (:)
+
+  if type(x) == datetime {
+    x = time.to-seconds(x).first()
+    datetime-axes.x = true
+  }
+  if type(y) == datetime {
+    y = time.to-seconds(y).first()
+    datetime-axes.y = true
+  }
   (
     x: x, 
     y: y,
     align: align,
     body: body,
-    plot: (plot, transform) => { 
+    plot: (plot, transform) => {
       let (px, py) = transform-point(x, y, transform)
       std.place(
         dx: px, dy: py,
@@ -107,6 +118,7 @@
     id: "place",
     xlimits: () => none,
     ylimits: () => none,
+    datetime: datetime-axes,
     label: none,
     clip: clip,
     z-index: z-index
