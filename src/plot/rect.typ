@@ -2,6 +2,7 @@
 #import "../logic/limits.typ": compute-primitive-limits
 #import "../logic/process-coordinates.typ": all-data-coordinates, convert-rect
 #import "../process-styles.typ": twod-ify-alignment
+#import "../logic/time.typ"
 
 
 /// Plots a rectangle or square with origin `(x, y)`. The origin coordinates as well
@@ -25,21 +26,21 @@
 /// ```
 /// 
 #let rect(
-  
+
   /// The x coordinate of the origin.
-  /// -> float | relative 
+  /// -> float | relative | datetime
   x, 
 
   /// The y coordinate of the origin.
-  /// -> float | relative 
+  /// -> float | relative | datetime
   y,
 
   /// The rectangle's width. 
-  /// -> auto | float | relative
+  /// -> auto | float | relative | duration
   width: auto,
 
   /// The rectangle's height. 
-  /// -> auto | float | relative
+  /// -> auto | float | relative | duration
   height: auto, 
 
   /// How to align the rectangle at the origin. 
@@ -89,6 +90,34 @@
   
   let body = body.pos().at(0, default: none)
 
+  
+  let datetime-axes = (:)
+
+  if type(width) == duration {
+    assert(
+      type(x) == datetime,
+      message: "The rectangle width can only be a duration if the x-coordinate is a datetime"
+    )
+    width = width.seconds()
+  }
+
+  if type(height) == duration {
+    assert(
+      type(y) == datetime,
+      message: "The rectangle height can only be a duration if the y-coordinate is a datetime"
+    )
+    height = height.seconds()
+  }
+
+  if type(x) == datetime {
+    x = time.to-seconds(x).first()
+    datetime-axes.x = true
+  }
+  if type(y) == datetime {
+    y = time.to-seconds(y).first()
+    datetime-axes.y = true
+  }
+
   (
     x: x, 
     y: y,
@@ -132,6 +161,7 @@
     xlimits: compute-primitive-limits.with((x, if all-data-coordinates((x, width)) { x + width } else { x })),
     ylimits: compute-primitive-limits.with((y, if all-data-coordinates((y, height)) { y + height } else { y })),
     label: label,
+    datetime: datetime-axes,
     legend: true,
     clip: clip,
     z-index: z-index

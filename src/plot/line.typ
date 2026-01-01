@@ -1,5 +1,6 @@
 #import "../logic/process-coordinates.typ": convert-vertex
 #import "../logic/limits.typ": compute-primitive-limits
+#import "../logic/time.typ"
 #import "@preview/tiptoe:0.4.0"
 
 
@@ -53,7 +54,8 @@
   /// - or absolute coordinates from the top left corner of the data area 
   ///   (`length`),
   /// - or in percent relative to the data area (`ratio`),
-  /// - or a combination of the latter two (`relative`).  
+  /// - or a combination of the latter two (`relative`),
+  /// - or as `datetime` instances. 
   /// -> array
   start, 
 
@@ -89,6 +91,26 @@
   z-index: 2,
 
 ) = {
+  let datetime-axes = (:)
+
+  if type(start.at(0)) == datetime {
+    start.at(0) = time.to-seconds(start.at(0)).first()
+    datetime-axes.x = true
+  }
+  if type(end.at(0)) == datetime {
+    end.at(0) = time.to-seconds(end.at(0)).first()
+    datetime-axes.x = true
+  }
+  if type(start.at(1)) == datetime {
+    start.at(1) = time.to-seconds(start.at(1)).first()
+    datetime-axes.y = true
+  }
+  if type(end.at(1)) == datetime {
+    end.at(1) = time.to-seconds(end.at(1)).first()
+    datetime-axes.y = true
+  }
+
+
   let vertices = (start, end)
   (
     plot: (plot, transform) => { 
@@ -112,6 +134,7 @@
     xlimits: compute-primitive-limits.with(vertices.map(x => x.at(0))),
     ylimits: compute-primitive-limits.with(vertices.map(x => x.at(1))),
     label: label,
+    datetime: datetime-axes,
     legend: true,
     clip: clip,
     z-index: z-index
