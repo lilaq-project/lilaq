@@ -54,7 +54,8 @@
   /// - or absolute coordinates from the top left corner of the data area 
   ///   (`length`),
   /// - or in percent relative to the data area (`ratio`),
-  /// - or a combination of the latter two (`relative`).  
+  /// - or a combination of the latter two (`relative`),
+  /// - or as `datetime` instances. 
   /// -> array
   start, 
 

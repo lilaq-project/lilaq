@@ -30,19 +30,19 @@
 #let ellipse(
   
   /// The x coordinate of the origin.
-  /// -> float | relative 
+  /// -> float | relative | datetime
   x, 
 
   /// The y coordinate of the origin.
-  /// -> float | relative 
+  /// -> float | relative | datetime
   y,
 
   /// The width of the ellipse. 
-  /// -> auto | float | relative
+  /// -> auto | float | relative | duration
   width: auto,
 
   /// The height of the ellipse. 
-  /// -> auto | float | relative
+  /// -> auto | float | relative | duration
   height: auto, 
 
   /// How to align the ellipse at the origin. 
