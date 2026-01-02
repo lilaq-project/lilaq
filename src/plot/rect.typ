@@ -5,6 +5,68 @@
 #import "../logic/time.typ"
 
 
+
+
+#let flip-gradient(gradient, axis: "x") = {
+  let angle = gradient.angle()
+  
+  if axis == "y" and angle in (90deg, 270deg, -90deg) {
+    angle = -angle
+  }
+  if axis == "x" and angle in (0deg, 180deg, -180deg) {
+    angle = angle + 180deg
+  }
+  (gradient.kind())(
+    ..gradient.stops(),
+    angle: angle,
+    space: gradient.space(),
+  )
+}
+
+
+// Convert a rectangle (or ellipse) to one with no negative width or height, 
+// providing an offset correction. 
+#let normalize-rect(
+  rect, dx: 0pt, dy: 0pt
+) = {
+  let fields = rect.fields()
+  let body = fields.remove("body")
+  let width = rect.width
+  let height = rect.height
+  let fill = rect.fill
+  
+  if body == none and type(fill) != gradient {
+    return (rect, dx, dy)
+  }
+
+
+  if (
+    (height.ratio == 0% and height.length < 0pt) or 
+    (height.length == 0pt and height.ratio < 100%)
+  ) {
+    dy += height
+    height *= -1
+    if type(fill) == gradient {
+      fill = flip-gradient(fill, axis: "y")
+    }
+  }
+  if (
+    (width.ratio == 0% and width.length < 0pt) or 
+    (width.length == 0pt and width.ratio < 100%)
+  ) {
+    dx += width
+    width *= -1
+    if type(fill) == gradient {
+      fill = flip-gradient(fill, axis: "x")
+    }
+  }
+
+  let content = (rect.func())(..fields, width: width, height: height, fill: fill, body)
+  
+  return (content, dx, dy)
+}
+
+
 /// Plots a rectangle or square with origin `(x, y)`. The origin coordinates as well
 /// as width and height can either be given as 
 /// - data coordinates (`int` or `float`),
@@ -129,7 +191,7 @@
         )
       }
 
-      let (x1, width, y1, height) = convert-rect(
+      let (dx, width, dy, height) = convert-rect(
         x, y, 
         width, height, 
         transform, 
@@ -137,26 +199,23 @@
       )
 
 
-      let rect = std.rect.with(
+
+
+      let rect = std.rect(
           fill: fill, 
           stroke: stroke,
           radius: radius, 
           inset: inset, 
           outset: outset,
+          width: width,
+          height: height,
           body
       )
 
-      let content = rect(width: width, height: height)
 
-      if (type(height) == length and height < 0pt) or (type(height) == ratio and height < 100%) {
-        y1 += height
-        content = rect(width: width, height: -height)
-        if type(fill) == gradient {
-          content = scale(y: -100%, content)
-        }
-      }
-      
-      place(dx: x1, dy: y1, content)
+      (rect, dx, dy) = normalize-rect(rect, dx: dx, dy: dy)
+
+      place(dx: dx, dy: dy, rect)
     },
     xlimits: compute-primitive-limits.with((x, if all-data-coordinates((x, width)) { x + width } else { x })),
     ylimits: compute-primitive-limits.with((y, if all-data-coordinates((y, height)) { y + height } else { y })),

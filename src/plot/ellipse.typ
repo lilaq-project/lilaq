@@ -3,7 +3,7 @@
 #import "../logic/process-coordinates.typ": all-data-coordinates, convert-rect
 #import "../process-styles.typ": twod-ify-alignment
 #import "../logic/time.typ"
-
+#import "rect.typ": normalize-rect
 
 /// Plots an ellipse or circle with origin `(x, y)`. The origin coordinates as well
 /// as width and height can either be given as 
@@ -86,6 +86,8 @@
 ) = {
   assertations.assert-no-named(body, fn: "ellipse")
 
+  let body = body.pos().at(0, default: none)
+
   
   let datetime-axes = (:)
 
@@ -126,24 +128,28 @@
         )
       }
 
-      let (x1, width, y1, height) = convert-rect(
+      let (dx, width, dy, height) = convert-rect(
         x, y, 
         width, height, 
         transform, 
         align: twod-ify-alignment(align)
       )
 
-      place(dx: x1, dy: y1, 
-        std.ellipse(
-          width: width, 
-          height: height, 
+
+      let ellipse = std.ellipse(
           fill: fill, 
-          stroke: stroke, 
+          stroke: stroke,
           inset: inset, 
           outset: outset,
-          body.pos().at(0, default: none)
-        )
+          width: width,
+          height: height,
+          body
       )
+
+
+      (ellipse, dx, dy) = normalize-rect(ellipse, dx: dx, dy: dy)
+
+      place(dx: dx, dy: dy, ellipse)
     },
     xlimits: compute-primitive-limits.with((x, if all-data-coordinates((x, width)) { x + width } else { x })),
     ylimits: compute-primitive-limits.with((y, if all-data-coordinates((y, height)) { y + height } else { y })),
