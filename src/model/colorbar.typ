@@ -24,11 +24,11 @@
 /// )
 /// 
 /// #grid(
-///  columns: 2, 
-///  column-gutter: 0.5em,
-///  lq.diagram(mesh),
-///  lq.colorbar(mesh, thickness: 2mm)
-///)
+///   columns: 2, 
+///   column-gutter: 0.5em,
+///   lq.diagram(mesh),
+///   lq.colorbar(mesh, thickness: 2mm)
+/// )
 /// ```
 /// 
 /// The color bar is a separate inline object and can be placed anywhere in the 
