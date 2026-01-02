@@ -247,6 +247,9 @@
         break
       }
     }
+    if type(lim) == array and datetime in lim.map(type) {
+      scale = "datetime"
+    }
   }
 
   if type(scale) == str {
