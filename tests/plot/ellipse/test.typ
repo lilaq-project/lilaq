@@ -1,7 +1,7 @@
 #set page(width: auto, height: auto, margin: 1pt)
 
 #import "../template.typ": *
-// #show: minimal
+#show: minimal
 
 
 #show: lq.set-diagram(
@@ -81,4 +81,39 @@
     width: duration(hours: 24),
     height: duration(hours: 48),
   ),
+)
+
+#pagebreak()
+
+
+#let ellipse1 = lq.ellipse.with(
+  1,
+  1,
+  width: 1,
+  height: -1,
+  fill: gradient.linear(..color.map.icefire, angle: 0deg).sharp(3),
+  box(width: 1em, height: 1em, fill: gray),
+)
+
+#let ellipse2 = lq.ellipse.with(
+  3,
+  1,
+  width: 1,
+  height: -1,
+  fill: gradient.linear(..color.map.icefire, angle: 90deg).sharp(3),
+  box(width: 1em, height: 1em, fill: gray),
+)
+
+#lq.diagram(
+  xlim: (0, 4),
+  ylim: (0, 2),
+  yaxis: (inverted: true),
+  ellipse1(width: 1, height: -1),
+  ellipse1(width: 1, height: 1),
+  ellipse1(width: -1, height: 1),
+  ellipse1(width: -1, height: -1),
+  ellipse2(width: 1, height: -1),
+  ellipse2(width: 1, height: 1),
+  ellipse2(width: -1, height: 1),
+  ellipse2(width: -1, height: -1),
 )
