@@ -430,3 +430,12 @@
 
 
 
+#pagebreak()
+
+
+#lq.diagram(
+  xlim: (
+    datetime(year: 0, month: 1, day: 1),
+    datetime(year: 0, month: 1, day: 5),
+  ),
+)
