@@ -161,16 +161,16 @@
     lq.diagram(
       xlim: (3, 7),
       ylim: (1, 5),
-      yaxis: (position: right),
+      yaxis: (position: right, mirror: false),
     ),
 
     lq.diagram(
-      xaxis: (position: top),
+      xaxis: (position: top, mirror: false),
       xlim: (2, 7),
     ),
     lq.diagram(
-      xaxis: (position: top),
-      yaxis: (position: right),
+      xaxis: (position: top, mirror: false),
+      yaxis: (position: right, mirror: false),
       ylim: (1, 5),
     ),
   )
@@ -200,16 +200,16 @@
     lq.diagram(
       xlim: (3, 7),
       ylim: (1, 5),
-      yaxis: (position: right),
+      yaxis: (position: right, mirror: false),
     ),
 
     lq.diagram(
-      xaxis: (position: top),
+      xaxis: (position: top, mirror: false),
       xlim: (2, 7),
     ),
     lq.diagram(
-      xaxis: (position: top),
-      yaxis: (position: right),
+      xaxis: (position: top, mirror: false),
+      yaxis: (position: right, mirror: false),
       ylim: (1, 5),
     ),
   )

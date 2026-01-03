@@ -69,7 +69,7 @@
   ///   `left` or `right` for $y$-axes), 
   /// - a `float` coordinate value on the other axis,
   /// - a `length` or `relative`,
-  /// - or a combination of the first and third option through a dictionary 
+  /// - or a combination of the first and second/third option through a dictionary 
   ///   with the keys `align` and `offset`. 
   /// 
   /// More on axis placement can be found in the tutorial section
@@ -77,11 +77,16 @@
   /// -> auto | alignment | float | relative | dictionary
   position: auto, 
 
-  /// Whether to mirror the axis, i.e., whether to show the axis ticks also on 
-  /// the side opposite of the one specified with @axis.position. When set to 
-  /// `auto`, mirroring is only activated when `position: auto`. More control
-  /// is granted through a dictionary with the possible keys `ticks` and 
-  /// `tick-labels` to individually activate or deactivate those. 
+  /// Whether to mirror the axis (and which parts of it), i.e., whether to show
+  /// the axis ticks also on the side opposite of the one specified with 
+  /// @axis.position. 
+  /// 
+  /// When set to `auto`, mirrors are deactivated automatically when either a 
+  /// secondary axis is added or @axis.position is set to something else than 
+  /// one of the four diagram sides. 
+  /// 
+  /// More control is granted through a dictionary with the possible keys `ticks` 
+  /// and `tick-labels` to individually activate or deactivate those. 
   /// 
   /// More on axis mirrors can be found in the tutorial section
   /// #link("tutorials/axis#placement-and-mirrors")[Axis − Placement and mirrors]. 
@@ -289,8 +294,6 @@
       assert(position in (left, right), message: "For y-axes, `position` can only be \"left\" or \"right\", got " + repr(position))
     }
   } else if type(position) == alignment {
-    if mirror == auto { mirror = none }
-    
     if kind == "x" {
       assert(position in (top, bottom), message: "For x-axes, `position` can only be \"top\" or \"bottom\", got " + repr(position))
     }
@@ -427,9 +430,7 @@
     }
   }
 
-  if mirror == auto {
-    mirror = (ticks: true)
-  } else if type(mirror) == bool {
+  if type(mirror) == bool {
     if mirror { mirror = (ticks: true) }
     else { mirror = none }
   } else if type(mirror) == dictionary {
@@ -911,9 +912,18 @@
   tick-info,
   orthogonal-axis-transform: none,
   e-get: none,
-  bounds-mode: "relaxed"
+  bounds-mode: "relaxed",
+  axes-count: (x: 1, y: 1),
 ) = {
   if axis.hidden { return (none, ()) }
+
+  if axis.mirror == auto {
+    if axes-count.at(axis.kind) > 1 {
+      axis.mirror = none
+    } else {
+      axis.mirror = (ticks: true)
+    }
+  }
 
   let (ticks, tick-labels, subticks, subtick-labels, exp, offset) = tick-info
   

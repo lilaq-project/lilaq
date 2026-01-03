@@ -12,7 +12,6 @@
   width: 10cm,
   margin: 3%,
 
-  xaxis: (offset: 0, mirror: false),
   xlabel: [Wavelength (nm)],
   ylabel: [Relative intensity],
 

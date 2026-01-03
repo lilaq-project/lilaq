@@ -14,7 +14,6 @@
   legend: (position: left + top),
   margin: (top: 20%),
 
-  yaxis: (mirror: false),
   xaxis: (
     ticks: months.map(rotate.with(-90deg, reflow: true)).enumerate(),
     subticks: none

@@ -485,7 +485,8 @@
   width, height, 
   it: (:), axes: (), plots: (), e-get: none, 
   auto-height: true, auto-width: true,
-  available-size: (width: 0pt, height: 0pt)
+  available-size: (width: 0pt, height: 0pt),
+  draw-axis: draw-axis
 ) = {
   (width, height) = resolve-dimensions-aspect-ratio(
     ..axes.slice(0, 2), 
@@ -612,6 +613,12 @@
   
   e.get(e-get => {
     let axes = (xaxis, yaxis) + axes
+
+    let axes-count = (
+      x: axes.map(axis => int(axis.kind == "x")).sum(),
+      y: axes.map(axis => int(axis.kind == "y")).sum(),
+    )
+    let draw-axis = draw-axis.with(axes-count: axes-count)
     
 
     let get-settable-field(element, object, field) = {
@@ -638,7 +645,8 @@
       let attempt-layout = attempt-layout.with(
         auto-width: type(it.width) == relative,
         auto-height: type(it.height) == relative,
-        available-size: it.size, it: it, axes: axes, e-get: e-get, plots: plots
+        available-size: it.size, it: it, axes: axes, e-get: e-get, plots: plots,
+        draw-axis: draw-axis
       )
 
       let exact-or-guess(length, container-length) = {
