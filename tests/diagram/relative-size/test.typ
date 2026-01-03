@@ -87,8 +87,8 @@
   width: 100%, height: 100%,
   xlim: (0, 0.1),
   xlabel: [x],
-  xaxis: (position: top),
-  yaxis: (position: right)
+  xaxis: (position: top, mirror: none),
+  yaxis: (position: right, mirror: none)
 )
 
 #pagebreak()
@@ -133,7 +133,7 @@
 #lq.diagram(
   width: 100%,
   height: 100%,
-  yaxis: (position: right),
+  yaxis: (position: right, mirror: none),
   xaxis: (position: -0.2),
 )
 
@@ -147,7 +147,7 @@
 #assert.eq(float.inf * 1pt * 0%, 0pt)
 
 #page(
-  width: auto, height: auto,margin: 0pt,
+  width: auto, height: auto, margin: 0pt,
   lq.diagram(
     width: 0% + 3cm,
     height: 0% + 3cm
