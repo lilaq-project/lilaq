@@ -336,6 +336,9 @@
 /// power of the base (starting with the lower limit). In this case, the 
 /// density of the ticks is determined by `num-ticks-suggestion`. 
 /// 
+/// This function resolves to @tick-locate.linear when the range is too small.
+/// The threshold is controlled by @tick-locate.log.linear-threshold. 
+/// 
 /// This function returns a dictionary with the key `ticks` containing an 
 /// array of tick positions. 
 ///
@@ -618,6 +621,10 @@
 ) = {
   if x0 > x1 { 
     (x0, x1) = (x1, x0) 
+  }
+  
+  if args.named().at("linear", default: false) {
+    return subticks-linear(x0, x1, ticks: ticks, ..args)
   }
 
   if ticks.len() == 0 { return (ticks: ()) }
