@@ -176,11 +176,9 @@
   let (xmin, xmax) = minmax(
     processed-data.map(info => info.limits).flatten(),
   )
-  let (ymin, ymax) = (y.at(0) - width.at(0) / 2, y.at(-1) + width.at(-1) / 2)
-
-  if processed-data.len() == 0 {
-    (ymin, ymax) = (none, none)
-  }
+  let (ymin, ymax) = minmax(
+    y.enumerate().map(((i, yi)) => (yi - width.at(i) / 2, yi + width.at(i) / 2)).flatten()
+  )
 
   (
     y: y,
