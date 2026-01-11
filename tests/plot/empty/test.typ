@@ -7,7 +7,7 @@
 #show: lq.set-tick(inset: 0pt, outset: 0pt)
 
 
-// Ensure that plots can be called with no coordinates, just to generate a legend entry. 
+// Ensure that plots can be called with no coordinates, just to generate a legend entry.
 
 #lq.diagram(
   xaxis: (ticks: (0, 1)),
@@ -18,7 +18,7 @@
   lq.bar((), (), label: []),
   lq.bar((), (), width: (), label: []),
   lq.hbar((), (), label: []),
-  lq.hbar((), (), width: (), label: []),
+  lq.hbar((), (), height: (), label: []),
   lq.stem((), (), label: []),
   lq.hstem((), (), label: []),
 )
