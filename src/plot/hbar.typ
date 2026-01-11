@@ -45,18 +45,18 @@
   ///   #lq.diagram(
   ///     yaxis: (subticks: none),
   ///     lq.hbar(
-  ///       (1,2,3,4,5), (1,2,3,4,5), 
-  ///       width: 0.2, fill: red, 
+  ///       (1,2,3,4,5), (1,2,3,4,5),
+  ///       height: 0.2, fill: red,
   ///       align: top, label: "top"
   ///     ),
   ///     lq.hbar(
-  ///       (5,4,3,2,1), (1,2,3,4,5), 
-  ///       width: 0.2, fill: blue, 
+  ///       (5,4,3,2,1), (1,2,3,4,5),
+  ///       height: 0.2, fill: blue,
   ///       align: bottom, label: "bottom"
   ///     ),
   ///     lq.hbar(
-  ///       (2.5,) * 5, (1,2,3,4,5), 
-  ///       width: 0.2, fill: rgb("#AAEEAA99"),
+  ///       (2.5,) * 5, (1,2,3,4,5),
+  ///       height: 0.2, fill: rgb("#AAEEAA99"),
   ///       align: horizon, label: "horizon"
   ///     ),
   ///   )
@@ -65,33 +65,33 @@
   /// -> top | horizon | bottom
   align: horizon,
 
-  /// Width of the bars. This can be a 
-  /// - `ratio` (e.g., `80%`) specifying the width relative to the minimum
+  /// Height of the bars. This can be a
+  /// - `ratio` (e.g., `80%`) specifying the height relative to the minimum
   ///   distance between two adjacent bars, (if there is only one bar, the
-  ///   width is set to the given ratio of 1 data unit), 
-  /// - a `float` or `int` specifying the width directly in data
-  ///   coordinates. In this case, the width can be set either to a constant
-  ///   for all bars or per-bar by passing an array with the same length as 
+  ///   height is set to the given ratio of 1 data unit),
+  /// - a `float` or `int` specifying the height directly in data
+  ///   coordinates. In this case, the height can be set either to a constant
+  ///   for all bars or per-bar by passing an array with the same length as
   ///   the coordinate arrays,
-  /// - or a `duration` specifying the width in terms of time units when the 
+  /// - or a `duration` specifying the height in terms of time units when the
   ///   coordinates @hbar.y are of type `datetime`. Again, this can be a constant
   ///   or an array.
-  /// 
+  ///
   /// #details[
-  ///   A bar plot with varying bar widths.
+  ///   A bar plot with varying bar heights.
   ///   ```example
   ///   #lq.diagram(
   ///     lq.hbar(
-  ///       (1, 2, 3, 2, 5), 
-  ///       (1, 2, 3, 4, 5), 
-  ///       width: (1, 0.5, 1, 0.5, 1), 
-  ///       fill: orange, 
+  ///       (1, 2, 3, 2, 5),
+  ///       (1, 2, 3, 4, 5),
+  ///       height: (1, 0.5, 1, 0.5, 1),
+  ///       fill: orange,
   ///     )
   ///   )
   ///   ```
   /// ]
   /// -> ratio | int | float | duration | array
-  width: 80%,
+  height: 80%,
 
   /// An offset to apply to all $y$ coordinates. This is equivalent to replacing
   /// the array passed to @bar.y with `y.map(y => y + offset)`. Using an offset
@@ -151,11 +151,11 @@
   }
 
   assertations.assert-matching-data-dimensions(
-    x, y, width: width, base: base, offset: offset, fill: fill,
+    x, y, height: height, base: base, offset: offset, fill: fill,
     fn-name: "hbar"
-  ) 
+  )
 
-  width = process-plot-item-width(width, y)
+  height = process-plot-item-width(height, y)
 
  
   
@@ -181,13 +181,13 @@
     bottom, -1
   )
 
-  let ylim = compute-across-limits(y, width, align, offset-coeff)
+  let ylim = compute-across-limits(y, height, align, offset-coeff)
 
 
   (
     x: x,
     y: y,
-    width: width,
+    width: height,
     offset-coeff: offset-coeff,
     label: label,
     base: base,

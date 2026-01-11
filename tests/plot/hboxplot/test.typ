@@ -54,7 +54,7 @@
   ylim: (0, 2),
   lq.hboxplot(
     (0, 1, 2, 2, 2, 3) + (6,),
-    width: 1,
+    height: 1,
     fill: blue,
     stroke: aqua,
     median: 2pt + green,

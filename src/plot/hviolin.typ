@@ -35,9 +35,9 @@
   /// -> auto | int | float | array
   y: auto,
 
-  /// Width of the violins. See @bar.width.
+  /// Height of the violins. See @bar.width.
   /// -> ratio | int | float | duration | array
-  width: 50%,
+  height: 50%,
 
   /// Bandwidth for kernel density estimation. The bandwidth can drastically
   /// influence the appearance and its selection requires good care. If set to
@@ -153,7 +153,7 @@
   }
 
 
-  width = process-plot-item-width(width, y)
+  height = process-plot-item-width(height, y)
 
   assert(
     y.len() == num-violins,
@@ -161,8 +161,8 @@
   )
 
   assert(
-    width.len() == num-violins,
-    message: "The number of widths does not match the number of data arrays",
+    height.len() == num-violins,
+    message: "The number of heights does not match the number of data arrays",
   )
 
   let processed-data = process-data(
@@ -176,7 +176,7 @@
   let (xmin, xmax) = minmax(
     processed-data.map(info => info.limits).flatten(),
   )
-  let (ymin, ymax) = (y.at(0) - width.at(0) / 2, y.at(-1) + width.at(-1) / 2)
+  let (ymin, ymax) = (y.at(0) - height.at(0) / 2, y.at(-1) + height.at(-1) / 2)
 
   if processed-data.len() == 0 {
     (ymin, ymax) = (none, none)
@@ -186,7 +186,7 @@
     y: y,
     data: processed-data,
     label: label,
-    width: width,
+    width: height,
     style: (
       fill: fill,
       stroke: stroke,

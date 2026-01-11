@@ -153,10 +153,10 @@
   /// -> int | float
   whisker-pos: 1.5,
 
-  /// The width of the boxplots in $y$ data coordinates. This can be a constant width
-  /// applied to all boxplots or an array of widths matching the number of data sets. 
+  /// The height of the boxplots in $y$ data coordinates. This can be a constant height
+  /// applied to all boxplots or an array of heights matching the number of data sets.
   /// -> int | float | array
-  width: 0.5,
+  height: 0.5,
 
   /// How to fill the boxes. 
   /// -> none | color | gradient | tiling
@@ -236,10 +236,10 @@
     message: "The number of y coordinates does not match the number of data arrays"
   )
   
-  if type(width) in (int, float) { width = (width,) * num-boxplots }
+  if type(height) in (int, float) { height = (height,) * num-boxplots }
   assert(
-    width.len() == num-boxplots, 
-    message: "The number of widths does not match the number of data arrays"
+    height.len() == num-boxplots,
+    message: "The number of heights does not match the number of data arrays"
   )
   
   if whisker == auto { whisker = utility.if-none(stroke, std.stroke()) }
@@ -254,14 +254,14 @@
   }
   let xmax = calc.max(..statistics.map(x => x.whisker-high), ..all-outliers)
   let xmin = calc.min(..statistics.map(x => x.whisker-low), ..all-outliers)
-  let ymin = y.at(0) - width.at(0)
-  let ymax = y.at(-1) + width.at(-1)
+  let ymin = y.at(0) - height.at(0)
+  let ymax = y.at(-1) + height.at(-1)
 
   (
     y: y,
     statistics: statistics,
     label: label,
-    width: width,
+    width: height,
     style: (
       fill: fill,
       stroke: stroke,

@@ -25,16 +25,16 @@
 #pagebreak()
 
 
-// Manual positions and width
+// Manual positions and height
 #lq.diagram(
-  lq.hviolin(data.at(0), y: (-1), width: .8),
-  lq.hviolin(..data.slice(1), y: (1, 2), width: (.5, 1)),
+  lq.hviolin(data.at(0), y: (-1), height: .8),
+  lq.hviolin(..data.slice(1), y: (1, 2), height: (.5, 1)),
 )
 
 #pagebreak()
 
 
-// Datetime x and ratio/duration width
+// Datetime y and ratio/duration height
 #lq.diagram(
   lq.hviolin(
     ..data.slice(0, 2),
@@ -42,12 +42,12 @@
       datetime(year: 2025, month: 2, day: 1),
       datetime(year: 2025, month: 3, day: 1),
     ),
-    width: 80%,
+    height: 80%,
   ),
   lq.hviolin(
     data.at(2),
     y: datetime(year: 2025, month: 4, day: 1),
-    width: duration(weeks: 4),
+    height: duration(weeks: 4),
   ),
   lq.hviolin(
     ..data.slice(1),
@@ -55,7 +55,7 @@
       datetime(year: 2025, month: 5, day: 1),
       datetime(year: 2025, month: 6, day: 1),
     ),
-    width: (
+    height: (
       duration(weeks: 2),
       duration(weeks: 1),
     ),
@@ -146,8 +146,8 @@
     boxplot: (width: 5pt),
     extrema: true,
   ),
-  lq.hviolin(data.at(1), y: 3, width: 1, boxplot: (width: 20pt)),
-  lq.hviolin(data.at(1), y: 4, width: .5, boxplot: (width: .5)),
+  lq.hviolin(data.at(1), y: 3, height: 1, boxplot: (width: 20pt)),
+  lq.hviolin(data.at(1), y: 4, height: .5, boxplot: (width: .5)),
 )
 
 #pagebreak()
@@ -171,8 +171,8 @@
     boxplot: (width: 5pt),
     extrema: true,
   ),
-  lq.hviolin(data.at(1), y: 3, width: 1, boxplot: (width: 20pt)),
-  lq.hviolin(data.at(1), y: 4, width: .5, boxplot: (width: .5)),
+  lq.hviolin(data.at(1), y: 3, height: 1, boxplot: (width: 20pt)),
+  lq.hviolin(data.at(1), y: 4, height: .5, boxplot: (width: .5)),
 )
 
 #pagebreak()
@@ -184,7 +184,7 @@
   lq.hviolin(data.at(1), boxplot: (width: 50%)),
   lq.hviolin(data.at(1), y: 2, side: "low", boxplot: (width: 25%)),
   lq.hviolin(data.at(1), y: 2, side: "high", boxplot: (width: 25%)),
-  lq.hviolin(data.at(1), y: 3, width: 1, boxplot: (width: 50%), median: white),
+  lq.hviolin(data.at(1), y: 3, height: 1, boxplot: (width: 50%), median: white),
 )
 
 
@@ -208,7 +208,7 @@
     lq.hviolin(
       data.at(1),
       y: 3,
-      width: 1,
+      height: 1,
       boxplot: (width: 10%),
       median: white,
     ),

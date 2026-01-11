@@ -80,12 +80,12 @@
 #pagebreak()
 
 
-// Variable width
+// Variable height
 #lq.diagram(
   lq.hbar(
     (1, 2, 3, 2, 5),
     (1, 2, 3, 4, 5),
-    width: (1, .5, 1, .5, 1),
+    height: (1, .5, 1, .5, 1),
     fill: orange,
     stroke: black,
   ),
@@ -113,21 +113,21 @@
   lq.hbar(
     (1, 2, 3, 4, 5),
     (1, 2, 3, 4, 5),
-    width: .2,
+    height: .2,
     fill: red,
     align: top,
   ),
   lq.hbar(
     (5, 4, 3, 2, 1),
     (1, 2, 3, 4, 5),
-    width: .2,
+    height: .2,
     fill: blue,
     align: bottom,
   ),
   lq.hbar(
     (2.5,) * 5,
     (1, 2, 3, 4, 5),
-    width: .2,
+    height: .2,
     fill: rgb("#AAEEAA99"),
     align: center,
   ),
@@ -141,7 +141,7 @@
   lq.hbar(
     (1, 2, 3, 4, 5),
     (1, 2, 3, 4, 5),
-    width: .2,
+    height: .2,
     offset: 0,
     fill: purple,
     align: top,
@@ -149,7 +149,7 @@
   lq.hbar(
     (0.5, 1.5, 2.5, 3.5, 4.5),
     (1, 2, 3, 4, 5),
-    width: .2,
+    height: .2,
     offset: .2,
     fill: yellow,
     align: top,
@@ -157,7 +157,7 @@
   lq.hbar(
     (0, 1, 2, 3, 4),
     (1, 2, 3, 4, 5),
-    width: .2,
+    height: .2,
     offset: .4,
     fill: rgb("#AAEEDDFF"),
     align: top,
@@ -173,7 +173,7 @@
   lq.hbar(
     (.5, 3, 0, 1, .2),
     (1, 2, 3, 4, 5),
-    width: .5,
+    height: .5,
     fill: tiling(line(length: 1cm, angle: 45deg)),
     stroke: 1pt,
     align: top,
@@ -221,7 +221,7 @@
     (2, 3, 4, 5, 6),
     range(5),
     offset: (.5, 0, 0, -.5, 0),
-    width: .5,
+    height: .5,
   ),
 )
 
@@ -241,7 +241,7 @@
 
 
 // Datetime support:
-// - Duration width and variable duration width
+// - Duration height and variable duration height
 // - Duration offset
 #lq.diagram(
   lq.hbar(
@@ -252,7 +252,7 @@
       datetime(year: 2000, month: 1, day: 3),
       datetime(year: 2000, month: 1, day: 4),
     ),
-    width: duration(hours: 12)
+    height: duration(hours: 12)
   ),
   lq.hbar(
     (1, 2, 3, 4),
@@ -262,7 +262,7 @@
       datetime(year: 2000, month: 1, day: 3),
       datetime(year: 2000, month: 1, day: 4),
     ),
-    width: (
+    height: (
       duration(hours: 24),
       duration(hours: 12),
       duration(hours: 24),
