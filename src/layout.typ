@@ -81,7 +81,7 @@
 
   // protect other grids such as the legend grid
   // if it.children.all(cell => e.eid(cell.body) != e.eid(diagram)) { return it }
-  if it.children.all(cell => not is-styled-diagram(cell.body)) { return it }
+  if it.children.all(cell => cell.func() != grid.cell or not is-styled-diagram(cell.body)) { return it }
   
   
   let grid = context {
