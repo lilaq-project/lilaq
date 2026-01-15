@@ -520,11 +520,9 @@
   let (ymin, ymax) = minmax(
     processed-data.map(info => info.limits).flatten(),
   )
-  let (xmin, xmax) = (x.at(0) - width.at(0) / 2, x.at(-1) + width.at(-1) / 2)
-
-  if processed-data.len() == 0 {
-    (xmin, xmax) = (none, none)
-  }
+  let (xmin, xmax) = minmax(
+    x.enumerate().map(((i, xi)) => (xi - width.at(i) / 2, xi + width.at(i) / 2)).flatten()
+  )
 
   (
     x: x,
