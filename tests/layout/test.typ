@@ -30,6 +30,8 @@
 
   // - rows
   #grid(
+    grid.vline(),
+    grid.hline(),
     lq.diagram(
       ylim: (10, 100),
     ),
