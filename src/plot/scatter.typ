@@ -73,7 +73,7 @@
 /// color can be set per point (this discerns @scatter from @plot). 
 /// 
 /// ```example
-/// #import "@preview/suiji:0.3.0"
+/// #import "@preview/suiji:0.5.1"
 /// #let rng = suiji.gen-rng(33)
 /// #let (rng, x) = suiji.uniform(rng, size: 20)
 /// #let (rng, y) = suiji.uniform(rng, size: 20)

@@ -4,7 +4,7 @@
 #let xs = lq.linspace(0, 4 * calc.pi)
 #let ys = xs.map(calc.sin)
 
-#import "@preview/suiji:0.3.0"
+#import "@preview/suiji:0.5.1"
 #let rng = suiji.gen-rng(33)
 
 #let (rng, noise) = suiji.normal(
