@@ -22,7 +22,7 @@ jobs:
       - name: Install tytanic (binary)
         uses: taiki-e/install-action@v2
         with:
-          tool: tytanic@0.3.0
+          tool: tytanic@0.3.3
 
       - name: Run test suite
         run: tt run --no-fail-fast
