@@ -66,6 +66,13 @@
   /// -> none | length | color | stroke | gradient | tiling | dictionary
   stroke: auto,
 
+  /// Color for the violin plot. Sets the base color from which @hviolin.fill
+  /// and @hviolin.stroke inherit. The boxplot fill and stroke also inherit
+  /// from this color (see @violin-boxplot). Explicit values for `fill`,
+  /// `stroke`, or boxplot parameters take precedence.
+  /// -> auto | color
+  color: auto,
+
   /// Whether and how to display the median value. It can be visualized with a
   /// mark (see @plot.mark) or a horizontal line (by passing a color, stroke, 
   /// or length).
@@ -190,6 +197,7 @@
     style: (
       fill: fill,
       stroke: stroke,
+      color: color,
       mean: mean,
       median: median,
       extrema: extrema,
