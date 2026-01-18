@@ -257,7 +257,7 @@
 
     if omit-unity {
       if tick == 1 { label = none }
-      else if tick == -1 { label = minus-sign-with-zero }
+      else if tick == -1 { label = class("unary", minus-sign-with-zero) }
     }
 
     $label suffix$
@@ -295,9 +295,9 @@
 
 
     if suffix-position == "numerator" {
-      $sign (label suffix)/denominator$
+      $class("unary", sign) (label suffix)/denominator$
     } else {
-      $sign label/denominator suffix$
+      $class("unary", sign) label/denominator suffix$
     }
   })
 
