@@ -1,8 +1,7 @@
 #import "../assertations.typ"
-#import "../style/styling.typ": mark, prepare-mark, resolve-mark
+#import "../style/styling.typ": mark, prepare-mark, resolve-mark, prepare-path, style as lq-style
 #import "../utility.typ"
 #import "../logic/time.typ"
-#import "../style/styling.typ": prepare-path
 #import "../math.typ": minmax
 #import "../process-styles.typ": process-plot-item-width
 
@@ -91,7 +90,7 @@
   legend: false,
   horizontal: false,
 ) = e.get(e-get => {
-  set std.circle(fill: style.color) if style.color != auto
+  set lq-style(fill: style.color) if style.color != auto
 
   let prepare-path = prepare-path.with(
     fill: style.fill,
@@ -101,6 +100,7 @@
 
   if legend {
     return {
+      set lq-style(fill: style.color) if style.color != auto
       show: prepare-path
       curve(
         curve.line((0%, 100%)),
