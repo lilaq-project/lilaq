@@ -177,7 +177,7 @@
     processed-data.map(info => info.limits).flatten(),
   )
   let (ymin, ymax) = minmax(
-    y.zip(width).map(((yi, w)) => (yi - w / 2, yi + w / 2)).flatten()
+    y.zip(width).map(((yi, w)) => (yi - w, yi + w)).flatten()
   )
 
   (
