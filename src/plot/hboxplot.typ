@@ -3,6 +3,7 @@
 #import "../algorithm/boxplot.typ": *
 #import "../style/styling.typ": mark, prepare-mark
 #import "../logic/time.typ"
+#import "../math.typ": minmax
 
 
 #let render-boxplot(plot, transform) = {
@@ -252,10 +253,12 @@
   if outliers != none {
     all-outliers = statistics.map(boxplot => boxplot.outliers).flatten()
   }
-  let xmax = calc.max(..statistics.map(x => x.whisker-high), ..all-outliers)
-  let xmin = calc.min(..statistics.map(x => x.whisker-low), ..all-outliers)
-  let ymin = y.at(0) - width.at(0)
-  let ymax = y.at(-1) + width.at(-1)
+  let (xmin, xmax) = minmax(
+    statistics.map(s => s.whisker-low) + statistics.map(s => s.whisker-high) + all-outliers
+  )
+  let (ymin, ymax) = minmax(
+    y.zip(width).map(((yi, w)) => (yi - w, yi + w)).flatten()
+  )
 
   (
     y: y,
