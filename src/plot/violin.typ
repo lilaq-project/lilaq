@@ -1,8 +1,7 @@
 #import "../assertations.typ"
-#import "../style/styling.typ": mark, prepare-mark, resolve-mark
+#import "../style/styling.typ": mark, prepare-mark, resolve-mark, prepare-path, style as lq-style
 #import "../utility.typ"
 #import "../logic/time.typ"
-#import "../style/styling.typ": prepare-path
 #import "../math.typ": minmax
 #import "../process-styles.typ": process-plot-item-width
 
@@ -91,6 +90,8 @@
   legend: false,
   horizontal: false,
 ) = e.get(e-get => {
+  set lq-style(fill: style.color) if style.color != auto
+
   let prepare-path = prepare-path.with(
     fill: style.fill,
     stroke: style.stroke,
@@ -99,6 +100,7 @@
 
   if legend {
     return {
+      set lq-style(fill: style.color) if style.color != auto
       show: prepare-path
       curve(
         curve.line((0%, 100%)),
@@ -400,6 +402,13 @@
   /// -> none | length | color | stroke | gradient | tiling | dictionary
   stroke: auto,
 
+  /// Color for the violin plot. Sets the base color from which @hviolin.fill
+  /// and @hviolin.stroke inherit. The boxplot fill and stroke also inherit
+  /// from this color (see @violin-boxplot). Explicit values for `fill`,
+  /// `stroke`, or boxplot parameters take precedence.
+  /// -> auto | color
+  color: auto,
+
   /// Whether and how to display the median value. It can be visualized with a
   /// mark (see @plot.mark) or a horizontal line (by passing a color, stroke, 
   /// or length).
@@ -534,6 +543,7 @@
     style: (
       fill: fill,
       stroke: stroke,
+      color: color,
       mean: mean,
       median: median,
       extrema: extrema,
