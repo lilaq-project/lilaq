@@ -315,7 +315,7 @@
     statistics.map(s => s.whisker-low) + statistics.map(s => s.whisker-high) + all-outliers
   )
   let (xmin, xmax) = minmax(
-    x.enumerate().map(((i, xi)) => (xi - width.at(i), xi + width.at(i))).flatten()
+    x.zip(width).map(((xi, w)) => (xi - w, xi + w)).flatten()
   )
 
   (

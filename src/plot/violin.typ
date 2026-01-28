@@ -521,7 +521,7 @@
     processed-data.map(info => info.limits).flatten(),
   )
   let (xmin, xmax) = minmax(
-    x.enumerate().map(((i, xi)) => (xi - width.at(i) / 2, xi + width.at(i) / 2)).flatten()
+    x.zip(width).map(((xi, w)) => (xi - w / 2, xi + w / 2)).flatten()
   )
 
   (
