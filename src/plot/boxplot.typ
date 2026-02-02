@@ -4,6 +4,7 @@
 #import "../style/styling.typ": mark, prepare-mark
 #import "../logic/time.typ"
 #import "../math.typ": minmax
+#import "../process-styles.typ": process-plot-item-width
 
 
 #let render-boxplot(plot, transform) = {
@@ -196,10 +197,9 @@
   /// -> int | float
   whisker-pos: 1.5,
 
-  /// The width of the boxplots in $x$ data coordinates. This can be a constant width
-  /// applied to all boxplots or an array of widths matching the number of data sets. 
-  /// -> int | float | array
-  width: 0.5,
+  /// The width of the boxplots in $x$ data coordinates. See @bar.width.
+  /// -> ratio | int | float | duration | array
+  width: 50%,
 
   /// How to fill the boxes. 
   /// -> none | color | gradient | tiling
@@ -272,8 +272,11 @@
   data = data.pos()
   let num-boxplots = data.len()
   
-  if type(x) in (int, float, datetime) { x = (x,) }
-  else if x == auto { x = range(1, num-boxplots + 1) }
+  if x == auto {
+    x = range(1, num-boxplots + 1)
+  } else if type(x) != array {
+    x = (x,)
+  }
 
   let datetime-axes = (:)
   if type(x.at(0, default: 0)) == datetime {
@@ -285,8 +288,10 @@
     x.len() == num-boxplots, 
     message: "The number of x coordinates does not match the number of data arrays"
   )
+
   
-  if type(width) in (int, float) { width = (width,) * num-boxplots }
+  width = process-plot-item-width(width, x)
+  
   assert(
     width.len() == num-boxplots, 
     message: "The number of widths does not match the number of data arrays"

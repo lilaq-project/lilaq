@@ -495,8 +495,10 @@
   data = data.pos()
   let num-violins = data.len()
 
-  if type(x) in (int, float, datetime) { x = (x,) } else if x == auto {
+  if x == auto {
     x = range(1, num-violins + 1)
+  } else if type(x) != array {
+    x = (x,)
   }
 
   let datetime-axes = (:)

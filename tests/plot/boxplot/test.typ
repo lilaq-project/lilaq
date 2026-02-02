@@ -26,21 +26,21 @@
     range(4),
     (
       median: 2.5,
-      q1: 1, 
-      q3: 3, 
-      whisker-low: 0, 
-      whisker-high: 10, 
+      q1: 1,
+      q3: 3,
+      whisker-low: 0,
+      whisker-high: 10,
     ),
     (
       median: 7,
-      q1: 3, 
-      q3: 8, 
-      whisker-low: 2, 
-      whisker-high: 10, 
-      outliers: (0, 1)
+      q1: 3,
+      q3: 8,
+      whisker-low: 2,
+      whisker-high: 10,
+      outliers: (0, 1),
     ),
-    x: (1, 2, 4)
-  )
+    x: (1, 2, 4),
+  ),
 )
 
 
@@ -64,8 +64,8 @@
     outliers: "s",
     outlier-size: 2pt,
     outlier-fill: green,
-    outlier-stroke: .5pt + black
-  )
+    outlier-stroke: .5pt + black,
+  ),
 )
 
 
@@ -78,13 +78,13 @@
 #lq.diagram(
   lq.boxplot(
     (1, 2, 3, 7, 8),
-    mean: "x"
+    mean: "x",
   ),
   lq.boxplot(
     (1, 2, 3, 7, 8),
     mean: green + 1pt,
-    x: 2
-  )
+    x: 2,
+  ),
 )
 
 
@@ -96,9 +96,9 @@
 
 #lq.diagram(
   lq.boxplot(
-    (1, 3, 4, 5, 6, 3, 1, 72, 3, 7, 8, 10,11, 34),
+    (1, 3, 4, 5, 6, 3, 1, 72, 3, 7, 8, 10, 11, 34),
     whisker-pos: 6,
-  )
+  ),
 )
 
 
@@ -115,5 +115,38 @@
     (0, 1, 2, 3),
     (0, 4, 5, 6),
     (-1, 0, 9, 10),
+  ),
+)
+
+#pagebreak()
+
+
+// Datetime x and ratio/duration width
+#lq.diagram(
+  lq.boxplot(
+    (1, 2),
+    (1, 2),
+    x: (
+      datetime(year: 2025, month: 2, day: 1),
+      datetime(year: 2025, month: 3, day: 1),
+    ),
+    width: 80%,
+  ),
+  lq.boxplot(
+    (1, 2),
+    x: datetime(year: 2025, month: 4, day: 1),
+    width: duration(weeks: 4),
+  ),
+  lq.boxplot(
+    (1, 2),
+    (1, 2),
+    x: (
+      datetime(year: 2025, month: 5, day: 1),
+      datetime(year: 2025, month: 6, day: 1),
+    ),
+    width: (
+      duration(weeks: 2),
+      duration(weeks: 1),
+    ),
   ),
 )
