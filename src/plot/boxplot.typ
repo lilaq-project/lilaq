@@ -160,7 +160,6 @@
 /// ```example
 /// #lq.diagram(
 ///   width: 4cm,
-///   margin: (x: 50%),
 ///   lq.boxplot(
 ///     (
 ///       median: 4.4,
@@ -218,7 +217,6 @@
   /// with a mark or a line like the median. 
   /// ```example
   /// #lq.diagram(
-  ///   margin: (x: 20%),
   ///   lq.boxplot((1, 3, 10), mean: "."),
   ///   lq.boxplot((1, 3, 10), mean: green, x: 2),
   /// )
