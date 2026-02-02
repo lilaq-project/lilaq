@@ -128,49 +128,34 @@
 /// )
 /// ```
 /// 
-/// By default, the mean value is not shown but it can be visualized by setting
-/// the @boxplot.mean parameter to a mark or line stroke. 
-/// ```example
-/// #lq.diagram(
-///   lq.boxplot((1, 3, 10), mean: "."),
-///   lq.boxplot((1, 3, 10), mean: green, x: 2),
-/// )
-/// ```
 /// 
 /// Boxplots can be richly customized as demonstrated below. 
 /// ```example
+/// #let data = (-3, -5, 1, 3, 3, 3, 4, 4, 2, 6, 10, 11)
+/// 
 /// #lq.diagram(
 ///   lq.boxplot(
-///     (1, 3, 10), 
-///     stroke: luma(30%), 
-///     fill: yellow, 
-///     median: red
+///     data,
+///     stroke: luma(30%),
+///     fill: yellow,
 ///   ),
 ///   lq.boxplot(
-///     (1.5, 3, 9), 
-///     x: 2, 
-///     whisker: blue, 
-///     cap: red, 
-///     cap-length: 0.7, 
+///     data, x: 2,
+///     whisker: blue,
+///     cap: red,
+///     cap-length: 0.7,
 ///     median: green
 ///   ),
-///   lq.boxplot(
-///     lq.linspace(5.3, 6.2) + (2, 3, 7, 9.5), 
-///     x: 3, 
-///     outliers: "x"
-///    ),
-///   lq.boxplot(
-///     lq.linspace(5.3, 6.2) + (2, 3, 7, 9.5), 
-///     x: 4, 
-///     outliers: none
-///   ),
+///   lq.boxplot(data, x: 3, outliers: "x"),
+///   lq.boxplot(data, x: 4, outliers: none),
 /// )
 /// ```
 /// 
-/// Some data sets might be too large to be processed in Typst. In this case, 
-/// the median, the first and third quartil as well as the whiskers can be 
-/// computed somewhere else and specified manually in Lilaq (see also 
-/// @boxplot.data). 
+/// Although Lilaq uses [Komet](https://typst.app/universe/package/komet/) to 
+/// compute the boxplot, some data sets might be too large to be processed in
+/// Typst. In this case, the median, the whiskers, the first and the third 
+/// quartil can be computed with an external tool and specified manually
+/// (see also @boxplot.data). 
 /// ```example
 /// #lq.diagram(
 ///   width: 4cm,
@@ -228,8 +213,14 @@
   /// -> length | color | stroke | gradient | tiling | dictionary
   median: 1pt + orange,
 
-  /// Whether and how to display the mean value. The mean value can be 
-  /// visualized with a mark (see @plot.mark) or a line like the median. 
+  /// By default, the mean value is not shown but it can be visualized 
+  /// with a mark or a line like the median. 
+  /// ```example
+  /// #lq.diagram(
+  ///   lq.boxplot((1, 3, 10), mean: "."),
+  ///   lq.boxplot((1, 3, 10), mean: green, x: 2),
+  /// )
+  /// ```
   /// -> none | lq.mark | str | stroke 
   mean: none,
 
@@ -315,7 +306,7 @@
     statistics.map(s => s.whisker-low) + statistics.map(s => s.whisker-high) + all-outliers
   )
   let (xmin, xmax) = minmax(
-    x.zip(width).map(((xi, w)) => (xi - w, xi + w)).flatten()
+    x.zip(width).map(((xi, w)) => (xi - calc.max(w, 1)/2, xi + calc.max(w, 1)/2)).flatten()
   )
 
   (
