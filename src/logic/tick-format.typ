@@ -1,4 +1,4 @@
-#import "@preview/zero:0.5.0"
+#import "@preview/zero:0.6.1"
 #import "../math.typ": pow10
 #import "tick-locate.typ": _estimate-significant-digits
 #import "../logic/time.typ"
