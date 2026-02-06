@@ -260,7 +260,7 @@
     statistics.map(s => s.whisker-low) + statistics.map(s => s.whisker-high) + all-outliers
   )
   let (ymin, ymax) = minmax(
-    y.zip(width).map(((yi, w)) => (yi - w, yi + w)).flatten()
+    y.zip(width).map(((yi, w)) => (yi - w/2, yi + w/2)).flatten()
   )
 
   (
