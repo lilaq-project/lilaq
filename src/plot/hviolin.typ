@@ -49,7 +49,7 @@
   /// #lq.diagram(
   ///   lq.hviolin(data, bandwidth: auto),
   ///   lq.hviolin(data, y: 2, bandwidth: .2),
-  ///   lq.scatter((1.5,) * data.len(), data)
+  ///   lq.scatter(data, (1.5,) * data.len())
   /// )
   /// ```
   /// -> auto | int | float
