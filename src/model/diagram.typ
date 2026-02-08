@@ -179,7 +179,8 @@
   /// -> none | color | gradient | tiling 
   fill: none,
 
-  /// How to compute the bounding box of a diagram. 
+  /// How to compute the bounding box of a diagram. See also the tutorial 
+  /// #link("tutorials/plot-grids#strict-or-relaxed-bounds")[Plot grids − Strict or relaxed bounds?].  
   /// - `"strict"`: The bounds are computed as the precise bounding box of the 
   ///   diagram. The exact behavior for text bounds also depends on the setting 
   ///   of #link("https://typst.app/docs/reference/text/text/#parameters-top-edge")[`text.top-edge`]
