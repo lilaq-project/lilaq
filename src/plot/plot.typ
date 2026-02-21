@@ -320,7 +320,7 @@
   stroke: auto, 
   
   /// The mark to use to mark data points. This may either be a mark (such as 
-  /// `lq.mark.x`) or a registered mark string, see @mark. 
+  /// `lq.marks.x`) or a registered mark string, see @mark. 
   /// -> auto | none | lq.mark | str
   mark: auto, 
   
