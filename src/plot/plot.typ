@@ -1,4 +1,4 @@
-#import "../algorithm/adaptive-sample.typ": adaptive-sample
+#import "../algorithm/adaptive-sampling.typ": adaptive-sample
 #import "../algorithm/bezier-interpolation.typ": bezier-splines
 #import "../logic/limits.typ": plot-lim
 #import "../process-styles.typ": merge-fills, merge-strokes

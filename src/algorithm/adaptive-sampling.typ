@@ -36,7 +36,7 @@
     let cos-err = 1 + _vec-cos((dx2 - dxm, dy2 - dym), (dx1 - dxm, dy1 - dym))
     let y-err = _lin-error((dx1, dy1), (dx2, dy2), (dxm, dym))
 
-    if (cos-err > cos-tol or y-err > err-tol) and depth < max-depth {
+    if (y-err > err-tol or cos-err > cos-tol) and depth < max-depth {
       subdivide(x1, xm, dx1, dy1, dxm, dym, depth + 1) + subdivide(xm, x2, dxm, dym, dx2, dy2, depth + 1)
     } else {
       ((dx2 * 1pt, dy2 * 1pt),)
