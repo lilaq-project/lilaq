@@ -97,13 +97,7 @@
   /// -> bool
   include-end: true
 
-) = {
-  assert(num >= 0, message: "linspace: num must be non-negative")
-  if num == 0 { return () }
-  if num == 1 { return (start,) }
-  let k = (end - start) / (num - int(include-end))
-  range(num).map(x => k * x + start)
-}
+) = linspace(start, end, num: num, include-end: include-end).map(x => calc.pow(base, x))
 
 /// Generates an array of logarithmically-spaced numbers in the interval `[base^start, base^end)` or `[base^start, base^end]`.
 /// Useful for displaying functions on a log-scaled diagram. 

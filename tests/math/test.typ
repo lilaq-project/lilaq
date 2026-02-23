@@ -24,6 +24,8 @@
 #assert.eq(linspace(0, 1, num: 0, include-end: false), ())
 #assert.eq(linspace(-2.3, 1, num: 1), (-2.3, ))
 #assert.eq(linspace(-2.3, 1, num: 1, include-end: false), (-2.3, ))
+#assert.eq(logspace(-1, 1, num: 1), (0.1,))
+#assert.eq(logspace(-1, 1, num: 1, include-end: false), (0.1,))
 
 // Normal operation
 #assert.eq(linspace(0, 1, num: 2), (0, 1))
@@ -31,12 +33,15 @@
 #assert.eq(linspace(-3.4, 7, num: 2), (-3.4, 7))
 #assert.eq(linspace(-3, 7, num: 2, include-end: false), (-3, 2))
 #assert.eq(linspace(0, 1, num: 5), (0, .25, .5, .75, 1))
+#assert.eq(logspace(0, 1, num: 2), (1, 10))
+#assert.eq(logspace(0, 2, num: 2, include-end: false), (1, 10))
 
 // Inverse range
 #assert.eq(linspace(1, 0, num: 2), (1, 0))
 #assert.eq(linspace(100, 0, num: 2), (100, 0))
 #assert.eq(linspace(100, 0, num: 2, include-end: false), (100, 50))
-
+#assert.eq(logspace(1, 0, num: 2), (10.0, 1.0))
+#assert.eq(logspace(-2, 0, num: 2, include-end: false), (0.01, 0.1))
 
 #assert.eq(arange(0, 1), (0,))
 #assert.eq(arange(0, 2), (0,1))
