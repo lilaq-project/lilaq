@@ -27,11 +27,9 @@
 ///
 /// Returns an array of `(x, y)` data-space coordinate pairs.
 #let adaptive-sample(fn, transform, pts, cos-tol: 0.02, err-tol: 0.5, max-depth: 8) = {
-  // 辅助函数：内部递归
   let subdivide(x1, x2, dx1, dy1, dx2, dy2, depth) = {
     let xm = (x1 + x2) / 2
     let ym = fn(xm)
-    if ym != ym { return () } // NaN guard
 
     let (dxm, dym) = transform(xm, ym).map(it => it.pt())
 

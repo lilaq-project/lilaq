@@ -217,15 +217,9 @@
 // supersampling (adaptive-sampling)
 #lq.diagram(
   lq.plot(x, y, smooth: false, supersampling: false),
-  lq.plot(x, y, smooth: false, supersampling: true),
   lq.plot(x, y, smooth: true, supersampling: false),
+  lq.plot(x, y, smooth: false, supersampling: true),
 )
-
-// #assert.eq(
-//   catch(() => lq.plot((), (), smooth: true, step: end)),
-//   "panicked with: \"`step` and `smooth` are mututally exclusive\""
-// )
-
 
 #pagebreak()
 
