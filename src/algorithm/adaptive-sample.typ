@@ -20,13 +20,13 @@
 ///
 /// - fn: data-space function `x -> y`
 /// - transform: `(x, y) -> (display-x, display-y)` coordinate transform
-/// - xs: sorted array of initial x grid points
+/// - pts: sorted array of initial grid points
 /// - cos-tol: cosine tolerance for angle at midpoints (smaller = stricter)
 /// - err-tol: max linear interpolation error in display points (pt)
 /// - max-depth: maximum subdivision depth per interval
 ///
 /// Returns an array of `(x, y)` data-space coordinate pairs.
-#let adaptive-sample(fn, transform, pts, cos-tol: 0.02, err-tol: 0.5, max-depth: 8) = {
+#let adaptive-sample(fn, transform, pts, cos-tol: none, err-tol: none, max-depth: none) = {
   let subdivide(x1, x2, dx1, dy1, dx2, dy2, depth) = {
     let xm = (x1 + x2) / 2
     let ym = fn(xm)
