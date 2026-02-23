@@ -105,8 +105,45 @@
   range(num).map(x => k * x + start)
 }
 
+/// Generates an array of logarithmically-spaced numbers in the interval `[base^start, base^end)` or `[base^start, base^end]`.
+/// Useful for displaying functions on a log-scaled diagram. 
+/// ```example
+/// #logspace(-4, 4, num:8, include-end: false)
+/// ```
+/// Returns values at 10^-4 to 10^4: (0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0)
+/// -> array
+#let logspace(
+  
+  /// Start of the range.
+  /// -> int | float
+  start, 
+  
+  /// End of the range.
+  /// -> int | float
+  end, 
+  
+  /// Number of log-spaced values to produce. 
+  /// -> int
+  num: 50,
 
+  /// Whether to include the end of the range. If `true`, samples are taken for
+  /// the closed interval `[start, end]`. 
+  /// -> bool
+  include-end: true,
 
+  /// The base of the logscale
+  /// -> int | float
+  base:10.0,
+) = {
+  assert(num >= 0, message: "logspace: num must be non-negative")
+  if num == 0 { return () }
+  if num == 1 { return (start,) }
+  let k = (end - start) / (num - int(include-end))
+  range(num).map(x=> calc.pow(base, k * x + start))
+  // let exponents = range(num).map(x=> start + (stop - end) * x / (num - int(include-end)) )
+  // let k = (end - start) / (num - )
+  // range(num).map(x => k * x + start)
+}
 
 /// Generates an array of numbers spaced by `step` in the interval `[start, end)`. 
 /// -> array
@@ -116,7 +153,7 @@
   /// -> int | float
   start,
   
-  /// End of the range (excluded). 
+  /// End of the range (excluded).
   /// -> int | float
   end,
   
