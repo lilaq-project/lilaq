@@ -115,11 +115,11 @@
 /// -> array
 #let logspace(
   
-  /// Start of the range exponent.
+  /// Start of the exponent range.
   /// -> int | float
   start, 
   
-  /// End of the range exponent.
+  /// End of the exponent range.
   /// -> int | float
   end, 
   
