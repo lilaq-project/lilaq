@@ -93,7 +93,7 @@
   num: 50,
   
   /// Whether to include the end of the range. If `true`, samples are taken for
-  /// the closed interval `[start, end]`. 
+  /// the closed interval `[start, end]`. Otherwise, the last point is omitted. 
   /// -> bool
   include-end: true
 
@@ -106,6 +106,37 @@
 }
 
 
+/// Generates an array of logarithmically-spaced numbers in the interval `[base^start, base^end)` or `[base^start, base^end]`.
+/// Useful for displaying functions on a log-scaled diagram. 
+/// ```example
+/// #logspace(-4, 4, num: 8, include-end: false)
+/// ```
+/// Returns values at $10^{-4}$ to $10^4$: `(0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0)`.
+/// -> array
+#let logspace(
+  
+  /// Start of the exponent range.
+  /// -> int | float
+  start, 
+  
+  /// End of the exponent range.
+  /// -> int | float
+  end, 
+  
+  /// Number of values to produce. 
+  /// -> int
+  num: 50,
+
+  /// Whether to include the end of the range. If `true`, samples are taken for
+  /// the closed interval `[start, end]`. Otherwise, the last point is omitted. 
+  /// -> bool
+  include-end: true,
+
+  /// The base of the power. 
+  /// -> int | float
+  base: 10.0,
+
+) = linspace(start, end, num: num, include-end: include-end).map(x => calc.pow(base, x))
 
 
 /// Generates an array of numbers spaced by `step` in the interval `[start, end)`. 
