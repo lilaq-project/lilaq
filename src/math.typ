@@ -97,7 +97,13 @@
   /// -> bool
   include-end: true
 
-) = linspace(start, end, num: num, include-end: include-end).map(x => calc.pow(base, x))
+) = {
+  assert(num >= 0, message: "linspace: num must be non-negative")
+  if num == 0 { return () }
+  if num == 1 { return (start,) }
+  let k = (end - start) / (num - int(include-end))
+  range(num).map(x => k * x + start)
+}
 
 /// Generates an array of logarithmically-spaced numbers in the interval `[base^start, base^end)` or `[base^start, base^end]`.
 /// Useful for displaying functions on a log-scaled diagram. 
@@ -128,16 +134,7 @@
   /// The base of the logscale
   /// -> int | float
   base:10.0,
-) = {
-  assert(num >= 0, message: "logspace: num must be non-negative")
-  if num == 0 { return () }
-  if num == 1 { return (start,) }
-  let k = (end - start) / (num - int(include-end))
-  range(num).map(x=> calc.pow(base, k * x + start))
-  // let exponents = range(num).map(x=> start + (stop - end) * x / (num - int(include-end)) )
-  // let k = (end - start) / (num - )
-  // range(num).map(x => k * x + start)
-}
+) = linspace(start, end, num: num, include-end: include-end).map(x => calc.pow(base, x))
 
 /// Generates an array of numbers spaced by `step` in the interval `[start, end)`. 
 /// -> array
@@ -147,7 +144,7 @@
   /// -> int | float
   start,
   
-  /// End of the range (excluded).
+  /// End of the range (excluded). 
   /// -> int | float
   end,
   
