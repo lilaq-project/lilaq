@@ -635,7 +635,7 @@
         tick-result.ticks,
         tick-info: tick-result, 
         exponent: axis.exponent, 
-        offset: if type(offset) in (int, float, auto) { offset } else { 0 }, 
+        offset: if type(offset) in (int, float) or offset == auto { offset } else { 0 }, 
         auto-exponent-threshold: axis.auto-exponent-threshold,
         min: x0, 
         max: x1
