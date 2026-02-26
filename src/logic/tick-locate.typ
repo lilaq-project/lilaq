@@ -308,7 +308,7 @@
 
   
   let axis-offset = 0 
-  if calc.abs(calc.max(x1, x0) / tick-distance) >= 5000 {
+  if calc.max(calc.abs(x1), calc.abs(x0)) / tick-distance >= 70000 {
     // let fg = pow10(calc.ceil(calc.log(dx, base: 10) + 1))
     axis-offset = _discretize-down(x0, 1, exponent + 2)
   }
