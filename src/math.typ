@@ -108,10 +108,10 @@
 
 /// Generates an array of logarithmically-spaced numbers in the interval `[base^start, base^end)` or `[base^start, base^end]`.
 /// Useful for displaying functions on a log-scaled diagram. 
-/// ```example
-/// #logspace(-4, 4, num: 8, include-end: false)
+/// ```typ
+/// #lq.logspace(-4, 4, num: 8, include-end: false)
 /// ```
-/// Returns values at $10^{-4}$ to $10^4$: `(0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0)`.
+/// This returns values from $10^{-4}$ to $10^4$: `(0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0)`.
 /// -> array
 #let logspace(
   
