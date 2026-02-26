@@ -211,6 +211,19 @@
 
 #pagebreak()
 
+#let x = lq.linspace(-1, 1, num: 10)
+#let y(x, a: .05, offset: 0) = x + calc.pow(a, 2) / calc.pow(calc.pow(a, 2) + (x - offset), 2)
+
+// supersampling (adaptive-sampling)
+#lq.diagram(
+  lq.plot(x, y, smooth: false, supersampling: false),
+  lq.plot(x, y, smooth: true, supersampling: false),
+  lq.plot(x, y, smooth: false, supersampling: true),
+)
+
+#pagebreak()
+
+
 // Plot-Fn
 #lq.diagram(
   lq.plot(lq.linspace(-1, 1), x => calc.max(0, x)),
