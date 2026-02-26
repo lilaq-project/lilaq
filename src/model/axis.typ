@@ -18,18 +18,67 @@
 
 
 /// An axis for a diagram. Visually, an axis consists of a _spine_ along the axis 
-/// direction, a collection of _ticks_ (and subticks) and an _axis label_. 
+/// direction, a collection of _ticks_ (and subticks) with _tick labels_ and an
+/// _axis label_. 
+/// ```typ render
+/// #import "@preview/tiptoe:0.4.0"
+/// #let line = lq.line.with(tip: tiptoe.straight, stroke: red + .5pt, clip: false)
+/// #set text(1.2em)
 /// 
-/// By default, a @diagram features two axes: an x and a y axis which can be 
-/// configured directly through @diagram.xaxis and @diagram.yaxis. However, it is 
-/// also possible to add more axes, please refer to the 
+/// #lq.diagram(
+///   yaxis: none,
+///   xaxis: (mirror: none, exponent: 1),
+///   xlim: (10, 50),
+///   ylim: (-.1, 1),
+///   grid: none,
+///   height: 1cm,
+///   width: 7cm,
+///   lq.place(16.5, .7, align: right, text(red)[_ticks_]),
+///   line((17, .6), (20,0.1)),
+///   line((17, .6), (30,0.1)),
+///   lq.place(39, .7, align: right, text(red)[_subticks_]),
+///   line((39.5, .6), (42,0)),
+///   line((39.5, .6), (44,0)),
+///   lq.place(60, .7, text(red)[_exponent_]),
+///   line((62, .4), (59,-.1)),
+///   lq.place(38, -1.5, align: left, text(red)[_axis label_]),
+///   line((37, -1.5), (31,-1.3)),
+///   lq.place(23, -1.5, text(red)[_tick label_]),
+///   line((23, -1.2), (21,-.8)),
+///   lq.place(12, -1.5, text(red)[_spine_]),
+///   line((12, -1.2), (15,-.1)),
+///   xlabel: $x$
+/// )
+/// ```
+/// 
+/// Most often, you will want to configure the main $x$ and $y$ axes by 
+/// applying the parameters listed here to @diagram.xaxis and @diagram.yaxis:
+/// ```typ
+/// // Scoped configuration
+/// #show: lq.set-diagram(
+///   yaxis: (exponent: 0),
+///   xaxis: (position: top)
+/// )
+/// 
+/// // Per-diagram configuration
+/// #lq.diagram(
+///   yaxis: (exponent: 0),
+///   xaxis: (position: top),
+///   ..
+/// )
+/// ```
+/// 
+/// However, it is also possible to add more axes, please refer to the 
 /// #link("tutorials/axis")[axis tutorial] for more details. 
+/// 
+/// 
 /// 
 /// The built-in _tick formatters_ use the Typst package
 /// #link("https://typst.app/universe/package/zero")[Zero] for displaying
 /// numbers. This makes it possible to define a consistent number format 
 /// throughout the entire document, including tables, in-text quantities,
 /// and figures. 
+/// 
 #let axis(
 
   /// Sets the scale of the axis. This may be a @scale object or the name of 
