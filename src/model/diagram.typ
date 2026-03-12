@@ -840,7 +840,7 @@
     }
     
 
-    if sys.version >= version(0, 14, 0) and "target" in sys and target() == "html" {
+    if sys.version >= version(0, 14, 0) and "target" in std and target() == "html" {
       result = html.frame(result)
     }
 
