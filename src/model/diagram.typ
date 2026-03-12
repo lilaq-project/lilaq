@@ -813,7 +813,7 @@
     it.width = resolve-em-length(it.width)
     it.height = resolve-em-length(it.height)
 
-    if type(it.width) == relative or type(it.height) == relative {
+    let result = if type(it.width) == relative or type(it.height) == relative {
       box(layout(size => {
         if type(it.width) == relative {
           // We have an exception for 0% which is useful to fit the _entire_ 
@@ -838,6 +838,13 @@
     } else {
       draw-diagram(it)
     }
+    
+
+    if sys.version >= version(0, 14, 0) and "target" in std and target() == "html" {
+      result = html.frame(result)
+    }
+
+    result
   }, 
 
   fields: (
