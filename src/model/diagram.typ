@@ -358,18 +358,40 @@
 
 
 
-
+/// Whether to adjust the dimensions to achieve a fixed x/y aspect ratio. 
 #let do-adjust-dimensions-for-aspect-ratio(diagram) = {
   diagram.width == auto or diagram.height == auto
 }
 
+/// Whether to adjust the margins to achieve a fixed x/y aspect ratio. 
 #let do-adjust-margins-for-aspect-ratio(diagram) = {
   not do-adjust-dimensions-for-aspect-ratio(diagram)
 }
 
 
-// Computes axis limits and transforms. 
-#let fill-in-transforms(axes, width, height, it: none) = {
+// Returns the given axes with filled out axis limits and transforms, 
+// given fixed data-area dimensions `width` and `height`. 
+#let fill-in-transforms(
+
+  /// Array of all diagram axes. Here, the first two axes are the principle x 
+  /// and y axes, respectively. 
+  /// -> array
+  axes, 
+  
+  /// The width to assume for the data area in pt. 
+  /// -> length
+  width, 
+
+  /// The height to assume for the data area in pt. 
+  /// -> length
+  height, 
+
+  /// The diagram object. Needed for aspect-ratio, margin, and original 
+  /// width/height info. 
+  /// -> diagram
+  it: none
+
+) = {
   assert(it != none, message: "Internal error: Missing diagram options when filling in axis transforms.")
 
   let main-margin = process-margin(it.margin)
@@ -432,20 +454,57 @@
 }
 
 
+
+/// If one of @diagram.width or @diagram.height are `auto`, adjust them 
+/// according to @diagram.aspect-ratio. 
+/// 
+/// This requires 
+/// - the aspect ratio to be set, 
+/// - and at most one of @diagram.width or @diagram.height to be set to `auto`,
+/// otherwise an error is thrown. 
+/// 
+/// Returns the new dimensions. 
+/// 
+/// -> (length, length)
 #let resolve-dimensions-aspect-ratio(
-  xaxis, yaxis, 
-  // diagram object with fields `width` and `height`, and `aspect-ratio`. 
-  // When one of these dimensions is `auto`, `aspect-ratio` is used for computing the other dimension, respectively. 
+
+  /// The principle x-axis. 
+  /// -> axis
+  xaxis, 
+
+  /// The principle y-axis. 
+  yaxis, 
+
+  /// Diagram object with original fields `width` and `height`, and 
+  /// `aspect-ratio`. 
+  /// -> diagram
   it: none,
-  // Width and height as lengths. If not `auto`, these are used instead of 
-  // `diagram.width` and `diagram.height` for computing the other dimension. This is necessary when `diagram.width` or `diagram.height` are relative lengths because in this case, the automatic dimension could not be resolved.
-  width: auto, height: auto,
+
+  /// Width of the data-area. 
+  /// - If `it.width` is a length and thus already refers to the fixed width of 
+  ///   the data-area, this field may be left at `auto` and is resolved to 
+  ///   `it.width`. 
+  /// - If `it.diagram` is a relative, this field needs to be given
+  /// - If `it.width` is `auto`, this should be `auto`. 
+  /// -> auto | length
+  width: auto, 
+
+  /// See width. 
+  /// -> auto | length
+  height: auto
+
 ) = {
-  assert(it != none, message: "Internal error: Missing diagram options when resolving proportional lengths.")
+  assert(
+    it != none, 
+    message: "Internal error: Missing diagram options when resolving proportional lengths."
+  )
+  
   if width == auto { width = it.width }
   if height == auto { height = it.height }
 
+
   if it.width != auto and it.height != auto {
+    // Nothing to adjust. 
     return (width, height)
   }
 
@@ -454,13 +513,15 @@
     message: "An aspect ratio must be specified when one of the dimensions of a diagram is set to `auto`."
   )
 
+
   // x/yaxis.normalized-transform do not exist yet (and can only be computed 
   // later when the dimensions are resolved), so we need to create them here
   // temporarily.
   // Note that in the case where dimensions need to be resolved, the 
   // margins/limits are already fixed because the aspect ratio 
   // is only realized through dimension adjustment and not margin adjustment. 
-  // This is why the following step is allowed. 
+  // This is why the following step is allowed (otherwise the margin might not
+  // yet be fixed). 
   let create-normalized-trafos(axis) = (
     create-trafo(
       axis.scale.transform, 
@@ -485,30 +546,79 @@
 }
 
 
-
+// When _at least one_ of @diagram.width and @diagram.height is a `relative`, 
+// an iterative approach is needed to determine the dimensions of the data area
+// because width and height can recursively depend on each other due to axes 
+// etc. 
+// 
+// This function does one iteration step by
+// 1. receiving an estimate for the data area dimensions
+// 2. returning a _better_ estimate for the data area dimensions. 
+// 
+// For this, a partial evaluation of the entire diagram is performed, including
+// tick generation, title/legend placement, and bounds-affecting plots 
+// (e.g., `lq.place`). 
+// 
+// 
+// Returns a tuple of the new estimate for the data area dimensions and the 
+// tickings computed. 
+// 
+// -> (length, length, dictionary)
 #let attempt-layout(
-  width, height, 
-  it: (:), axes: (), plots: (), e-get: none, 
-  auto-height: true, auto-width: true,
+
+  /// The previous estimate for the data-area width or `auto`, iff 
+  /// @diagram.width is `auto`. 
+  /// -> auto | length
+  width, 
+
+  /// The previous estimate for the data-area height or `auto`, iff 
+  /// @diagram.height is `auto`. 
+  /// -> auto | length
+  height, 
+
+  /// The diagram object. 
+  /// -> diagram
+  it: (:), 
+  
+  /// Array of all diagram axes. Here, the first two axes are the principle x 
+  /// and y axes, respectively. The axes do not need to have their limits and 
+  /// transforms already filled in. 
+  /// -> array
+  axes: (), 
+  
+  /// Array of all plot objects. 
+  /// -> array
+  plots: (), 
+  
+  /// The total size to fill with the diagram, including axes, title, ...!
+  /// -> (length, length)
   available-size: (width: 0pt, height: 0pt),
-  draw-axis: draw-axis
+
+  draw-axis: draw-axis,
+  e-get: none, 
+
 ) = {
+  let get-settable-field(element, object, field) = {
+    e.fields(object).at(field, default: e-get(element).at(field))
+  }
+
+
+  // First resolve any auto dimensions. After this, width/height are lengths. 
   (width, height) = resolve-dimensions-aspect-ratio(
     ..axes.slice(0, 2), 
     width: width, height: height, 
     it: it,
   )
 
-  axes = fill-in-transforms(axes, width, height, it: it)
-  let (xaxis, yaxis) = axes.slice(0, 2)
-
-  let get-settable-field(element, object, field) = {
-    e.fields(object).at(field, default: e-get(element).at(field))
-  }
-
   let bounds = (left: 0pt, right: width, top: 0pt, bottom: height)
   let update-bounds = update-bounds.with(width: width, height: height)
 
+
+  // Prepare axes for tick generation
+  axes = fill-in-transforms(axes, width, height, it: it)
+  let (xaxis, yaxis) = axes.slice(0, 2)
+
+  // Evaluate ticks, title/legend placement, and plots
   let tickings = axes.map(axis => 
     _axis-generate-ticks(
       axis, 
@@ -544,10 +654,11 @@
   }
 
 
-  if auto-width {
+  // Compute new data-area estimate
+  if type(it.width) == relative {
     width = available-size.width - bounds.right + bounds.left + width
   }
-  if auto-height {
+  if type(it.height) == relative {
     height = available-size.height - bounds.bottom + bounds.top + height
   }
   return (width, height, tickings)
@@ -648,8 +759,6 @@
     // Diagram may have relative/ratio width or height
     if type(it.width) == relative or type(it.height) == relative {
       let attempt-layout = attempt-layout.with(
-        auto-width: type(it.width) == relative,
-        auto-height: type(it.height) == relative,
         available-size: it.size, it: it, axes: axes, e-get: e-get, plots: plots,
         draw-axis: draw-axis
       )
@@ -683,6 +792,7 @@
       }
 
       axes = fill-in-transforms(axes, width, height, it: it)
+
       (it.width, it.height) = (width, height)
 
       if it.aspect-ratio != none {
