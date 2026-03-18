@@ -359,19 +359,19 @@
 
 
 /// Whether to adjust the dimensions to achieve a fixed x/y aspect ratio. 
-#let do-adjust-dimensions-for-aspect-ratio(diagram) = {
+#let _do-adjust-dimensions-for-aspect-ratio(diagram) = {
   diagram.width == auto or diagram.height == auto
 }
 
 /// Whether to adjust the margins to achieve a fixed x/y aspect ratio. 
-#let do-adjust-margins-for-aspect-ratio(diagram) = {
-  not do-adjust-dimensions-for-aspect-ratio(diagram)
+#let _do-adjust-margins-for-aspect-ratio(diagram) = {
+  not _do-adjust-dimensions-for-aspect-ratio(diagram)
 }
 
 
-// Returns the given axes with filled out axis limits and transforms, 
-// given fixed data-area dimensions `width` and `height`. 
-#let fill-in-transforms(
+/// Returns the given axes with filled out axis limits and transforms, 
+/// given fixed data-area dimensions `width` and `height`. 
+#let _fill-in-transforms(
 
   /// Array of all diagram axes. Here, the first two axes are the principle x 
   /// and y axes, respectively. 
@@ -396,7 +396,7 @@
 
   let main-margin = process-margin(it.margin)
 
-  if it.aspect-ratio != none and do-adjust-margins-for-aspect-ratio(it) {
+  if it.aspect-ratio != none and _do-adjust-margins-for-aspect-ratio(it) {
     let (xaxis, yaxis) = axes.slice(0, 2)
 
     let xlim = _axis-compute-limits(xaxis, margin: main-margin, is-independent: true)
@@ -463,10 +463,8 @@
 /// - and at most one of @diagram.width or @diagram.height to be set to `auto`,
 /// otherwise an error is thrown. 
 /// 
-/// Returns the new dimensions. 
-/// 
-/// -> (length, length)
-#let resolve-dimensions-aspect-ratio(
+/// Returns the new dimensions `(length, length)`. 
+#let _resolve-dimensions-aspect-ratio(
 
   /// The principle x-axis. 
   /// -> axis
@@ -546,25 +544,23 @@
 }
 
 
-// When _at least one_ of @diagram.width and @diagram.height is a `relative`, 
-// an iterative approach is needed to determine the dimensions of the data area
-// because width and height can recursively depend on each other due to axes 
-// etc. 
-// 
-// This function does one iteration step by
-// 1. receiving an estimate for the data area dimensions
-// 2. returning a _better_ estimate for the data area dimensions. 
-// 
-// For this, a partial evaluation of the entire diagram is performed, including
-// tick generation, title/legend placement, and bounds-affecting plots 
-// (e.g., `lq.place`). 
-// 
-// 
-// Returns a tuple of the new estimate for the data area dimensions and the 
-// tickings computed. 
-// 
-// -> (length, length, dictionary)
-#let attempt-layout(
+/// When _at least one_ of @diagram.width and @diagram.height is a `relative`, 
+/// an iterative approach is needed to determine the dimensions of the data area
+/// because width and height can recursively depend on each other due to axes 
+/// etc. 
+/// 
+/// This function does one iteration step by
+/// 1. receiving an estimate for the data area dimensions
+/// 2. returning a _better_ estimate for the data area dimensions. 
+/// 
+/// For this, a partial evaluation of the entire diagram is performed, including
+/// tick generation, title/legend placement, and bounds-affecting plots 
+/// (e.g., `lq.place`). 
+/// 
+/// 
+/// Returns a tuple `(length, length, dictionary)` of the new estimate for the data area dimensions and the 
+/// tickings computed. 
+#let _attempt-layout(
 
   /// The previous estimate for the data-area width or `auto`, iff 
   /// @diagram.width is `auto`. 
@@ -591,7 +587,7 @@
   plots: (), 
   
   /// The total size to fill with the diagram, including axes, title, ...!
-  /// -> (length, length)
+  /// -> dictionary
   available-size: (width: 0pt, height: 0pt),
 
   draw-axis: draw-axis,
@@ -604,7 +600,7 @@
 
 
   // First resolve any auto dimensions. After this, width/height are lengths. 
-  (width, height) = resolve-dimensions-aspect-ratio(
+  (width, height) = _resolve-dimensions-aspect-ratio(
     ..axes.slice(0, 2), 
     width: width, height: height, 
     it: it,
@@ -615,7 +611,7 @@
 
 
   // Prepare axes for tick generation
-  axes = fill-in-transforms(axes, width, height, it: it)
+  axes = _fill-in-transforms(axes, width, height, it: it)
   let (xaxis, yaxis) = axes.slice(0, 2)
 
   // Evaluate ticks, title/legend placement, and plots
@@ -758,7 +754,7 @@
     
     // Diagram may have relative/ratio width or height
     if type(it.width) == relative or type(it.height) == relative {
-      let attempt-layout = attempt-layout.with(
+      let attempt-layout = _attempt-layout.with(
         available-size: it.size, it: it, axes: axes, e-get: e-get, plots: plots,
         draw-axis: draw-axis
       )
@@ -791,7 +787,7 @@
         }
       }
 
-      axes = fill-in-transforms(axes, width, height, it: it)
+      axes = _fill-in-transforms(axes, width, height, it: it)
 
       (it.width, it.height) = (width, height)
 
@@ -803,8 +799,8 @@
     } else {
       // Resolving needs to be done before filling in transforms because
       // the aspect ratio may change the dimensions.
-      let (width, height) = resolve-dimensions-aspect-ratio(..axes.slice(0,2), it: it)
-      axes = fill-in-transforms(axes, width, height, it: it)
+      let (width, height) = _resolve-dimensions-aspect-ratio(..axes.slice(0,2), it: it)
+      axes = _fill-in-transforms(axes, width, height, it: it)
       (it.width, it.height) = (width, height)
 
       tickings = axes.map(axis => _axis-generate-ticks(axis, length: if axis.kind == "x" { it.width } else { it.height }))
