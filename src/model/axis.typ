@@ -51,22 +51,24 @@
 /// )
 /// ```
 /// 
-/// Most often, you will want to configure the main $x$ and $y$ axes by 
-/// applying the parameters listed here to @diagram.xaxis and @diagram.yaxis:
-/// ```typ
-/// // Scoped configuration
-/// #show: lq.set-diagram(
-///   yaxis: (exponent: 0),
-///   xaxis: (position: top)
-/// )
-/// 
-/// // Per-diagram configuration
-/// #lq.diagram(
-///   yaxis: (exponent: 0),
-///   xaxis: (position: top),
-///   ..
-/// )
-/// ```
+/// #tip[
+///   Most often, you will want to configure the main $x$ and $y$ axes by 
+///   applying the parameters listed here to @diagram.xaxis and @diagram.yaxis:
+///   ```typ
+///   // Scoped configuration
+///   #show: lq.set-diagram(
+///     yaxis: (exponent: 0),
+///     xaxis: (position: top)
+///   )
+///   
+///   // Per-diagram configuration
+///   #lq.diagram(
+///     yaxis: (exponent: 0),
+///     xaxis: (position: top),
+///     ..
+///   )
+///   ```
+/// ]
 /// 
 /// However, it is also possible to add more axes, please refer to the 
 /// #link("tutorials/axis")[axis tutorial] for more details. 
