@@ -179,3 +179,70 @@
   }
 }
 
+
+
+// Process error inputs of the form as documented in @plot.xerr. 
+#let process-errors(err, n /* basically x.len() */, kind: "x") = {
+
+  if type(err) in (int, float) {
+    err = (p: (err,) * n, m: (err,) * n)
+
+  } else if type(err) == dictionary {
+    assert(
+      "m" in err and "p" in err,
+      message: "Error bar dictionaries must contain both \"p\" and \"m\""
+    )
+    if err.keys().len() != 2 {
+      let key = err.keys().filter(x => x not in ("m", "p")).first()
+      assert(
+        false,
+        message: "Errorbar dictionary contains unexpected key \"" + key + "\", expected \"p\" and \"m\""
+      )
+    }
+
+    if type(err.m) in (int, float) {
+      err.m = (err.m,) * n
+    } else if type(err.m) == array {
+      assert(
+        err.m.len() == n,
+        message: "The length of `" + kind + "err.m` does not match the number of data points"
+      )
+    } else {
+      assert(false, message: "`" + kind + "err.m` expects a float or an array")
+    }
+    if type(err.p) in (int, float) {
+      err.p = (err.p,) * n
+    } else if type(err.p) == array {
+      assert(
+        err.p.len() == n,
+        message: "The length of `" + kind + "err.p` does not match the number of data points"
+      )
+    } else {
+      assert(false, message: "`" + kind + "err.p` expects a float or an array")
+    }
+
+  } else if type(err) == array {
+    assert(
+      err.len() == n, 
+      message: "The length of `" + kind + "err` (" + str(err.len()) + ") does not match the number of data points"
+    )
+
+    err = err.map(e => {
+      if type(e) in (int, float) { (p: e, m: e) }
+      else if type(e) == dictionary { 
+        assert("p" in e and "m" in e, message: "Errorbar dictionaries must contain both \"m\" and \"p\"")
+        e
+      }
+      else { assert(false, message: "Expected a single uncertainty or a dictionary, found " + repr(e))}
+    })
+    err = (p: err.map(e => e.p), m: err.map(e => e.m))
+
+  } else {
+    assert(
+      false, 
+      message: "`" + kind + "err` expects a float, an array, or a dictionary with the keys \"p\" and \"m\"."
+    )
+
+  }
+  err
+}

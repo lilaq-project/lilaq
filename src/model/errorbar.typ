@@ -92,3 +92,24 @@
   )
 )
 
+
+#let generate-xerrorbar(((x, y), p, m), transform: none) = {
+  let (p0, p1) = (transform(x - m, y), transform(x + p, y))
+
+  place(
+    dx: p0.at(0),
+    dy: p0.at(1),
+    box(width: p1.at(0) - p0.at(0), errorbar(kind: "x"))
+  )
+}
+
+#let generate-yerrorbar(((x, y), p, m), transform: none) = {
+  let (p0, p1) = (transform(x, y - m), transform(x, y + p))
+  let (y0, y1) = (p0.at(1), p1.at(1)).sorted()
+
+  place(
+    dx: p1.at(0),
+    dy: y0,
+    box(height: y1 - y0, errorbar(kind: "y"))
+  )
+}
