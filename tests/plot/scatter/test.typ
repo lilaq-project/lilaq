@@ -26,33 +26,38 @@
 #lq.diagram(
   // Manual color
   scatter(
-    range(4), (4,) * 4, 
+    range(4),
+    (4,) * 4,
     color: (red, blue, yellow, orange),
   ),
   // Scalar-based color
   scatter(
-    range(4), (3,) * 4, 
+    range(4),
+    (3,) * 4,
     color: range(4),
   ),
   // Same with different map
   scatter(
-    range(4), (2,) * 4, 
+    range(4),
+    (2,) * 4,
     color: range(4),
-    map: color.map.cividis
+    map: color.map.cividis,
   ),
   // Manual max/min
   scatter(
-    range(4), (1,) * 4, 
+    range(4),
+    (1,) * 4,
     color: range(4),
     max: 2,
     min: 1,
   ),
   // Manual max/min
   scatter(
-    range(4), (0,) * 4, 
+    range(4),
+    (0,) * 4,
     color: range(1, 5),
-    norm: "log"
-  )
+    norm: "log",
+  ),
 )
 
 #pagebreak()
@@ -80,8 +85,15 @@
   ylim: (-.5, 1.5),
   xlim: (-.5, 3.5),
   cycle: (
-    it => { set lq.style(fill: blue); it },
-    it => { set lq.style(fill: gray); set lq.mark(fill: yellow, stroke: red); it},
+    it => {
+      set lq.style(fill: blue)
+      it
+    },
+    it => {
+      set lq.style(fill: gray)
+      set lq.mark(fill: yellow, stroke: red)
+      it
+    },
   ),
   // Plain scatter. Color for fill and stroke is inherited from the cycle
   scatter((0,), (1,)),
@@ -95,19 +107,25 @@
   scatter((0,), (0,), color: (4,)),
   // Color-coded scatter and explicit `stroke: none`
   scatter(
-    (1,), (0,), color: (4,), 
-    stroke: none
+    (1,),
+    (0,),
+    color: (4,),
+    stroke: none,
   ),
   // The stroke is set through the scatter interface
   scatter(
-    (2,), (0,), color: (4,), 
-    stroke: (dash: "dotted", thickness: 2pt)
+    (2,),
+    (0,),
+    color: (4,),
+    stroke: (dash: "dotted", thickness: 2pt),
   ),
   // The stroke set via the scatter interface is merged with the
-  // mark.stroke from the cycle. 
+  // mark.stroke from the cycle.
   scatter(
-    (3,), (0,), color: (4,), 
-    stroke: (dash: "dotted", thickness: 2pt)
+    (3,),
+    (0,),
+    color: (4,),
+    stroke: (dash: "dotted", thickness: 2pt),
   ),
 )
 
@@ -133,24 +151,60 @@
 #lq.diagram(
   // Single absolute alpha
   lq.scatter(
-    (0, 1, 2), (2,) * 3, size: 10pt, 
-    color: blue, alpha: 50%, 
-    label: []
+    (0, 1, 2),
+    (2,) * 3,
+    size: 10pt,
+    color: blue,
+    alpha: 50%,
+    label: [],
   ),
   // Per-point alpha
   lq.scatter(
-    (0, 1, 2), (1,) * 3, size: 10pt, 
-    color: blue, alpha: (50%, 10%, 100%), 
-    label: []
+    (0, 1, 2),
+    (1,) * 3,
+    size: 10pt,
+    color: blue,
+    alpha: (50%, 10%, 100%),
+    label: [],
   ),
   // Color-coding and per-point alpha
   lq.scatter(
-    (0, 1, 2), (0,) * 3, size: 10pt, 
-    alpha: (50%, 50%, 50%), 
-    color: (1,2,3),
-    label: []
+    (0, 1, 2),
+    (0,) * 3,
+    size: 10pt,
+    alpha: (50%, 50%, 50%),
+    color: (1, 2, 3),
+    label: [],
   ),
 )
 // alpha together with `scatter.color: auto` (i.e., color is inherited
-// from the cycle) does not work currently. And I think that's okay. 
+// from the cycle) does not work currently. And I think that's okay.
 
+
+#pagebreak()
+
+
+#lq.diagram(
+  // yaxis: (inverted: true),
+  lq.scatter(
+    (0, 0, 0),
+    (0, 2, 4),
+    xerr: .5,
+    yerr: .2,
+  ),
+  lq.scatter(
+    (2, 2, 2),
+    (0.5, 2.5, 4.5),
+    color: red,
+    mark: "s",
+    xerr: (p: .5, m: .2),
+    yerr: (p: .4, m: .3),
+  ),
+  lq.scatter(
+    (4, 4, 4),
+    (1, 3, 5),
+    color: (2, 4, 6),
+    xerr: (.2, .4, .2),
+    yerr: (.2, .4, .2),
+  ),
+)

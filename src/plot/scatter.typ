@@ -1,12 +1,14 @@
 #import "../process-styles.typ": merge-strokes
 #import "../assertations.typ"
-#import "../logic/process-coordinates.typ": filter-nan-points
+#import "../logic/process-coordinates.typ": process-errors, filter-nan-points
 #import "../logic/sample-colors.typ": sample-colors
 #import "../logic/time.typ"
 #import "../math.typ": minmax
-#import "../style/styling.typ": mark, prepare-mark, _auto, style
+#import "../style/styling.typ": mark, prepare-mark, _auto, style, prepare-path
 #import "../utility.typ": if-auto, match-type, if-none
-
+#import "../logic/limits.typ": plot-lim
+#import "plot.typ": process-errors
+#import "../model/errorbar.typ": errorbar, generate-xerrorbar, generate-yerrorbar
 
 
 #let render-scatter(plot, transform) = {
@@ -45,6 +47,27 @@
     color: if type(plot.color) == array { _auto } else { plot.color },
     stroke: plot.style.stroke
   )
+
+  let plot-err(err, generate-errorbar) = {
+    if err == none { return }
+
+    let (p, m) = err
+    show: if type(plot.color) != array {
+      prepare-path.with(stroke: plot.color)
+    } else {
+      it => it
+    }
+    
+    points.zip(p, m).enumerate().map(((i, ((x, y), p, m))) => {
+      let mark-color = get-mark-color(i)
+      set curve(stroke: mark-color) if mark-color != _auto
+      generate-errorbar(((x, y), p, m), transform: transform)
+    }).join()
+  }
+
+  plot-err(plot.xerr, generate-xerrorbar)
+  plot-err(plot.yerr, generate-yerrorbar)
+  
 
 
   for (i, p) in points.enumerate() {
@@ -146,6 +169,14 @@
   /// The mark to use to mark data points. See @plot.mark. 
   /// -> auto | lq.mark | str
   mark: auto, 
+  
+  /// Optional errors/uncertainties for $x$ coordinates. See @plot.xerr. 
+  /// -> none | array | dictionary
+  xerr: none,
+  
+  /// Optional errors/uncertainties for $y$ coordinates. See @plot.xerr. 
+  /// -> none | array
+  yerr: none,
 
   /// Mark stroke. TODO: need to get rid of it
   /// -> stroke
@@ -200,10 +231,16 @@
       (color, cinfo) = sample-colors(color, map, norm, ignore-nan: false, min: min, max: max)
     }
   }
+  
+  if xerr != none { xerr = process-errors(xerr, x.len(), kind: "x") }
+  if yerr != none { yerr = process-errors(yerr, x.len(), kind: "y") }
+
   (
     cinfo: cinfo,
     x: x,
     y: y,
+    xerr: xerr,
+    yerr: yerr,
     size: size,
     color: color, 
     alpha: alpha,
@@ -214,8 +251,8 @@
       map: map,
     ),
     plot: render-scatter,
-    xlimits: () => minmax(x),
-    ylimits: () => minmax(y),
+    xlimits: () => plot-lim(x, err: xerr),
+    ylimits: () => plot-lim(y, err: yerr),
     datetime: datetime-axes,
     legend: true,
     ignores-cycle: false,

@@ -2,10 +2,10 @@
 #import "../logic/limits.typ": plot-lim
 #import "../process-styles.typ": merge-strokes, merge-fills
 #import "../assertations.typ"
-#import "../logic/process-coordinates.typ": filter-nan-points, stepify
+#import "../logic/process-coordinates.typ": process-errors, filter-nan-points, stepify
 #import "../utility.typ": if-auto
 #import "../style/styling.typ": mark, prepare-mark, prepare-path
-#import "../model/errorbar.typ": errorbar
+#import "../model/errorbar.typ": errorbar, generate-xerrorbar, generate-yerrorbar
 #import "../logic/time.typ"
 #import "@preview/tiptoe:0.4.0"
 
@@ -16,71 +16,6 @@
   return stroke(thickness: base-stroke.thickness, paint: base-stroke.paint)
 }
 
-// Process error inputs of the form as documented in @plot.xerr. 
-#let process-errors(err, n /* basically x.len() */, kind: "x") = {
-
-  if type(err) in (int, float) {
-    err = (p: (err,) * n, m: (err,) * n)
-
-  } else if type(err) == dictionary {
-    assert(
-      "m" in err and "p" in err,
-      message: "Error bar dictionaries must contain both \"p\" and \"m\""
-    )
-    if err.keys().len() != 2 {
-      let key = err.keys().filter(x => x not in ("m", "p")).first()
-      assert(
-        false,
-        message: "Errorbar dictionary contains unexpected key \"" + key + "\", expected \"p\" and \"m\""
-      )
-    }
-
-    if type(err.m) in (int, float) {
-      err.m = (err.m,) * n
-    } else if type(err.m) == array {
-      assert(
-        err.m.len() == n,
-        message: "The length of `" + kind + "err.m` does not match the number of data points"
-      )
-    } else {
-      assert(false, message: "`" + kind + "err.m` expects a float or an array")
-    }
-    if type(err.p) in (int, float) {
-      err.p = (err.p,) * n
-    } else if type(err.p) == array {
-      assert(
-        err.p.len() == n,
-        message: "The length of `" + kind + "err.p` does not match the number of data points"
-      )
-    } else {
-      assert(false, message: "`" + kind + "err.p` expects a float or an array")
-    }
-
-  } else if type(err) == array {
-    assert(
-      err.len() == n, 
-      message: "The length of `" + kind + "err` (" + str(err.len()) + ") does not match the number of data points"
-    )
-
-    err = err.map(e => {
-      if type(e) in (int, float) { (p: e, m: e) }
-      else if type(e) == dictionary { 
-        assert("p" in e and "m" in e, message: "Errorbar dictionaries must contain both \"m\" and \"p\"")
-        e
-      }
-      else { assert(false, message: "Expected a single uncertainty or a dictionary, found " + repr(e))}
-    })
-    err = (p: err.map(e => e.p), m: err.map(e => e.m))
-
-  } else {
-    assert(
-      false, 
-      message: "`" + kind + "err` expects a float, an array, or a dictionary with the keys \"p\" and \"m\"."
-    )
-
-  }
-  err
-}
 
 
 #let render-plot(plot, transform) = {
@@ -148,12 +83,6 @@
 
 
 
-  let errorbar-stroke = prepare-path.with(
-    stroke: merge-strokes(
-      ..((dash: "solid"), plot.style.stroke, plot.style.color).filter(x => x != none)
-    )
-  )
-
 
   let filter = {
     let every = plot.mark.every
@@ -179,48 +108,29 @@
   if filter != none { points = filter(points) }
   
 
-  if plot.xerr != none {
-    show: errorbar-stroke
+  let plot-err(err, generate-errorbar) = {
+    if err == none { return }
 
-    let (p, m) = plot.xerr
+
+    show: prepare-path.with(
+      stroke: merge-strokes(
+        ..((dash: "solid"), plot.style.stroke, plot.style.color).filter(x => x != none)
+      )
+    )
+
+    let (p, m) = err
     if filter != none { 
       p = filter(p)
       m = filter(m)
     }
     
-    points.zip(p, m).map((((x, y), p, m)) => {
-      let (p0, p1) = (transform(x - m, y), transform(x + p, y))
-
-      place(
-        dx: p0.at(0),
-        dy: p0.at(1),
-        box(width: p1.at(0) - p0.at(0), errorbar(kind: "x"))
-      )
-      
-    }).join()
+    points.zip(p, m)
+      .map(generate-errorbar.with(transform: transform))
+      .join()
   }
-  
-  if plot.yerr != none {
-    show: errorbar-stroke
-    
-    let (p, m) = plot.yerr
-    if filter != none { 
-      p = filter(p)
-      m = filter(m)
-    }
 
-    points.zip(p, m).map((((x, y), p, m)) => {
-      let (p0, p1) = (transform(x, y - m), transform(x, y + p))
-      let (y0, y1) = (p0.at(1), p1.at(1)).sorted()
-
-      place(
-        dx: p1.at(0),
-        dy: y0,
-        box(height: y1 - y0, errorbar(kind: "y"))
-      )
-      
-    }).join()
-  }
+  plot-err(plot.xerr, generate-xerrorbar)
+  plot-err(plot.yerr, generate-yerrorbar)
   
 
   
