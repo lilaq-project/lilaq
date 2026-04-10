@@ -118,8 +118,10 @@
   /// -> array
   x, 
   
-  /// An array of $y$ coordinates. The number of $x$ and $y$ coordinates must match. 
-  /// -> array
+  /// Specifies either an array of $y$ coordinates or a function that takes an
+  /// `x` value and returns a corresponding `y` coordinate. The number of $x$ 
+  /// and $y$ coordinates must match. 
+  /// -> array | function
   y, 
   
   /// How to scale the marks. The area of the marks scales proportionally 
@@ -182,7 +184,7 @@
   /// -> stroke
   stroke: auto,
 
-  /// The fill opacity. TODO: maybe get rid of it, there is already color. 
+  /// The fill opacity. 
   /// -> ratio | array
   alpha: 100%,
   
@@ -200,6 +202,10 @@
   z-index: 2,
   
 ) = {
+  if type(y) == function {
+    y = x.map(y)
+  }
+
   let datetime-axes = (:)
   if type(x.at(0, default: 0)) == datetime {
     x = time.to-seconds(..x)

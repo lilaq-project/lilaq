@@ -1,3 +1,6 @@
+// The algorithm implemented here is superseded by the Rust implementation in 
+// https://github.com/Mc-Zen/komet. 
+
 #import "../math.typ": vec
 
 /// Computes the orientation of a polygon, returns `left` if the polygon is 
