@@ -62,7 +62,8 @@
     ), 
     base: base, 
     digits: digits, 
-    omit-unity-mantissa: omit-unit-mantissa
+    omit-unity-mantissa: omit-unit-mantissa,
+    round: (precision: none),
   )
 }
 

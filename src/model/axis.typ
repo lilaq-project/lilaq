@@ -918,14 +918,14 @@
 
   let attachment = none
   if type(offset) in (int, float) and offset != 0 {
-    attachment += zero.num(positive-sign: true, offset)
+    attachment += zero.num(positive-sign: true, offset, round: (precision: none))
   } else if offset not in (0, auto) {
     attachment += offset
   }
   if type(exp) == int and exp != 0 {
     attachment += {
       show "X": none
-      zero.num("Xe" + str(exp))
+      zero.num("Xe" + str(exp), round: (precision: none))
     }
   }
 
