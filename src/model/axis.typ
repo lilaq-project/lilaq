@@ -144,20 +144,25 @@
   /// -> auto | bool | dictionary
   mirror: auto,
 
-  /// Instead of using the tick locator, specifies the tick locations explicitly
-  /// and optionally the tick labels. This can be an array with just the tick
-  /// location or tuples of tick location and label, or a dictionary with the 
-  /// keys `ticks` and `labels`, containing arrays of equal length. When `ticks` 
-  /// is `none`, no ticks are displayed. If it is `auto`, the `tick-locator` is 
-  /// used. 
+  /// If this is `auto`, @axis.locate-ticks is used for determining ticks on 
+  /// the axis, if it is `none`, no ticks are displayed. 
+  /// 
+  /// Otherwise, instead of using a tick locator, this parameter can be used to 
+  /// specify tick locations manually (and optionally also the tick labels) by
+  /// passing
+  /// - an `array` with just the tick location or tuples of tick location and label, 
+  /// - or a `dictionary` with the keys `ticks` and `labels`, containing arrays
+  ///   of equal length. 
   /// 
   /// Check out the #link("tutorials/ticks")[tutorial on ticks] for tips on how 
   /// to work with ticks. 
   /// -> auto | array | dictionary | none
   ticks: auto, 
 
-  /// Instead of using the tick locator, specifies the tick positions explicitly
-  /// and optionally the tick labels.
+  /// If this is `auto`, @axis.locate-subticks is used for determiningsub ticks 
+  /// on the axis, if it is `none`, no subticks are displayed. When the linear 
+  /// tick locator is used, an integer can be passed, specifying the number of 
+  /// subticks to distribute between consecutive ticks. 
   /// 
   /// Also see the #link("tutorials/ticks")[tutorial on ticks]. 
   /// -> auto | none | int
@@ -387,16 +392,22 @@
       default: () => tick-format.naive
     )
   }
+  if locate-subticks == auto {
+    locate-subticks = if-none(scale.locate-subticks, none)
+  }
   if subticks == none {
     locate-subticks = none
-  } else if type(subticks) == int {
+  } else if type(subticks) == int { 
+    assert(
+      // this check does not account for aliases like `tick-locate.linear.with(..)` but it's the best we can do
+      locate-ticks == tick-locate.linear,
+      message: "Specifying the number of subticks through an integer is only supported for linear scales"
+    )
     locate-subticks = tick-locate.subticks-linear.with(num: subticks)
   } else if subticks != auto {
     assert(false, message: "Unsupported argument type `" + str(type(subticks)) + "` for parameter `subticks`")
   }
-  if locate-subticks == auto {
-    locate-subticks = if-none(scale.locate-subticks, none)
-  }
+
   let is-independent = functions == auto
   if functions == auto { 
     functions = (x => x, x => x) 
