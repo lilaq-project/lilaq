@@ -254,10 +254,11 @@
   plots, cycle, width, height, axes, only-bounds: false
 ) = {
   let (xaxis, yaxis) = axes.slice(0, 2)
-
+  
+  let clamp(a, min, max) = calc.min(max, calc.max(a, min))
   let transform(x, y) = (
-    (xaxis.transform)(x), 
-    (yaxis.transform)(y), 
+    clamp((xaxis.transform)(x), -width*1e5, width*1e5), 
+    clamp((yaxis.transform)(y), -height*1e5, height*1e5), 
   )
   cycle = process-cycles-arg(cycle)
 
@@ -274,9 +275,15 @@
     if type(plot) == dictionary and "axis-id" in plot {
       let axis = axes.at(plot.axis-id + 2)
       transform = if axis.kind == "x" {
-        (x, y) => ((axis.transform)(x), (yaxis.transform)(y))
+        (x, y) => (
+          clamp((axis.transform)(x), -width*1e5, width*1e5), 
+          clamp((yaxis.transform)(y), -height*1e5, height*1e5), 
+        )
       } else {
-        (x, y) => ((xaxis.transform)(x), (axis.transform)(y))
+        (x, y) => (
+          clamp((xaxis.transform)(x), -width*1e5, width*1e5), 
+          clamp((axis.transform)(y), -height*1e5, height*1e5), 
+        )
       }
       plot = plot.plot
     }
