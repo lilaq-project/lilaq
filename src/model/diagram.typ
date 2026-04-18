@@ -260,7 +260,6 @@
     clamp((xaxis.transform)(x), -width*1e5, width*1e5), 
     clamp((yaxis.transform)(y), -height*1e5, height*1e5), 
   )
-  // let transform(x, y) = ((xaxis.transform)(x),(yaxis.transform)(y))
   cycle = process-cycles-arg(cycle)
 
   let update-bounds = update-bounds.with(width: width, height: height)
