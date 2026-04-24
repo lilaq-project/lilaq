@@ -251,7 +251,7 @@
 
 
 #let generate-plots(
-  plots, cycle, width, height, axes, only-bounds: false
+  plots, cycle, width, height, axes, only-bounds: false, reveal: auto
 ) = {
   let (xaxis, yaxis) = axes.slice(0, 2)
   
@@ -268,7 +268,10 @@
   let artists = ()
   let legend-entries = ()
   let cycle-index = 0
+  if reveal == auto { reveal = i => true }
+  else if type(reveal) == int { reveal = i => i < reveal }
 
+  let i = 0
   for plot in plots {
     let transform = transform
 
@@ -317,6 +320,7 @@
           box(width: width, height: height, clip: true, plotted-plot)
         )
       }
+      if not reveal(i) { plotted-plot = none }
       artists.push((content: plotted-plot, z: plot.at("z-index", default: 2)))
     }
 
@@ -331,11 +335,17 @@
         show: cycle-style
         (plot.plot)(plot, legend-trafo)
       }
+      let label = plot.label
+      if not reveal(i) {
+        label = hide(label)
+        handle = hide(handle)
+      }
       legend-entries.push((
         box(width: 2em, height: .7em, handle),
-        plot.label
+        label
       ))
     }
+    i += 1
   }
 
 
@@ -842,7 +852,7 @@
 
       // PLOTS
       let (legend-entries, artists: plot-artists, bounds: plot-bounds) = generate-plots(
-        plots, it.cycle, it.width, it.height, 
+        plots, it.cycle, it.width, it.height, reveal: it.reveal,
         axes
       )
       artists += plot-artists
@@ -982,6 +992,7 @@
     e.field("cycle", e.types.wrap(e.types.array(e.types.union(function, color, dictionary)), fold: none), default: petroff10),
     e.field("fill", e.types.option(e.types.paint), default: none),
     e.field("bounds", e.types.union("strict", "relaxed", "data-area"), default: "strict"),
+    e.field("reveal", e.types.union(int, function, auto), default: auto),
   ),
 
   parse-args: (default-parser, fields: none, typecheck: none) => (args, include-required: false) => {
