@@ -194,6 +194,16 @@
   /// -> "relaxed" | "strict" | "data-area"
   bounds: "strict",
 
+  /// Whether to reveal only a subset of the plots. This can be used for 
+  /// example in presentations to introduce plots one by one. This can be
+  /// - `auto` to reveal all plots,
+  /// - an `int` to reveal only the first n plots, or
+  /// - a `function` that receives the plot index and returns a boolean 
+  ///   indicating whether to reveal the plot or not. 
+  /// 
+  /// -> auto | int | function
+  reveal: auto,
+
   /// Plot objects like @plot, @bar, @scatter, @contour etc. and additional 
   /// @axis objects. 
   /// -> any
