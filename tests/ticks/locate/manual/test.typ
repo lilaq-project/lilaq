@@ -79,3 +79,33 @@
     mode: "time"
   )
 )
+
+#assert.eq(
+  lq.tick-locate.manual(
+    2, 0,
+    ticks: (
+      (0, "A"),
+      (1, "B"),
+      (2, "C"),
+    )
+  ), 
+  (
+    ticks: (0, 1, 2),
+    labels: ("A", "B", "C"),
+  )
+)
+
+
+#assert.eq(
+  lq.tick-locate.manual(
+    2, 0,
+    ticks: (
+      (3, "A"),
+      (4, "B"),
+    )
+  ), 
+  (
+    ticks: (()),
+    labels: (()),
+  )
+)
