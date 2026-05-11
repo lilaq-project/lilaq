@@ -138,6 +138,10 @@
   ..args
 
 ) = {
+  if x1 < x0 {
+    (x1, x0) = (x0, x1)
+  }
+
   if type(ticks.at(0, default: 0)) == array {
     
     let result = (
