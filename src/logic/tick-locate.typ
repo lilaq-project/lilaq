@@ -157,16 +157,13 @@
       .zip(result.labels)
       .filter(((x, label)) => x0 <= x and x <= x1)
 
+    if filtered-ticks.len() == 0 {
+      return (ticks: (), labels: ())
+    }
 
     (result.ticks, result.labels) = array.zip(..filtered-ticks)
 
     result
-
-    // let filtered-ticks = ticks.filter(((x, label)) => x0 <= x and x <= x1)
-    // (
-    //   ticks: filtered-ticks.map(x => x.at(0)), 
-    //   labels: filtered-ticks.map(x => x.at(1))
-    // )
   } else {
     let result = (:)
     if type(ticks.at(0, default: 0)) == datetime {
