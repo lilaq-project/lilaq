@@ -74,8 +74,8 @@
 #show: lq.show_(lq.tick-label.with(kind: "x", sub: true), rotate.with(-90deg, reflow: true))
 
 #lq.diagram(
-  width: 3cm, 
-  height: 2cm, 
+  width: 3cm,
+  height: 2cm,
   grid: none,
   xlim: (-1, 1.1),
   ylim: (1, 3.2),
@@ -88,3 +88,14 @@
     subticks: 1
   ),
 )
+
+#pagebreak()
+
+
+// Setting stroke to none hides tick marks while keeping tick labels visible
+
+#{
+  show: lq.set-tick(stroke: none)
+
+  lq.diagram(width: 3cm, height: 2cm, grid: none)
+}
