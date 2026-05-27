@@ -780,7 +780,6 @@
   let outset = tick-state.outset * factor
   let inset = tick-state.inset * factor
   let shorten-sub = tick-state.shorten-sub
-  let length = inset + outset
   let angle = if align in (top, bottom) { 90deg } else { 0deg }
 
   let tick-stroke = merge-strokes(
@@ -789,6 +788,7 @@
     (cap: "butt"),
     e-get(spine).stroke,
   )
+  let length = if tick-stroke != none {inset + outset} else {0pt}
   let make-tick
   let tline = if tick-stroke != none { line(length: length, angle: angle, stroke: tick-stroke) } else { [] }
 
