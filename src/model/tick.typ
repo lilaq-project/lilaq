@@ -109,12 +109,13 @@
   display: it => e.get(e-get => {
     let angle = if it.align in (top, bottom) { 90deg } else { 0deg }
     let factor = if it.sub { 1 - (it.shorten-sub / 100%) } else { 1 }
-    let outset = it.outset * factor
     let stroke = it.stroke
     if stroke == auto {
       stroke = e-get(spine).stroke
     }
-    let length = (it.inset + it.outset) * factor
+    let outset = if tick-stroke != none {it.outset * factor} else {0pt}
+    let inset = if tick-stroke != none {it.inset * factor} else {0pt}
+    let length = outset + inset
 
     let label = it.label
     if e.eid(label) != e.eid(tick-label) {

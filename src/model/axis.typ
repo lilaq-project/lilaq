@@ -777,9 +777,7 @@
   let tick-state = e-get(lq-tick)
   let pad = tick-state.pad
   let factor = if sub { 1 - (tick-state.shorten-sub / 100%) } else { 1 }
-  let outset = tick-state.outset * factor
-  let inset = tick-state.inset * factor
-  let shorten-sub = tick-state.shorten-sub
+    let shorten-sub = tick-state.shorten-sub
   let angle = if align in (top, bottom) { 90deg } else { 0deg }
 
   let tick-stroke = merge-strokes(
@@ -788,7 +786,9 @@
     (cap: "butt"),
     e-get(spine).stroke,
   )
-  let length = if tick-stroke != none {inset + outset} else {0pt}
+  let outset = if tick-stroke != none {tick-state.outset * factor} else {0pt}
+  let inset = if tick-stroke != none {tick-state.inset * factor} else {0pt}
+  let length = inset + outset
   let make-tick
   let tline = if tick-stroke != none { line(length: length, angle: angle, stroke: tick-stroke) } else { none }
 
