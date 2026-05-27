@@ -121,7 +121,7 @@
       label = tick-label(label, sub: it.sub)
     }
 
-    let tline = if stroke != none { line(length: length, angle: angle, stroke: stroke) } else { [] }
+    let tline = if stroke != none { line(length: length, angle: angle, stroke: stroke) } else { none }
 
     if it.align == right {
       move(dx: -outset, {

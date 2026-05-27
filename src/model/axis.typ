@@ -790,7 +790,7 @@
   )
   let length = if tick-stroke != none {inset + outset} else {0pt}
   let make-tick
-  let tline = if tick-stroke != none { line(length: length, angle: angle, stroke: tick-stroke) } else { [] }
+  let tline = if tick-stroke != none { line(length: length, angle: angle, stroke: tick-stroke) } else { none }
 
   if align == right {
     make-tick = (label, loc) => place(dx: -outset, dy: loc, {tline + place(dx: -length - pad, right + horizon, label)})
