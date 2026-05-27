@@ -783,17 +783,14 @@
   let length = inset + outset
   let angle = if align in (top, bottom) { 90deg } else { 0deg }
 
-  let tick-stroke = if-none(
-    merge-strokes(
-      tick-state.stroke, 
-      axis.stroke, (cap: "butt"), 
-      e-get(spine).stroke
-    ), 
-    0.5pt  // can be none when spine.stroke is none
-  ) 
-
-  let tline = line(length: length, angle: angle, stroke: tick-stroke)
+  let tick-stroke = merge-strokes(
+    tick-state.stroke,
+    axis.stroke,
+    (cap: "butt"),
+    e-get(spine).stroke,
+  )
   let make-tick
+  let tline = if tick-stroke != none { line(length: length, angle: angle, stroke: tick-stroke) } else { [] }
 
   if align == right {
     make-tick = (label, loc) => place(dx: -outset, dy: loc, {tline + place(dx: -length - pad, right + horizon, label)})
