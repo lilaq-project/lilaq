@@ -780,7 +780,7 @@
   let shorten-sub = tick-state.shorten-sub
   let angle = if align in (top, bottom) { 90deg } else { 0deg }
 
-  let axis-stroke = merge-strokes(e-get(spine).stroke, axis.stroke)
+  let axis-stroke = merge-strokes(axis.stroke, e-get(spine).stroke)
   let tick-stroke = merge-strokes(
     tick-state.stroke,
     // Default to butt cap to avoid visual artifacts and protrusion where ticks meet the spine.

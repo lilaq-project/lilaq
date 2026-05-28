@@ -113,8 +113,8 @@
     if stroke == auto {
       stroke = e-get(spine).stroke
     }
-    let outset = if tick-stroke != none {it.outset * factor} else {0pt}
-    let inset = if tick-stroke != none {it.inset * factor} else {0pt}
+    let outset = if stroke != none {it.outset * factor} else {0pt}
+    let inset = if stroke != none {it.inset * factor} else {0pt}
     let length = outset + inset
 
     let label = it.label
