@@ -65,9 +65,9 @@
   /// -> "x" | "y"
   kind: "x",
 
-  /// How to stroke the tick mark. If set to `auto`, the stroke is inherited 
-  /// the axis spine. 
-  /// -> auto | stroke
+  /// How to stroke the tick mark. If set to `auto`, the stroke is inherited
+  /// from the axis spine.
+  /// -> auto | none | stroke
   stroke: auto,
 
   /// How much to shorten sub ticks compared to regular ticks. 
@@ -109,22 +109,20 @@
   display: it => e.get(e-get => {
     let angle = if it.align in (top, bottom) { 90deg } else { 0deg }
     let factor = if it.sub { 1 - (it.shorten-sub / 100%) } else { 1 }
-    let outset = it.outset * factor
-    let length = (it.inset + it.outset) * factor
-    
     let stroke = it.stroke
-    if stroke == auto { 
-      stroke = e-get(spine).stroke 
+    if stroke == auto {
+      stroke = e-get(spine).stroke
     }
+    let outset = if stroke != none {it.outset * factor} else {0pt}
+    let inset = if stroke != none {it.inset * factor} else {0pt}
+    let length = outset + inset
 
     let label = it.label
     if e.eid(label) != e.eid(tick-label) {
       label = tick-label(label, sub: it.sub)
     }
 
-    let tline = line(length: length, angle: angle, stroke: stroke)
-
-
+    let tline = if stroke != none { line(length: length, angle: angle, stroke: stroke) } else { none }
 
     if it.align == right {
       move(dx: -outset, {
@@ -157,7 +155,7 @@
     ),
     e.field("label", e.types.any, default: none),
     e.field("align", e.types.wrap(alignment, fold: none), default: right),
-    e.field("stroke", e.types.smart(stroke), default: auto),
+    e.field("stroke", e.types.smart(e.types.option(stroke)), default: auto),
     e.field("shorten-sub", ratio, default: 50%),
     e.field("pad", length, default: 0.5em),
     e.field("inset", length, default: 3pt),

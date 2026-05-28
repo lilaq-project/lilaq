@@ -777,23 +777,21 @@
   let tick-state = e-get(lq-tick)
   let pad = tick-state.pad
   let factor = if sub { 1 - (tick-state.shorten-sub / 100%) } else { 1 }
-  let outset = tick-state.outset * factor
-  let inset = tick-state.inset * factor
   let shorten-sub = tick-state.shorten-sub
-  let length = inset + outset
   let angle = if align in (top, bottom) { 90deg } else { 0deg }
 
-  let tick-stroke = if-none(
-    merge-strokes(
-      tick-state.stroke, 
-      axis.stroke, (cap: "butt"), 
-      e-get(spine).stroke
-    ), 
-    0.5pt  // can be none when spine.stroke is none
-  ) 
-
-  let tline = line(length: length, angle: angle, stroke: tick-stroke)
+  let axis-stroke = merge-strokes(axis.stroke, e-get(spine).stroke)
+  let tick-stroke = merge-strokes(
+    tick-state.stroke,
+    // Default to butt cap to avoid visual artifacts and protrusion where ticks meet the spine.
+    if axis-stroke != none {(cap: "butt")},
+    axis-stroke,
+  )
+  let outset = if tick-stroke != none {tick-state.outset * factor} else {0pt}
+  let inset = if tick-stroke != none {tick-state.inset * factor} else {0pt}
+  let length = inset + outset
   let make-tick
+  let tline = if tick-stroke != none { line(length: length, angle: angle, stroke: tick-stroke) } else { none }
 
   if align == right {
     make-tick = (label, loc) => place(dx: -outset, dy: loc, {tline + place(dx: -length - pad, right + horizon, label)})
