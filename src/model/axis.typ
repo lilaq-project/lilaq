@@ -971,6 +971,7 @@
   axis,
   tick-info,
   orthogonal-axis-transform: none,
+  orthogonal-axis-length: none,
   e-get: none,
   bounds-mode: "relaxed",
   axes-count: (x: 1, y: 1),
@@ -1101,11 +1102,21 @@
 
   let orthogonal-offset = axis.orthogonal-offset
   if type(orthogonal-offset) in (int, float) {
-    orthogonal-offset = orthogonal-axis-transform(orthogonal-offset)
+    orthogonal-offset = calc.max(
+      calc.min(
+        orthogonal-axis-transform(orthogonal-offset), 
+        orthogonal-axis-length
+      ),
+      0pt
+    )
+
+    let i = (axis.kind, orthogonal-offset)
     
     if axis.position in (bottom,  right) {
       orthogonal-offset -= 100%
     }
+
+
   }
   if axis.kind == "x" {
     orthogonal-offset = (0pt, orthogonal-offset)
