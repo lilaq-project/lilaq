@@ -59,3 +59,25 @@
 
 
 #test-grid
+
+
+#pagebreak()
+
+
+// clamping of coordinate position
+
+#grid(
+  row-gutter: 10pt,
+  lq.diagram(
+    xlim: (0, 1),
+    ylim: (0, 1),
+    yaxis: (position: -1),
+    xaxis: (position: -1)
+  ),
+  lq.diagram(
+    xlim: (0, 1),
+    ylim: (0, 1),
+    yaxis: (position: 2),
+    xaxis: (position: 2)
+  ),
+)
