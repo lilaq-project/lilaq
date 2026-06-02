@@ -700,6 +700,7 @@
   set math.equation(numbering: none)
   set curve(stroke: .7pt)
   set line(stroke: .7pt)
+  set block(width: auto, height: auto, inset: 0pt)
 
 
 
