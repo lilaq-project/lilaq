@@ -138,6 +138,50 @@
 
 ) = linspace(start, end, num: num, include-end: include-end).map(x => calc.pow(base, x))
 
+#let geomspace(
+
+  /// Start of the range.
+  /// -> int | float
+  start,
+
+  /// End of the range.
+  /// -> int | float
+  end,
+
+  /// Number of evenly-spaced values to produce. 
+  /// -> int
+  num: 50,
+
+  /// Whether to include the end of the range. If `true`, samples are taken for
+  /// the closed interval `[start, end]`. Otherwise, the last point is omitted. 
+  /// -> bool
+  include-end: true,
+
+) = {
+  // This algorithm mirrors the official numpy implementation
+  assert(num >= 0, message: "geomspace: num must be non-negative")
+  
+  if num == 0 { return () }
+  if num == 1 { return (start,) }
+
+  let denom = num - int(include-end)
+  
+  // transformation to log-space
+  let log-start = calc.ln(start)
+  let log-end = calc.ln(end)
+  let log-step = (log-end - log-start) / denom
+
+  range(0, num).map(v => {
+    if v == 0 {
+      float(start)
+    } else if include-end and v == num - 1 {
+      float(end)
+    } else {
+      // backtransform to linear space
+      calc.exp(log-start + log-step * v)
+    }
+  })
+}
 
 /// Generates an array of numbers spaced by `step` in the interval `[start, end)`. 
 /// -> array
