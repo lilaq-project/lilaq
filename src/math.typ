@@ -76,7 +76,7 @@
 
 
 
-/// Generates an array of evenly-spaced numbers in the interval `[start, end)` or `[start, end]`. 
+/// Generates an array of evenly-spaced numbers in the interval `[start, end)` or ` [start, end]`. 
 /// -> array
 #let linspace(
   
@@ -106,7 +106,7 @@
 }
 
 
-/// Generates an array of logarithmically-spaced numbers in the interval `[base^start, base^end)` or `[base^start, base^end]`.
+/// Generates an array of logarithmically-spaced numbers in the interval `[base^start, base^end)` or ` [base^start, base^end]`.
 /// Useful for displaying functions on a log-scaled diagram. 
 /// ```typ
 /// #lq.logspace(-4, 4, num: 8, include-end: false)
@@ -138,6 +138,68 @@
 
 ) = linspace(start, end, num: num, include-end: include-end).map(x => calc.pow(base, x))
 
+/// Generates an array of numbers spaced evenly on a log scale (geometric progression) in the interval `[start, end)` or ` [start, end]`.
+/// Unlike `logspace`, the endpoints are specified directly rather than as exponents. 
+/// ```typ
+/// #lq.geomspace(1, 1000, num: 4)
+/// ```
+/// This returns values from 1 to 1000: `(1.0, 10.0, 100.0, 1000.0)`.
+/// -> array
+#let geomspace(
+
+  /// Start of the range.
+  /// -> int | float
+  start,
+
+  /// End of the range.
+  /// -> int | float
+  end,
+
+  /// Number of values with evenly-spaced logarithms.
+  /// -> int
+  num: 50,
+
+  /// Whether to include the end of the range. If `true`, samples are taken for
+  /// the closed interval `[start, end]`. Otherwise, the last point is omitted. 
+  /// -> bool
+  include-end: true,
+
+) = {
+  // This algorithm mirrors the official numpy implementation
+  assert(num >= 0, message: "geomspace: num must be non-negative")
+  assert(
+    (start > 0 and end > 0) or (start < 0 and end < 0),
+    message: "geomspace: start and end must have the same sign and must not be zero",
+  )
+  
+  if num == 0 { return () }
+  if num == 1 { return (start,) }
+  
+  let is-negative = start < 0
+  let abs-start = calc.abs(start)
+  let abs-end = calc.abs(end)
+  
+  let denom = num - int(include-end)
+  
+  // transformation to log-space
+  let log-start = calc.log(abs-start)
+  let log-end = calc.log(abs-end)
+  let log-step = (log-end - log-start) / denom
+  
+  range(0, num).map(v => {
+    let val = if v == 0 {
+      float(abs-start)
+    } else if include-end and v == num - 1 {
+      float(abs-end)
+    } else {
+      // backtransform to linear space
+      calc.pow(10.0, log-start + log-step * v)
+    }
+    
+    // restore sign
+    if is-negative { -val } else { val }
+  })
+}
 
 /// Generates an array of numbers spaced by `step` in the interval `[start, end)`. 
 /// -> array

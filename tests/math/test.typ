@@ -26,6 +26,24 @@
 #assert.eq(linspace(-2.3, 1, num: 1, include-end: false), (-2.3, ))
 #assert.eq(logspace(-1, 1, num: 1), (0.1,))
 #assert.eq(logspace(-1, 1, num: 1, include-end: false), (0.1,))
+#assert.eq(geomspace(1, 2, num: 0), ())
+#assert.eq(geomspace(1, 2, num: 1), (1,))
+
+// Close equal for floating point equality checks
+#let assert-close-eq(a, b, tol: 1e-8) = {
+  assert(
+    a.len() == b.len(),
+    message: ("Test failed: Arrays have different lengths: " + str(a.len())) + " != " + str(b.len()),
+  )
+  assert(
+    a.zip(b).all(((a, b)) => calc.abs(a - b) <= tol),
+    message: "Test failed: Non matching arrays: ("
+      + a.map(str).join(", ")
+      + ") not approximately equal to ("
+      + b.map(str).join(", ")
+      + ")",
+  )
+}
 
 // Normal operation
 #assert.eq(linspace(0, 1, num: 2), (0, 1))
@@ -35,6 +53,13 @@
 #assert.eq(linspace(0, 1, num: 5), (0, .25, .5, .75, 1))
 #assert.eq(logspace(0, 1, num: 2), (1, 10))
 #assert.eq(logspace(0, 2, num: 2, include-end: false), (1, 10))
+#assert-close-eq(geomspace(1, 1000, num: 2), (1., 1000.))
+#assert-close-eq(geomspace(1, 100, num: 3), (1., 10., 100.))
+#assert-close-eq(geomspace(10.5, 1050, num: 3), (10.5, 105., 1050.))
+#assert-close-eq(geomspace(-10.5, -1050, num: 3), (-10.5, -105., -1050.))
+#assert-close-eq(geomspace(1, 100, num: 2, include-end: false), (1., 10.))
+#assert-close-eq(geomspace(1, 1000, num: 2), (1., 1000.))
+#assert-close-eq(geomspace(1, 1000000, num: 7), (1., 10., 100., 1000., 10000., 100000., 1000000.))
 
 // Inverse range
 #assert.eq(linspace(1, 0, num: 2), (1, 0))
@@ -42,6 +67,8 @@
 #assert.eq(linspace(100, 0, num: 2, include-end: false), (100, 50))
 #assert.eq(logspace(1, 0, num: 2), (10.0, 1.0))
 #assert.eq(logspace(-2, 0, num: 2, include-end: false), (0.01, 0.1))
+#assert-close-eq(geomspace(100,1,num:3), (100.,10.,1.))
+#assert-close-eq(geomspace(100, 1, num:2, include-end: false), (100., 10.))
 
 #assert.eq(arange(0, 1), (0,))
 #assert.eq(arange(0, 2), (0,1))
