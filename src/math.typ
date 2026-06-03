@@ -76,7 +76,7 @@
 
 
 
-/// Generates an array of evenly-spaced numbers in the interval `[start, end)` or `[start, end]`. 
+/// Generates an array of evenly-spaced numbers in the interval `[start, end)` or ` [start, end]`. 
 /// -> array
 #let linspace(
   
@@ -106,7 +106,7 @@
 }
 
 
-/// Generates an array of logarithmically-spaced numbers in the interval `[base^start, base^end)` or `[base^start, base^end]`.
+/// Generates an array of logarithmically-spaced numbers in the interval `[base^start, base^end)` or ` [base^start, base^end]`.
 /// Useful for displaying functions on a log-scaled diagram. 
 /// ```typ
 /// #lq.logspace(-4, 4, num: 8, include-end: false)
@@ -138,6 +138,13 @@
 
 ) = linspace(start, end, num: num, include-end: include-end).map(x => calc.pow(base, x))
 
+/// Generates an array of numbers spaced evenly on a log scale (geometric progression) in the interval `[start, end)` or ` [start, end]`.
+/// Unlike `logspace`, the endpoints are specified directly rather than as exponents. 
+/// ```typ
+/// #lq.geomspace(1, 1000, num: 4)
+/// ```
+/// This returns values from 1 to 1000: `(1.0, 10.0, 100.0, 1000.0)`.
+/// -> array
 #let geomspace(
 
   /// Start of the range.
@@ -148,7 +155,7 @@
   /// -> int | float
   end,
 
-  /// Number of evenly-spaced values to produce. 
+  /// Number of values with evenly-spaced logarithms.
   /// -> int
   num: 50,
 
