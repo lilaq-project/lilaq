@@ -160,26 +160,37 @@
 ) = {
   // This algorithm mirrors the official numpy implementation
   assert(num >= 0, message: "geomspace: num must be non-negative")
+  assert(
+    (start > 0 and end > 0) or (start < 0 and end < 0),
+    message: "geomspace: start and end must have the same sign and must not be zero",
+  )
   
   if num == 0 { return () }
   if num == 1 { return (start,) }
-
+  
+  let is-negative = start < 0
+  let abs-start = calc.abs(start)
+  let abs-end = calc.abs(end)
+  
   let denom = num - int(include-end)
   
   // transformation to log-space
-  let log-start = calc.ln(start)
-  let log-end = calc.ln(end)
+  let log-start = calc.ln(abs-start)
+  let log-end = calc.ln(abs-end)
   let log-step = (log-end - log-start) / denom
-
+  
   range(0, num).map(v => {
-    if v == 0 {
-      float(start)
+    let val = if v == 0 {
+      float(abs-start)
     } else if include-end and v == num - 1 {
-      float(end)
+      float(abs-end)
     } else {
       // backtransform to linear space
       calc.exp(log-start + log-step * v)
     }
+    
+    // restore sign
+    if is-negative { -val } else { val }
   })
 }
 
