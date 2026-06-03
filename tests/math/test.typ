@@ -31,8 +31,18 @@
 
 // Close equal for floating point equality checks
 #let assert-close-eq(a, b, tol: 1e-8) = {
-  assert(a.len() == b.len(), message: "Test failed: Arrays have different lengths")
-  assert(a.zip(b).all(((a, b)) => calc.abs(a - b) <= tol), message: "Test failed: Non matching arrays")
+  assert(
+    a.len() == b.len(),
+    message: ("Test failed: Arrays have different lengths: " + str(a.len())) + " != " + str(b.len()),
+  )
+  assert(
+    a.zip(b).all(((a, b)) => calc.abs(a - b) <= tol),
+    message: "Test failed: Non matching arrays: ("
+      + a.map(str).join(", ")
+      + ") not approximately equal to ("
+      + b.map(str).join(", ")
+      + ")",
+  )
 }
 
 // Normal operation
@@ -46,6 +56,7 @@
 #assert-close-eq(geomspace(1, 1000, num: 2), (1., 1000.))
 #assert-close-eq(geomspace(1, 100, num: 3), (1., 10., 100.))
 #assert-close-eq(geomspace(10.5, 1050, num: 3), (10.5, 105., 1050.))
+#assert-close-eq(geomspace(-10.5, -1050, num: 3), (-10.5, -105., -1050.))
 #assert-close-eq(geomspace(1, 100, num: 2, include-end: false), (1., 10.))
 #assert-close-eq(geomspace(1, 1000, num: 2), (1., 1000.))
 #assert-close-eq(geomspace(1, 1000000, num: 7), (1., 10., 100., 1000., 10000., 100000., 1000000.))
