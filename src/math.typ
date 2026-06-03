@@ -175,8 +175,8 @@
   let denom = num - int(include-end)
   
   // transformation to log-space
-  let log-start = calc.ln(abs-start)
-  let log-end = calc.ln(abs-end)
+  let log-start = calc.log(abs-start)
+  let log-end = calc.log(abs-end)
   let log-step = (log-end - log-start) / denom
   
   range(0, num).map(v => {
@@ -186,7 +186,7 @@
       float(abs-end)
     } else {
       // backtransform to linear space
-      calc.exp(log-start + log-step * v)
+      calc.pow(10.0, log-start + log-step * v)
     }
     
     // restore sign
