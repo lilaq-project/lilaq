@@ -312,8 +312,11 @@
 
 
     let takes-part-in-cycle = not plot.at("ignores-cycle", default: true)
-    let cycle-style = cycle.at(calc.rem(cycle-index, cycle.len()))
-
+    let cycle-style = if takes-part-in-cycle {
+      cycle.at(calc.rem(cycle-index, cycle.len()))
+    } else {
+      it => it
+    }
     if not only-bounds {
       let plotted-plot = {
         show: cycle-init
