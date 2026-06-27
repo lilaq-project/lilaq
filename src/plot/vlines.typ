@@ -3,6 +3,7 @@
 #import "../math.typ": minmax
 #import "../assertations.typ"
 #import "../logic/time.typ"
+#import "../style/styling.typ": prepare-line
 
 
 
@@ -23,9 +24,10 @@
     (_, max) = transform(1, max)
   }
 
+  show: prepare-line.with(stroke: plot.style.stroke)
   for x in plot.x {
     let (xx, _) = transform(x, 1)
-    place(line(start: (xx, min), end: (xx, max), stroke: plot.style.stroke))
+    place(line(start: (xx, min), end: (xx, max)))
   }
 }
 
@@ -58,8 +60,8 @@
   max: auto,
 
   /// How to stroke the lines. 
-  /// -> stroke
-  stroke: black,
+  /// -> auto | stroke
+  stroke: auto,
   
   /// The legend label for this plot. See @plot.label. 
   /// -> content
@@ -69,6 +71,10 @@
   /// objects.  See @plot.z-index.  
   /// -> int | float
   z-index: 2,
+
+  /// Whether to use the diagram color cycle for this plot. See @plot.use-cycle. 
+  /// -> bool
+  use-cycle: false,
   
 ) = {
   assertations.assert-no-named(x)
@@ -101,6 +107,7 @@
     ylimits: () => ylimits,
     datetime: datetime-axes,
     legend: true,
+    ignores-cycle: not use-cycle,
     z-index: z-index
   )
 }

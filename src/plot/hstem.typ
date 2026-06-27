@@ -118,6 +118,10 @@
   /// objects. See @plot.z-index.  
   /// -> int | float
   z-index: 2,
+
+  /// Whether to use the diagram color cycle for this plot. See @plot.use-cycle. 
+  /// -> bool
+  use-cycle: true,
   
 ) = {
 
@@ -150,7 +154,7 @@
     ylimits: () => minmax(y),
     datetime: datetime-axes,
     legend: true,
-    ignores-cycle: false,
+    ignores-cycle: not use-cycle,
     clip: clip,
     z-index: z-index
   )
