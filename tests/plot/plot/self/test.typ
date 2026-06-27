@@ -148,13 +148,13 @@
   ),
 )
 
-#errors
+#box(errors)
 #{
   show: lq.set-diagram(
     xaxis: (inverted: true),
     yaxis: (inverted: true),
   )
-  errors
+  box(errors)
 }
 
 
