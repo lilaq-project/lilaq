@@ -921,7 +921,11 @@
       inset: bounds, 
       diagram, 
       stroke: if debug { 0.1pt } else { none },
-      baseline: bounds.bottom
+      baseline: if sys.version >= version(0, 15) { 
+        (at: bottom, shift: bounds.bottom)
+      } else {
+        bounds.bottom
+      }
     )
     if it.pad != auto {
       result = pad(result, ..it.pad)
