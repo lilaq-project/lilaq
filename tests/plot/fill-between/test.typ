@@ -145,7 +145,7 @@
 
 #assert.eq(
   catch(() => lq.fill-between((), (), smooth: true, step: end)),
-  "panicked with: \"`step` and `smooth` are mututally exclusive\""
+  "panicked with: `step` and `smooth` are mututally exclusive"
 )
 
 #pagebreak()
