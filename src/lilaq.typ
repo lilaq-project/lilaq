@@ -17,7 +17,7 @@
 
 #import "layout.typ": layout
 
-#import "plot/plot.typ": plot
+#import "plot/plot.typ": plot, plot-function
 #import "plot/bar.typ": bar
 #import "plot/hbar.typ": hbar
 #import "plot/stem.typ": stem
