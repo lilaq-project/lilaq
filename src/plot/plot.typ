@@ -7,6 +7,7 @@
 #import "../style/styling.typ": mark, prepare-mark, prepare-path
 #import "../model/errorbar.typ": errorbar, generate-xerrorbar, generate-yerrorbar
 #import "../logic/time.typ"
+#import "../math.typ": linspace
 #import "@preview/tiptoe:0.4.0"
 
 #let get-errorbar-stroke(base-stroke) = {
@@ -443,5 +444,75 @@
     ignores-cycle: not use-cycle,
     clip: clip,
     z-index: z-index
+  )
+}
+
+
+
+/// Plots a function over a finite domain without requiring an explicit array
+/// of $x$ coordinates.
+///
+/// The function is evaluated at uniformly spaced points across
+/// @plot-function.domain.
+/// By default, the generated curve has no marks and uses Bézier interpolation
+/// for a smooth appearance. The number of evaluation points can be configured
+/// through @plot-function.samples.
+///
+/// ```example
+/// #lq.diagram(
+///   lq.plot-function(
+///     (-calc.pi, calc.pi),
+///     calc.sin,
+///   )
+/// )
+/// ```
+///
+/// Additional named arguments are forwarded to @plot. This can be used to
+/// style the curve or override the default `mark: none` and `smooth: true`
+/// options.
+#let plot-function(
+
+  /// The start and end of the interval on which to evaluate @plot-function.f.
+  /// -> array
+  domain,
+
+  /// A function that maps an $x$ coordinate to a $y$ coordinate.
+  /// -> function
+  f,
+
+  /// Number of uniformly spaced points at which to evaluate @plot-function.f.
+  /// -> int
+  samples: 200,
+
+  /// Additional named arguments to pass to @plot.
+  /// -> any
+  ..args,
+
+) = {
+  assert(
+    type(f) == function,
+    message: "plot-function: f must be a function",
+  )
+  assert(
+    type(domain) == array and domain.len() == 2,
+    message: "plot-function: domain must contain exactly two values",
+  )
+  assert(
+    domain.all(value => type(value) in (int, float)),
+    message: "plot-function: domain values must be numbers",
+  )
+  assert(
+    type(samples) == int and samples >= 2,
+    message: "plot-function: samples must be an integer greater than one",
+  )
+
+  let (start, end) = domain
+  plot.with(
+    mark: none,
+    smooth: true,
+  )(
+    linspace(start, end, num: samples),
+    f,
+    ..args,
   )
 }
