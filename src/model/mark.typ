@@ -34,6 +34,10 @@
 
 #let circle = mark => {
   let radius = mark.size / 2
+  if mark.stroke.paint == mark.fill { 
+    radius += mark.stroke.thickness / 2
+    mark.stroke = none
+  }
   move(
     dx: -radius, 
     dy: -radius, 
@@ -64,6 +68,10 @@
 
 #let square = mark => {
   let s = mark.size * 0.85
+  if mark.stroke.paint == mark.fill { 
+    s += mark.stroke.thickness
+    mark.stroke = none
+  }
   move(
     dx: -s / 2, 
     dy: -s / 2, 
@@ -90,6 +98,11 @@
   // The last term serves for equalizing the apparent size of polygons with different n. 
   let radius = mark.size / 2 * calc.sqrt(1 + 4 / (n*n))
   let dy = (0, .13, 0, .03, 0, .02).at(n - 2, default: 0) * radius
+  if mark.stroke.paint == mark.fill and n > 2 { 
+    let alpha = 180deg * (n - 2) / n
+    radius += mark.stroke.thickness / 2 / calc.sin(alpha / 2)
+    mark.stroke = none
+  }
   let poly = std.polygon(
     stroke: mark.stroke, fill: mark.fill,
     ..range(n).map(i => {
@@ -109,6 +122,16 @@
 
 #let star = (mark, n: 5, angle: 0deg, inset: 60%) => { 
   let radius = mark.size / 2 * 1.15
+  let inner-radius = radius * (100% - inset)
+  if mark.stroke.paint == mark.fill and n > 2 and inset < 100% { 
+    let a = calc.sin(360deg/n/2) * 2 * radius // side length of regular polygon
+    let alpha = 180deg * (n - 2) / n // inner anger of regular polygon
+    let h = radius * calc.cos(360deg / n / 2) // height of one facet of regular polygon
+    let delta = calc.atan(2 * (h - inner-radius) / a)
+    let gamma = alpha - 2 * delta
+    radius += mark.stroke.thickness / 2 / calc.sin(gamma / 2)
+    mark.stroke = none
+  }
   
   std.polygon(
     stroke: mark.stroke, 
