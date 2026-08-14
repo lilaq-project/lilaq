@@ -34,7 +34,7 @@
 
 #let circle = mark => {
   let radius = mark.size / 2
-  if mark.stroke != none and mark.stroke.paint == mark.fill { 
+  if mark.stroke != none and mark.stroke.paint == mark.fill and mark.stroke.dash in (auto, none, "solid") { 
     radius += mark.stroke.thickness / 2
     mark.stroke = none
   }
@@ -48,7 +48,7 @@
 
 #let small-circle = mark => {
   let radius = mark.size / 4
-  if mark.stroke != none and mark.stroke.paint == mark.fill { 
+  if mark.stroke != none and mark.stroke.paint == mark.fill and mark.stroke.dash in (auto, none, "solid") { 
     radius += mark.stroke.thickness / 2
     mark.stroke = none
   }
@@ -72,7 +72,7 @@
 
 #let square = mark => {
   let s = mark.size * 0.85
-  if mark.stroke != none and mark.stroke.paint == mark.fill { 
+  if mark.stroke != none and mark.stroke.paint == mark.fill and mark.stroke.dash in (auto, none, "solid") { 
     s += mark.stroke.thickness
     mark.stroke = none
   }
@@ -102,7 +102,7 @@
   // The last term serves for equalizing the apparent size of polygons with different n. 
   let radius = mark.size / 2 * calc.sqrt(1 + 4 / (n*n))
   let dy = (0, .13, 0, .03, 0, .02).at(n - 2, default: 0) * radius
-  if mark.stroke != none and mark.stroke.paint == mark.fill and n > 2 { 
+  if mark.stroke != none and mark.stroke.paint == mark.fill and mark.stroke.dash in (auto, none, "solid") and n > 2 { 
     let alpha = 180deg * (n - 2) / n
     radius += mark.stroke.thickness / 2 / calc.sin(alpha / 2)
     mark.stroke = none
@@ -127,7 +127,7 @@
 #let star = (mark, n: 5, angle: 0deg, inset: 60%) => { 
   let radius = mark.size / 2 * 1.15
   let inner-radius = radius * (100% - inset)
-  if mark.stroke != none and mark.stroke.paint == mark.fill and n > 2 and inset < 100% { 
+  if mark.stroke != none and mark.stroke.paint == mark.fill and mark.stroke.dash in (auto, none, "solid") and n > 2 and inset < 100% { 
     let a = calc.sin(360deg/n/2) * 2 * radius // side length of regular polygon
     let alpha = 180deg * (n - 2) / n // inner anger of regular polygon
     let h = radius * calc.cos(360deg / n / 2) // height of one facet of regular polygon
