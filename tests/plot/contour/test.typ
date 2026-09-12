@@ -94,3 +94,46 @@
     )
   )
 }
+
+
+// level behaviour with min/max
+#pagebreak()
+
+#{
+  let F = 1000 // N
+  let l = 1100 // mm
+  let S = 1.34
+  
+  let (b, h) = (30, lq.linspace(40, 115, num: 30))
+  let ws = lq.linspace(1, 9, num: 30)
+  
+  let Mb = F * l
+  
+  let I(b, h, ws) = {
+    b * calc.pow(h, 3) / 12 - (b - 2 * ws) * calc.pow(h - 2 * ws, 3) / 12
+  }
+  let sigma(ws, h) = {
+    Mb / I(b, h, ws) * h / 2 * S
+  }
+  
+  lq.diagram(
+    lq.contour(
+      ws,
+      h,
+      sigma,
+      fill: true,
+      levels: 10,
+      min: 0,
+      max: 1000,
+    ),
+    // There should be a step visible below the dotted line
+    lq.contour(
+      ws,
+      h,
+      sigma,
+      fill: false,
+      levels: (100,),
+      stroke: (paint: black, thickness: 0.7pt, dash: "dotted"),
+    ),
+  )
+}

@@ -64,30 +64,121 @@
 ) = {
   let cinfo = plot.cinfo
   
-  let grad = if orientation == "vertical" {
-    rect(
-      0%, cinfo.min, 
-      width: 100%, 
-      height: cinfo.max - cinfo.min, 
-      fill: gradient.linear(
-        ..cinfo.colormap.stops(), 
-        angle: 90deg
-      )
-    )
-  } else if orientation == "horizontal" {
-    rect(
-      cinfo.min, 0%,
-      height: 100%, 
-      width: cinfo.max - cinfo.min, 
-      fill: gradient.linear(
-        ..cinfo.colormap.stops(), 
-        angle: 0deg
-      )
-    )
-  }
-
+  let grad = ()
   
-
+  // Contour plots require special treatment because they map discrete levels to colors. 
+  // We identify contour plots by the presence of the `levels` array in the plot object.
+  let is-discrete-contour = "levels" in plot and plot.at("fill", default: false)
+  let is-line-contour = "levels" in plot and not plot.at("fill", default: false)
+  
+  if is-discrete-contour {
+    // Sort levels and colors to ensure non-overlapping intervals
+    let combined = plot.levels.zip(plot.line-colors).sorted(key: x => x.at(0))
+    let sorted-levels = combined.map(x => x.at(0))
+    let sorted-colors = combined.map(x => x.at(1))
+    
+    for i in range(sorted-levels.len()) {
+      let bottom = sorted-levels.at(i)
+      let top = cinfo.max
+      
+      if top > bottom {
+        // Render layers as stacked geometric primitives extending to the upper bound.
+        // This layering approach replicates the rendering logic of the actual contour plot, 
+        // effectively eliminating anti-aliasing artifacts between boundaries 
+        // while maintaining mathematically precise alignment with the tick marks.
+        let color = sorted-colors.at(i)
+        
+        if orientation == "vertical" {
+          grad.push(rect(
+            0%,
+            bottom,
+            width: 100%,
+            height: top - bottom,
+            fill: color,
+            stroke: none,
+          ))
+        } else {
+          grad.push(rect(
+            bottom,
+            0%,
+            width: top - bottom,
+            height: 100%,
+            fill: color,
+            stroke: none,
+          ))
+        }
+      }
+    }
+    
+    // Add the boundary rect to enforce diagram limits precisely
+    
+    grad.push(rect(
+      if orientation == "vertical" { 0% } else { cinfo.min },
+      if orientation == "vertical" { cinfo.min } else { 0% },
+      width: if orientation == "vertical" { 100% } else { cinfo.max - cinfo.min },
+      height: if orientation == "vertical" { cinfo.max - cinfo.min } else { 100% },
+      fill: none,
+      stroke: none,
+    ))
+  } else if is-line-contour {
+    // For unfilled contour plots, we draw discrete lines at the specific levels.
+    // The stroke styling (e.g. thickness) is inherited from the plot's general stroke 
+    // and combined with the specific level color.
+    import "../plot/hlines.typ": hlines
+    import "../plot/vlines.typ": vlines
+    import "../process-styles.typ": merge-strokes
+    
+    let levels = plot.levels
+    let colors = plot.line-colors
+    let plot-stroke = plot.at("stroke", default: auto)
+    
+    for i in range(levels.len()) {
+      let level = levels.at(i)
+      let merged = merge-strokes(plot-stroke, colors.at(i))
+      
+      if orientation == "vertical" {
+        grad.push(hlines(level, stroke: merged))
+      } else {
+        grad.push(vlines(level, stroke: merged))
+      }
+    }
+    
+    // Add an invisible bounding box to force the diagram axes to span the full [min, max] range
+    grad.push(rect(
+      if orientation == "vertical" { 0% } else { cinfo.min },
+      if orientation == "vertical" { cinfo.min } else { 0% },
+      width: if orientation == "vertical" { 100% } else { cinfo.max - cinfo.min },
+      height: if orientation == "vertical" { cinfo.max - cinfo.min } else { 100% },
+      fill: none,
+      stroke: none,
+    ))
+  } else {
+    // Standard continuous colorbar for plots like scatter or colormesh
+    if orientation == "vertical" {
+      grad.push(rect(
+        0%,
+        cinfo.min,
+        width: 100%,
+        height: cinfo.max - cinfo.min,
+        fill: gradient.linear(
+          ..cinfo.colormap.stops(),
+          angle: 90deg,
+        ),
+      ))
+    } else if orientation == "horizontal" {
+      grad.push(rect(
+        cinfo.min,
+        0%,
+        height: 100%,
+        width: cinfo.max - cinfo.min,
+        fill: gradient.linear(
+          ..cinfo.colormap.stops(),
+          angle: 0deg,
+        ),
+      ))
+    }
+  }
+  
   let preset-args = (:)
   if orientation == "vertical" {
     preset-args = (
@@ -116,6 +207,6 @@
     margin: 0%,
     ..preset-args,
     ..args,
-    grad
+    ..grad,
   )
 }
