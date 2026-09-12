@@ -65,50 +65,31 @@
   let cinfo = plot.cinfo
   
   let grad = ()
+  
+  // Contour plots require special treatment because they map discrete levels to colors. 
+  // We identify contour plots by the presence of the `levels` array in the plot object.
   let is-discrete-contour = "levels" in plot and plot.at("fill", default: false)
   let is-line-contour = "levels" in plot and not plot.at("fill", default: false)
   
   if is-discrete-contour {
-    import "../logic/transform.typ": create-trafo
-    import "../utility.typ": match-type
-    import "../logic/scale.typ"
-    
-    let norm-fn = match-type(
-      cinfo.norm,
-      function: () => cinfo.norm,
-      string: () => scale.scales.at(cinfo.norm).transform,
-      dictionary: () => cinfo.norm.transform,
-      default: () => assert(false),
-    )
-    let normalize = create-trafo(norm-fn, cinfo.min, cinfo.max)
-    
-    let levels = plot.levels
-    let colors = plot.line-colors
-    let stops = ()
-    
-    for i in range(levels.len()) {
-      let bottom = levels.at(i)
-      let top = if i < levels.len() - 1 { levels.at(i + 1) } else { calc.max(cinfo.max, bottom) }
-      if top > bottom {
-        let bottom-pct = calc.clamp(normalize(bottom), 0.0, 1.0) * 100%
-        let top-pct = calc.clamp(normalize(top), 0.0, 1.0) * 100%
-        stops.push((colors.at(i), bottom-pct))
-        stops.push((colors.at(i), top-pct))
-      }
-    }
+    // For filled contour plots, we create a single rectangle filled with a sharp, 
+    // step-based gradient. This avoids hairline gaps (artifacts) that often appear 
+    // in PDF viewers when rendering multiple adjacent rectangles.
+    import "../logic/sample-colors.typ": create-discrete-gradient
+    let angle = if orientation == "vertical" { 90deg } else { 0deg }
     
     grad.push(rect(
       if orientation == "vertical" { 0% } else { cinfo.min },
       if orientation == "vertical" { cinfo.min } else { 0% },
       width: if orientation == "vertical" { 100% } else { cinfo.max - cinfo.min },
       height: if orientation == "vertical" { cinfo.max - cinfo.min } else { 100% },
-      fill: gradient.linear(
-        ..stops,
-        angle: if orientation == "vertical" { 90deg } else { 0deg },
-      ),
-      stroke: none,
+      fill: create-discrete-gradient(plot.levels, plot.line-colors, cinfo, angle: angle),
+      stroke: none
     ))
   } else if is-line-contour {
+    // For unfilled contour plots, we draw discrete lines at the specific levels.
+    // The stroke styling (e.g. thickness) is inherited from the plot's general stroke 
+    // and combined with the specific level color.
     import "../plot/hlines.typ": hlines
     import "../plot/vlines.typ": vlines
     import "../process-styles.typ": merge-strokes
@@ -128,6 +109,7 @@
       }
     }
     
+    // Add an invisible bounding box to force the diagram axes to span the full [min, max] range
     grad.push(rect(
       if orientation == "vertical" { 0% } else { cinfo.min },
       if orientation == "vertical" { cinfo.min } else { 0% },
@@ -137,6 +119,7 @@
       stroke: none,
     ))
   } else {
+    // Standard continuous colorbar for plots like scatter or colormesh
     if orientation == "vertical" {
       grad.push(rect(
         0%,
