@@ -66,6 +66,7 @@
   
   let grad = ()
   let is-discrete-contour = "levels" in plot and plot.at("fill", default: false)
+  let is-line-contour = "levels" in plot and not plot.at("fill", default: false)
   
   if is-discrete-contour {
     import "../logic/transform.typ": create-trafo
@@ -107,6 +108,34 @@
       ),
       stroke: none,
     ))
+  } else if is-line-contour {
+    import "../plot/hlines.typ": hlines
+    import "../plot/vlines.typ": vlines
+    import "../process-styles.typ": merge-strokes
+    
+    let levels = plot.levels
+    let colors = plot.line-colors
+    let plot-stroke = plot.at("stroke", default: auto)
+    
+    for i in range(levels.len()) {
+      let level = levels.at(i)
+      let merged = merge-strokes(plot-stroke, colors.at(i))
+      
+      if orientation == "vertical" {
+        grad.push(hlines(level, stroke: merged))
+      } else {
+        grad.push(vlines(level, stroke: merged))
+      }
+    }
+    
+    grad.push(rect(
+      if orientation == "vertical" { 0% } else { cinfo.min },
+      if orientation == "vertical" { cinfo.min } else { 0% },
+      width: if orientation == "vertical" { 100% } else { cinfo.max - cinfo.min },
+      height: if orientation == "vertical" { cinfo.max - cinfo.min } else { 100% },
+      fill: none,
+      stroke: none,
+    ))
   } else {
     if orientation == "vertical" {
       grad.push(rect(
@@ -132,7 +161,6 @@
       ))
     }
   }
-  //
   
   let preset-args = (:)
   if orientation == "vertical" {

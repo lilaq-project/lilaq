@@ -33,16 +33,37 @@
 #pagebreak()
 
 // discretization for contourplots
-#let contourplt = lq.contour(
-  lq.linspace(-2 * calc.pi, 2 * calc.pi),
-  lq.linspace(-2 * calc.pi, 2 * calc.pi),
-  (x, y) => calc.sin(x) + calc.cos(y),
+#let x = lq.linspace(-2 * calc.pi, 2 * calc.pi)
+#let y = lq.linspace(-2 * calc.pi, 2 * calc.pi)
+#let fun(x, y) = { calc.sin(x) + calc.cos(y) }
+
+#let contourplt_filled = lq.contour(
+  x,
+  y,
+  fun,
   min: -1,
   max: 1,
   fill: true,
   levels: lq.linspace(-1, 1, num: 9),
 )
+#let contourplt_lines = lq.contour(
+  x,
+  y,
+  fun,
+  min: -1,
+  max: 1,
+  fill: false,
+  levels: lq.linspace(-1, 1, num: 9),
+  stroke: 2pt,
+)
 
-#lq.colorbar(contourplt, orientation: "horizontal")
+#lq.colorbar(contourplt_filled, orientation: "horizontal", label: [`filled:true`])
 #pagebreak()
-#lq.colorbar(contourplt, orientation: "vertical")
+
+#lq.colorbar(contourplt_lines, orientation: "horizontal", label: [`filled:false`])
+#pagebreak()
+
+#lq.colorbar(contourplt_filled, orientation: "vertical", label: [`filled:true`])
+#pagebreak()
+
+#lq.colorbar(contourplt_lines, orientation: "vertical", label: [`filled:false`])
