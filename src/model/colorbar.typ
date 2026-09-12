@@ -72,19 +72,53 @@
   let is-line-contour = "levels" in plot and not plot.at("fill", default: false)
   
   if is-discrete-contour {
-    // For filled contour plots, we create a single rectangle filled with a sharp, 
-    // step-based gradient. This avoids hairline gaps (artifacts) that often appear 
-    // in PDF viewers when rendering multiple adjacent rectangles.
-    import "../logic/sample-colors.typ": create-discrete-gradient
-    let angle = if orientation == "vertical" { 90deg } else { 0deg }
+    // Sort levels and colors to ensure non-overlapping intervals
+    let combined = plot.levels.zip(plot.line-colors).sorted(key: x => x.at(0))
+    let sorted-levels = combined.map(x => x.at(0))
+    let sorted-colors = combined.map(x => x.at(1))
+    
+    for i in range(sorted-levels.len()) {
+      let bottom = sorted-levels.at(i)
+      let top = cinfo.max
+      
+      if top > bottom {
+        // Render layers as stacked geometric primitives extending to the upper bound.
+        // This layering approach replicates the rendering logic of the actual contour plot, 
+        // effectively eliminating anti-aliasing artifacts between boundaries 
+        // while maintaining mathematically precise alignment with the tick marks.
+        let color = sorted-colors.at(i)
+        
+        if orientation == "vertical" {
+          grad.push(rect(
+            0%,
+            bottom,
+            width: 100%,
+            height: top - bottom,
+            fill: color,
+            stroke: none,
+          ))
+        } else {
+          grad.push(rect(
+            bottom,
+            0%,
+            width: top - bottom,
+            height: 100%,
+            fill: color,
+            stroke: none,
+          ))
+        }
+      }
+    }
+    
+    // Add the boundary rect to enforce diagram limits precisely
     
     grad.push(rect(
       if orientation == "vertical" { 0% } else { cinfo.min },
       if orientation == "vertical" { cinfo.min } else { 0% },
       width: if orientation == "vertical" { 100% } else { cinfo.max - cinfo.min },
       height: if orientation == "vertical" { cinfo.max - cinfo.min } else { 100% },
-      fill: create-discrete-gradient(plot.levels, plot.line-colors, cinfo, angle: angle),
-      stroke: none
+      fill: none,
+      stroke: none,
     ))
   } else if is-line-contour {
     // For unfilled contour plots, we draw discrete lines at the specific levels.
