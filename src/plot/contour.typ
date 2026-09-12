@@ -173,7 +173,8 @@
   )
   
   let z-flat = z.flatten()
-  let (z0, z1) = (calc.min(..z-flat), calc.max(..z-flat))
+  let z0 = if min != auto { min } else { calc.min(..z-flat) }
+  let z1 = if max != auto { max } else { calc.max(..z-flat) }
   if z0 == z1 { z0 -= 1; z1 += 1}
 
   if type(levels) == int {
