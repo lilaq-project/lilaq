@@ -39,6 +39,7 @@
   (x, y) => calc.sin(x) + calc.cos(y),
   min: -1,
   max: 1,
+  fill: true,
   levels: lq.linspace(-1, 1, num: 9),
 )
 

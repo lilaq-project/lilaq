@@ -64,30 +64,76 @@
 ) = {
   let cinfo = plot.cinfo
   
-  let grad = if orientation == "vertical" {
-    rect(
-      0%, cinfo.min, 
-      width: 100%, 
-      height: cinfo.max - cinfo.min, 
-      fill: gradient.linear(
-        ..cinfo.colormap.stops(), 
-        angle: 90deg
-      )
-    )
-  } else if orientation == "horizontal" {
-    rect(
-      cinfo.min, 0%,
-      height: 100%, 
-      width: cinfo.max - cinfo.min, 
-      fill: gradient.linear(
-        ..cinfo.colormap.stops(), 
-        angle: 0deg
-      )
-    )
-  }
-
+  let grad = ()
+  let is-discrete-contour = "levels" in plot and plot.at("fill", default: false)
   
-
+  if is-discrete-contour {
+    import "../logic/transform.typ": create-trafo
+    import "../utility.typ": match-type
+    import "../logic/scale.typ"
+    
+    let norm-fn = match-type(
+      cinfo.norm,
+      function: () => cinfo.norm,
+      string: () => scale.scales.at(cinfo.norm).transform,
+      dictionary: () => cinfo.norm.transform,
+      default: () => assert(false),
+    )
+    let normalize = create-trafo(norm-fn, cinfo.min, cinfo.max)
+    
+    let levels = plot.levels
+    let colors = plot.line-colors
+    let stops = ()
+    
+    for i in range(levels.len()) {
+      let bottom = levels.at(i)
+      let top = if i < levels.len() - 1 { levels.at(i + 1) } else { calc.max(cinfo.max, bottom) }
+      if top > bottom {
+        let bottom-pct = calc.clamp(normalize(bottom), 0.0, 1.0) * 100%
+        let top-pct = calc.clamp(normalize(top), 0.0, 1.0) * 100%
+        stops.push((colors.at(i), bottom-pct))
+        stops.push((colors.at(i), top-pct))
+      }
+    }
+    
+    grad.push(rect(
+      if orientation == "vertical" { 0% } else { cinfo.min },
+      if orientation == "vertical" { cinfo.min } else { 0% },
+      width: if orientation == "vertical" { 100% } else { cinfo.max - cinfo.min },
+      height: if orientation == "vertical" { cinfo.max - cinfo.min } else { 100% },
+      fill: gradient.linear(
+        ..stops,
+        angle: if orientation == "vertical" { 90deg } else { 0deg },
+      ),
+      stroke: none,
+    ))
+  } else {
+    if orientation == "vertical" {
+      grad.push(rect(
+        0%,
+        cinfo.min,
+        width: 100%,
+        height: cinfo.max - cinfo.min,
+        fill: gradient.linear(
+          ..cinfo.colormap.stops(),
+          angle: 90deg,
+        ),
+      ))
+    } else if orientation == "horizontal" {
+      grad.push(rect(
+        cinfo.min,
+        0%,
+        height: 100%,
+        width: cinfo.max - cinfo.min,
+        fill: gradient.linear(
+          ..cinfo.colormap.stops(),
+          angle: 0deg,
+        ),
+      ))
+    }
+  }
+  //
+  
   let preset-args = (:)
   if orientation == "vertical" {
     preset-args = (
@@ -116,6 +162,6 @@
     margin: 0%,
     ..preset-args,
     ..args,
-    grad
+    ..grad,
   )
 }
