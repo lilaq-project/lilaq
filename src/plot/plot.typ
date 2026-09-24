@@ -135,16 +135,20 @@
   
 
   
-  show: prepare-mark.with(
-    func: plot.mark.mark, 
-    color: plot.style.color,
-    fill: plot.mark.fill,
-    size: plot.mark.size
-  )
+  // With `mark: none`, skip the marks entirely: otherwise one invisible
+  // mark per data point is still created, styled and placed.
+  if plot.mark.mark != none {
+    show: prepare-mark.with(
+      func: plot.mark.mark, 
+      color: plot.style.color,
+      fill: plot.mark.fill,
+      size: plot.mark.size
+    )
   
-  let marker = mark()
-  let transformed-points = points.map(p => transform(..p))
-  transformed-points.map(((x, y)) => place(dx: x, dy: y, marker)).join()
+    let marker = mark()
+    let transformed-points = points.map(p => transform(..p))
+    transformed-points.map(((x, y)) => place(dx: x, dy: y, marker)).join()
+  }
 
 }
 
