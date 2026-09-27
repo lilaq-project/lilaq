@@ -135,16 +135,18 @@
   
 
   
-  show: prepare-mark.with(
-    func: plot.mark.mark, 
-    color: plot.style.color,
-    fill: plot.mark.fill,
-    size: plot.mark.size
-  )
+  if plot.mark.mark != none {
+    show: prepare-mark.with(
+      func: plot.mark.mark, 
+      color: plot.style.color,
+      fill: plot.mark.fill,
+      size: plot.mark.size
+    )
   
-  let marker = mark()
-  let transformed-points = points.map(p => transform(..p))
-  transformed-points.map(((x, y)) => place(dx: x, dy: y, marker)).join()
+    let marker = mark()
+    let transformed-points = points.map(p => transform(..p))
+    transformed-points.map(((x, y)) => place(dx: x, dy: y, marker)).join()
+  }
 
 }
 
