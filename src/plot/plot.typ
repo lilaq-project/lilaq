@@ -135,8 +135,6 @@
   
 
   
-  // With `mark: none`, skip the marks entirely: otherwise one invisible
-  // mark per data point is still created, styled and placed.
   if plot.mark.mark != none {
     show: prepare-mark.with(
       func: plot.mark.mark, 
