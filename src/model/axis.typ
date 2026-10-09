@@ -6,7 +6,7 @@
 #import "../bounds.typ": *
 #import "../assertations.typ"
 #import "../model/label.typ": xlabel, ylabel, label as lq-label
-#import "../process-styles.typ": update-stroke, merge-strokes, process-margin
+#import "../process-styles.typ": update-stroke, merge-strokes, process-margin, ink
 #import "@preview/elembic:1.1.1" as e
 
 #import "tick.typ": tick as lq-tick, tick-label as lq-tick-label
@@ -791,6 +791,7 @@
   let inset = if tick-stroke != none {tick-state.inset * factor} else {0pt}
   let length = inset + outset
   let make-tick
+  if tick-stroke != none { tick-stroke = update-stroke(ink(), tick-stroke) }
   let tline = if tick-stroke != none { line(length: length, angle: angle, stroke: tick-stroke) } else { none }
 
   if align == right {

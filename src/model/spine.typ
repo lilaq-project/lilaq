@@ -1,11 +1,13 @@
 #import "@preview/elembic:1.1.1" as e
 #import "@preview/tiptoe:0.4.0"
+#import "../process-styles.typ": update-stroke, ink
 
 
 /// The spine of a diagram axis (the line drawn along the axis). 
 #let spine(
   
-  /// How to stroke the spine of the axis. 
+  /// How to stroke the spine of the axis. A stroke without a paint takes the
+  /// text color.
   /// -> none | stroke
   stroke: (thickness: 0.5pt, cap: "square"),
 
@@ -36,7 +38,7 @@
     } else if it.kind == "y"{
       line = tiptoe.line.with(angle: 90deg, tip: it.toe, toe: it.tip)
     }
-    line(length: 100%, stroke: it.stroke)
+    context line(length: 100%, stroke: update-stroke(ink(), it.stroke))
   },
 
   fields: (

@@ -1,4 +1,5 @@
 #import "@preview/elembic:1.1.1" as e
+#import "../process-styles.typ": update-stroke, ink
 
 
 /// An axis grid for highlighting tick positions in the diagram area. The 
@@ -53,9 +54,11 @@
   /// -> "x" | "y"
   kind: "x",
 
-  /// How to stroke grid lines. 
+  /// How to stroke grid lines. A stroke without a paint takes the text color
+  /// mixed 20% into the page color, which with black text on white paper is
+  /// `luma(80%)`.
   /// -> none | stroke
-  stroke: 0.5pt + luma(80%),
+  stroke: 0.5pt,
 
   /// How to stroke grid lines for subticks. If `auto`, the style is inherited
   /// from @grid.stroke. 
@@ -88,25 +91,34 @@
     let stroke = if it.sub { it.stroke-sub } else { it.stroke }
     if stroke == none { return }
 
-    let line
-    if it.kind == "x" {
-      line = tick => place(
-        std.line(start: (tick, 0%), end: (tick, 100%), stroke: stroke)
-      )
-    } else if it.kind == "y" {
-      line = tick => place(
-        std.line(start: (0%, tick), end: (100%, tick), stroke: stroke)
-      )
-    }
+    context {
+      // A stroke without a paint takes the text color mixed 20% into the
+      // page color. Subtick lines without a paint take the paint of the main
+      // grid lines.
+      let main = update-stroke(ink(mix: 20%), it.stroke)
+      let stroke = if it.sub {
+        update-stroke(if main == none { ink(mix: 20%) } else { main.paint }, stroke)
+      } else { main }
+      let line
+      if it.kind == "x" {
+        line = tick => place(
+          std.line(start: (tick, 0%), end: (tick, 100%), stroke: stroke)
+        )
+      } else if it.kind == "y" {
+        line = tick => place(
+          std.line(start: (0%, tick), end: (100%, tick), stroke: stroke)
+        )
+      }
 
-    it.ticks.map(line).join()
+      it.ticks.map(line).join()
+    }
   },
 
   fields: (
     e.field("ticks", array, required: true),
     e.field("sub", bool, default: false),
     e.field("kind", str, default: "x"),
-    e.field("stroke", e.types.option(stroke), default: 0.5pt + luma(80%)),
+    e.field("stroke", e.types.option(stroke), default: 0.5pt),
     e.field("stroke-sub", auto-none-stroke, default: none),
     e.field("z-index", float, default: 0),
   ),

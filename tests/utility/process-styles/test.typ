@@ -35,3 +35,23 @@
 #assert.eq(merge-strokes(none, stroke(), 1pt, tiling("1"), red, auto, stroke()), none)
 #assert.eq(merge-strokes(1pt, none, tiling("1"), red, auto, stroke()), stroke(1pt))
 
+
+
+
+// Black text on white paper: the previous defaults.
+#context assert.eq(paper(), white)
+#context assert.eq(ink(), black)
+#context assert.eq(ink(mix: 20%).to-hex(), luma(80%).to-hex())
+#context assert.eq(ink(mix: 100% / 3).to-hex(), gray.to-hex())
+
+// Text filled with a gradient counts as black.
+#set text(fill: gradient.linear(red, blue))
+#context assert.eq(ink(), black)
+
+// Light text on a dark page.
+#set page(fill: rgb("#18191c"))
+#set text(fill: rgb("#e8eaed"))
+#context assert.eq(paper(), rgb("#18191c"))
+#context assert.eq(ink(), rgb("#e8eaed"))
+#context assert.eq(ink(mix: 20%).to-hex(), "#424346")
+#context assert.eq(ink(mix: 100% / 3).to-hex(), "#5d5f62")

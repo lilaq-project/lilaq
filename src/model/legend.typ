@@ -1,4 +1,4 @@
-#import "../process-styles.typ": twod-ify-alignment
+#import "../process-styles.typ": twod-ify-alignment, update-stroke, ink, paper
 #import "../bounds.typ": place-with-bounds
 #import "../assertations.typ"
 #import "@preview/elembic:1.1.1" as e
@@ -23,17 +23,20 @@
   /// -> array
   ..children,
 
-  /// How to fill the background of the legend. 
-  /// -> none | color | gradient | tiling
-  fill: white.transparentize(20%),
+  /// How to fill the background of the legend. With `auto`, the legend takes
+  /// the page color at 80% opacity, or white when the page has no fill.
+  /// -> auto | none | color | gradient | tiling
+  fill: auto,
 
   /// Determines the padding of the entire legend within its box. 
   /// -> relative
   inset: 0.3em,
 
-  /// How to stroke the outer border of the legend. 
+  /// How to stroke the outer border of the legend. A stroke without a paint
+  /// takes the text color mixed a third into the page color, which with black
+  /// text on white paper is `gray`.
   /// -> none | stroke 
-  stroke: 0.5pt + gray,
+  stroke: 0.5pt,
 
   /// The radius of the outer border of the legend. 
   /// -> relative | dictionary
@@ -80,19 +83,19 @@
   "legend",
   prefix: "lilaq",
 
-  display: it => box(
-    stroke: it.stroke,
+  display: it => context box(
+    stroke: update-stroke(ink(mix: 100% / 3), it.stroke),
     inset: it.inset,
-    fill: it.fill,
+    fill: if it.fill == auto { paper().transparentize(20%) } else { it.fill },
     radius: it.radius,
     grid(..it.children)
   ),
 
   fields: (
     e.field("children", e.types.array(e.types.any), required: true),
-    e.field("fill", e.types.option(e.types.paint), default: white.transparentize(20%)),
+    e.field("fill", e.types.smart(e.types.option(e.types.paint)), default: auto),
     e.field("inset", relative, default: 0.3em),
-    e.field("stroke", e.types.option(stroke), default: 0.5pt + gray),
+    e.field("stroke", e.types.option(stroke), default: 0.5pt),
     e.field("radius", e.types.union(relative, dictionary), default: 1.5pt),
     
     e.field("position", e.types.union(alignment, array), default: top + right),
