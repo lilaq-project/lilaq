@@ -1,4 +1,4 @@
-#set page(width: 5.4cm, height: 3.9cm, margin: 5pt, fill: rgb("#18191c"))
+#set page(width: auto, height: auto, margin: 5pt, fill: rgb("#18191c"))
 #set text(fill: rgb("#e8eaed"))
 #import "/tests/test-presets.typ": *
 #show: obfuscate

@@ -782,7 +782,7 @@
 
   // A spine without a paint takes the text color. The ticks inherit from
   // the spine.
-  let axis-stroke = update-stroke(ink(), merge-strokes(axis.stroke, e-get(spine).stroke))
+  let axis-stroke = merge-strokes(axis.stroke, e-get(spine).stroke, ink())
   let tick-stroke = merge-strokes(
     tick-state.stroke,
     // Default to butt cap to avoid visual artifacts and protrusion where ticks meet the spine.
