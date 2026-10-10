@@ -83,7 +83,7 @@
   "legend",
   prefix: "lilaq",
 
-  display: it => context box(
+  display: it => box(
     stroke: update-stroke(ink(mix: 100% / 3), it.stroke),
     inset: it.inset,
     fill: if it.fill == auto { paper().transparentize(20%) } else { it.fill },

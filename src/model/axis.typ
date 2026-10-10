@@ -780,7 +780,9 @@
   let shorten-sub = tick-state.shorten-sub
   let angle = if align in (top, bottom) { 90deg } else { 0deg }
 
-  let axis-stroke = merge-strokes(axis.stroke, e-get(spine).stroke)
+  // A spine without a paint takes the text color. The ticks inherit from
+  // the spine.
+  let axis-stroke = update-stroke(ink(), merge-strokes(axis.stroke, e-get(spine).stroke))
   let tick-stroke = merge-strokes(
     tick-state.stroke,
     // Default to butt cap to avoid visual artifacts and protrusion where ticks meet the spine.
@@ -791,7 +793,6 @@
   let inset = if tick-stroke != none {tick-state.inset * factor} else {0pt}
   let length = inset + outset
   let make-tick
-  if tick-stroke != none { tick-stroke = update-stroke(ink(), tick-stroke) }
   let tline = if tick-stroke != none { line(length: length, angle: angle, stroke: tick-stroke) } else { none }
 
   if align == right {

@@ -38,7 +38,7 @@
     } else if it.kind == "y"{
       line = tiptoe.line.with(angle: 90deg, tip: it.toe, toe: it.tip)
     }
-    context line(length: 100%, stroke: update-stroke(ink(), it.stroke))
+    line(length: 100%, stroke: update-stroke(ink(), it.stroke))
   },
 
   fields: (

@@ -17,18 +17,15 @@
 }
 
 
-/// The page color, or white when the page has no fill. Needs context.
+/// The page color, or white when the page has no fill or a gradient/tiling
+/// fill. Needs context.
 /// -> color
 #let paper() = if type(page.fill) == color { page.fill } else { white }
 
 
 /// The text color where this is called, mixed into the page color when `mix`
-/// is less than 100%. Strokes without a paint use it: spines and ticks take
-/// `ink()`, grid lines `ink(mix: 20%)` and the legend border
-/// `ink(mix: 100% / 3)`, so a diagram reads on any page color without a theme.
-/// With black text on white paper these are black, `luma(80%)` and `gray`, as
-/// before. Text filled with a gradient or tiling counts as black. Needs
-/// context.
+/// is less than 100%. Text filled with a gradient or tiling counts as black.
+/// Needs context.
 /// -> color
 #let ink(mix: 100%) = {
   let ink = if type(text.fill) == color { text.fill } else { black }

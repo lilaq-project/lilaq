@@ -111,9 +111,8 @@
     let factor = if it.sub { 1 - (it.shorten-sub / 100%) } else { 1 }
     let stroke = it.stroke
     if stroke == auto {
-      stroke = e-get(spine).stroke
+      stroke = update-stroke(ink(), e-get(spine).stroke)
     }
-    if stroke != none { stroke = update-stroke(ink(), stroke) }
     let outset = if stroke != none {it.outset * factor} else {0pt}
     let inset = if stroke != none {it.inset * factor} else {0pt}
     let length = outset + inset

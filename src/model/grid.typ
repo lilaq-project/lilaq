@@ -88,30 +88,28 @@
 
   display: it => {
 
-    let stroke = if it.sub { it.stroke-sub } else { it.stroke }
+    // A stroke without a paint takes the text color mixed 20% into the page
+    // color. Subtick lines inherit from the main lines, or take the same
+    // default when there are none.
+    let default = ink(mix: 20%)
+    let stroke = update-stroke(default, it.stroke)
+    if it.sub and it.stroke-sub != auto {
+      stroke = update-stroke(if stroke == none { default } else { stroke }, it.stroke-sub)
+    }
     if stroke == none { return }
 
-    context {
-      // A stroke without a paint takes the text color mixed 20% into the
-      // page color. Subtick lines without a paint take the paint of the main
-      // grid lines.
-      let main = update-stroke(ink(mix: 20%), it.stroke)
-      let stroke = if it.sub {
-        update-stroke(if main == none { ink(mix: 20%) } else { main.paint }, stroke)
-      } else { main }
-      let line
-      if it.kind == "x" {
-        line = tick => place(
-          std.line(start: (tick, 0%), end: (tick, 100%), stroke: stroke)
-        )
-      } else if it.kind == "y" {
-        line = tick => place(
-          std.line(start: (0%, tick), end: (100%, tick), stroke: stroke)
-        )
-      }
-
-      it.ticks.map(line).join()
+    let line
+    if it.kind == "x" {
+      line = tick => place(
+        std.line(start: (tick, 0%), end: (tick, 100%), stroke: stroke)
+      )
+    } else if it.kind == "y" {
+      line = tick => place(
+        std.line(start: (0%, tick), end: (100%, tick), stroke: stroke)
+      )
     }
+
+    it.ticks.map(line).join()
   },
 
   fields: (
