@@ -10,7 +10,7 @@
 #let contour-label = e.element.declare(
   "contour-label",
   prefix: "lilaq",
-  display: it => it.body,
+  display: it => pad(it.body),
   fields: (
     e.field("body", e.types.option(content), required: true),
   ),
@@ -28,22 +28,21 @@
     import "../logic/tick-format.typ"
     tags = tick-format.linear(tags).labels
   }
-  tags = tags.map(contour-label)
+  tags = tags.map(tag => {
+    set pad(x: .3em)
+    set text(.8em)
+    contour-label(tag)
+  })
   
   import "@local/komet:0.2.0"
   let x = plot.x
   let y = plot.y
   
   if not plot.fill {
-    (x, y) = array.zip(
-      ..x.zip(y).map(p => transform(..p).map(q => q.pt()))
-    ).map(coordinates => {
-      if coordinates.at(0) > coordinates.at(-1) {
-        coordinates.rev()
-      } else {
-        coordinates
-      }
-    })
+    x = x.map(x => transform(x, 1).at(0).pt())
+    y = y.map(y => transform(1, y).at(1).pt())
+    if x.at(0) > x.at(-1) { x = x.rev() }
+    if y.at(0) > y.at(-1) { y = y.rev() }
   }  
 
   assert(x.sorted() == x)
@@ -51,7 +50,7 @@
   let label-lengths = if plot.fill { none } else {
     tags.map(label => measure(label).width)
   }
-  let (contours, labels) = komet.contour(
+  let (contours, labels: label-positions) = komet.contour(
     x, y, 
     plot.z, 
     plot.levels, 
@@ -69,11 +68,6 @@
   }
 
   
-  for (position, tag) in labels.zip(tags) {
-    if position == none { continue }
-    let (x, y) = (1pt * position.x, 1pt * position.y)
-    place(dx: x, dy: y, place(center + horizon, rotate(position.angle * 1deg, reflow: true, text(1em,tag))))
-  }
     
   if plot.fill { 
   
@@ -109,8 +103,8 @@
 
   } else {
       
-    for (i, contour) in contours.enumerate() {
-      set curve(stroke: plot.line-colors.at(i))
+    for (contour, color, position, label) in contours.zip(plot.line-colors, label-positions, tags) {
+      set curve(stroke: color)
       set curve(stroke: plot.stroke)
       for path in contour {
         // path = path.map(p => transform(..p))
@@ -120,6 +114,19 @@
           ..path.slice(1).map(curve.line)
         ))
       }
+      
+      if position != none {
+        set text(color)
+        let (x, y) = (1pt * position.x, 1pt * position.y)
+        place(dx: x, dy: y, 
+          place(center + horizon, 
+            rotate(position.angle * 1deg, reflow: true, 
+              text(1em, label)
+            )
+          )
+        )
+      }
+
     }
     
   }
@@ -167,7 +174,7 @@
   /// Specifies the $z$ coordinates (height) for all combinations of $x$ and $y$ 
   /// coordinates. This can either be a 
   /// - two-dimensional $m×n$-array where $m$ is the length of @contour.y 
-  ///   and $n$ is the length of @contour.x (for each $y$ value, a row of $x$
+    ///   and $n$ is the length of @contour.x (for each $y$ value, a row of $x$
   ///   values), 
   /// - or a function that takes an `x` and a `y` value and returns a 
   ///   corresponding `z` coordinate. 
