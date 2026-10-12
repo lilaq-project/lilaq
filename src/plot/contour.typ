@@ -3,11 +3,77 @@
 #import "../logic/sample-colors.typ": sample-colors
 #import "../math.typ": minmax, mesh
 
+#import "@preview/elembic:1.1.1" as e
+
+
+// A median mark of a violin plot
+#let contour-label = e.element.declare(
+  "contour-label",
+  prefix: "lilaq",
+  display: it => it.body,
+  fields: (
+    e.field("body", e.types.option(content), required: true),
+  ),
+)
+
+
 #let render-contour(plot, transform) = {
   if "make-legend" in plot {
     return std.line(length: 100%, stroke: plot.line-colors.first())
   }
 
+  let tags = auto
+  if tags == auto {
+    tags = plot.levels
+    import "../logic/tick-format.typ"
+    tags = tick-format.linear(tags).labels
+  }
+  tags = tags.map(contour-label)
+  
+  import "@local/komet:0.2.0"
+  let x = plot.x
+  let y = plot.y
+  
+  if not plot.fill {
+    (x, y) = array.zip(
+      ..x.zip(y).map(p => transform(..p).map(q => q.pt()))
+    ).map(coordinates => {
+      if coordinates.at(0) > coordinates.at(-1) {
+        coordinates.rev()
+      } else {
+        coordinates
+      }
+    })
+  }  
+
+  assert(x.sorted() == x)
+  assert(y.sorted() == y)
+  let label-lengths = if plot.fill { none } else {
+    tags.map(label => measure(label).width)
+  }
+  let (contours, labels) = komet.contour(
+    x, y, 
+    plot.z, 
+    plot.levels, 
+    label-lengths: label-lengths
+  )
+
+
+
+  if plot.fill {
+    let boundaries = (xmin: x.first(), xmax: x.last(), ymin: y.first(), ymax: y.last())
+
+    contours = contours.map(paths => {
+      paths.map(close-path-at-boundaries.with(boundaries: boundaries)).filter(x => x != none)
+    })
+  }
+
+  
+  for (position, tag) in labels.zip(tags) {
+    if position == none { continue }
+    let (x, y) = (1pt * position.x, 1pt * position.y)
+    place(dx: x, dy: y, place(center + horizon, rotate(position.angle * 1deg, reflow: true, text(1em,tag))))
+  }
     
   if plot.fill { 
   
@@ -16,11 +82,12 @@
     let canvas-rect = ((xmax, ymax), (xmax, ymin), (xmin, ymin), (xmin, ymax), (xmax, ymax)) // right-turning curve
     // assert.eq(compute-polygon-orientation(..canvas-rect), right)
     
-    for (i, contour) in plot.contours.enumerate() {
+    for (i, contour) in contours.enumerate() {
       set curve(stroke: none, fill: plot.line-colors.at(i))
 
       let to-closed-curve(contour) = {
         if contour.len() == 0 { return () }
+        // contour = contour.map(p => p.map(q => q * 1pt))
         contour = contour.map(p => transform(..p))
         return (
           curve.move(contour.first()),
@@ -42,11 +109,12 @@
 
   } else {
       
-    for (i, contour) in plot.contours.enumerate() {
+    for (i, contour) in contours.enumerate() {
       set curve(stroke: plot.line-colors.at(i))
       set curve(stroke: plot.stroke)
       for path in contour {
-        path = path.map(p => transform(..p))
+        // path = path.map(p => transform(..p))
+        path = path.map(p => p.map(q => q * 1pt))
         place(std.curve(
           curve.move(path.first()),
           ..path.slice(1).map(curve.line)
@@ -175,7 +243,8 @@
   let z-flat = z.flatten()
   let z0 = if min != auto { min } else { calc.min(..z-flat) }
   let z1 = if max != auto { max } else { calc.max(..z-flat) }
-  if z0 == z1 { z0 -= 1; z1 += 1}
+  if z0 == z1 { z0 -= 1; z1 += 1 }
+
 
   if type(levels) == int {
     import "../logic/tick-locate.typ"
@@ -190,17 +259,6 @@
   let (color, cinfo) = sample-colors(levels, map, norm, min: min, max: max)
 
 
-  import "@preview/komet:0.1.0"
-  let contours = komet.contour(x, y, z, levels)
-
-  if fill {
-
-    let boundaries = (xmin: x.first(), xmax: x.last(), ymin: y.first(), ymax: y.last())
-
-    contours = contours.map(paths => {
-      paths.map(close-path-at-boundaries.with(boundaries: boundaries)).filter(x => x != none)
-    })
-  }
   
   
   (
@@ -210,7 +268,6 @@
     z: z,
     levels: levels,
     line-colors: color,
-    contours: contours,
     fill: fill,
     stroke: stroke,
     label: label,
