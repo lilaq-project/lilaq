@@ -1,5 +1,5 @@
 
-#import "../process-styles.typ": twod-ify-alignment
+#import "../process-styles.typ": twod-ify-alignment, update-stroke, ink
 #import "@preview/elembic:1.1.1" as e
 #import "spine.typ": spine
 
@@ -111,7 +111,7 @@
     let factor = if it.sub { 1 - (it.shorten-sub / 100%) } else { 1 }
     let stroke = it.stroke
     if stroke == auto {
-      stroke = e-get(spine).stroke
+      stroke = update-stroke(ink(), e-get(spine).stroke)
     }
     let outset = if stroke != none {it.outset * factor} else {0pt}
     let inset = if stroke != none {it.inset * factor} else {0pt}

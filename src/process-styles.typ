@@ -17,6 +17,23 @@
 }
 
 
+/// The page color, or white when the page has no fill or a gradient/tiling
+/// fill. Needs context.
+/// -> color
+#let paper() = if type(page.fill) == color { page.fill } else { white }
+
+
+/// The text color where this is called, mixed into the page color when `mix`
+/// is less than 100%. Text filled with a gradient or tiling counts as black.
+/// Needs context.
+/// -> color
+#let ink(mix: 100%) = {
+  let ink = if type(text.fill) == color { text.fill } else { black }
+  if mix == 100% { return ink }
+  color.mix((ink, mix), (paper(), 100% - mix), space: rgb)
+}
+
+
 
 
 /// Merge a series of fills sorted by descending priority. Fills exclude each other, 

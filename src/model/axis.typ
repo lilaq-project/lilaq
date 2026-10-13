@@ -6,7 +6,7 @@
 #import "../bounds.typ": *
 #import "../assertations.typ"
 #import "../model/label.typ": xlabel, ylabel, label as lq-label
-#import "../process-styles.typ": update-stroke, merge-strokes, process-margin
+#import "../process-styles.typ": update-stroke, merge-strokes, process-margin, ink
 #import "@preview/elembic:1.1.1" as e
 
 #import "tick.typ": tick as lq-tick, tick-label as lq-tick-label
@@ -780,7 +780,9 @@
   let shorten-sub = tick-state.shorten-sub
   let angle = if align in (top, bottom) { 90deg } else { 0deg }
 
-  let axis-stroke = merge-strokes(axis.stroke, e-get(spine).stroke)
+  // A spine without a paint takes the text color. The ticks inherit from
+  // the spine.
+  let axis-stroke = merge-strokes(axis.stroke, e-get(spine).stroke, ink())
   let tick-stroke = merge-strokes(
     tick-state.stroke,
     // Default to butt cap to avoid visual artifacts and protrusion where ticks meet the spine.

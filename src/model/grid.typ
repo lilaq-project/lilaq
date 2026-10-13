@@ -1,4 +1,5 @@
 #import "@preview/elembic:1.1.1" as e
+#import "../process-styles.typ": update-stroke, ink
 
 
 /// An axis grid for highlighting tick positions in the diagram area. The 
@@ -53,9 +54,11 @@
   /// -> "x" | "y"
   kind: "x",
 
-  /// How to stroke grid lines. 
+  /// How to stroke grid lines. A stroke without a paint takes the text color
+  /// mixed 20% into the page color, which with black text on white paper is
+  /// `luma(80%)`.
   /// -> none | stroke
-  stroke: 0.5pt + luma(80%),
+  stroke: 0.5pt,
 
   /// How to stroke grid lines for subticks. If `auto`, the style is inherited
   /// from @grid.stroke. 
@@ -85,7 +88,14 @@
 
   display: it => {
 
-    let stroke = if it.sub { it.stroke-sub } else { it.stroke }
+    // A stroke without a paint takes the text color mixed 20% into the page
+    // color. Subtick lines inherit from the main lines, or take the same
+    // default when there are none.
+    let default = ink(mix: 20%)
+    let stroke = update-stroke(default, it.stroke)
+    if it.sub and it.stroke-sub != auto {
+      stroke = update-stroke(if stroke == none { default } else { stroke }, it.stroke-sub)
+    }
     if stroke == none { return }
 
     let line
@@ -106,7 +116,7 @@
     e.field("ticks", array, required: true),
     e.field("sub", bool, default: false),
     e.field("kind", str, default: "x"),
-    e.field("stroke", e.types.option(stroke), default: 0.5pt + luma(80%)),
+    e.field("stroke", e.types.option(stroke), default: 0.5pt),
     e.field("stroke-sub", auto-none-stroke, default: none),
     e.field("z-index", float, default: 0),
   ),
