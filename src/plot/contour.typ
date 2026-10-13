@@ -41,12 +41,8 @@
   if not plot.fill {
     x = x.map(x => transform(x, 1).at(0).pt())
     y = y.map(y => transform(1, y).at(1).pt())
-    if x.at(0) > x.at(-1) { x = x.rev() }
-    if y.at(0) > y.at(-1) { y = y.rev() }
   }  
 
-  assert(x.sorted() == x)
-  assert(y.sorted() == y)
   let label-lengths = if plot.fill or plot.level-labels == none{ none } else {
     tags.map(label => measure(label).width)
   }
