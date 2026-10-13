@@ -25,7 +25,7 @@
 #import "plot/scatter.typ": scatter
 #import "plot/fill-between.typ": fill-between
 #import "plot/colormesh.typ": colormesh
-#import "plot/contour.typ": contour, contour-label
+#import "plot/contour.typ": contour, contour-level-label
 #import "plot/boxplot.typ": boxplot
 #import "plot/hboxplot.typ": hboxplot
 #import "plot/violin.typ": violin, violin-boxplot
@@ -48,7 +48,7 @@
 #import "typing.typ": (
   cond-set, fields, selector, set-diagram, set-errorbar, set-grid, set-label, set-legend, set-spine, set-tick,
   set-tick-label, set-title, show_, set-violin-boxplot, set-violin-extremum,
-  set-contour-label
+  set-contour-level-label
 )
 
 

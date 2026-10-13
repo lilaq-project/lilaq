@@ -6,9 +6,9 @@
 #import "@preview/elembic:1.1.1" as e
 
 
-// A median mark of a violin plot
-#let contour-label = e.element.declare(
-  "contour-label",
+
+#let contour-level-label = e.element.declare(
+  "contour-level-label",
   prefix: "lilaq",
   display: it => pad(it.body),
   fields: (
@@ -31,7 +31,7 @@
   tags = tags.map(tag => {
     set pad(x: .3em)
     set text(.8em)
-    contour-label(tag)
+    contour-level-label(tag)
   })
   
   import "@local/komet:0.2.0"
@@ -47,7 +47,7 @@
 
   assert(x.sorted() == x)
   assert(y.sorted() == y)
-  let label-lengths = if plot.fill { none } else {
+  let label-lengths = if plot.fill or plot.level-labels == none{ none } else {
     tags.map(label => measure(label).width)
   }
   let (contours, labels: label-positions) = komet.contour(
@@ -190,6 +190,12 @@
   /// -> int | array
   levels: 10,
 
+  /// Controls the insertion of level labels into the contour lines.
+  /// This only applies when @contour.fill is `false`, otherwise, no labels are
+  /// drawn. When set to `auto`, labels are added to all contour lines that provide a sufficient amount of space.
+  /// -> none | auto
+  level-labels: none,
+
   /// Whether to fill the contour levels. 
   /// -> bool
   fill: false,
@@ -275,6 +281,7 @@
     z: z,
     levels: levels,
     line-colors: color,
+    level-labels: level-labels,
     fill: fill,
     stroke: stroke,
     label: label,
