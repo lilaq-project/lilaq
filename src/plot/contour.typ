@@ -19,7 +19,7 @@
 
 #let render-contour(plot, transform) = {
   if "make-legend" in plot {
-    return std.line(length: 100%, stroke: plot.level-style.first())
+    return std.line(length: 100%, stroke: plot.level-colors.first())
   }
 
   let tags = auto
@@ -38,12 +38,12 @@
   let x = plot.x
   let y = plot.y
   
-  if not plot.fill {
+  if not plot.is-filled {
     x = x.map(x => transform(x, 1).at(0).pt())
     y = y.map(y => transform(1, y).at(1).pt())
   }  
 
-  let label-lengths = if plot.fill or plot.level-labels == none{ none } else {
+  let label-lengths = if not plot.is-filled or plot.level-labels == none { none } else {
     tags.map(label => measure(label).width)
   }
   let (contours, labels: label-positions) = komet.contour(
@@ -56,17 +56,12 @@
 
 
 
-  if plot.fill {
+  if plot.is-filled {
     let boundaries = (xmin: x.first(), xmax: x.last(), ymin: y.first(), ymax: y.last())
 
     contours = contours.map(paths => {
       paths.map(close-path-at-boundaries.with(boundaries: boundaries)).filter(x => x != none)
     })
-  }
-
-  
-    
-  if plot.fill { 
   
     let (xmin, xmax) = minmax(plot.x)
     let (ymin, ymax) = minmax(plot.y)
@@ -74,11 +69,9 @@
     // assert.eq(compute-polygon-orientation(..canvas-rect), right)
     
     for (i, contour) in contours.enumerate() {
-      set curve(stroke: none, fill: plot.level-style.at(i))
 
       let to-closed-curve(contour) = {
         if contour.len() == 0 { return () }
-        // contour = contour.map(p => p.map(q => q * 1pt))
         contour = contour.map(p => transform(..p))
         return (
           curve.move(contour.first()),
@@ -93,18 +86,23 @@
       if compute-polygon-orientation(..contour.first()) == left {
         contour = (canvas-rect,) + contour
       }
-      place(curve(
-        ..contour.map(to-closed-curve).join()
-      ))
+      let contour-curve = curve(..contour.map(to-closed-curve).join())
+      
+      
+      set curve(stroke: none, fill: plot.level-colors.at(i))
+      place(contour-curve)
+
+      if plot.fill.at(i) != auto {
+        set curve(fill: plot.fill.at(i))
+        place(contour-curve)
+      }
     }
 
   } else {
-      
-    for (contour, color, positions, label) in contours.zip(plot.level-style, label-positions, tags) {
+    for (contour, color, positions, label, stroke) in contours.zip(plot.level-colors, label-positions, tags, plot.stroke) {
       set curve(stroke: color)
-      set curve(stroke: plot.stroke)
+      set curve(stroke: stroke)
       for path in contour {
-        // path = path.map(p => transform(..p))
         path = path.map(p => p.map(q => q * 1pt))
         place(std.curve(
           curve.move(path.first()),
@@ -171,7 +169,7 @@
   /// Specifies the $z$ coordinates (height) for all combinations of $x$ and $y$ 
   /// coordinates. This can either be a 
   /// - two-dimensional $m×n$-array where $m$ is the length of @contour.y 
-    ///   and $n$ is the length of @contour.x (for each $y$ value, a row of $x$
+  ///   and $n$ is the length of @contour.x (for each $y$ value, a row of $x$
   ///   values), 
   /// - or a function that takes an `x` and a `y` value and returns a 
   ///   corresponding `z` coordinate. 
@@ -194,19 +192,20 @@
   level-labels: auto,
 
   /// Whether to fill the contour levels. 
-  /// -> bool
-  fill: false,
+  /// This can also be an array of fills for each level (if the
+  /// number of fills is less than the number of levels, they are repeated). 
+  /// -> none | auto | array
+  fill: none,
 
-  /// How to stroke the contours in the cases that `fill: false`. If this
-  /// argument specifies a color, the coloring from the @contour.map is
-  /// overridden. 
-  /// -> stroke
+  /// How to stroke the contours in the cases that `fill: false`. If the
+  /// stroke specifies a color, the coloring from the @contour.map is
+  /// overridden. This can also be an array of strokes for each level (if the
+  /// number of strokes is less than the number of levels, they are repeated). 
+  /// -> stroke | array
   stroke: 0.7pt,
   
   /// A color map in form of a gradient or an array of colors to sample from
-  /// according to @contour.norm. When @contour.fill is true, this can also be
-  /// an array of tilings to fill each level with (if the map is shorter than
-  /// the number of levels, it is repeated).
+  /// according to @contour.norm. 
   /// -> array | gradient
   map: color.map.viridis,
 
@@ -264,19 +263,34 @@
     let range = tick-locate.linear(z0, z1, num-ticks-suggestion: levels)
     levels = range.ticks
   }
+
+  assert(
+    levels.sorted() == levels,
+    message: "contour.levels need to be sorted, got " + repr(levels)
+  )
   
   if min == auto { min = calc.min(..z-flat) }
   if max == auto { max = calc.max(..z-flat) }
   // if min == auto { min = calc.min(..levels) }
   // if max == auto { max = calc.max(..levels) }
-  let (level-style, cinfo) = (none, none)
-  if fill and type(map) == array and type(map.first()) == tiling {
-    level-style = (map * calc.ceil(levels.len() / map.len())).slice(0, levels.len())
-  } else {
-    (level-style, cinfo) = sample-colors(levels, map, norm, min: min, max: max)
-  }
+  let (level-colors, cinfo) = sample-colors(levels, map, norm, min: min, max: max)
 
+  // backwards compatibility
+  if fill == true { fill = auto }
+  if fill == false { fill = none }
+
+  let is-filled = fill != none
+  if type(fill) != array {
+    fill = (fill,) * levels.len()
+  } else {
+    fill = (fill * calc.ceil(levels.len() / fill.len())).slice(0, levels.len())
+  }
   
+  if type(stroke) != array {
+    stroke = (stroke,) * levels.len()
+  } else {
+    stroke = (stroke * calc.ceil(levels.len() / stroke.len()))
+  }
   
   (
     cinfo: cinfo,
@@ -284,9 +298,10 @@
     y: y,
     z: z,
     levels: levels,
-    level-style: level-style,
+    level-colors: level-colors,
     level-labels: level-labels,
     fill: fill,
+    is-filled: is-filled,
     stroke: stroke,
     label: label,
     plot: render-contour,
