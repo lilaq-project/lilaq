@@ -19,7 +19,7 @@
 
 #let render-contour(plot, transform) = {
   if "make-legend" in plot {
-    return std.line(length: 100%, stroke: plot.line-colors.first())
+    return std.line(length: 100%, stroke: plot.level-style.first())
   }
 
   let tags = auto
@@ -50,7 +50,8 @@
     x, y, 
     plot.z, 
     plot.levels, 
-    label-lengths: label-lengths
+    label-lengths: label-lengths,
+    // label-every-line: true
   )
 
 
@@ -73,7 +74,7 @@
     // assert.eq(compute-polygon-orientation(..canvas-rect), right)
     
     for (i, contour) in contours.enumerate() {
-      set curve(stroke: none, fill: plot.line-colors.at(i))
+      set curve(stroke: none, fill: plot.level-style.at(i))
 
       let to-closed-curve(contour) = {
         if contour.len() == 0 { return () }
@@ -99,7 +100,7 @@
 
   } else {
       
-    for (contour, color, position, label) in contours.zip(plot.line-colors, label-positions, tags) {
+    for (contour, color, positions, label) in contours.zip(plot.level-style, label-positions, tags) {
       set curve(stroke: color)
       set curve(stroke: plot.stroke)
       for path in contour {
@@ -111,12 +112,12 @@
         ))
       }
       
-      if position != none {
+      for position in positions {
         set text(color)
         let (x, y) = (1pt * position.x, 1pt * position.y)
         place(dx: x, dy: y, 
           place(center + horizon, 
-            rotate(position.angle * 1deg, reflow: true, 
+            rotate(position.angle, reflow: true, 
               text(1em, label)
             )
           )
@@ -190,7 +191,7 @@
   /// This only applies when @contour.fill is `false`, otherwise, no labels are
   /// drawn. When set to `auto`, labels are added to all contour lines that provide a sufficient amount of space.
   /// -> none | auto
-  level-labels: none,
+  level-labels: auto,
 
   /// Whether to fill the contour levels. 
   /// -> bool
@@ -202,7 +203,10 @@
   /// -> stroke
   stroke: 0.7pt,
   
-  /// A color map in form of a gradient or an array of colors to sample from. 
+  /// A color map in form of a gradient or an array of colors to sample from
+  /// according to @contour.norm. When @contour.fill is true, this can also be
+  /// an array of tilings to fill each level with (if the map is shorter than
+  /// the number of levels, it is repeated).
   /// -> array | gradient
   map: color.map.viridis,
 
@@ -265,8 +269,12 @@
   if max == auto { max = calc.max(..z-flat) }
   // if min == auto { min = calc.min(..levels) }
   // if max == auto { max = calc.max(..levels) }
-  let (color, cinfo) = sample-colors(levels, map, norm, min: min, max: max)
-
+  let (level-style, cinfo) = (none, none)
+  if fill and type(map) == array and type(map.first()) == tiling {
+    level-style = (map * calc.ceil(levels.len() / map.len())).slice(0, levels.len())
+  } else {
+    (level-style, cinfo) = sample-colors(levels, map, norm, min: min, max: max)
+  }
 
   
   
@@ -276,7 +284,7 @@
     y: y,
     z: z,
     levels: levels,
-    line-colors: color,
+    level-style: level-style,
     level-labels: level-labels,
     fill: fill,
     stroke: stroke,
