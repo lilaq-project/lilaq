@@ -43,7 +43,7 @@
     y = y.map(y => transform(1, y).at(1).pt())
   }  
 
-  let label-lengths = if not plot.is-filled or plot.level-labels == none { none } else {
+  let label-lengths = if plot.is-filled or plot.level-labels == none { none } else {
     tags.map(label => measure(label).width)
   }
   let (contours, labels: label-positions) = komet.contour(
@@ -189,7 +189,7 @@
   /// This only applies when @contour.fill is `false`, otherwise, no labels are
   /// drawn. When set to `auto`, labels are added to all contour lines that provide a sufficient amount of space.
   /// -> none | auto
-  level-labels: auto,
+  level-labels: none,
 
   /// Whether to fill the contour levels. 
   /// This can also be an array of fills for each level (if the
