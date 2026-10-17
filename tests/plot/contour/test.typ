@@ -157,24 +157,26 @@
   ), contour
 )
 #lq.colorbar(contour)
-// 
-// 
+
+
+#pagebreak()
+
+#lq.diagram(
+  let contour = lq.contour(
+    lq.linspace(-2, 2, num: 6),
+    lq.linspace(-2, 2, num: 6),
+    (x, y) => x * y,
+    stroke: ((dash: "dashed"), (dash: "dash-dotted"), (dash: "solid", thickness: 2pt)),
+    levels: 7
+  ), contour
+)
+#lq.colorbar(contour)
+
 // #pagebreak()
-// 
-// #lq.diagram(
-//   let contour = lq.contour(
-//     lq.linspace(-2, 2, num: 6),
-//     lq.linspace(-2, 2, num: 6),
-//     (x, y) => x * y,
-//     stroke: ((dash: "dashed"), (dash: "dash-dotted"), (dash: "solid", thickness: 2pt)),
-//     levels: 7
-//   ), contour
-// )
-// #lq.colorbar(contour)
-// 
-// // #show lq.selector(lq.contour-label): set text(.5em)
-// // #show lq.selector(lq.contour-label): pad.with(x: 0.3em)
-// 
+
+// #show lq.selector(lq.contour-label): set text(.5em)
+// #show lq.selector(lq.contour-label): pad.with(x: 0.3em)
+
 // #lq.diagram(
 //   lq.contour(
 //     lq.arange(-3, 3, step:0.025),
@@ -183,7 +185,7 @@
 //     levels: 7,
 //   )
 // )
-// 
+
 // 
 // #lq.diagram(
 //   lq.contour(
