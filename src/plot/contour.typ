@@ -200,8 +200,9 @@
   /// How to stroke the contours in the cases that `fill: false`. If the
   /// stroke specifies a color, the coloring from the @contour.map is
   /// overridden. This can also be an array of strokes for each level (if the
-  /// number of strokes is less than the number of levels, they are repeated). 
-  /// -> stroke | array
+  /// number of strokes is less than the number of levels, they are repeated)
+  /// or a function that takes the level and returns a stroke.
+  /// -> stroke | array | function
   stroke: 0.7pt,
   
   /// A color map in form of a gradient or an array of colors to sample from
@@ -285,7 +286,10 @@
   } else {
     fill = (fill * calc.ceil(levels.len() / fill.len())).slice(0, levels.len())
   }
-  
+
+  if type(stroke) == function {
+    stroke = levels.map(stroke)
+  }
   if type(stroke) != array {
     stroke = (stroke,) * levels.len()
   } else {

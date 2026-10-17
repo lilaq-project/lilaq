@@ -172,6 +172,19 @@
 )
 #lq.colorbar(contour)
 
+#pagebreak()
+
+
+#lq.diagram(
+  lq.contour(
+    lq.linspace(-2, 2, num: 6),
+    lq.linspace(-2, 2, num: 6),
+    (x, y) => x * y,
+    stroke: level => if level < 0 { (dash: "dashed") } else { (dash: "solid") },
+    levels: 7
+  )
+)
+
 // #pagebreak()
 
 // #show lq.selector(lq.contour-label): set text(.5em)
