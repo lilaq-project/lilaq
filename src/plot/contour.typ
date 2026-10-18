@@ -2,6 +2,7 @@
 #import "../algorithm/contour.typ": close-path-at-boundaries, compute-polygon-orientation
 #import "../logic/sample-colors.typ": sample-colors
 #import "../math.typ": minmax, mesh
+#import "../process-styles.typ": merge-fills
 
 #import "@preview/elembic:1.1.1" as e
 
@@ -111,7 +112,7 @@
       }
       
       for position in positions {
-        set text(color)
+        set text(merge-fills(std.stroke(stroke).paint, color))
         let (x, y) = (1pt * position.x, 1pt * position.y)
         place(dx: x, dy: y, 
           place(center + horizon, 
@@ -156,6 +157,19 @@
 ///   )
 /// )
 /// ```
+/// Use @colorbar for displaying height information about the levels. Moreover,
+/// stroked contour plots can be enhanced with in-plot level labels.
+/// ```example
+/// #let plot = lq.contour(
+///   lq.linspace(-1, 3),
+///   lq.linspace(-2, 2),
+///   (x, y) => 2*(calc.exp(-x*x - y*(y + 1)) - calc.exp(-calc.pow(x - 3, 2) - calc.pow(y - 1, 2))),
+///   levels: 7,
+///   level-labels: auto
+/// )
+/// #lq.diagram(plot)
+/// #lq.colorbar(plot)
+/// ```
 #let contour(
 
   /// A one-dimensional array of $x$ data coordinates. 
@@ -194,6 +208,24 @@
   /// Whether to fill the contour levels. 
   /// This can also be an array of fills for each level (if the
   /// number of fills is less than the number of levels, they are repeated). 
+  /// ```example
+  /// #let fill = (
+  ///   lq.tilings.diag(),
+  ///   lq.tilings.diag(angle: 0deg),
+  ///   lq.tilings.diag(angle: -45deg),
+  ///   lq.tilings.diag(angle: 90deg),
+  /// )
+  /// #let contour = lq.contour(
+  ///   lq.linspace(-2, 2, num: 6),
+  ///   lq.linspace(-2, 2, num: 6),
+  ///   (x, y) => x * y,
+  ///   fill: fill,
+  ///   map: (white, luma(40%)),
+  ///   levels: (-4, -1, 0, 2, 3),
+  /// )
+  /// #lq.diagram(contour)
+  /// #lq.colorbar(contour)
+  /// ```
   /// -> none | auto | array
   fill: none,
 
@@ -201,7 +233,37 @@
   /// stroke specifies a color, the coloring from the @contour.map is
   /// overridden. This can also be an array of strokes for each level (if the
   /// number of strokes is less than the number of levels, they are repeated)
+  /// ```example
+  /// #let contour = lq.contour(
+  ///   lq.linspace(-2, 2, num: 6),
+  ///   lq.linspace(-2, 2, num: 6),
+  ///   (x, y) => x * y,
+  ///   stroke: (
+  ///     (dash: "dashed"), 
+  ///     (dash: "dash-dotted"), 
+  ///     (dash: "solid", thickness: 2pt)
+  ///   ),
+  /// )
+  /// #lq.diagram(contour)
+  /// #lq.colorbar(contour)
+  /// ```
+  /// 
   /// or a function that takes the level and returns a stroke.
+  /// ```example
+  /// #lq.diagram(
+  ///   lq.contour(
+  ///     lq.linspace(-1.5, 1.5),
+  ///     lq.linspace(-1.5, 1.5),
+  ///     (x, y) => calc.exp(-x * x - y * y) - 0.5,
+  ///     stroke: level => if level < 0 {
+  ///       (paint: black, dash: "dashed")
+  ///     } else {
+  ///       (paint: black, dash: "solid")
+  ///     },
+  ///     level-labels: auto,
+  ///   )
+  /// )
+  /// ```
   /// -> stroke | array | function
   stroke: 0.7pt,
   
