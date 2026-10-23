@@ -361,9 +361,15 @@
   if ticks != auto {
     if type(ticks) == dictionary {
       assert("ticks" in ticks, message: "When passing a dictionary for `ticks`, you need to provide the keys \"ticks\" and optionally \"labels\"")
-      locate-ticks = tick-locate.manual.with(ticks: ticks.ticks.zip(ticks.labels))
       if "labels" in ticks {
-        format-ticks = tick-locate.format-ticks-manual 
+        assert(
+          ticks.ticks.len() == ticks.labels.len(),
+          message: "The number of tick positions and labels needs to match"
+        )
+        format-ticks = tick-format.manual 
+        locate-ticks = tick-locate.manual.with(ticks: ticks.ticks.zip(ticks.labels))
+      } else {
+        locate-ticks = tick-locate.manual.with(ticks: ticks.ticks)
       }
     } else if type(ticks) == array {
       if ticks.len() > 0 and type(ticks.first()) == array {
