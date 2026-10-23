@@ -8,7 +8,7 @@
 
 
 // Ensure that plots can be called with no coordinates, just to generate a legend entry.
-#show lq.selector(lq.legend): set grid(columns: 4)
+#show: lq.set-legend(columns: 2, ordering: ltr)
 
 #lq.diagram(
   xaxis: (ticks: (0, 1)),
