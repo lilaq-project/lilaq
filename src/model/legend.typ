@@ -62,6 +62,17 @@
   /// -> length
   pad: 2pt, 
 
+  /// The number of columns in the legend. The default is 1, which means that
+  /// the legend entries are stacked vertically. With 2, the entries are
+  /// arranged in two columns etc.
+  /// -> int
+  columns: 1,
+
+  /// The ordering of the legend entries. With `ltr`, the entries are arranged
+  /// left-to-right, with `ttb` they are arranged top-to-bottom.
+  /// -> ltr | ttb
+  ordering: ttb,
+
   /// The horizontal displacement of the legend from the position specified 
   /// through @legend.position. 
   /// -> relative
@@ -83,13 +94,25 @@
   "legend",
   prefix: "lilaq",
 
-  display: it => box(
-    stroke: update-stroke(ink(mix: 100% / 3), it.stroke),
-    inset: it.inset,
-    fill: if it.fill == auto { paper().transparentize(20%) } else { it.fill },
-    radius: it.radius,
-    grid(..it.children)
-  ),
+  display: it => {
+    let children = it.children
+    assert(
+      it.ordering in (ltr, ttb),
+      message: "legend.ordering has to be ltr or ttb, got " + repr(it.ordering)
+    )
+    if it.ordering == ttb {
+      let rows = calc.ceil(children.len() / 2 / it.columns)
+      children += (none,) * (2 * rows * it.columns - children.len())
+      children = array.zip(..children.chunks(2).chunks(rows)).join().join()
+    }
+    box(
+      stroke: update-stroke(ink(mix: 100% / 3), it.stroke),
+      inset: it.inset,
+      fill: if it.fill == auto { paper().transparentize(20%) } else { it.fill },
+      radius: it.radius,
+      grid(..children, columns: it.columns * 2)
+    )
+  },
 
   fields: (
     e.field("children", e.types.array(e.types.any), required: true),
@@ -100,6 +123,8 @@
     
     e.field("position", e.types.union(alignment, array), default: top + right),
     e.field("pad", length, default: 2pt),
+    e.field("columns", int, default: 1),
+    e.field("ordering", direction, default: ttb),
     e.field("dx", relative, default: 0pt),
     e.field("dy", relative, default: 0pt),
     e.field("z-index", float, default: 6),
@@ -163,7 +188,6 @@
     wrap-in-box: true,
     {
       set grid(
-        columns: 2, 
         stroke: none, 
         inset: 2pt, 
         align: horizon + start
