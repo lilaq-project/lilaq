@@ -24,7 +24,7 @@
 
 
 #let fill-between = lq.fill-between.with(label: [])
-#show lq.selector(lq.legend): set grid(columns: 4)
+#show: lq.set-legend(columns: 2, ordering: ltr)
 
 // Cycling test
 #lq.diagram(
