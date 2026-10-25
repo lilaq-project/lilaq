@@ -189,7 +189,7 @@
     {
       set grid(
         stroke: none, 
-        inset: 2pt, 
+        inset: 2em / 11, 
         align: horizon + start
       )
       set grid.cell(breakable: false)
