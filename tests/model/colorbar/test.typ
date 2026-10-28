@@ -36,7 +36,7 @@
 #let x = lq.linspace(-2 * calc.pi, 2 * calc.pi)
 #let y = lq.linspace(-2 * calc.pi, 2 * calc.pi)
 #let fun(x, y) = { calc.sin(x) + calc.cos(y) }
-#let levels = (-1, 0.7, 0.3, 0.5, 1)
+#let levels = (-1, 0.3, 0.5, 0.7, 1)
 #let contourplt-filled = lq.contour(
   x,
   y,
@@ -46,6 +46,7 @@
   fill: true,
   levels: levels,
 )
+
 #let contourplt-lines = lq.contour(
   x,
   y,
