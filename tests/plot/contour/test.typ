@@ -187,85 +187,107 @@
 
 
 
-// #pagebreak()
+#pagebreak()
 
-// // Level labels
-// #lq.diagram(
-//   lq.contour(
-//     lq.linspace(-2, 2, num: 10),
-//     lq.linspace(-2, 2, num: 10),
-//     (x, y) => x * y,
-//     levels: 7,
-//     level-labels: auto
-//   )
-// )
+// Level labels
+#lq.diagram(
+  lq.contour(
+    lq.linspace(-2, 2, num: 10),
+    lq.linspace(-2, 2, num: 10),
+    (x, y) => x * y,
+    levels: 7,
+    level-labels: auto
+  )
+)
 
-// #pagebreak()
 
-// #[
-//   // #show lq.selector(lq.contour-level-label): set text(.5em)
-//   // #show lq.selector(lq.contour-level-label): set pad(0em)
+#pagebreak()
+
+#[
+  // #show lq.selector(lq.contour-level-label): set text(.5em)
+  // #show lq.selector(lq.contour-level-label): set pad(0em)
   
-//   #lq.diagram(
-//     lq.contour(
-//       lq.linspace(-1, 3),
-//       lq.linspace(-2, 2),
-//       (x, y) => 2*(calc.exp(-x*x - y*(y + 1)) - calc.exp(-calc.pow(x - 3, 2) - calc.pow(y - 1, 2))),
-//       level-labels: auto
-//     )
-//   )
-// ]
-// #pagebreak()
+  #lq.diagram(
+    lq.contour(
+      lq.linspace(-1, 3),
+      lq.linspace(-2, 2),
+      (x, y) => 2*(calc.exp(-x*x - y*(y + 1)) - calc.exp(-calc.pow(x - 3, 2) - calc.pow(y - 1, 2))),
+      level-labels: auto
+    )
+  )
+]
+#pagebreak()
 
-// // Level labels with custom stroke color
-// #lq.diagram(
-//   let c =lq.contour(
-//     lq.linspace(-1.5, 1.5, num: 50),
-//     lq.linspace(-1.5, 1.5, num: 50),
-//     (x, y) => calc.exp(-x *x - y * y) - .5,
-//     stroke: level => if level < 0 { (paint: red, dash: "dashed") } else { (paint: black, dash: "solid") },
-//     level-labels: auto,
-//   ), c
-// )
-// #lq.colorbar(c)
+// Level labels with custom stroke color
+#lq.diagram(
+  let c =lq.contour(
+    lq.linspace(-1.5, 1.5, num: 50),
+    lq.linspace(-1.5, 1.5, num: 50),
+    (x, y) => calc.exp(-x *x - y * y) - .5,
+    stroke: level => if level < 0 { (paint: red, dash: "dashed") } else { (paint: black, dash: "solid") },
+    level-labels: auto,
+  ), c
+)
+#lq.colorbar(c)
 
-// #pagebreak()
+#pagebreak()
 
 
-// #lq.diagram(
-//   lq.contour(
-//     lq.linspace(-2, 2, num: 16),
-//     lq.linspace(-2, 2, num: 16),
-//     (x, y) => x * y,
-//     levels: 50,
-//     level-labels: auto
-//   )
-// )
+#lq.diagram(
+  lq.contour(
+    lq.linspace(-2, 2, num: 16),
+    lq.linspace(-2, 2, num: 16),
+    (x, y) => x * y,
+    levels: 50,
+    level-labels: auto
+  )
+)
 
-// #pagebreak()
+#pagebreak()
 
-// #lq.diagram(
-//   xaxis: (inverted: true),
-//   yaxis: (inverted: true),
-//   lq.contour(
-//     lq.linspace(-2, 2, num: 6),
-//     lq.linspace(-2, 2, num: 6),
-//     (x, y) => (x + 1) * (y - 1),
-//     levels: 7,
-//     level-labels: auto
-//   )
-// )
-// #pagebreak()
+#lq.diagram(
+  xaxis: (inverted: true),
+  yaxis: (inverted: true),
+  lq.contour(
+    lq.linspace(-2, 2, num: 6),
+    lq.linspace(-2, 2, num: 6),
+    (x, y) => (x + 1) * (y - 1),
+    levels: 7,
+    level-labels: auto
+  )
+)
+#pagebreak()
 
-// #lq.diagram(
-//   xaxis: (inverted: true),
-//   yaxis: (inverted: true),
-//   lq.contour(
-//     lq.linspace(-2, 2, num: 23),
-//     lq.linspace(-3, 3, num: 21),
-//     (x, y) => calc.sin(x) * (y - 1) + calc.tanh(y),
-//     levels: 7,
-//     level-labels: auto
-//   )
-// )
+// Manual level labels
+#lq.diagram(
+  lq.contour(
+    lq.linspace(-2, 2, num: 10),
+    lq.linspace(-2, 2, num: 10),
+    (x, y) => x * y,
+    levels: 10,
+    level-labels: (positions: (
+      (1.5, 1.5),
+      (0, 1),
+      (0, -1),
+      (1, 0),
+      (-1.5, -1.5),
+      (-1.4, 1.6),
+    ))
+  )
+)
+
+#pagebreak()
+
+
+#lq.diagram(
+  xaxis: (inverted: true),
+  yaxis: (inverted: true),
+  lq.contour(
+    lq.linspace(-2, 2, num: 23),
+    lq.linspace(-3, 3, num: 21),
+    (x, y) => calc.sin(x) * (y - 1) + calc.tanh(y),
+    levels: 7,
+    level-labels: auto
+  )
+)
 

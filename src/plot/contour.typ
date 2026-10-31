@@ -23,17 +23,35 @@
     return std.line(length: 100%, stroke: plot.level-colors.first())
   }
 
-  let tags = auto
-  if tags == auto {
-    tags = plot.levels
-    import "../logic/tick-format.typ"
-    tags = tick-format.linear(tags).labels
+
+  if plot.level-labels == auto {
+    plot.level-labels = (:)
   }
-  tags = tags.map(tag => {
-    set pad(x: .3em)
-    set text(.8em)
-    contour-level-label(tag)
-  })
+  if type(plot.level-labels) == dictionary {
+    if "format" not in plot.level-labels {
+      import "../logic/tick-format.typ"
+      plot.level-labels.format = tick-format.linear
+    }
+    if "all" not in plot.level-labels {
+      plot.level-labels.all = false
+    }
+    if "positions" not in plot.level-labels {
+      plot.level-labels.positions = none
+    } else {
+      plot.level-labels.positions = plot.level-labels.positions.map(p => transform(..p).map(x => x.pt()))
+    }
+  }
+
+  let labels = plot.levels
+  if plot.level-labels != none {
+    labels = (plot.level-labels.format)(plot.levels)
+      .labels
+      .map(label => {
+        set pad(x: .3em)
+        set text(.8em)
+        contour-level-label(label)
+      })
+  }
   
   import "@local/komet:0.2.0"
   let x = plot.x
@@ -45,14 +63,15 @@
   }  
 
   let label-lengths = if plot.is-filled or plot.level-labels == none { none } else {
-    tags.map(label => measure(label).width)
+    labels.map(label => measure(label).width)
   }
   let (contours, labels: label-positions) = komet.contour(
     x, y, 
     plot.z, 
     plot.levels, 
     label-lengths: label-lengths,
-    // label-every-line: true
+    label-positions: if plot.level-labels != none { plot.level-labels.positions },
+    label-every-line: if plot.level-labels != none {plot.level-labels.all} else {false}
   )
 
 
@@ -100,7 +119,7 @@
     }
 
   } else {
-    for (contour, color, positions, label, stroke) in contours.zip(plot.level-colors, label-positions, tags, plot.stroke) {
+    for (contour, color, positions, label, stroke) in contours.zip(plot.level-colors, label-positions, labels, plot.stroke) {
       set curve(stroke: color)
       set curve(stroke: stroke)
       for path in contour {
@@ -201,8 +220,21 @@
 
   /// Controls the insertion of level labels into the contour lines.
   /// This only applies when @contour.fill is `false`, otherwise, no labels are
-  /// drawn. When set to `auto`, labels are added to all contour lines that provide a sufficient amount of space.
-  /// -> none | auto
+  /// drawn. When set to `auto`, labels are added to all contour lines that
+  /// provide a sufficient amount of space.
+  /// 
+  /// For more control, a dictionary can be passed with the optional keys
+  /// - `format`: A formatter for the level ticks, see @axis.format-ticks and
+  ///   the tutorial section 
+  ///   #link("tutorials/ticks#formatting-ticks")[Ticks − Formatting ticks]. 
+  ///   This defaults to `lq.tick-format.linear`.
+  /// - `all`: Whether to label all segments when one level consists of several 
+  ///   disconnected curves, by default `false`.
+  /// - `positions`: An array of positions for manual label placement.
+  ///   It accepts an array of `(x, y)`
+  ///   coordinate pairs; each point is assigned to the closest contour line across
+  ///   all levels, and automatic placement is disabled.
+  /// -> none | auto | dictionary
   level-labels: none,
 
   /// Whether to fill the contour levels. 
@@ -319,7 +351,6 @@
   let z0 = if min != auto { min } else { calc.min(..z-flat) }
   let z1 = if max != auto { max } else { calc.max(..z-flat) }
   if z0 == z1 { z0 -= 1; z1 += 1 }
-
 
   if type(levels) == int {
     import "../logic/tick-locate.typ"
