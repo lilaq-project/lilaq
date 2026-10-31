@@ -38,15 +38,20 @@
     if "positions" not in plot.level-labels {
       plot.level-labels.positions = none
     } else {
-      plot.level-labels.positions = plot.level-labels.positions.map(p => transform(..p).map(x => x.pt()))
+      plot.level-labels.positions = plot.level-labels
+        .positions
+        .map(p => transform(..p).map(x => x.pt()))
     }
   }
 
   let labels = plot.levels
   if plot.level-labels != none {
     labels = (plot.level-labels.format)(plot.levels)
-      .labels
-      .map(label => {
+    if type(labels) == dictionary {
+      labels = labels.labels
+    }
+    
+    labels = labels.map(label => {
         set pad(x: .3em)
         set text(.8em)
         contour-level-label(label)
