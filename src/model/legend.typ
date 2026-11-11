@@ -28,8 +28,12 @@
   /// -> auto | none | color | gradient | tiling
   fill: auto,
 
-  /// Determines the padding of the entire legend within its box. The default
-  /// of `0.3em + 2em / 11` amounts to about `0.48em`. 
+  /// The padding between the border of the legend and its entries. This is
+  /// the only padding around the entries: with `inset: 0pt`, the entries 
+  /// touch the border. The spacing between the entries is controlled 
+  /// separately via @legend.row-gutter, @legend.column-gutter, and 
+  /// @legend.handle-gap. The default of `0.3em + 2em / 11` amounts to about
+  /// `0.48em`. 
   /// -> relative
   inset: 0.3em + 2em / 11,
 
