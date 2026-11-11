@@ -28,9 +28,10 @@
   /// -> auto | none | color | gradient | tiling
   fill: auto,
 
-  /// Determines the padding of the entire legend within its box. 
+  /// Determines the padding of the entire legend within its box. The default
+  /// of `0.3em + 2em / 11` amounts to about `0.48em`. 
   /// -> relative
-  inset: 0.3em,
+  inset: 0.3em + 2em / 11,
 
   /// How to stroke the outer border of the legend. A stroke without a paint
   /// takes the text color mixed a third into the page color, which with black
@@ -67,6 +68,51 @@
   /// arranged in two columns etc.
   /// -> int
   columns: 1,
+
+  /// The vertical spacing between two rows of legend entries.
+  /// 
+  /// ```example
+  /// #lq.diagram(
+  ///   legend: (row-gutter: 1em),
+  /// 
+  ///   lq.plot((1,2,3), (1,2,3), label: [Data A]),
+  ///   lq.plot((1,2,3), (2,3,4), label: [Data B]),
+  /// )
+  /// ```
+  /// -> relative
+  row-gutter: 4em / 11,
+
+  /// The horizontal spacing between two columns of legend entries. This only
+  /// has an effect when @legend.columns is greater than 1. The spacing 
+  /// between a handle and its label is controlled via @legend.handle-gap.
+  /// -> relative
+  column-gutter: 4em / 11,
+
+  /// The width of the legend handles, i.e., the small previews of the plots 
+  /// next to the labels. 
+  /// 
+  /// ```example
+  /// #lq.diagram(
+  ///   legend: (handle-width: 1em, handle-height: 1em),
+  /// 
+  ///   lq.bar((1,2,3), (1,2,3), label: [Data A]),
+  ///   lq.plot((1,2,3), (2,3,4), label: [Data B]),
+  /// )
+  /// ```
+  /// 
+  /// This only applies to the automatically generated legend entries. 
+  /// Handles of custom entries passed through @legend.children are 
+  /// used as given. 
+  /// -> length
+  handle-width: 2em,
+
+  /// The height of the legend handles. Also see @legend.handle-width. 
+  /// -> length
+  handle-height: 0.7em,
+
+  /// The horizontal spacing between a legend handle and its label. 
+  /// -> relative
+  handle-gap: 4em / 11,
 
   /// The ordering of the legend entries. With `ltr`, the entries are arranged
   /// left-to-right, with `ttb` they are arranged top-to-bottom.
@@ -110,20 +156,31 @@
       inset: it.inset,
       fill: if it.fill == auto { paper().transparentize(20%) } else { it.fill },
       radius: it.radius,
-      grid(..children, columns: it.columns * 2)
+      grid(
+        ..children,
+        columns: it.columns * 2,
+        row-gutter: it.row-gutter,
+        column-gutter: ((it.handle-gap, it.column-gutter) * it.columns)
+          .slice(0, -1),
+      )
     )
   },
 
   fields: (
     e.field("children", e.types.array(e.types.any), required: true),
     e.field("fill", e.types.smart(e.types.option(e.types.paint)), default: auto),
-    e.field("inset", relative, default: 0.3em),
+    e.field("inset", relative, default: 0.3em + 2em / 11),
     e.field("stroke", e.types.option(stroke), default: 0.5pt),
     e.field("radius", e.types.union(relative, dictionary), default: 1.5pt),
     
     e.field("position", e.types.union(alignment, array), default: top + right),
     e.field("pad", length, default: 2pt),
     e.field("columns", int, default: 1),
+    e.field("row-gutter", relative, default: 4em / 11),
+    e.field("column-gutter", relative, default: 4em / 11),
+    e.field("handle-width", length, default: 2em),
+    e.field("handle-height", length, default: 0.7em),
+    e.field("handle-gap", relative, default: 4em / 11),
     e.field("ordering", direction, default: ttb),
     e.field("dx", relative, default: 0pt),
     e.field("dy", relative, default: 0pt),
@@ -161,6 +218,13 @@
   }
 
   if e.eid(my-legend) != e.eid(legend) {
+    let get-field(field) = my-legend.at(field, default: e-get(legend).at(field))
+    let handle-width = get-field("handle-width")
+    let handle-height = get-field("handle-height")
+    legend-entries = legend-entries.map(((handle, label)) => (
+      box(width: handle-width, height: handle-height, handle),
+      label
+    ))
     my-legend = legend(..legend-entries.join(), ..my-legend)
   }
 
@@ -189,7 +253,7 @@
     {
       set grid(
         stroke: none, 
-        inset: 2em / 11, 
+        inset: 0pt, 
         align: horizon + start
       )
       set grid.cell(breakable: false)

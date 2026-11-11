@@ -353,10 +353,9 @@
         label = hide(label)
         handle = hide(handle)
       }
-      legend-entries.push((
-        box(width: 2em, height: .7em, handle),
-        label
-      ))
+      // The handle is sized according to the legend settings later on in
+      // `_place-legend-with-bounds`. 
+      legend-entries.push((handle, label))
     }
     i += 1
   }
