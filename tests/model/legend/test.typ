@@ -58,3 +58,11 @@
   ),
   ..plots
 )
+
+
+// Label size and per-diagram z-index
+#lq.diagram(
+  width: 3cm, height: 2cm,
+  legend: (label-size: 0.6em, z-index: 1, columns: 2),
+  ..plots
+)

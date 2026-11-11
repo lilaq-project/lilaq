@@ -114,6 +114,21 @@
   /// -> relative
   handle-gap: 4em / 11,
 
+  /// The text size of the legend labels. With `auto`, the labels inherit
+  /// the surrounding text size. Only the labels are affected; the handles
+  /// and the spacing keep their size. 
+  /// 
+  /// ```example
+  /// #lq.diagram(
+  ///   legend: (label-size: 0.8em),
+  /// 
+  ///   lq.plot((1,2,3), (1,2,3), label: [Data A]),
+  ///   lq.plot((1,2,3), (2,3,4), label: [Data B]),
+  /// )
+  /// ```
+  /// -> auto | length
+  label-size: auto,
+
   /// The ordering of the legend entries. With `ltr`, the entries are arranged
   /// left-to-right, with `ttb` they are arranged top-to-bottom.
   /// -> ltr | ttb
@@ -132,7 +147,7 @@
   /// Specifies the $z$ position of the legend in the order of rendered
   /// diagram objects. 
   /// -> int | float
-  z-index: 25,
+  z-index: 6,
 
 ) = {}
 
@@ -142,6 +157,13 @@
 
   display: it => {
     let children = it.children
+    if it.label-size != auto {
+      // children alternate between handles and labels
+      children = children.enumerate().map(((i, child)) => {
+        if calc.odd(i) and child != none { text(size: it.label-size, child) }
+        else { child }
+      })
+    }
     assert(
       it.ordering in (ltr, ttb),
       message: "legend.ordering has to be ltr or ttb, got " + repr(it.ordering)
@@ -181,6 +203,7 @@
     e.field("handle-width", length, default: 2em),
     e.field("handle-height", length, default: 0.7em),
     e.field("handle-gap", relative, default: 4em / 11),
+    e.field("label-size", e.types.smart(length), default: auto),
     e.field("ordering", direction, default: ttb),
     e.field("dx", relative, default: 0pt),
     e.field("dy", relative, default: 0pt),
@@ -232,6 +255,7 @@
   let dx = get-settable-field(legend, my-legend, "dx")
   let dy = get-settable-field(legend, my-legend, "dy")
   let pad = get-settable-field(legend, my-legend, "pad")
+  let z = get-settable-field(legend, my-legend, "z-index")
 
   let alignment = top + left
   let content-alignment = "inside"
@@ -245,7 +269,7 @@
     pad = 0pt
   } 
 
-  place-with-bounds(
+  let (content, bounds) = place-with-bounds(
     alignment: alignment, 
     content-alignment: content-alignment, 
     dx: dx, dy: dy, pad: pad,
@@ -260,4 +284,5 @@
       my-legend
     }
   )
+  (content, bounds, z)
 }
