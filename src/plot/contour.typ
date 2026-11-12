@@ -233,12 +233,47 @@
   ///   the tutorial section 
   ///   #link("tutorials/ticks#formatting-ticks")[Ticks − Formatting ticks]. 
   ///   This defaults to `lq.tick-format.linear`.
+  ///   ```example
+  ///   #lq.diagram(
+  ///     lq.contour(
+  ///       lq.linspace(-2, 2, num: 10),
+  ///       lq.linspace(-2, 2, num: 10),
+  ///       (x, y) => x * y,
+  ///       levels: 10,
+  ///       level-labels: (
+  ///         format: levels => levels.map(
+  ///           level => "Level " + str(level)
+  ///         ),
+  ///       ),
+  ///     ),
+  ///   )
+  ///   ```
   /// - `all`: Whether to label all segments when one level consists of several 
   ///   disconnected curves, by default `false`.
   /// - `positions`: An array of positions for manual label placement.
   ///   It accepts an array of `(x, y)`
   ///   coordinate pairs; each point is assigned to the closest contour line across
   ///   all levels, and automatic placement is disabled.
+  ///   ```example
+  ///   #lq.diagram(
+  ///     lq.contour(
+  ///       lq.linspace(-2, 2, num: 10),
+  ///       lq.linspace(-2, 2, num: 10),
+  ///       (x, y) => x * y,
+  ///       levels: 10,
+  ///       level-labels: (
+  ///         positions: (
+  ///           (1.5, 1.5),
+  ///           (0, 1),
+  ///           (0, -1),
+  ///           (1, 0),
+  ///           (-1.5, -1.5),
+  ///           (-1.4, 1.6),
+  ///         ),
+  ///       ),
+  ///     ),
+  ///   )
+  ///   ```
   /// -> none | auto | dictionary
   level-labels: none,
 
