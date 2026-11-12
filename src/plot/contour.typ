@@ -58,7 +58,7 @@
       })
   }
   
-  import "@local/komet:0.2.0"
+  import "@preview/komet:0.3.0"
   let x = plot.x
   let y = plot.y
   
