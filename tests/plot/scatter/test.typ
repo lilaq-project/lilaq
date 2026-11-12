@@ -9,11 +9,12 @@
   xaxis: none,
   yaxis: none,
   grid: none,
-  legend: (position: left, dx: 100%),
+  legend: (
+    position: left, dx: 100%,
+    inset: 0.3em, row-gutter: 0pt, column-gutter: 0pt, handle-gap: 0pt,
+  ),
 )
 
-
-#show lq.selector(lq.legend): set grid(inset: 0pt)
 
 
 

@@ -247,13 +247,14 @@
 
 #let generate-legend(legend, legend-entries, e-get) = {
   if legend != none and (legend-entries.len() > 0 or e.eid(legend) == e.eid(lq-legend)) {
-    let (legend-content, legend-bounds) = _place-legend-with-bounds(
+    let (legend-content, legend-bounds, z) = _place-legend-with-bounds(
       legend, legend-entries, e-get
     )
 
     (
       content: legend-content,
-      bounds: legend-bounds
+      bounds: legend-bounds,
+      z: z,
     )
   }
 }
@@ -353,10 +354,9 @@
         label = hide(label)
         handle = hide(handle)
       }
-      legend-entries.push((
-        box(width: 2em, height: .7em, handle),
-        label
-      ))
+      // The handle is sized according to the legend settings later on in
+      // `_place-legend-with-bounds`. 
+      legend-entries.push((handle, label))
     }
     i += 1
   }
@@ -901,7 +901,7 @@
       // LEGEND
       let legend = generate-legend(it.legend, legend-entries, e-get)
       if legend != none {
-        artists.push((content: legend.content, z: e-get(lq-legend).z-index))
+        artists.push((content: legend.content, z: legend.z))
         bounds = update-bounds(bounds, legend.bounds)
       }
 
