@@ -102,6 +102,11 @@
   /// -> auto | array
   lim: auto,
 
+  /// Includes zero in automatic limits before adding margins. This applies to
+  /// linear and symlog scales; explicitly specified limits take precedence.
+  /// -> bool
+  include-zero: false,
+
   /// Whether to invert the limits (swap minimum and maximum). Inverting is 
   /// applied regardless of whether the limits are set manually or computed automatically. 
   /// -> bool
@@ -496,6 +501,18 @@
     if data-limits.x1 == auto {
       data-limits.x1 = if scale.identity == 0 { 1 } else { scale.identity }
     }
+
+    if include-zero and scale.name in ("linear", "symlog") {
+      if lim.at(0) == auto and data-limits.x0 > 0 {
+        data-limits.x0 = 0
+        data-limits.tight-x0 = false
+      }
+
+      if lim.at(1) == auto and data-limits.x1 < 0 {
+        data-limits.x1 = 0
+        data-limits.tight-x1 = false
+      }
+    }
   }
 
   if type(mirror) == bool {
@@ -513,6 +530,7 @@
     type: "axis",
     scale: scale,
     lim: lim,
+    include-zero: include-zero,
     data-limits: data-limits,
     functions: (forward: functions.at(0), inv: functions.at(1)),
     label: label,
