@@ -102,11 +102,6 @@
   /// -> auto | array
   lim: auto,
 
-  /// Includes zero in automatic limits before adding margins. This applies to
-  /// linear and symlog scales; explicitly specified limits take precedence.
-  /// -> bool
-  include-zero: false,
-
   /// Whether to invert the limits (swap minimum and maximum). Inverting is 
   /// applied regardless of whether the limits are set manually or computed automatically. 
   /// -> bool
@@ -227,6 +222,11 @@
   /// #link("tutorials/ticks#displaying-subtick-labels")[Ticks − Displaying subticks labels]. 
   /// -> auto | none | function
   format-subticks: none,
+
+  /// Whether to include zero in automatic limits before adding margins. This applies to
+  /// linear and symlog scales; explicitly specified limits take precedence.
+  /// -> bool
+  include-zero: false,
 
   /// An array of extra ticks to display. The ticks can be positions given as `float` data values or @tick instances. 
   /// -> array
@@ -464,6 +464,10 @@
     let plot-limits = plots
       .map(plot => plot.at(kind + "limits")())
       .filter(x => x != none)
+      
+    if include-zero and scale.name in ("linear", "symlog") {
+      plot-limits.push((0fr, 0fr))
+    }
 
     if plot-limits.len() == 0 {
       if scale.identity != 0 {
@@ -500,18 +504,6 @@
     }
     if data-limits.x1 == auto {
       data-limits.x1 = if scale.identity == 0 { 1 } else { scale.identity }
-    }
-
-    if include-zero and scale.name in ("linear", "symlog") {
-      if lim.at(0) == auto and data-limits.x0 > 0 {
-        data-limits.x0 = 0
-        data-limits.tight-x0 = false
-      }
-
-      if lim.at(1) == auto and data-limits.x1 < 0 {
-        data-limits.x1 = 0
-        data-limits.tight-x1 = false
-      }
     }
   }
 
