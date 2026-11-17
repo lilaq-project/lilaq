@@ -465,7 +465,7 @@
       .map(plot => plot.at(kind + "limits")())
       .filter(x => x != none)
       
-    if include-zero and scale.name in ("linear", "symlog") {
+    if include-zero and scale.name in ("linear", "symlog") and plot-limits.len() > 0 {
       plot-limits.push((0, 0))
     }
 
