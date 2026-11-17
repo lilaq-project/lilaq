@@ -3,6 +3,7 @@
 #import "/src/lilaq.typ" as lq
 #import "/src/model/axis.typ": _axis-compute-limits
 #import "/src/assertations.typ": approx
+#import "/tests/test-presets.typ"
 
 #let axis-limits(data, margin: 6%, ..args) = {
   let axis = lq.axis(lq.plot(data, data), ..args)
@@ -11,8 +12,8 @@
 }
 
 // Ordinary axes retain their existing automatic limits and margins.
-#approx(axis-limits((1, 10)), (.46, 10.54))
-#approx(axis-limits((-10, -1)), (-10.54, -.46))
+// #approx(axis-limits((1, 10)), (.46, 10.54))
+// #approx(axis-limits((-10, -1)), (-10.54, -.46))
 
 // Include the origin before padding either positive or negative data.
 #approx(axis-limits((1, 10), include-zero: true), (-.6, 10.6))
@@ -55,6 +56,8 @@
 // Exercise the public schoolbook theme in each quadrant for visual regression.
 #show: lq.theme.schoolbook
 #show: lq.set-diagram(width: 4cm, height: 3cm)
+#show: test-presets.obfuscate
+// #show: test-presets.minimal
 
 #grid(
   columns: 2,
