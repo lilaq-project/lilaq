@@ -466,7 +466,7 @@
       .filter(x => x != none)
       
     if include-zero and scale.name in ("linear", "symlog") {
-      plot-limits.push((0fr, 0fr))
+      plot-limits.push((0, 0))
     }
 
     if plot-limits.len() == 0 {
