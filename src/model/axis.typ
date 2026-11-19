@@ -841,9 +841,19 @@
     )
 
     if type(tick) in (int, float) {
+      let tick-label = format-ticks((tick,))
+      
+      if type(tick-label) == dictionary {
+        assertations.assert-dict-keys(
+          tick-label,
+          mandatory: ("labels",),
+          optional: ("offset", "exponent")
+        )
+        tick-label = tick-label.labels
+      }
       tick = lq-tick(
         tick, 
-        label: format-ticks((tick,)).labels.first(),
+        label: tick-label.first(),
         align: position.inv(),
         kind: axis.kind
       )
