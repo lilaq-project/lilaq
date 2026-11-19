@@ -286,7 +286,7 @@
   trim: true,
   whisker-pos: 1.5,
 ) = {
-  import "@preview/komet:0.2.0"
+  import "@preview/komet:0.3.0"
 
   data
     .filter(dataset => dataset.len() > 0)

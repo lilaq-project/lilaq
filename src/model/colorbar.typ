@@ -68,17 +68,13 @@
   
   // Contour plots require special treatment because they map discrete levels to colors. 
   // We identify contour plots by the presence of the `levels` array in the plot object.
-  let is-discrete-contour = "levels" in plot and plot.at("fill", default: false)
-  let is-line-contour = "levels" in plot and not plot.at("fill", default: false)
+  let is-discrete-contour = "levels" in plot and plot.at("is-filled", default: none)
+  let is-line-contour = "levels" in plot and not plot.at("is-filled", default: none)
   
   if is-discrete-contour {
-    // Sort levels and colors to ensure non-overlapping intervals
-    let combined = plot.levels.zip(plot.line-colors).sorted(key: x => x.at(0))
-    let sorted-levels = combined.map(x => x.at(0))
-    let sorted-colors = combined.map(x => x.at(1))
     
-    for i in range(sorted-levels.len()) {
-      let bottom = sorted-levels.at(i)
+    for i in range(plot.levels.len()) {
+      let bottom = plot.levels.at(i)
       let top = cinfo.max
       
       if top > bottom {
@@ -86,26 +82,31 @@
         // This layering approach replicates the rendering logic of the actual contour plot, 
         // effectively eliminating anti-aliasing artifacts between boundaries 
         // while maintaining mathematically precise alignment with the tick marks.
-        let color = sorted-colors.at(i)
+        let color = plot.level-colors.at(i)
+        let fill = plot.fill.at(i)
         
-        if orientation == "vertical" {
-          grad.push(rect(
+        
+        let rect = if orientation == "vertical" {
+          fill => rect(
             0%,
             bottom,
             width: 100%,
             height: top - bottom,
-            fill: color,
-            stroke: none,
-          ))
+            fill: fill,
+          )
         } else {
-          grad.push(rect(
+          fill => rect(
             bottom,
             0%,
             width: top - bottom,
             height: 100%,
-            fill: color,
-            stroke: none,
-          ))
+            fill: fill,
+          )
+        }
+
+        grad.push(rect(color))
+        if fill != auto {
+          grad.push(rect(fill))
         }
       }
     }
@@ -118,12 +119,11 @@
     import "../process-styles.typ": merge-strokes
     
     let levels = plot.levels
-    let colors = plot.line-colors
-    let plot-stroke = plot.at("stroke", default: auto)
+    let colors = plot.level-colors
     
     for i in range(levels.len()) {
       let level = levels.at(i)
-      let merged = merge-strokes(plot-stroke, colors.at(i))
+      let merged = merge-strokes(stroke(dash: "solid"), plot.stroke.at(i), colors.at(i))
       
       if orientation == "vertical" {
         grad.push(hlines(level, stroke: merged))

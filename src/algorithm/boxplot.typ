@@ -17,7 +17,7 @@
 ) = {
 
   if type(input) == array {
-    import "@preview/komet:0.1.0"
+    import "@preview/komet:0.3.0"
     return komet.boxplot(input, whisker-pos: whiskers)
   }
 

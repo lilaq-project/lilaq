@@ -8,6 +8,7 @@
 #import "model/diagram.typ": diagram
 #import "model/errorbar.typ": errorbar
 #import "plot/violin.typ": violin-boxplot, violin-extremum
+#import "plot/contour.typ": contour-level-label
 
 #let set_ = e.set_
 #let fields = e.fields
@@ -22,3 +23,4 @@
 #let set-errorbar = e.set_.with(errorbar)
 #let set-violin-boxplot = e.set_.with(violin-boxplot)
 #let set-violin-extremum = e.set_.with(violin-extremum)
+#let set-contour-level-label = e.set_.with(contour-level-label)
