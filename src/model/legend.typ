@@ -168,6 +168,7 @@
   let dx = get-settable-field(legend, my-legend, "dx")
   let dy = get-settable-field(legend, my-legend, "dy")
   let pad = get-settable-field(legend, my-legend, "pad")
+  let z-index = get-settable-field(legend, my-legend, "z-index")
 
   let alignment = top + left
   let content-alignment = "inside"
@@ -181,7 +182,7 @@
     pad = 0pt
   } 
 
-  place-with-bounds(
+  let (content, bounds) = place-with-bounds(
     alignment: alignment, 
     content-alignment: content-alignment, 
     dx: dx, dy: dy, pad: pad,
@@ -196,4 +197,5 @@
       my-legend
     }
   )
+  (content: content, bounds: bounds, z-index: z-index)
 }
