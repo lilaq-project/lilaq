@@ -381,7 +381,6 @@
       }
     } else if ticks == none {
       locate-ticks = none
-      format-ticks = none
     } else { assert(false, message: "The parameter `ticks` may either be an array or a dictionary")}
   }
   
