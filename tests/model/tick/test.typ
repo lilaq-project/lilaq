@@ -135,3 +135,17 @@
     ),
   )
 }
+
+#pagebreak()
+
+#lq.diagram(
+  yaxis: none,
+  height: 20pt,
+  xaxis: (
+    ticks: none,
+    format-ticks: (ticks, ..args) => ticks.map(value => if value == 1.0 {
+      ""
+    } else { str(value) + "e" }),
+    extra-ticks: (.2,),
+  ),
+)
