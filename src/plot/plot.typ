@@ -157,7 +157,8 @@
 /// error bars. Points are given as separate arrays of $x$ and $y$ coordinates.
 /// For convenience, @plot.y also accepts a `function` argument which is then 
 /// automatically evaluated for all given $x$ coordinates. Both methods are
-/// demonstrated below. 
+/// demonstrated below. Also see @plot-function as a variation that focuses on
+/// `function` instances over a domain with marks turned off by default.
 /// 
 /// ```example
 /// #let x = lq.linspace(0, 10)
@@ -451,8 +452,8 @@
 
 
 
-/// Plots a function over a finite domain without requiring an explicit array
-/// of $x$ coordinates.
+/// A wrapper for @plot that plots a function over a finite domain without requiring an explicit array
+/// of $x$ coordinates. 
 ///
 /// The function is evaluated at uniformly spaced points across
 /// @plot-function.domain.
