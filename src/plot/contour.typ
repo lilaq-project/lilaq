@@ -194,6 +194,8 @@
 /// #lq.diagram(plot)
 /// #lq.colorbar(plot)
 /// ```
+/// The font size and styling of the labels can be controlled through `set` 
+/// and `show` rules on the type `contour-level-label`.
 #let contour(
 
   /// A one-dimensional array of $x$ data coordinates. 
@@ -228,6 +230,9 @@
   /// drawn. When set to `auto`, labels are added to all contour lines that
   /// provide a sufficient amount of space.
   /// 
+  /// The font size and styling of the labels can be controlled through `set` 
+  /// and `show` rules on the type `contour-level-label`.
+  /// 
   /// For more control, a dictionary can be passed with the optional keys
   /// - `format`: A formatter for the level ticks, see @axis.format-ticks and
   ///   the tutorial section 
@@ -251,9 +256,9 @@
   /// - `all`: Whether to label all segments when one level consists of several 
   ///   disconnected curves, by default `false`.
   /// - `positions`: An array of positions for manual label placement.
-  ///   It accepts an array of `(x, y)`
+  ///   This expects an array of `(x, y)`
   ///   coordinate pairs; each point is assigned to the closest contour line across
-  ///   all levels, and automatic placement is disabled.
+  ///   all levels. Automatic placement is disabled when manual positions are given.
   ///   ```example
   ///   #lq.diagram(
   ///     lq.contour(
@@ -277,7 +282,10 @@
   /// -> none | auto | dictionary
   level-labels: none,
 
-  /// Whether to fill the contour levels. 
+  /// Whether to fill the contour levels. If set to `none`, the contours are
+  /// stroked, if set to `auto`, they are filled according to the level,
+  /// @contour.map, and @contour.norm.
+  /// 
   /// This can also be an array of fills for each level (if the
   /// number of fills is less than the number of levels, they are repeated). 
   /// ```example
@@ -301,7 +309,7 @@
   /// -> none | auto | array
   fill: none,
 
-  /// How to stroke the contours in the cases that `fill: false`. If the
+  /// How to stroke the contours in the cases that `fill: none`. If the
   /// stroke specifies a color, the coloring from the @contour.map is
   /// overridden. This can also be an array of strokes for each level (if the
   /// number of strokes is less than the number of levels, they are repeated)
