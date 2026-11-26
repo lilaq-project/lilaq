@@ -223,8 +223,9 @@
   /// -> auto | none | function
   format-subticks: none,
 
-  /// Whether to include zero in automatic limits before adding margins. This applies to
-  /// linear and symlog scales; explicitly specified limits take precedence.
+  /// Whether to include zero in automatic limits before adding margins. This applies only to
+  /// linear and symlog scales and only to automatic limits. Limits that are explicitly set to a 
+  /// coordinate in @axis.lim take precedence.
   /// -> bool
   include-zero: false,
 
