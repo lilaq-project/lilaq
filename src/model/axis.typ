@@ -223,6 +223,12 @@
   /// -> auto | none | function
   format-subticks: none,
 
+  /// Whether to include zero in automatic limits before adding margins. This applies only to
+  /// linear and symlog scales and only to automatic limits. Limits that are explicitly set to a 
+  /// coordinate in @axis.lim take precedence.
+  /// -> bool
+  include-zero: false,
+
   /// An array of extra ticks to display. The ticks can be positions given as `float` data values or @tick instances. 
   /// -> array
   extra-ticks: (), 
@@ -458,6 +464,10 @@
     let plot-limits = plots
       .map(plot => plot.at(kind + "limits")())
       .filter(x => x != none)
+      
+    if include-zero and scale.name in ("linear", "symlog") and plot-limits.len() > 0 {
+      plot-limits.push((0, 0))
+    }
 
     if plot-limits.len() == 0 {
       if scale.identity != 0 {
@@ -512,6 +522,7 @@
     type: "axis",
     scale: scale,
     lim: lim,
+    include-zero: include-zero,
     data-limits: data-limits,
     functions: (forward: functions.at(0), inv: functions.at(1)),
     label: label,
