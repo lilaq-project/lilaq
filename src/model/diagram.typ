@@ -6,7 +6,7 @@
 #import "../logic/process-coordinates.typ": transform-point
 
 
-#import "legend.typ": legend as lq-legend, _place-legend-with-bounds
+#import "legend.typ": legend as lq-legend, _place-legend-with-bounds, legend-icon
 #import "grid.typ": grid as lq-grid
 #import "title.typ": title as lq-title, _place-title-with-bounds
 #import "label.typ": label as lq-label
@@ -349,7 +349,7 @@
         handle = hide(handle)
       }
       legend-entries.push((
-        box(width: 2em, height: .7em, handle),
+        legend-icon(handle, label: plot.label),
         label
       ))
     }

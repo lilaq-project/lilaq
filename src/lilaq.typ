@@ -5,7 +5,7 @@
 #import "model/tick.typ": tick, tick-label
 #import "model/spine.typ": spine
 #import "model/title.typ": title
-#import "model/legend.typ": legend
+#import "model/legend.typ": legend, legend-icon
 #import "model/grid.typ": grid
 #import "model/errorbar.typ": errorbar
 #import "model/label.typ": label, xlabel, ylabel
@@ -46,7 +46,7 @@
 #import "place-anchor.typ": place-anchor
 
 #import "typing.typ": (
-  cond-set, fields, selector, set-diagram, set-errorbar, set-grid, set-label, set-legend, set-spine, set-tick,
+  cond-set, fields, selector, set-diagram, set-errorbar, set-grid, set-label, set-legend, set-legend-icon, set-spine, set-tick,
   set-tick-label, set-title, show_, set-violin-boxplot, set-violin-extremum,
   set-contour-level-label
 )
