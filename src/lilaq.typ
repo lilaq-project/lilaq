@@ -5,7 +5,7 @@
 #import "model/tick.typ": tick, tick-label
 #import "model/spine.typ": spine
 #import "model/title.typ": title
-#import "model/legend.typ": legend
+#import "model/legend.typ": legend, legend-icon
 #import "model/grid.typ": grid
 #import "model/errorbar.typ": errorbar
 #import "model/label.typ": label, xlabel, ylabel
