@@ -199,3 +199,21 @@
   )
   (content: content, bounds: bounds, z-index: z-index)
 }
+
+
+#let legend-icon = e.element.declare(
+  "legend-icon",
+  prefix: "lilaq",
+
+  display: it => box(width: it.width, height: it.height, it.body),
+
+  labelable: false,
+
+  fields: (
+    e.field("body", content, required: true),
+    e.field("width", relative, default: 2em),
+    e.field("height", relative, default: 0.7em),
+    e.field("label", content, default: none),
+  )
+)
+
